@@ -2,7 +2,7 @@ name: VNStock Daily
 
 on:
   schedule:
-    - cron: '0 1 * * 1-5'    # 8h00 ICT — chạy TRƯỚC intraday
+    - cron: '0 1 * * 1-5'
   workflow_dispatch:
 
 jobs:
@@ -27,8 +27,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Install nằm ở đây — chạy 1 lần/ngày
-      # Cả cron_intraday sẽ restore cache này
       - name: Cache vnstock venv + user.json
         id: cache-venv
         uses: actions/cache@v4
@@ -44,6 +42,8 @@ jobs:
 
       - name: Install VNStock Premium + user.json
         if: steps.cache-venv.outputs.cache-hit != 'true'
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
         run: |
           mkdir -p /home/runner/.vnstock
           mkdir -p /home/runner/.config/matplotlib
@@ -67,7 +67,9 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
 
-      - name: Step 3 — Market Context + Foreign Flow
+      - name: Step 3 — Market Context
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
           source /opt/vnstock/.venv/bin/activate
