@@ -150,16 +150,20 @@ if __name__ == "__main__":
     # EXPORT
     # =====================================================
 
-    # Ranking CSV + JSON
+   # Ranking
     if all_ranking_rows:
         df_all_rank = pd.concat(all_ranking_rows, ignore_index=True)
-        df_clean    = clean_for_export(df_all_rank)
+        save_json("ranking_raw.json",
+                  df_all_rank.to_dict(orient="records"))
+        df_clean = clean_for_export(df_all_rank)
         save_csv("ranking.csv", df_clean)
         save_json("ranking.json", df_clean.to_dict(orient="records"))
 
-    # Snapshot CSV + JSON
+    # Snapshot
     if all_snapshot_rows:
         df_snap  = pd.DataFrame(all_snapshot_rows)
+        save_json("snapshot_raw.json",
+                  df_snap.to_dict(orient="records"))
         df_clean = clean_for_export(df_snap)
         save_csv("snapshot.csv", df_clean)
         save_json("snapshot.json", df_clean.to_dict(orient="records"))
