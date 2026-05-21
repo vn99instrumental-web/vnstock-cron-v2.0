@@ -1,0 +1,83 @@
+name: VNStock Daily
+
+on:
+  schedule:
+    - cron: '0 1 * * 1-5'    # 8h00 ICT — chạy TRƯỚC intraday
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Install nằm ở đây — chạy 1 lần/ngày
+      # Cả cron_intraday sẽ restore cache này
+      - name: Cache vnstock venv + user.json
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4
+
+      - name: Install installer dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: pip install requests
+
+      - name: Install VNStock Premium + user.json
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /home/runner/.vnstock
+          mkdir -p /home/runner/.config/matplotlib
+          wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
+            -O installer.run
+          chmod +x installer.run
+          ./installer.run -- \
+            --non-interactive \
+            --api-key "$VNSTOCK_API_KEY" \
+            --venv-path "$VNSTOCK_VENV_PATH" \
+            --language en
+          wget -q https://vnstocks.com/files/generate_user_info.min.py \
+            -O generate_user_info.min.py
+          source /opt/vnstock/.venv/bin/activate
+          python3 generate_user_info.min.py \
+            --api-key "$VNSTOCK_API_KEY"
+          echo "✅ Install done"
+
+      - name: Install extra dependencies
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          pip install -q gspread google-auth
+
+      - name: Step 3 — Market Context + Foreign Flow
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step3_context.py
+
+      - name: Commit output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          git diff --staged --quiet || \
+            git commit -m "data: daily $(date +'%Y-%m-%d')"
+          git push
