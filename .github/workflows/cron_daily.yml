@@ -12,6 +12,7 @@ jobs:
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:   ${{ secrets.VNSTOCK_DEVICE_ID }}
       VNSTOCK_INTERACTIVE: "0"
       VNSTOCK_LANGUAGE:    en
       VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
@@ -43,7 +44,8 @@ jobs:
       - name: Install VNStock Premium + user.json
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
-          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.vnstock
           mkdir -p /home/runner/.config/matplotlib
@@ -69,7 +71,8 @@ jobs:
 
       - name: Step 3 — Market Context
         env:
-          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
           source /opt/vnstock/.venv/bin/activate
