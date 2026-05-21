@@ -287,9 +287,16 @@ if __name__ == "__main__":
 
     if all_deep_rows:
         df_deep  = pd.DataFrame(all_deep_rows)
-        save_csv("deep.csv",   df_deep)
-        save_json("deep.json", df_deep.to_dict(orient="records"))
+
+        # Export raw JSON — giữ nguyên số để dùng cho AI/analysis
+        save_json("deep_raw.json", df_deep.to_dict(orient="records"))
+
+        # Export clean CSV/JSON — format đẹp cho Google Sheets
+        from utils.formatter import clean_for_export
+        df_clean = clean_for_export(df_deep)
+        save_csv("deep.csv",   df_clean)
+        save_json("deep.json", df_clean.to_dict(orient="records"))
+
         log.info(f"Exported {len(df_deep)} rows, "
                  f"{len(df_deep.columns)} cols")
-
-    log.info("=== STEP 2 DONE ===")
+        log.info(f"Columns: {list(df_clean.columns)}")
