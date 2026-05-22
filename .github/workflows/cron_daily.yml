@@ -2,7 +2,7 @@ name: VNStock Daily
 
 on:
   schedule:
-    - cron: '0 1 * * 1-5'
+    - cron: '0 1 * * 1-5'    # 8h00 ICT
   workflow_dispatch:
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
 
-      - name: Step 3 — Market Context
+      - name: Step 3 — Market Context + Industry + Foreign Flow
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
@@ -81,7 +81,8 @@ jobs:
       - name: Commit output
         run: |
           git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "github-actions[bot]@users.noreply.github.com"
           git add output/
           git diff --staged --quiet || \
             git commit -m "data: daily $(date +'%Y-%m-%d')"
