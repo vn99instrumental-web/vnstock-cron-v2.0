@@ -26,11 +26,10 @@ def save_csv(filename: str, df: pd.DataFrame):
     df.to_csv(path, index=False, encoding="utf-8-sig")
     log.info(f"  💾 {path}")
 
-def save_display_csv(filename: str, df: pd.DataFrame,
-                     meta: dict):
+def save_display_csv(filename: str, df: pd.DataFrame, meta: dict):
     """
     Lưu CSV với 4 dòng header:
-      Row 1: field name
+      Row 1: field name (tên cột)
       Row 2: description
       Row 3: formula
       Row 4: baseline
@@ -39,24 +38,32 @@ def save_display_csv(filename: str, df: pd.DataFrame,
     path = os.path.join(OUTPUT_DIR, filename)
     cols = list(df.columns)
 
-    desc_row     = {c: meta.get(c, {}).get("desc",     "") for c in cols}
-    formula_row  = {c: meta.get(c, {}).get("formula",  "") for c in cols}
-    baseline_row = {c: meta.get(c, {}).get("baseline", "") for c in cols}
+    # Build 4 header rows
+    header_rows = [
+        # Row 1: field names — dùng làm label cột
+        ["field"] + cols,
+        # Row 2: description
+        ["description"] + [meta.get(c, {}).get("desc", "") for c in cols],
+        # Row 3: formula
+        ["formula"] + [meta.get(c, {}).get("formula", "") for c in cols],
+        # Row 4: baseline
+        ["baseline"] + [meta.get(c, {}).get("baseline", "") for c in cols],
+    ]
 
-    header_df = pd.DataFrame([
-        desc_row,
-        formula_row,
-        baseline_row,
-    ])
-    header_df.insert(0, "field", ["description", "formula", "baseline"])
+    # Build data rows
+    data_rows = []
+    for _, row in df.iterrows():
+        data_rows.append(
+            [row.get("symbol", "")] + [row.get(c, "") for c in cols]
+        )
 
-    data_df = df.copy()
-    data_df.insert(0, "field", data_df["symbol"] \
-                   if "symbol" in data_df.columns else "")
+    # Ghi thẳng ra file — không dùng pd.concat
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        import csv
+        writer = csv.writer(f)
+        for header_row in header_rows:
+            writer.writerow(header_row)
+        for data_row in data_rows:
+            writer.writerow(data_row)
 
-    combined = pd.concat(
-        [header_df, data_df.rename(columns={"symbol": "field"})],
-        ignore_index=True
-    )
-    combined.to_csv(path, index=False, encoding="utf-8-sig")
     log.info(f"  💾 {path}")
