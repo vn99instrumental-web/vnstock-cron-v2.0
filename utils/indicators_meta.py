@@ -117,11 +117,7 @@ INDICATORS_META = {
     "industry"       : {"desc": "Ngành ICB",             "formula": "Reference.industry",         "baseline": "-"},
     "market_cap"     : {"desc": "Vốn hóa (tỷ)",         "formula": "price×shares",               "baseline": ">10000 large <1000 small"},
     "market_cap_group":{"desc":"Phân loại quy mô",       "formula": "market_cap phân loại",       "baseline": "Large/Mid/Small cap"},
-    "industry_pe_avg": {"desc": "PE TB ngành",           "formula": "avg PE trong ngành",         "baseline": "So sánh với r_pe"},
-    "industry_pb_avg": {"desc": "PB TB ngành",           "formula": "avg PB trong ngành",         "baseline": "So sánh với r_pb"},
-    "pe_vs_industry" : {"desc": "PE so với TB ngành",    "formula": "r_pe/industry_pe_avg",       "baseline": "<0.8 rẻ hơn ngành >1.2 đắt hơn"},
-    "pb_vs_industry" : {"desc": "PB so với TB ngành",    "formula": "r_pb/industry_pb_avg",       "baseline": "<0.8 rẻ hơn ngành >1.2 đắt hơn"},
-
+   
     # ── Market Context ──
     "vnindex_pe"     : {"desc": "PE VNINDEX hiện tại",   "formula": "Analytics VND",              "baseline": "So với mean 5Y"},
     "pe_percentile_5y":{"desc": "PE percentile 5 năm",  "formula": "rank PE trong 5Y",           "baseline": "<30% rẻ >70% đắt"},
