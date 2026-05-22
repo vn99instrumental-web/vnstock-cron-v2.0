@@ -343,32 +343,21 @@ def get_fundamental(symbol: str) -> dict:
 # =====================================================
 
 def enrich_metadata(row: dict,
-                    industry_map: list,
-                    industry_pe: dict) -> dict:
+                    industry_map: list) -> dict:
+    """
+    Thêm industry + market_cap_group vào row
+    Bỏ pe_vs_industry — dùng PE trực tiếp trong scoring
+    """
     symbol = row["symbol"]
 
-    # Industry
+    # Industry từ icb_name
     ind_row = next(
-        (r for r in industry_map if r.get("symbol") == symbol), {})
-    ind_col = next(
-        (k for k in ind_row.keys()
-         if "industry" in k.lower() or "sector" in k.lower()), None)
-    industry = ind_row.get(ind_col, "") if ind_col else ""
-    row["industry"] = industry
+        (r for r in industry_map
+         if r.get("symbol") == symbol), {})
+    row["industry"] = ind_row.get("icb_name", "")
+    row["icb_code"]  = ind_row.get("icb_code", "")
 
-    # PE/PB vs industry
-    if industry and industry in industry_pe:
-        ind_data = industry_pe[industry]
-        row["industry_pe_avg"] = ind_data.get("pe_avg")
-        row["industry_pb_avg"] = ind_data.get("pb_avg")
-        if row.get("r_pe") and ind_data.get("pe_avg"):
-            row["pe_vs_industry"] = round(
-                row["r_pe"] / ind_data["pe_avg"], 2)
-        if row.get("r_pb") and ind_data.get("pb_avg"):
-            row["pb_vs_industry"] = round(
-                row["r_pb"] / ind_data["pb_avg"], 2)
-
-    # Market cap
+    # Market cap group
     market_cap_bil = row.get("market_cap")
     if market_cap_bil:
         if market_cap_bil >= 10000:
