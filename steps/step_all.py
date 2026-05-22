@@ -375,8 +375,7 @@ def enrich_metadata(row: dict,
 
 def build_deep_row(symbol: str, group: str,
                    market_open: bool,
-                   industry_map: list,
-                   industry_pe: dict) -> dict:
+                   industry_map: list) -> dict:  # bỏ industry_pe
     log.info(f"\n--- {symbol} ({group}) ---")
 
     snap = get_snapshot(symbol, market_open)
@@ -396,7 +395,7 @@ def build_deep_row(symbol: str, group: str,
         **{k: v for k, v in fund.items()  if k != "symbol"},
     }
 
-    row = enrich_metadata(row, industry_map, industry_pe)
+    row = enrich_metadata(row, industry_map)  # bỏ industry_pe
     return row
 
 # =====================================================
