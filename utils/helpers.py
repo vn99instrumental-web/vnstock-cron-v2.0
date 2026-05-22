@@ -52,13 +52,23 @@ def safe_run(label: str, fn):
         traceback.print_exc()
         return None
 
+def to_float(val) -> float | None:
+    if val is None:
+        return None
+    try:
+        f = float(val)
+        return round(f, 2) if not pd.isna(f) else None
+    except Exception:
+        return None
+
+# =====================================================
 # Exchange map
+# =====================================================
 _exchange_map: dict = {}
 
 def load_exchange_map():
     global _exchange_map
     from vnstock_data import Listing
-    log.info("Loading exchange map...")
     df = safe_run("symbols_by_exchange",
          lambda: Listing(source="VCI").symbols_by_exchange())
     if df is not None and not df.empty:
