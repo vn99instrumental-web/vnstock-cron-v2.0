@@ -411,7 +411,7 @@ if __name__ == "__main__":
 
     # Load daily context
     industry_map = load_json("industry_map.json") or []
-    industry_pe  = load_json("industry_pe.json")  or {}
+    # industry_pe  = load_json("industry_pe.json")  or {}
 
     ranking = get_ranking()
 
@@ -437,7 +437,7 @@ if __name__ == "__main__":
         for symbol in symbols:
             row = build_deep_row(
                 symbol, group, trading,
-                industry_map, industry_pe
+                industry_map
             )
             all_deep_rows.append(row)
             log.info(f"  [{symbol}] "
