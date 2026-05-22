@@ -10,7 +10,7 @@ os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
 
 import logging
 import pandas as pd
-from vnstock_data import Analytics, TopStock, Reference
+from vnstock_data import Analytics, Reference
 
 from utils.helpers import now_ict, last_trading_date, safe_run
 from utils.cache import save_json, save_csv
@@ -23,7 +23,6 @@ log = logging.getLogger(__name__)
 
 # =====================================================
 # INDUSTRY MAP — Reference(VCI)
-# icb_code, icb_name, icb_level, symbol
 # =====================================================
 
 def get_industry_map() -> pd.DataFrame:
@@ -74,35 +73,13 @@ def get_market_context() -> list:
     }]
 
 # =====================================================
-# FOREIGN FLOW — TopStock(VND)
-# =====================================================
-
-def get_foreign_flow() -> list:
-    log.info("=== FOREIGN FLOW ===")
-    ins  = TopStock()
-    date = last_trading_date()
-    rows = []
-    for label, fn in [
-        ("BUY",  lambda: ins.foreign_buy(limit=10,  date=date)),
-        ("SELL", lambda: ins.foreign_sell(limit=10, date=date)),
-    ]:
-        df = safe_run(f"foreign_{label.lower()}", fn)
-        if df is not None and not df.empty:
-            df["type"] = label
-            df["date"] = date
-            rows.extend(df.to_dict(orient="records"))
-            log.info(f"  {label}: {len(df)} rows")
-
-    return rows
-
-# =====================================================
 # MAIN
 # =====================================================
 
 if __name__ == "__main__":
     log.info(f"Time: {now_ict():%Y-%m-%d %H:%M:%S} ICT")
 
-    # Industry map — metadata cho symbol
+    # Industry map
     get_industry_map()
 
     # Market context
@@ -114,12 +91,5 @@ if __name__ == "__main__":
         log.info(f"PE={c['vnindex_pe']} "
                  f"pct={c['pe_percentile_5y']}% "
                  f"→ {c['market_valuation']}")
-
-    # Foreign flow
-    ff = get_foreign_flow()
-    if ff:
-        save_json("foreign_flow.json", ff)
-        save_csv("foreign_flow.csv", pd.DataFrame(ff))
-        log.info(f"Foreign flow: {len(ff)} rows")
 
     log.info("=== STEP 3 DONE ===")
