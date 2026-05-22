@@ -43,10 +43,8 @@ jobs:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          echo "⚠️ Cache miss — fallback install"
           pip install requests
           mkdir -p /home/runner/.vnstock
-          mkdir -p /home/runner/.config/matplotlib
           wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
             -O installer.run
           chmod +x installer.run
@@ -60,34 +58,34 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python3 generate_user_info.min.py \
             --api-key "$VNSTOCK_API_KEY"
-          echo "✅ Fallback done"
 
       - name: Install extra dependencies
         run: |
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
 
-      - name: Step 1 — Ranking + Snapshot
+      - name: Step All — Ranking + Deep
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
           source /opt/vnstock/.venv/bin/activate
-          python steps/step1_ranking.py
+          python steps/step_all.py
 
-      - name: Step 2 — Deep Analysis
+      - name: Step Scoring
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           source /opt/vnstock/.venv/bin/activate
-          python steps/step2_deep.py
+          python steps/step_scoring.py
 
       - name: Commit output
         run: |
           git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "github-actions[bot]@users.noreply.github.com"
           git add output/
           git diff --staged --quiet || \
             git commit -m "data: $(date +'%Y-%m-%d %H:%M') ICT"
