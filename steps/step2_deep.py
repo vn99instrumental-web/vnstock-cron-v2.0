@@ -18,6 +18,7 @@ from utils.helpers import (
     safe_run, safe_val, start_str, today_str
 )
 from utils.cache import load_json, save_json, save_csv
+from utils.formatter import clean_for_export
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,7 +27,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # =====================================================
-# HELPER
+# HELPERS
 # =====================================================
 
 def _to_float(val) -> float | None:
@@ -38,15 +39,27 @@ def _to_float(val) -> float | None:
     except Exception:
         return None
 
-def _get_col(row: pd.Series, candidates: list):
-    """Thử nhiều tên column, trả về giá trị đầu tiên tìm thấy"""
-    for c in candidates:
-        if c in row.index and pd.notna(row[c]):
-            return _to_float(row[c])
+def _kbs_lookup(df: pd.DataFrame, keys: list) -> float | None:
+    """
+    KBS Wide-form: rows=item_id, cols=kỳ báo cáo
+    Tìm item_id trong danh sách keys, lấy giá trị kỳ mới nhất
+    """
+    period_cols = [c for c in df.columns
+                   if c not in ["item", "item_id"]]
+    if not period_cols:
+        return None
+    latest_col = period_cols[-1]
+
+    idx_col = "item_id" if "item_id" in df.columns else df.columns[0]
+    df_idx  = df.set_index(idx_col)[latest_col]
+
+    for k in keys:
+        if k in df_idx.index:
+            return _to_float(df_idx[k])
     return None
 
 # =====================================================
-# TA INDICATORS
+# TA INDICATORS — vnstock_ta
 # =====================================================
 
 def get_ta(symbol: str) -> dict:
@@ -94,7 +107,8 @@ def get_ta(symbol: str) -> dict:
     return res
 
 # =====================================================
-# ORDER FLOW — prop_trade đã bỏ
+# ORDER FLOW — Trading(VCI)
+# prop_trade đã bỏ do bug thư viện
 # =====================================================
 
 def get_flow(symbol: str) -> dict:
@@ -132,93 +146,113 @@ def get_flow(symbol: str) -> dict:
     return res
 
 # =====================================================
-# FUNDAMENTAL — Finance(VCI) Long-form
-# Columns từ tài liệu 05-finance.md:
-#   ratio(): pe, pb, roe, eps, bvps, beta, dividend_yield,
-#            roa, current_ratio, quick_ratio,
-#            debt_to_equity, interest_coverage
-#   income_statement(): net_revenue, gross_profit, net_profit,
-#                       net_profit_margin, revenue_growth,
-#                       net_profit_growth, ebitda
+# FUNDAMENTAL
+# Dùng KBS (Wide-form) cho ratio/income/balance
+# Wide-form: rows=item_id, cols=kỳ báo cáo
 # =====================================================
 
 def get_fundamental(symbol: str) -> dict:
     log.info(f"  Fundamental: {symbol}")
     res = {"symbol": symbol}
 
-    # --- Ratio ---
+    # --- RATIO — KBS ---
     df_ratio = safe_run(f"ratio {symbol}",
-                lambda: Finance(source="VCI", symbol=symbol).ratio(
-                    period="quarter", lang="en"))
+                lambda: Finance(source="KBS", symbol=symbol).ratio(
+                    period="quarter", limit=1))
     if df_ratio is not None and not df_ratio.empty:
-        last = df_ratio.iloc[0]   # dòng mới nhất (kỳ gần nhất)
-        log.info(f"  ratio cols: {list(df_ratio.columns)}")
+        log.info(f"  ratio cols : {list(df_ratio.columns)}")
+        log.info(f"  ratio items: {df_ratio.get('item_id', df_ratio.iloc[:,0]).tolist()}")
 
-        # Định giá
-        res["r_pe"]        = _get_col(last, ["pe", "P/E"])
-        res["r_pb"]        = _get_col(last, ["pb", "P/B"])
-        res["r_eps"]       = _get_col(last, ["eps", "EPS"])
-        res["r_bvps"]      = _get_col(last, ["bvps", "BVPS"])
+        period_cols = [c for c in df_ratio.columns
+                       if c not in ["item", "item_id"]]
+        res["r_period"] = period_cols[-1] if period_cols else ""
 
-        # Hiệu quả
-        res["r_roe"]       = _get_col(last, ["roe", "ROE"])
-        res["r_roa"]       = _get_col(last, ["roa", "ROA"])
+        res["r_pe"]            = _kbs_lookup(df_ratio,
+            ["pe_ratio", "pe", "P/E", "price_to_earnings"])
+        res["r_pb"]            = _kbs_lookup(df_ratio,
+            ["pb_ratio", "pb", "P/B", "price_to_book"])
+        res["r_eps"]           = _kbs_lookup(df_ratio,
+            ["eps", "EPS", "earnings_per_share"])
+        res["r_bvps"]          = _kbs_lookup(df_ratio,
+            ["bvps", "book_value_per_share"])
+        res["r_roe"]           = _kbs_lookup(df_ratio,
+            ["roe", "ROE", "return_on_equity"])
+        res["r_roa"]           = _kbs_lookup(df_ratio,
+            ["roa", "ROA", "return_on_assets"])
+        res["r_beta"]          = _kbs_lookup(df_ratio,
+            ["beta", "Beta"])
+        res["r_div_yield"]     = _kbs_lookup(df_ratio,
+            ["dividend_yield", "div_yield", "dividend_ratio"])
+        res["r_current_ratio"] = _kbs_lookup(df_ratio,
+            ["current_ratio", "liquidity_ratio"])
+        res["r_quick_ratio"]   = _kbs_lookup(df_ratio,
+            ["quick_ratio", "acid_test_ratio"])
+        res["r_debt_equity"]   = _kbs_lookup(df_ratio,
+            ["debt_to_equity", "debt_equity", "d_e_ratio"])
 
-        # Rủi ro & cổ tức
-        res["r_beta"]      = _get_col(last, ["beta", "Beta"])
-        res["r_div_yield"] = _get_col(last,
-            ["dividend_yield", "div_yield", "Dividend Yield"])
-
-        # Thanh khoản & nợ
-        res["r_current_ratio"] = _get_col(last,
-            ["current_ratio", "Current Ratio"])
-        res["r_quick_ratio"]   = _get_col(last,
-            ["quick_ratio", "Quick Ratio"])
-        res["r_debt_equity"]   = _get_col(last,
-            ["debt_to_equity", "Debt/Equity"])
-
-        res["r_period"] = str(last.get("report_period", ""))
-
-    # --- Income statement ---
+    # --- INCOME STATEMENT — KBS ---
     df_is = safe_run(f"income {symbol}",
-             lambda: Finance(source="VCI", symbol=symbol)\
-                     .income_statement(period="quarter", lang="en"))
+             lambda: Finance(source="KBS", symbol=symbol)\
+                     .income_statement(period="quarter", limit=1))
     if df_is is not None and not df_is.empty:
-        last = df_is.iloc[0]
-        log.info(f"  income cols: {list(df_is.columns)}")
+        log.info(f"  income cols : {list(df_is.columns)}")
+        log.info(f"  income items: {df_is.get('item_id', df_is.iloc[:,0]).tolist()}")
 
-        res["is_revenue"]       = _get_col(last,
-            ["net_revenue", "Net Revenue", "revenue"])
-        res["is_gross_profit"]  = _get_col(last,
-            ["gross_profit", "Gross Profit"])
-        res["is_net_profit"]    = _get_col(last,
-            ["net_profit", "Net Profit"])
-        res["is_ebitda"]        = _get_col(last,
+        res["is_revenue"]       = _kbs_lookup(df_is,
+            ["net_revenue", "revenue", "net_sales", "total_revenue"])
+        res["is_gross_profit"]  = _kbs_lookup(df_is,
+            ["gross_profit", "gross_income"])
+        res["is_net_profit"]    = _kbs_lookup(df_is,
+            ["net_profit", "profit_after_tax", "net_income"])
+        res["is_ebitda"]        = _kbs_lookup(df_is,
             ["ebitda", "EBITDA"])
-        res["is_net_margin"]    = _get_col(last,
-            ["net_profit_margin", "Net Profit Margin"])
-        res["is_rev_growth"]    = _get_col(last,
-            ["revenue_growth", "Revenue Growth"])
-        res["is_profit_growth"] = _get_col(last,
-            ["net_profit_growth", "Net Profit Growth"])
+        res["is_net_margin"]    = _kbs_lookup(df_is,
+            ["net_profit_margin", "profit_margin", "net_margin"])
+        res["is_rev_growth"]    = _kbs_lookup(df_is,
+            ["revenue_growth", "yoy_revenue_growth"])
+        res["is_profit_growth"] = _kbs_lookup(df_is,
+            ["net_profit_growth", "yoy_profit_growth"])
 
-    # --- Balance sheet — thêm từ tài liệu ---
+    # --- BALANCE SHEET — KBS ---
     df_bs = safe_run(f"balance_sheet {symbol}",
-             lambda: Finance(source="VCI", symbol=symbol)\
-                     .balance_sheet(period="quarter", lang="en"))
+             lambda: Finance(source="KBS", symbol=symbol)\
+                     .balance_sheet(period="quarter", limit=1))
     if df_bs is not None and not df_bs.empty:
-        last = df_bs.iloc[0]
-        log.info(f"  balance cols: {list(df_bs.columns)}")
+        log.info(f"  bs cols : {list(df_bs.columns)}")
+        log.info(f"  bs items: {df_bs.get('item_id', df_bs.iloc[:,0]).tolist()}")
 
-        res["bs_total_assets"]   = _get_col(last,
-            ["total_assets", "Total Assets"])
-        res["bs_total_equity"]   = _get_col(last,
-            ["total_equity", "Total Equity",
-             "owner_equity", "Stockholders Equity"])
-        res["bs_short_debt"]     = _get_col(last,
-            ["short_term_debt", "Short Term Debt"])
-        res["bs_long_debt"]      = _get_col(last,
-            ["long_term_debt", "Long Term Debt"])
+        res["bs_total_assets"] = _kbs_lookup(df_bs,
+            ["total_assets", "assets"])
+        res["bs_equity"]       = _kbs_lookup(df_bs,
+            ["equity", "total_equity", "owner_equity",
+             "stockholders_equity"])
+        res["bs_total_liab"]   = _kbs_lookup(df_bs,
+            ["total_liabilities", "total_liability", "liabilities"])
+        res["bs_short_debt"]   = _kbs_lookup(df_bs,
+            ["short_term_debt", "short_term_borrowing",
+             "short_term_loan"])
+        res["bs_long_debt"]    = _kbs_lookup(df_bs,
+            ["long_term_debt", "long_term_borrowing",
+             "long_term_loan"])
+
+    # --- CASH FLOW — KBS ---
+    df_cf = safe_run(f"cash_flow {symbol}",
+             lambda: Finance(source="KBS", symbol=symbol)\
+                     .cash_flow(period="quarter", limit=1))
+    if df_cf is not None and not df_cf.empty:
+        log.info(f"  cf cols : {list(df_cf.columns)}")
+
+        res["cf_operating"]  = _kbs_lookup(df_cf,
+            ["operating_cash_flow", "cfo",
+             "net_cash_from_operating"])
+        res["cf_investing"]  = _kbs_lookup(df_cf,
+            ["investing_cash_flow", "cfi",
+             "net_cash_from_investing"])
+        res["cf_financing"]  = _kbs_lookup(df_cf,
+            ["financing_cash_flow", "cff",
+             "net_cash_from_financing"])
+        res["cf_free"]       = _kbs_lookup(df_cf,
+            ["free_cash_flow", "fcf"])
 
     return res
 
@@ -233,7 +267,7 @@ if __name__ == "__main__":
 
     top3_cache = load_json("top3_cache.json")
     if not top3_cache:
-        log.error("Không tìm thấy top3_cache.json")
+        log.error("Không tìm thấy top3_cache.json — chạy step1 trước")
         sys.exit(1)
 
     log.info(f"Top 3: {top3_cache}")
@@ -246,6 +280,7 @@ if __name__ == "__main__":
     ]:
         symbols = top3_cache.get(group_key, [])
         if not symbols:
+            log.warning(f"Không có symbols cho {group_label}")
             continue
 
         log.info(f"\n=== DEEP {group_label}: {symbols} ===")
@@ -267,32 +302,40 @@ if __name__ == "__main__":
             all_deep_rows.append(row)
 
             log.info(f"  [{symbol}]")
-            log.info(f"    TA   : RSI={row.get('rsi')}, "
-                     f"MACD={row.get('macd')}, "
+            log.info(f"    TA      : RSI={row.get('rsi')}, "
+                     f"MACD={row.get('macd')}/{row.get('macd_hist')}, "
                      f"ADX={row.get('adx')}")
-            log.info(f"    Ratio: PE={row.get('r_pe')}, "
+            log.info(f"    BB      : {row.get('bb_lower')}|"
+                     f"{row.get('bb_mid')}|{row.get('bb_upper')}, "
+                     f"ATR={row.get('atr')}")
+            log.info(f"    Ratio   : PE={row.get('r_pe')}, "
                      f"PB={row.get('r_pb')}, "
                      f"ROE={row.get('r_roe')}, "
-                     f"EPS={row.get('r_eps')}")
-            log.info(f"    IS   : Rev={row.get('is_revenue')}, "
+                     f"EPS={row.get('r_eps')}, "
+                     f"Period={row.get('r_period')}")
+            log.info(f"    IS      : Rev={row.get('is_revenue')}, "
                      f"Margin={row.get('is_net_margin')}, "
                      f"Growth={row.get('is_profit_growth')}")
-            log.info(f"    BS   : Assets={row.get('bs_total_assets')}, "
-                     f"Equity={row.get('bs_total_equity')}")
-            log.info(f"    FF   : net5d={row.get('ff_net_val_5d')}, "
-                     f"net20d={row.get('ff_net_val_20d')}")
-            log.info(f"    Insider: {row.get('insider_count')} deals, "
+            log.info(f"    BS      : Assets={row.get('bs_total_assets')}, "
+                     f"Equity={row.get('bs_equity')}")
+            log.info(f"    CF      : Oper={row.get('cf_operating')}, "
+                     f"Free={row.get('cf_free')}")
+            log.info(f"    FF      : net5d={row.get('ff_net_val_5d')}, "
+                     f"net20d={row.get('ff_net_val_20d')}, "
+                     f"room={row.get('ff_room')}")
+            log.info(f"    Insider : {row.get('insider_count')} deals, "
                      f"{row.get('insider_latest')} "
                      f"by {row.get('insider_name')}")
 
+    # Export
     if all_deep_rows:
-        df_deep  = pd.DataFrame(all_deep_rows)
+        df_deep = pd.DataFrame(all_deep_rows)
 
-        # Export raw JSON — giữ nguyên số để dùng cho AI/analysis
-        save_json("deep_raw.json", df_deep.to_dict(orient="records"))
+        # Raw JSON — giữ nguyên số để dùng cho AI/analysis
+        save_json("deep_raw.json",
+                  df_deep.to_dict(orient="records"))
 
-        # Export clean CSV/JSON — format đẹp cho Google Sheets
-        from utils.formatter import clean_for_export
+        # Clean CSV/JSON — format đẹp cho Google Sheets
         df_clean = clean_for_export(df_deep)
         save_csv("deep.csv",   df_clean)
         save_json("deep.json", df_clean.to_dict(orient="records"))
@@ -300,3 +343,5 @@ if __name__ == "__main__":
         log.info(f"Exported {len(df_deep)} rows, "
                  f"{len(df_deep.columns)} cols")
         log.info(f"Columns: {list(df_clean.columns)}")
+
+    log.info("=== STEP 2 DONE ===")
