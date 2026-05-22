@@ -197,12 +197,25 @@ def get_flow(symbol: str) -> dict:
     log.info(f"  Flow: {symbol}")
     res = {"symbol": symbol}
 
-    df_ft = safe_run(f"foreign_trade {symbol}",
+    # Foreign trade — VCI trước, fallback CafeF
+    df_ft = safe_run(f"foreign_trade_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
                  start=start_str(20), end=today_str()))
+
+    if df_ft is None:
+        df_ft = safe_run(f"foreign_trade_cafef {symbol}",
+                 lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
+                     start=start_str(20), end=today_str()))
+        if df_ft is not None and not df_ft.empty:
+            # CafeF columns khác VCI — normalize
+            df_ft = df_ft.rename(columns={
+                "fr_buy_volume" : "fr_buy_value_matched",
+                "fr_sell_volume": "fr_sell_value_matched",
+                "fr_net_volume" : "fr_net_value_total",
+            })
+
     if df_ft is not None and not df_ft.empty:
         net_series = df_ft["fr_net_value_total"]
-
         res["ff_buy_val_5d"]  = float(
             df_ft["fr_buy_value_matched"].tail(5).sum())
         res["ff_sell_val_5d"] = float(
@@ -217,24 +230,35 @@ def get_flow(symbol: str) -> dict:
         # FF derived
         if len(net_series) >= 5:
             import numpy as np
-            x = np.arange(len(net_series))
-            y = net_series.fillna(0).values
+            x     = np.arange(len(net_series))
+            y     = net_series.fillna(0).values
             slope = np.polyfit(x, y, 1)[0]
-            res["ff_trend"] = round(float(slope) / 1e9, 2)
-
-            days_positive = (net_series > 0).sum()
+            res["ff_trend"]       = round(float(slope) / 1e9, 2)
             res["ff_consistency"] = round(
-                days_positive / len(net_series), 2)
-
+                (net_series > 0).sum() / len(net_series), 2)
             ff_5d_avg  = net_series.tail(5).mean()
             ff_20d_avg = net_series.mean()
             res["ff_acceleration"] = round(
                 float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
                 if ff_20d_avg != 0 else 0
 
-    df_id = safe_run(f"insider_deal {symbol}",
+    # Insider deal — VCI trước, fallback CafeF
+    df_id = safe_run(f"insider_deal_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI")\
                      .insider_deal(limit=5))
+
+    if df_id is None:
+        df_id = safe_run(f"insider_deal_cafef {symbol}",
+                 lambda: Trading(symbol=symbol, source="CafeF")\
+                         .insider_deal(limit=5))
+        if df_id is not None and not df_id.empty:
+            # Normalize CafeF columns → VCI format
+            df_id = df_id.rename(columns={
+                "transaction_man"         : "trader_name",
+                "transaction_man_position": "trader_position",
+                "transaction_note"        : "action_type",
+            })
+
     if df_id is not None and not df_id.empty:
         res["insider_count"]  = len(df_id)
         res["insider_latest"] = str(df_id["action_type"].iloc[0]) \
