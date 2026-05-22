@@ -160,97 +160,101 @@ def get_fundamental(symbol: str) -> dict:
                 lambda: Finance(source="KBS", symbol=symbol).ratio(
                     period="quarter", limit=1))
     if df_ratio is not None and not df_ratio.empty:
-        log.info(f"  ratio cols : {list(df_ratio.columns)}")
-        log.info(f"  ratio items: {df_ratio.get('item_id', df_ratio.iloc[:,0]).tolist()}")
-
         period_cols = [c for c in df_ratio.columns
                        if c not in ["item", "item_id"]]
         res["r_period"] = period_cols[-1] if period_cols else ""
 
         res["r_pe"]            = _kbs_lookup(df_ratio,
-            ["pe_ratio", "pe", "P/E", "price_to_earnings"])
+            ["pe_ratio"])
         res["r_pb"]            = _kbs_lookup(df_ratio,
-            ["pb_ratio", "pb", "P/B", "price_to_book"])
+            ["pb_ratio"])
         res["r_eps"]           = _kbs_lookup(df_ratio,
-            ["eps", "EPS", "earnings_per_share"])
+            ["trailing_eps", "eps"])
         res["r_bvps"]          = _kbs_lookup(df_ratio,
-            ["bvps", "book_value_per_share"])
+            ["book_value_per_share_bvps", "bvps"])
         res["r_roe"]           = _kbs_lookup(df_ratio,
-            ["roe", "ROE", "return_on_equity"])
+            ["roe", "roe_trailling"])
         res["r_roa"]           = _kbs_lookup(df_ratio,
-            ["roa", "ROA", "return_on_assets"])
+            ["roa", "roa_trailling"])
         res["r_beta"]          = _kbs_lookup(df_ratio,
-            ["beta", "Beta"])
+            ["beta"])
         res["r_div_yield"]     = _kbs_lookup(df_ratio,
-            ["dividend_yield", "div_yield", "dividend_ratio"])
+            ["dividend_yield"])
+        res["r_gross_margin"]  = _kbs_lookup(df_ratio,
+            ["gross_margin"])
+        res["r_ebit_margin"]   = _kbs_lookup(df_ratio,
+            ["ebit_margin"])
+        res["r_net_margin"]    = _kbs_lookup(df_ratio,
+            ["net_margin"])
         res["r_current_ratio"] = _kbs_lookup(df_ratio,
-            ["current_ratio", "liquidity_ratio"])
-        res["r_quick_ratio"]   = _kbs_lookup(df_ratio,
-            ["quick_ratio", "acid_test_ratio"])
-        res["r_debt_equity"]   = _kbs_lookup(df_ratio,
-            ["debt_to_equity", "debt_equity", "d_e_ratio"])
+            ["cash_ratio", "quick_ratio"])
+        res["r_interest_cov"]  = _kbs_lookup(df_ratio,
+            ["interest_coverage"])
+        res["r_ev_ebitda"]     = _kbs_lookup(df_ratio,
+            ["ev_ebitda"])
 
     # --- INCOME STATEMENT — KBS ---
     df_is = safe_run(f"income {symbol}",
              lambda: Finance(source="KBS", symbol=symbol)\
                      .income_statement(period="quarter", limit=1))
     if df_is is not None and not df_is.empty:
-        log.info(f"  income cols : {list(df_is.columns)}")
-        log.info(f"  income items: {df_is.get('item_id', df_is.iloc[:,0]).tolist()}")
+        log.info(f"  income items: "
+                 f"{df_is.get('item_id', df_is.iloc[:,0]).tolist()}")
 
         res["is_revenue"]       = _kbs_lookup(df_is,
-            ["net_revenue", "revenue", "net_sales", "total_revenue"])
+            ["net_revenue", "revenue", "total_revenue"])
         res["is_gross_profit"]  = _kbs_lookup(df_is,
-            ["gross_profit", "gross_income"])
+            ["gross_profit"])
         res["is_net_profit"]    = _kbs_lookup(df_is,
-            ["net_profit", "profit_after_tax", "net_income"])
+            ["profit_after_tax",
+             "profit_after_tax_for_shareholders_of_the_parent_company",
+             "net_profit"])
         res["is_ebitda"]        = _kbs_lookup(df_is,
-            ["ebitda", "EBITDA"])
-        res["is_net_margin"]    = _kbs_lookup(df_is,
-            ["net_profit_margin", "profit_margin", "net_margin"])
+            ["ebitda", "ebitda_net_revenue"])
         res["is_rev_growth"]    = _kbs_lookup(df_is,
-            ["revenue_growth", "yoy_revenue_growth"])
+            ["revenue_growth", "yoy_revenue"])
         res["is_profit_growth"] = _kbs_lookup(df_is,
-            ["net_profit_growth", "yoy_profit_growth"])
+            ["profit_growth", "yoy_profit"])
 
     # --- BALANCE SHEET — KBS ---
     df_bs = safe_run(f"balance_sheet {symbol}",
              lambda: Finance(source="KBS", symbol=symbol)\
                      .balance_sheet(period="quarter", limit=1))
     if df_bs is not None and not df_bs.empty:
-        log.info(f"  bs cols : {list(df_bs.columns)}")
-        log.info(f"  bs items: {df_bs.get('item_id', df_bs.iloc[:,0]).tolist()}")
+        log.info(f"  bs items: "
+                 f"{df_bs.get('item_id', df_bs.iloc[:,0]).tolist()}")
 
         res["bs_total_assets"] = _kbs_lookup(df_bs,
-            ["total_assets", "assets"])
+            ["total_assets"])
         res["bs_equity"]       = _kbs_lookup(df_bs,
-            ["equity", "total_equity", "owner_equity",
-             "stockholders_equity"])
+            ["owner_equity", "total_owner_s_equity_and_liabilities",
+             "d_owner_s_equity"])
         res["bs_total_liab"]   = _kbs_lookup(df_bs,
-            ["total_liabilities", "total_liability", "liabilities"])
+            ["liabilities", "long_term_liabilities"])
         res["bs_short_debt"]   = _kbs_lookup(df_bs,
-            ["short_term_debt", "short_term_borrowing",
-             "short_term_loan"])
+            ["11_short_term_borrowings_and_financial_leases",
+             "short_term_borrowing"])
         res["bs_long_debt"]    = _kbs_lookup(df_bs,
-            ["long_term_debt", "long_term_borrowing",
-             "long_term_loan"])
+            ["9_long_term_borrowings_and_financial_leases",
+             "long_term_borrowing"])
 
     # --- CASH FLOW — KBS ---
     df_cf = safe_run(f"cash_flow {symbol}",
              lambda: Finance(source="KBS", symbol=symbol)\
                      .cash_flow(period="quarter", limit=1))
     if df_cf is not None and not df_cf.empty:
-        log.info(f"  cf cols : {list(df_cf.columns)}")
+        log.info(f"  cf items: "
+                 f"{df_cf.get('item_id', df_cf.iloc[:,0]).tolist()}")
 
         res["cf_operating"]  = _kbs_lookup(df_cf,
-            ["operating_cash_flow", "cfo",
-             "net_cash_from_operating"])
+            ["operating_cash_flow", "net_cash_from_operating",
+             "cash_flow_from_operations"])
         res["cf_investing"]  = _kbs_lookup(df_cf,
-            ["investing_cash_flow", "cfi",
-             "net_cash_from_investing"])
+            ["investing_cash_flow", "net_cash_from_investing",
+             "cash_flow_from_investing"])
         res["cf_financing"]  = _kbs_lookup(df_cf,
-            ["financing_cash_flow", "cff",
-             "net_cash_from_financing"])
+            ["financing_cash_flow", "net_cash_from_financing",
+             "cash_flow_from_financing"])
         res["cf_free"]       = _kbs_lookup(df_cf,
             ["free_cash_flow", "fcf"])
 
