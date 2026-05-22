@@ -81,6 +81,14 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step_scoring.py
 
+      - name: Step Order Flow
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_order_flow.py
+
       - name: Commit output
         run: |
           git config user.name  "github-actions[bot]"
