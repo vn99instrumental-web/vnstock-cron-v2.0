@@ -23,56 +23,21 @@ log = logging.getLogger(__name__)
 
 # =====================================================
 # INDUSTRY MAP — Reference(VCI)
+# icb_code, icb_name, icb_level, symbol
 # =====================================================
 
-def get_industry_map() -> dict:
+def get_industry_map() -> pd.DataFrame:
     log.info("=== INDUSTRY MAP ===")
     df = safe_run("industry_list",
          lambda: Reference().industry.list())
     if df is None or df.empty:
-        return {}
-    log.info(f"  industry cols: {list(df.columns)}")
+        log.warning("  industry_list trả về empty")
+        return pd.DataFrame()
+    log.info(f"  cols: {list(df.columns)}")
     log.info(f"  {len(df)} symbols")
-    save_json("industry_map.json", df.to_dict(orient="records"))
+    save_json("industry_map.json",
+              df.to_dict(orient="records"))
     return df
-
-# =====================================================
-# INDUSTRY PE/PB — Analytics(VND)
-# =====================================================
-
-def get_industry_pe(df_industry: pd.DataFrame) -> dict:
-    log.info("=== INDUSTRY PE/PB ===")
-    if df_industry is None or df_industry.empty:
-        return {}
-
-    # Detect industry column name
-    ind_col = next(
-        (c for c in df_industry.columns
-         if "industry" in c.lower() or "sector" in c.lower()), None)
-    if not ind_col:
-        log.warning("  Không tìm thấy industry column")
-        return {}
-
-    industries = df_industry[ind_col].dropna().unique().tolist()
-    log.info(f"  {len(industries)} industries: {industries[:5]}...")
-
-    result = {}
-    for ind in industries:
-        symbols = df_industry[
-            df_industry[ind_col] == ind]["symbol"].tolist()
-        if not symbols:
-            continue
-        # Lấy PE/PB từ Analytics cho từng ngành
-        # Dùng symbol đại diện của ngành
-        result[ind] = {
-            "symbol_count": len(symbols),
-            "pe_avg": None,
-            "pb_avg": None,
-        }
-
-    save_json("industry_pe.json", result)
-    log.info(f"  Saved {len(result)} industries")
-    return result
 
 # =====================================================
 # MARKET CONTEXT — Analytics(VND) 5Y
@@ -126,6 +91,7 @@ def get_foreign_flow() -> list:
             df["type"] = label
             df["date"] = date
             rows.extend(df.to_dict(orient="records"))
+            log.info(f"  {label}: {len(df)} rows")
 
     return rows
 
@@ -136,11 +102,8 @@ def get_foreign_flow() -> list:
 if __name__ == "__main__":
     log.info(f"Time: {now_ict():%Y-%m-%d %H:%M:%S} ICT")
 
-    # Industry map
-    df_industry = get_industry_map()
-
-    # Industry PE/PB
-    get_industry_pe(df_industry)
+    # Industry map — metadata cho symbol
+    get_industry_map()
 
     # Market context
     ctx = get_market_context()
@@ -157,5 +120,6 @@ if __name__ == "__main__":
     if ff:
         save_json("foreign_flow.json", ff)
         save_csv("foreign_flow.csv", pd.DataFrame(ff))
+        log.info(f"Foreign flow: {len(ff)} rows")
 
     log.info("=== STEP 3 DONE ===")
