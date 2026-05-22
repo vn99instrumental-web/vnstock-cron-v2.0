@@ -136,36 +136,41 @@ def score_symbol(row: dict, context: dict) -> dict:
         else:
             add("ff", -5, "FF decelerating")
 
-    # ── FUNDAMENTAL vs INDUSTRY (max 15) ──
-    pe_vs_ind = row.get("pe_vs_industry")
-    pb_vs_ind = row.get("pb_vs_industry")
-    roe       = row.get("r_roe")
+    # ── FUNDAMENTAL — dùng PE/PB trực tiếp (max 15) ──
+    r_pe = row.get("r_pe")
+    r_pb = row.get("r_pb")
+    roe  = row.get("r_roe")
 
-    if pe_vs_ind is not None:
-        if pe_vs_ind < 0.8:
-            add("fundamental", 10, f"PE={pe_vs_ind}x industry cheap")
-        elif pe_vs_ind > 1.2:
-            add("fundamental", -5, f"PE={pe_vs_ind}x industry expensive")
+    # PE — định giá tuyệt đối
+    if r_pe:
+        if r_pe < 10:
+            add("fundamental", 10, f"PE={r_pe} very cheap")
+        elif r_pe < 15:
+            add("fundamental", 7,  f"PE={r_pe} cheap")
+        elif r_pe <= 25:
+            add("fundamental", 3,  f"PE={r_pe} fair")
         else:
-            add("fundamental", 3, f"PE={pe_vs_ind}x industry fair")
-    elif row.get("r_pe"):
-        pe = row["r_pe"]
-        if pe < 15:
-            add("fundamental", 8, f"PE={pe} cheap")
-        elif pe > 25:
-            add("fundamental", -5, f"PE={pe} expensive")
+            add("fundamental", -5, f"PE={r_pe} expensive")
 
-    if pb_vs_ind is not None:
-        if pb_vs_ind < 0.8:
-            add("fundamental", 5, f"PB={pb_vs_ind}x industry cheap")
-        elif pb_vs_ind > 1.2:
-            add("fundamental", -3, f"PB={pb_vs_ind}x industry expensive")
+    # PB — giá so với giá trị sổ sách
+    if r_pb:
+        if r_pb < 1:
+            add("fundamental", 5,  f"PB={r_pb} below book")
+        elif r_pb <= 2:
+            add("fundamental", 3,  f"PB={r_pb} fair")
+        elif r_pb <= 3:
+            add("fundamental", 0,  f"PB={r_pb} neutral")
+        else:
+            add("fundamental", -3, f"PB={r_pb} expensive")
 
+    # ROE — hiệu quả vốn
     if roe:
         if roe > 20:
-            add("fundamental", 5, f"ROE={roe}% excellent")
+            add("fundamental", 5,  f"ROE={roe}% excellent")
         elif roe > 15:
-            add("fundamental", 3, f"ROE={roe}% good")
+            add("fundamental", 3,  f"ROE={roe}% good")
+        elif roe > 10:
+            add("fundamental", 0,  f"ROE={roe}% neutral")
         elif roe < 5:
             add("fundamental", -3, f"ROE={roe}% weak")
 
