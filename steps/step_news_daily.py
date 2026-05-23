@@ -2,6 +2,16 @@
 # Chạy trong cron_daily.yml — sau step3_context.py
 # Crawl RSS từ các báo tài chính → tag industry + macro → lưu news_raw.json
 
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+os.environ["VNSTOCK_INTERACTIVE"] = "0"
+os.environ["VNSTOCK_LANGUAGE"]    = "en"
+os.environ["MPLCONFIGDIR"]        = "/home/runner/.config/matplotlib"
+os.makedirs("/home/runner/.vnstock",           exist_ok=True)
+os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
+
 import logging
 from datetime import datetime, timezone, timedelta
 
