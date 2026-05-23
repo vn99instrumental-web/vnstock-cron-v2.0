@@ -1,65 +1,79 @@
-import os
+"""
+cache.py — I/O helpers
+=======================
+Thay đổi từ bản cũ:
+  - save_json/load_json tự tạo subdirectory nếu cần
+  - Hỗ trợ paths như "finance/cache.json", "news/today_index.json"
+  - API không thay đổi — không break code hiện tại
+"""
+import csv
 import json
 import logging
+import os
+
 import pandas as pd
+
 from config import OUTPUT_DIR
 
 log = logging.getLogger(__name__)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-def save_json(filename: str, data):
+
+def _resolve(filename: str) -> str:
+    """Resolve full path, tạo parent dirs nếu cần."""
     path = os.path.join(OUTPUT_DIR, filename)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    return path
+
+
+def save_json(filename: str, data) -> None:
+    path = _resolve(filename)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2, default=str)
     log.info(f"  💾 {path}")
 
+
 def load_json(filename: str):
-    path = os.path.join(OUTPUT_DIR, filename)
+    path = _resolve(filename)
     if not os.path.exists(path):
         log.warning(f"  ⚠️ Not found: {path}")
         return None
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
-def save_csv(filename: str, df: pd.DataFrame):
-    path = os.path.join(OUTPUT_DIR, filename)
+
+def save_csv(filename: str, df: pd.DataFrame) -> None:
+    path = _resolve(filename)
     df.to_csv(path, index=False, encoding="utf-8-sig")
     log.info(f"  💾 {path}")
 
-def save_display_csv(filename: str, df: pd.DataFrame, meta: dict):
+
+def save_display_csv(filename: str, df: pd.DataFrame, meta: dict) -> None:
     """
     Lưu CSV với 4 dòng header:
-      Row 1: field name (tên cột)
+      Row 1: field name
       Row 2: description
       Row 3: formula
       Row 4: baseline
-    Sau đó data rows
+    Sau đó data rows.
     """
-    path = os.path.join(OUTPUT_DIR, filename)
+    path = _resolve(filename)
     cols = list(df.columns)
 
-    # Build 4 header rows
     header_rows = [
-        # Row 1: field names — dùng làm label cột
-        ["field"] + cols,
-        # Row 2: description
-        ["description"] + [meta.get(c, {}).get("desc", "") for c in cols],
-        # Row 3: formula
-        ["formula"] + [meta.get(c, {}).get("formula", "") for c in cols],
-        # Row 4: baseline
-        ["baseline"] + [meta.get(c, {}).get("baseline", "") for c in cols],
+        ["field"]       + cols,
+        ["description"] + [meta.get(c, {}).get("desc",     "") for c in cols],
+        ["formula"]     + [meta.get(c, {}).get("formula",  "") for c in cols],
+        ["baseline"]    + [meta.get(c, {}).get("baseline", "") for c in cols],
     ]
 
-    # Build data rows
     data_rows = []
     for _, row in df.iterrows():
         data_rows.append(
             [row.get("symbol", "")] + [row.get(c, "") for c in cols]
         )
 
-    # Ghi thẳng ra file — không dùng pd.concat
     with open(path, "w", encoding="utf-8-sig", newline="") as f:
-        import csv
         writer = csv.writer(f)
         for header_row in header_rows:
             writer.writerow(header_row)
