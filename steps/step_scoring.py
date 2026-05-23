@@ -10,6 +10,7 @@ import logging
 import pandas as pd
 from utils.helpers import now_ict, today_str
 from utils.cache import load_json, save_json, save_csv, save_display_csv
+from utils.formatter import clean_for_export
 from utils.indicators_meta import INDICATORS_META
 
 logging.basicConfig(
@@ -113,6 +114,27 @@ def build_news_scores(today_index: dict,
 # =====================================================
 
 def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
+    """
+    Tính điểm cho một symbol.
+
+    Kiến trúc pass-through:
+    - out = dict(row)  →  copy toàn bộ deep_raw fields vào output
+    - Scoring chỉ thêm/override các field điểm số
+    - Không filter field nào → downstream nhận đầy đủ data
+    - signals_display.csv tự filter qua INDICATORS_META
+
+    Scoring groups & caps:
+      Trend        : max ±30  (EMA cross 15 + Price>EMA 5 + ADX 5 + Supertrend 5)
+      Momentum     : max ±23  (RSI 15 + MACD 10 + Stoch zone 5 + Stoch cross 3)
+      Volume       : max ±20  (CMF 10 + MFI 10 + OBV 5 + BB position 5)
+      Foreign Flow : max ±20  (FF net5d 5 + FF net20d 5 + FF trend 5 + FF accel 5)
+      Fundamental  : max ±18  (PE 10 + PB 5 + ROE 5)  — sửa từ 15 → 18 cho đúng code
+      Cash Flow    : max ±10  (CFO 5 + CF quality 5)
+      Market Ctx   : max ±5
+      News         : 0–10
+    Total max tích cực ~ 136, thực tế dải hữu ích -50 → +100
+    Thresholds: ≥70 STRONG BUY | ≥50 BUY | ≥30 NEUTRAL | ≥10 SELL | <10 STRONG SELL
+    """
     s      = {}
     sigs   = []
     market = context.get("market_valuation", "FAIR")
@@ -121,16 +143,25 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         s[group] = s.get(group, 0) + pts
         sigs.append(f"{reason} {'+' if pts > 0 else ''}{pts}")
 
-    # ── TREND (max 25) ──
+    # ── VOLATILITY FILTER ──
+    # Nếu ATR% < 0.5% → thị trường đang flat/tích lũy
+    # Giảm độ tin cậy EMA cross và MACD xuống 50%
+    price   = row.get("price") or 1
+    atr_pct = row.get("atr_pct") or 0
+    volatility_ok = atr_pct >= 0.5
+    ema_macd_weight = 1.0 if volatility_ok else 0.5
+
+    # ── TREND (max 30) ──
     ema20 = row.get("ema20")
     ema50 = row.get("ema50")
-    price = row.get("price")
 
     if ema20 and ema50:
-        if ema20 > ema50:
-            add("trend", 15, "EMA20>EMA50")
-        else:
-            add("trend", -15, "EMA20<EMA50")
+        raw_pts = 15 if ema20 > ema50 else -15
+        pts     = round(raw_pts * ema_macd_weight)
+        label   = "EMA20>EMA50" if ema20 > ema50 else "EMA20<EMA50"
+        if not volatility_ok:
+            label += "(flat×0.5)"
+        add("trend", pts, label)
 
     if price and ema20:
         if price > ema20:
@@ -145,7 +176,14 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         elif adx < 20:
             add("trend", 0, f"ADX={adx} sideways")
 
-    # ── MOMENTUM (max 20) ──
+    supertrend = row.get("supertrend")
+    if supertrend and price:
+        if price > supertrend:
+            add("trend", 5, f"ST={supertrend} bullish")
+        else:
+            add("trend", -5, f"ST={supertrend} bearish")
+
+    # ── MOMENTUM (max 23) ──
     rsi = row.get("rsi")
     if rsi:
         if rsi < 30:
@@ -157,19 +195,30 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
 
     macd_hist = row.get("macd_hist")
     if macd_hist is not None:
-        if macd_hist > 0:
-            add("momentum", 10, f"MACD hist={macd_hist}>0")
-        else:
-            add("momentum", -10, f"MACD hist={macd_hist}<0")
+        raw_pts = 10 if macd_hist > 0 else -10
+        pts     = round(raw_pts * ema_macd_weight)
+        label   = f"MACD hist={macd_hist}>0" if macd_hist > 0 \
+                  else f"MACD hist={macd_hist}<0"
+        if not volatility_ok:
+            label += "(flat×0.5)"
+        add("momentum", pts, label)
 
     stoch_k = row.get("stoch_k")
-    if stoch_k:
+    stoch_d = row.get("stoch_d")
+    if stoch_k is not None:
+        # Zone score
         if stoch_k < 20:
-            add("momentum", 5, f"Stoch K={stoch_k} oversold")
+            add("momentum", 5,  f"Stoch K={stoch_k} oversold")
         elif stoch_k > 80:
             add("momentum", -5, f"Stoch K={stoch_k} overbought")
+        # Cross score — K vượt D (chỉ tính ở vùng không cực đoan)
+        if stoch_k is not None and stoch_d is not None:
+            if stoch_k > stoch_d and stoch_k < 80:
+                add("momentum", 3,  f"Stoch K>{stoch_d} cross up")
+            elif stoch_k < stoch_d and stoch_k > 20:
+                add("momentum", -3, f"Stoch K<{stoch_d} cross down")
 
-    # ── VOLUME (max 15) ──
+    # ── VOLUME (max 20) ──
     cmf = row.get("cmf")
     if cmf is not None:
         if cmf > 0.1:
@@ -178,21 +227,30 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
             add("volume", -10, f"CMF={cmf} outflow")
 
     mfi = row.get("mfi")
-    if mfi:
+    if mfi is not None:
         if mfi < 20:
             add("volume", 10, f"MFI={mfi} oversold")
         elif mfi > 80:
             add("volume", -5, f"MFI={mfi} overbought")
         else:
-            add("volume", 0, f"MFI={mfi} neutral")
+            add("volume", 0,  f"MFI={mfi} neutral")
 
     obv       = row.get("obv")
     ema_cross = row.get("ema_cross_pct")
-    if obv and ema_cross:
+    if obv is not None and ema_cross is not None:
         if (obv > 0 and ema_cross > 0) or (obv < 0 and ema_cross < 0):
-            add("volume", 5, "OBV confirms trend")
+            add("volume", 5,  "OBV confirms trend")
         else:
             add("volume", -5, "OBV divergence")
+
+    # BB position: 0=lower band, 1=upper band, >1=breakout, <0=breakdown
+    bb_pos = row.get("bb_position")
+    if bb_pos is not None:
+        if bb_pos < 0.2:
+            add("volume", 5,  f"BB pos={bb_pos} near lower (oversold zone)")
+        elif bb_pos > 0.8:
+            add("volume", -5, f"BB pos={bb_pos} near upper (overbought zone)")
+        # 0.2–0.8: neutral, không cộng không trừ
 
     # ── FOREIGN FLOW (max 20) ──
     ff_net_5d  = row.get("ff_net_val_5d")
@@ -224,7 +282,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         else:
             add("ff", -5, "FF decelerating")
 
-    # ── FUNDAMENTAL (max 15) ──
+    # ── FUNDAMENTAL (max 18) ──
     r_pe = row.get("r_pe")
     r_pb = row.get("r_pb")
     roe  = row.get("r_roe")
@@ -265,23 +323,23 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
 
     if cfo is not None:
         if cfo > 0:
-            add("cf", 5, "CFO>0 real cash")
+            add("cf", 5,   "CFO>0 real cash")
         else:
             add("cf", -10, "CFO<0 cash burn")
 
     if cf_qual is not None:
         if cf_qual > 1:
-            add("cf", 5, f"CF quality={cf_qual} high")
+            add("cf", 5,  f"CF quality={cf_qual} high")
         elif cf_qual < 0.5:
             add("cf", -5, f"CF quality={cf_qual} low")
 
     # ── MARKET CONTEXT (max 5) ──
     if market == "CHEAP":
-        add("context", 5, "Market CHEAP")
+        add("context", 5,  "Market CHEAP")
     elif market == "EXPENSIVE":
         add("context", -5, "Market EXPENSIVE")
     else:
-        add("context", 0, "Market FAIR")
+        add("context", 0,  "Market FAIR")
 
     # ── NEWS SENTIMENT (max 10) ──
     sym        = row["symbol"]
@@ -312,12 +370,12 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
 
     sigs.append(f"{news_label} +{news_score} {art_hint}")
 
-    # ── TOTAL ──
-    trend_score       = max(-25, min(25, s.get("trend",       0)))
-    momentum_score    = max(-20, min(20, s.get("momentum",    0)))
-    volume_score      = max(-15, min(15, s.get("volume",      0)))
+    # ── TOTAL — apply caps ──
+    trend_score       = max(-30, min(30, s.get("trend",       0)))
+    momentum_score    = max(-23, min(23, s.get("momentum",    0)))
+    volume_score      = max(-20, min(20, s.get("volume",      0)))
     ff_score          = max(-20, min(20, s.get("ff",          0)))
-    fundamental_score = max(-15, min(15, s.get("fundamental", 0)))
+    fundamental_score = max(-18, min(18, s.get("fundamental", 0)))
     cf_score          = max(-10, min(10, s.get("cf",          0)))
     context_score     = max(-5,  min(5,  s.get("context",     0)))
     news_score_final  = news_score
@@ -332,20 +390,14 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
     elif total >= 10: decision = "SELL"
     else:             decision = "STRONG SELL"
 
-    return {
-        "symbol"              : row["symbol"],
-        "group"               : row.get("group"),
-        "industry"            : row.get("industry"),
-        "time"                : row.get("time"),
-        "date"                : row.get("date"),
+    # ── PASS-THROUGH + SCORING FIELDS ──
+    # Bắt đầu từ toàn bộ deep_raw row, sau đó override/thêm scoring fields.
+    # Bất kỳ field mới nào thêm vào step_all.get_ta() sẽ tự động xuất hiện
+    # trong signals.json mà không cần sửa file này.
+    out = dict(row)
+    out.update({
         "market_valuation"    : market,
-        "r_pe"                : row.get("r_pe"),
-        "r_pb"                : row.get("r_pb"),
-        "r_roe"               : row.get("r_roe"),
-        "ff_trend"            : row.get("ff_trend"),
-        "ff_consistency"      : row.get("ff_consistency"),
-        "ff_acceleration"     : row.get("ff_acceleration"),
-        "cf_quality_ratio"    : row.get("cf_quality_ratio"),
+        "atr_pct"             : row.get("atr_pct"),   # đảm bảo luôn có dù row cũ
         "trend_score"         : trend_score,
         "momentum_score"      : momentum_score,
         "volume_score"        : volume_score,
@@ -361,7 +413,8 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         "total_score"         : total,
         "decision"            : decision,
         "signals"             : " | ".join(sigs),
-    }
+    })
+    return out
 
 
 # =====================================================
@@ -373,7 +426,7 @@ if __name__ == "__main__":
 
     deep_raw    = load_json("deep_raw.json")
     context     = load_json("context.json")
-    today_index = load_json("news_today_index.json")  # ← đọc pre-computed
+    today_index = load_json("news_today_index.json")
     ctx         = context[0] if context else {}
 
     if not deep_raw:
@@ -405,18 +458,20 @@ if __name__ == "__main__":
 
         log.info(f"  [{result['symbol']}] "
                  f"score={result['total_score']} "
-                 f"(news={result['news_score']}) "
+                 f"(T={result['trend_score']} M={result['momentum_score']} "
+                 f"V={result['volume_score']} FF={result['ff_score']}) "
+                 f"atr%={result.get('atr_pct')} "
                  f"→ {result['decision']} | {ev_summary}")
 
     df_signals = pd.DataFrame(scored_rows)
 
-    # ── signals.json ──
+    # ── signals.json — raw numbers (consistent với deep_raw) ──
     save_json("signals.json",
               df_signals.to_dict(orient="records"))
 
-    # ── signals.csv ──
-    df_csv = df_signals.copy()
-    df_csv["news_evidence"] = df_csv["news_evidence"].apply(
+    # ── signals.csv — qua clean_for_export (tỷ đồng, format chuẩn) ──
+    # Tách news_evidence ra trước vì không qua clean_for_export được
+    news_evidence_col = df_signals["news_evidence"].apply(
         lambda evs: " | ".join(
             f"{e.get('type','?')}·{e.get('source','?')}·"
             f"{e.get('title','')[:40]}·"
@@ -425,13 +480,20 @@ if __name__ == "__main__":
             f"{' eff:'+e['effective_date'] if e.get('effective_date') else ''}"
             for e in (evs or [])
         )
-    )
+    ) if "news_evidence" in df_signals.columns else pd.Series(
+        [""] * len(df_signals))
+
+    df_for_csv = df_signals.drop(columns=["news_evidence"], errors="ignore")
+    df_csv     = clean_for_export(df_for_csv)
+    df_csv["news_evidence"] = news_evidence_col.values
     save_csv("signals.csv", df_csv)
 
     # ── signals_display.csv ──
-    display_cols = [c for c in df_signals.columns
-                    if c in INDICATORS_META]
+    # Filter chỉ những col có trong INDICATORS_META (bao gồm cả raw TA
+    # vì pass-through đảm bảo chúng có trong df_signals)
+    display_cols = [c for c in df_signals.columns if c in INDICATORS_META]
     df_display   = df_signals[display_cols].copy()
+
     if "news_evidence" in df_display.columns:
         df_display["news_evidence"] = df_display["news_evidence"].apply(
             lambda evs: " | ".join(
@@ -444,7 +506,10 @@ if __name__ == "__main__":
                 for e in (evs or [])
             )
         )
+
     save_display_csv("signals_display.csv", df_display, INDICATORS_META)
 
-    log.info(f"Exported {len(df_signals)} rows")
+    log.info(f"Exported {len(df_signals)} rows, "
+             f"{len(df_signals.columns)} cols total, "
+             f"{len(display_cols)} cols in display")
     log.info("=== SCORING DONE ===")
