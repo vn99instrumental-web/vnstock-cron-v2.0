@@ -19,10 +19,88 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # =====================================================
+# NEWS SCORING HELPER
+# =====================================================
+
+def build_news_scores(news_raw: list, symbols_with_industry: list[dict]) -> dict:
+    """
+    Tính news_score cho từng symbol dựa trên news_raw.json.
+    Trả về dict: {symbol: {"industry": float, "mention": float, "macro": float, "total": float}}
+    Nếu news_raw rỗng hoặc None → tất cả symbol nhận điểm neutral (5.0).
+    """
+    # Neutral score = giữa thang 0–10
+    NEUTRAL = 5.0
+
+    if not news_raw:
+        return {item["symbol"]: {
+            "industry": NEUTRAL, "mention": NEUTRAL,
+            "macro": NEUTRAL,    "total":   NEUTRAL
+        } for item in symbols_with_industry}
+
+    # Build lookup: industry → [weighted_sentiment]
+    industry_scores: dict[str, list[float]] = {}
+    symbol_scores:   dict[str, list[float]] = {}
+    macro_scores:    list[float] = []
+
+    for art in news_raw:
+        ws = art.get("weighted_sentiment", 0.0) or 0.0
+        ms = art.get("macro_score", 0.0) or 0.0
+
+        # Industry bucket
+        for ind in art.get("matched_industries", []):
+            industry_scores.setdefault(ind, []).append(ws)
+
+        # Macro bucket
+        if ms != 0:
+            macro_scores.append(ms)
+
+        # Direct symbol mention trong title/tags
+        title = (art.get("title") or "").upper()
+        tags  = str(art.get("tags") or "").upper()
+        text  = f"{title} {tags}"
+        for item in symbols_with_industry:
+            sym = item["symbol"]
+            if sym in text:
+                # boost 1.5× vì đề cập trực tiếp
+                symbol_scores.setdefault(sym, []).append(ws * 1.5)
+
+    def _raw_to_score(values: list[float], max_pts: float) -> float:
+        """
+        Trung bình list → clip [−5, +5] → scale tuyến tính về [0, max_pts].
+        Nếu list rỗng → trả neutral (max_pts / 2).
+        """
+        if not values:
+            return round(max_pts / 2, 2)
+        avg = sum(values) / len(values)
+        clipped = max(-5.0, min(5.0, avg))
+        return round((clipped + 5.0) / 10.0 * max_pts, 2)
+
+    macro_avg = _raw_to_score(macro_scores, 2.0)  # max 2 điểm
+
+    result = {}
+    for item in symbols_with_industry:
+        sym = item["symbol"]
+        ind = item.get("icb_name") or item.get("industry") or ""
+
+        ind_score = _raw_to_score(industry_scores.get(ind, []), 4.0)  # max 4
+        sym_score = _raw_to_score(symbol_scores.get(sym,  []), 4.0)   # max 4
+        total     = round(ind_score + sym_score + macro_avg, 2)       # max 10
+
+        result[sym] = {
+            "industry": ind_score,
+            "mention":  sym_score,
+            "macro":    macro_avg,
+            "total":    total,
+        }
+
+    return result
+
+
+# =====================================================
 # SCORING ENGINE
 # =====================================================
 
-def score_symbol(row: dict, context: dict) -> dict:
+def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
     s      = {}   # scores
     sigs   = []   # signal list
     market = context.get("market_valuation", "FAIR")
@@ -96,7 +174,6 @@ def score_symbol(row: dict, context: dict) -> dict:
         else:
             add("volume", 0, f"MFI={mfi} neutral")
 
-    # OBV trend — so sánh với giá
     obv = row.get("obv")
     ema_cross = row.get("ema_cross_pct")
     if obv and ema_cross:
@@ -110,7 +187,6 @@ def score_symbol(row: dict, context: dict) -> dict:
     ff_net_20d = row.get("ff_net_val_20d")
     ff_trend   = row.get("ff_trend")
     ff_accel   = row.get("ff_acceleration")
-    ff_consist = row.get("ff_consistency")
 
     if ff_net_5d is not None:
         if ff_net_5d > 0:
@@ -136,12 +212,11 @@ def score_symbol(row: dict, context: dict) -> dict:
         else:
             add("ff", -5, "FF decelerating")
 
-    # ── FUNDAMENTAL — dùng PE/PB trực tiếp (max 15) ──
+    # ── FUNDAMENTAL (max 15) ──
     r_pe = row.get("r_pe")
     r_pb = row.get("r_pb")
     roe  = row.get("r_roe")
 
-    # PE — định giá tuyệt đối
     if r_pe:
         if r_pe < 10:
             add("fundamental", 10, f"PE={r_pe} very cheap")
@@ -152,7 +227,6 @@ def score_symbol(row: dict, context: dict) -> dict:
         else:
             add("fundamental", -5, f"PE={r_pe} expensive")
 
-    # PB — giá so với giá trị sổ sách
     if r_pb:
         if r_pb < 1:
             add("fundamental", 5,  f"PB={r_pb} below book")
@@ -163,7 +237,6 @@ def score_symbol(row: dict, context: dict) -> dict:
         else:
             add("fundamental", -3, f"PB={r_pb} expensive")
 
-    # ROE — hiệu quả vốn
     if roe:
         if roe > 20:
             add("fundamental", 5,  f"ROE={roe}% excellent")
@@ -175,8 +248,8 @@ def score_symbol(row: dict, context: dict) -> dict:
             add("fundamental", -3, f"ROE={roe}% weak")
 
     # ── CASH FLOW QUALITY (max 10) ──
-    cfo      = row.get("cf_operating")
-    cf_qual  = row.get("cf_quality_ratio")
+    cfo     = row.get("cf_operating")
+    cf_qual = row.get("cf_quality_ratio")
 
     if cfo is not None:
         if cfo > 0:
@@ -198,6 +271,26 @@ def score_symbol(row: dict, context: dict) -> dict:
     else:
         add("context", 0, "Market FAIR")
 
+    # ── NEWS SENTIMENT (max 10) ──
+    sym = row["symbol"]
+    ns  = news_scores.get(sym, {})
+    news_score = ns.get("total", 5.0)   # 5.0 = neutral nếu không có data
+    # clip về [0, 10]
+    news_score = round(max(0.0, min(10.0, news_score)), 2)
+
+    # Label để đưa vào signals string
+    if news_score >= 8:
+        news_label = "News VERY_POS"
+    elif news_score >= 6:
+        news_label = "News POS"
+    elif news_score >= 4:
+        news_label = "News NEUTRAL"
+    elif news_score >= 2:
+        news_label = "News NEG"
+    else:
+        news_label = "News VERY_NEG"
+    sigs.append(f"{news_label} +{news_score}")
+
     # ── TOTAL ──
     trend_score       = max(-25, min(25, s.get("trend",       0)))
     momentum_score    = max(-20, min(20, s.get("momentum",    0)))
@@ -206,9 +299,12 @@ def score_symbol(row: dict, context: dict) -> dict:
     fundamental_score = max(-15, min(15, s.get("fundamental", 0)))
     cf_score          = max(-10, min(10, s.get("cf",          0)))
     context_score     = max(-5,  min(5,  s.get("context",     0)))
+    # news không clip âm — sàn đã là 0
+    news_score_final  = news_score  # 0–10
 
     total = (trend_score + momentum_score + volume_score +
-             ff_score + fundamental_score + cf_score + context_score)
+             ff_score + fundamental_score + cf_score +
+             context_score + news_score_final)
 
     if total >= 70:
         decision = "STRONG BUY"
@@ -222,31 +318,35 @@ def score_symbol(row: dict, context: dict) -> dict:
         decision = "STRONG SELL"
 
     return {
-        "symbol"           : row["symbol"],
-        "group"            : row.get("group"),
-        "industry"         : row.get("industry"),
-        "time"             : row.get("time"),
-        "date"             : row.get("date"),
-        "market_valuation" : market,
-        # bỏ pe_vs_industry, pb_vs_industry
-        "r_pe"             : row.get("r_pe"),
-        "r_pb"             : row.get("r_pb"),
-        "r_roe"            : row.get("r_roe"),
-        "ff_trend"         : row.get("ff_trend"),
-        "ff_consistency"   : row.get("ff_consistency"),
-        "ff_acceleration"  : row.get("ff_acceleration"),
-        "cf_quality_ratio" : row.get("cf_quality_ratio"),
-        "trend_score"      : trend_score,
-        "momentum_score"   : momentum_score,
-        "volume_score"     : volume_score,
-        "ff_score"         : ff_score,
-        "fundamental_score": fundamental_score,
-        "cf_score"         : cf_score,
-        "context_score"    : context_score,
-        "total_score"      : total,
-        "decision"         : decision,
-        "signals"          : " | ".join(sigs),
+        "symbol"              : row["symbol"],
+        "group"               : row.get("group"),
+        "industry"            : row.get("industry"),
+        "time"                : row.get("time"),
+        "date"                : row.get("date"),
+        "market_valuation"    : market,
+        "r_pe"                : row.get("r_pe"),
+        "r_pb"                : row.get("r_pb"),
+        "r_roe"               : row.get("r_roe"),
+        "ff_trend"            : row.get("ff_trend"),
+        "ff_consistency"      : row.get("ff_consistency"),
+        "ff_acceleration"     : row.get("ff_acceleration"),
+        "cf_quality_ratio"    : row.get("cf_quality_ratio"),
+        "trend_score"         : trend_score,
+        "momentum_score"      : momentum_score,
+        "volume_score"        : volume_score,
+        "ff_score"            : ff_score,
+        "fundamental_score"   : fundamental_score,
+        "cf_score"            : cf_score,
+        "context_score"       : context_score,
+        "news_score"          : news_score_final,        # ← MỚI
+        "news_industry"       : ns.get("industry", 5.0), # ← MỚI (breakdown)
+        "news_mention"        : ns.get("mention",  5.0), # ← MỚI (breakdown)
+        "news_macro"          : ns.get("macro",    1.0), # ← MỚI (breakdown)
+        "total_score"         : total,
+        "decision"            : decision,
+        "signals"             : " | ".join(sigs),
     }
+
 
 # =====================================================
 # MAIN
@@ -256,36 +356,47 @@ if __name__ == "__main__":
     log.info(f"Time: {now_ict():%Y-%m-%d %H:%M:%S} ICT")
 
     # Load inputs
-    deep_raw = load_json("deep_raw.json")
-    context  = load_json("context.json")
-    ctx      = context[0] if context else {}
+    deep_raw  = load_json("deep_raw.json")
+    context   = load_json("context.json")
+    news_raw  = load_json("news_raw.json")   # ← MỚI (None nếu daily chưa chạy)
+    ctx       = context[0] if context else {}
 
     if not deep_raw:
         log.error("Không tìm thấy deep_raw.json")
         sys.exit(1)
+
+    if news_raw is None:
+        log.warning("news_raw.json không tìm thấy — news_score sẽ là neutral (5.0)")
+
+    # Build news scores cho tất cả symbols 1 lần — không tính lại trong loop
+    symbols_with_industry = [
+        {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
+        for r in deep_raw
+    ]
+    news_scores = build_news_scores(news_raw or [], symbols_with_industry)
 
     log.info(f"Scoring {len(deep_raw)} symbols...")
 
     # Score từng symbol
     scored_rows = []
     for row in deep_raw:
-        result = score_symbol(row, ctx)
+        result = score_symbol(row, ctx, news_scores)
         scored_rows.append(result)
         log.info(f"  [{result['symbol']}] "
                  f"score={result['total_score']} "
+                 f"(news={result['news_score']}) "
                  f"→ {result['decision']}")
 
     df_signals = pd.DataFrame(scored_rows)
 
-    # ── File 1: signals.json (tính toán/AI) ──
+    # ── File 1: signals.json ──
     save_json("signals.json",
               df_signals.to_dict(orient="records"))
 
-    # ── File 2: signals.csv (tính toán) ──
+    # ── File 2: signals.csv ──
     save_csv("signals.csv", df_signals)
 
-    # ── File 3: signals_display.csv (xem, hiểu ngay) ──
-    # Chỉ lấy columns có trong INDICATORS_META
+    # ── File 3: signals_display.csv ──
     display_cols = [c for c in df_signals.columns
                     if c in INDICATORS_META]
     df_display = df_signals[display_cols].copy()
