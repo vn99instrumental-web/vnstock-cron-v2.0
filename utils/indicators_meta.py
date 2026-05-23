@@ -114,10 +114,9 @@ INDICATORS_META = {
     "cf_quality_ratio":{"desc": "Chất lượng LN",        "formula": "cf_operating/net_profit",    "baseline": ">1 LN chất lượng cao <0.5 cảnh báo"},
 
     # ── Fundamental vs Industry ──
-    "industry"       : {"desc": "Ngành ICB",             "formula": "Reference.industry",         "baseline": "-"},
     "market_cap"     : {"desc": "Vốn hóa (tỷ)",         "formula": "price×shares",               "baseline": ">10000 large <1000 small"},
     "market_cap_group":{"desc":"Phân loại quy mô",       "formula": "market_cap phân loại",       "baseline": "Large/Mid/Small cap"},
-   
+
     # ── Market Context ──
     "vnindex_pe"     : {"desc": "PE VNINDEX hiện tại",   "formula": "Analytics VND",              "baseline": "So với mean 5Y"},
     "pe_percentile_5y":{"desc": "PE percentile 5 năm",  "formula": "rank PE trong 5Y",           "baseline": "<30% rẻ >70% đắt"},
@@ -128,10 +127,17 @@ INDICATORS_META = {
     "momentum_score" : {"desc": "Điểm momentum",         "formula": "RSI+MACD+Stoch",             "baseline": "Max 20đ"},
     "volume_score"   : {"desc": "Điểm volume",           "formula": "CMF+MFI+OBV",               "baseline": "Max 15đ"},
     "ff_score"       : {"desc": "Điểm dòng tiền ngoại",  "formula": "FF net+trend+accel",         "baseline": "Max 20đ"},
-    "fundamental_score":{"desc":"Điểm cơ bản",           "formula": "PE+PB vs ngành+ROE",         "baseline": "Max 15đ"},
+    "fundamental_score":{"desc":"Điểm cơ bản",           "formula": "PE+PB+ROE",                  "baseline": "Max 15đ"},
     "cf_score"       : {"desc": "Điểm chất lượng CF",    "formula": "CFO+CF quality",             "baseline": "Max 10đ"},
     "context_score"  : {"desc": "Điểm context thị trường","formula":"market_valuation",           "baseline": "Max 5đ"},
-    "total_score"    : {"desc": "Tổng điểm",             "formula": "Σ all scores",               "baseline": ">=50 BUY >=70 STRONG BUY"},
+
+    # ── News Sentiment ──                                ← MỚI
+    "news_score"     : {"desc": "Điểm tin tức tổng hợp", "formula": "industry+mention+macro",     "baseline": "0-10đ | 5=neutral 8+=tích cực 2-=tiêu cực"},
+    "news_industry"  : {"desc": "Tin tức theo ngành",    "formula": "avg(weighted_sentiment) ngành ICB của symbol", "baseline": "0-4đ | 2=neutral"},
+    "news_mention"   : {"desc": "Tin đề cập trực tiếp",  "formula": "avg(weighted_sentiment×1.5) khi symbol trong title/tags", "baseline": "0-4đ | 2=neutral boost 1.5×"},
+    "news_macro"     : {"desc": "Tin vĩ mô thị trường",  "formula": "MACRO_KEYWORDS matched × bias / total_articles", "baseline": "0-2đ | 1=neutral | dùng chung toàn thị trường"},
+
+    "total_score"    : {"desc": "Tổng điểm",             "formula": "Σ all scores",               "baseline": ">=50 BUY >=70 STRONG BUY | Max 120đ"},
     "decision"       : {"desc": "Quyết định",            "formula": "total_score phân loại",      "baseline": "STRONG BUY/BUY/NEUTRAL/SELL/STRONG SELL"},
     "signals"        : {"desc": "Chi tiết tín hiệu",     "formula": "list signals",               "baseline": "-"},
 }
