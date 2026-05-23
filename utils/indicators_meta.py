@@ -131,12 +131,12 @@ INDICATORS_META = {
     "cf_score"       : {"desc": "Điểm chất lượng CF",    "formula": "CFO+CF quality",             "baseline": "Max 10đ"},
     "context_score"  : {"desc": "Điểm context thị trường","formula":"market_valuation",           "baseline": "Max 5đ"},
 
-    # ── News Sentiment ──                                ← MỚI
+    # ── News Sentiment ──
     "news_score"     : {"desc": "Điểm tin tức tổng hợp", "formula": "industry+mention+macro",     "baseline": "0-10đ | 5=neutral 8+=tích cực 2-=tiêu cực"},
     "news_industry"  : {"desc": "Tin tức theo ngành",    "formula": "avg(weighted_sentiment) ngành ICB của symbol", "baseline": "0-4đ | 2=neutral"},
     "news_mention"   : {"desc": "Tin đề cập trực tiếp",  "formula": "avg(weighted_sentiment×1.5) khi symbol trong title/tags", "baseline": "0-4đ | 2=neutral boost 1.5×"},
     "news_macro"     : {"desc": "Tin vĩ mô thị trường",  "formula": "MACRO_KEYWORDS matched × bias / total_articles", "baseline": "0-2đ | 1=neutral | dùng chung toàn thị trường"},
-
+    "news_evidence"  : {"desc": "Dẫn chứng tin tức",     "formula": "top 3 articles by |contribution| per symbol", "baseline": "format: [type] source: title (HH:MM) score | type=mention/industry/macro"},
     "total_score"    : {"desc": "Tổng điểm",             "formula": "Σ all scores",               "baseline": ">=50 BUY >=70 STRONG BUY | Max 120đ"},
     "decision"       : {"desc": "Quyết định",            "formula": "total_score phân loại",      "baseline": "STRONG BUY/BUY/NEUTRAL/SELL/STRONG SELL"},
     "signals"        : {"desc": "Chi tiết tín hiệu",     "formula": "list signals",               "baseline": "-"},
