@@ -25,72 +25,139 @@ log = logging.getLogger(__name__)
 def build_news_scores(news_raw: list, symbols_with_industry: list[dict]) -> dict:
     """
     Tính news_score cho từng symbol dựa trên news_raw.json.
-    Trả về dict: {symbol: {"industry": float, "mention": float, "macro": float, "total": float}}
-    Nếu news_raw rỗng hoặc None → tất cả symbol nhận điểm neutral (5.0).
+    Trả về dict:
+      {
+        symbol: {
+          "industry": float,   # 0–4
+          "mention":  float,   # 0–4
+          "macro":    float,   # 0–2
+          "total":    float,   # 0–10
+          "evidence": [        # top 3 articles đóng góp nhiều nhất
+            {
+              "title":        str,
+              "source":       str,
+              "time":         str,
+              "type":         str,   # "mention" / "industry" / "macro"
+              "industries":   list,
+              "contribution": float  # weighted_sentiment sau decay
+            }, ...
+          ]
+        }
+      }
+    Nếu news_raw rỗng → tất cả symbol nhận neutral (5.0).
     """
-    # Neutral score = giữa thang 0–10
     NEUTRAL = 5.0
 
     if not news_raw:
         return {item["symbol"]: {
-            "industry": NEUTRAL, "mention": NEUTRAL,
-            "macro": NEUTRAL,    "total":   NEUTRAL
+            "industry": NEUTRAL / 2,
+            "mention":  NEUTRAL / 2,
+            "macro":    1.0,
+            "total":    NEUTRAL,
+            "evidence": []
         } for item in symbols_with_industry}
 
-    # Build lookup: industry → [weighted_sentiment]
-    industry_scores: dict[str, list[float]] = {}
-    symbol_scores:   dict[str, list[float]] = {}
-    macro_scores:    list[float] = []
+    # ── Build buckets ──────────────────────────────────────────────────
+    # industry → [(weighted_sentiment, article)]
+    industry_bucket: dict[str, list[tuple]] = {}
+    # symbol → [(weighted_sentiment, article)]
+    symbol_bucket:   dict[str, list[tuple]] = {}
+    # macro → [(macro_score, article)]
+    macro_bucket:    list[tuple] = []
 
     for art in news_raw:
         ws = art.get("weighted_sentiment", 0.0) or 0.0
         ms = art.get("macro_score", 0.0) or 0.0
 
-        # Industry bucket
         for ind in art.get("matched_industries", []):
-            industry_scores.setdefault(ind, []).append(ws)
+            industry_bucket.setdefault(ind, []).append((ws, art))
 
-        # Macro bucket
         if ms != 0:
-            macro_scores.append(ms)
+            macro_bucket.append((ms, art))
 
-        # Direct symbol mention trong title/tags
         title = (art.get("title") or "").upper()
         tags  = str(art.get("tags") or "").upper()
         text  = f"{title} {tags}"
         for item in symbols_with_industry:
             sym = item["symbol"]
             if sym in text:
-                # boost 1.5× vì đề cập trực tiếp
-                symbol_scores.setdefault(sym, []).append(ws * 1.5)
+                symbol_bucket.setdefault(sym, []).append((ws * 1.5, art))
 
+    # ── Helpers ────────────────────────────────────────────────────────
     def _raw_to_score(values: list[float], max_pts: float) -> float:
-        """
-        Trung bình list → clip [−5, +5] → scale tuyến tính về [0, max_pts].
-        Nếu list rỗng → trả neutral (max_pts / 2).
-        """
         if not values:
             return round(max_pts / 2, 2)
-        avg = sum(values) / len(values)
+        avg     = sum(values) / len(values)
         clipped = max(-5.0, min(5.0, avg))
         return round((clipped + 5.0) / 10.0 * max_pts, 2)
 
-    macro_avg = _raw_to_score(macro_scores, 2.0)  # max 2 điểm
+    def _top_articles(tuples: list[tuple], type_label: str,
+                      n: int = 3) -> list[dict]:
+        """Lấy top n articles có |contribution| lớn nhất."""
+        sorted_arts = sorted(tuples, key=lambda x: abs(x[0]), reverse=True)
+        result = []
+        seen_urls = set()
+        for contrib, art in sorted_arts[:n * 2]:   # lấy dư để dedup
+            url = art.get("url", "")
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            result.append({
+                "title":        (art.get("title") or "")[:80],
+                "source":       art.get("source", ""),
+                "time":         str(art.get("publish_time", ""))[:16],
+                "type":         type_label,
+                "industries":   art.get("matched_industries", []),
+                "contribution": round(contrib, 3),
+            })
+            if len(result) >= n:
+                break
+        return result
 
+    # ── Tính macro 1 lần — dùng chung toàn thị trường ─────────────────
+    macro_vals  = [v for v, _ in macro_bucket]
+    macro_score = _raw_to_score(macro_vals, 2.0)
+    macro_evidence = _top_articles(macro_bucket, "macro", n=2)
+
+    # ── Tính per-symbol ────────────────────────────────────────────────
     result = {}
     for item in symbols_with_industry:
         sym = item["symbol"]
         ind = item.get("icb_name") or item.get("industry") or ""
 
-        ind_score = _raw_to_score(industry_scores.get(ind, []), 4.0)  # max 4
-        sym_score = _raw_to_score(symbol_scores.get(sym,  []), 4.0)   # max 4
-        total     = round(ind_score + sym_score + macro_avg, 2)       # max 10
+        ind_tuples  = industry_bucket.get(ind, [])
+        sym_tuples  = symbol_bucket.get(sym, [])
+
+        ind_vals    = [v for v, _ in ind_tuples]
+        sym_vals    = [v for v, _ in sym_tuples]
+
+        ind_score   = _raw_to_score(ind_vals, 4.0)
+        sym_score   = _raw_to_score(sym_vals, 4.0)
+        total       = round(ind_score + sym_score + macro_score, 2)
+
+        # Evidence: ưu tiên mention trước, rồi industry, rồi macro
+        evidence = []
+        evidence += _top_articles(sym_tuples, "mention",  n=2)
+        evidence += _top_articles(ind_tuples, "industry", n=2)
+        evidence += macro_evidence[:1]   # chỉ lấy 1 macro article
+
+        # Dedup + giới hạn 3 tin
+        seen   = set()
+        top3   = []
+        for ev in evidence:
+            key = ev["title"]
+            if key not in seen:
+                seen.add(key)
+                top3.append(ev)
+            if len(top3) >= 3:
+                break
 
         result[sym] = {
             "industry": ind_score,
             "mention":  sym_score,
-            "macro":    macro_avg,
+            "macro":    macro_score,
             "total":    total,
+            "evidence": top3,
         }
 
     return result
@@ -101,8 +168,8 @@ def build_news_scores(news_raw: list, symbols_with_industry: list[dict]) -> dict
 # =====================================================
 
 def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
-    s      = {}   # scores
-    sigs   = []   # signal list
+    s      = {}
+    sigs   = []
     market = context.get("market_valuation", "FAIR")
 
     def add(group, pts, reason):
@@ -174,7 +241,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         else:
             add("volume", 0, f"MFI={mfi} neutral")
 
-    obv = row.get("obv")
+    obv       = row.get("obv")
     ema_cross = row.get("ema_cross_pct")
     if obv and ema_cross:
         if (obv > 0 and ema_cross > 0) or (obv < 0 and ema_cross < 0):
@@ -202,9 +269,9 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
 
     if ff_trend is not None:
         if ff_trend > 0:
-            add("ff", 5, f"FF trend accumulating")
+            add("ff", 5, "FF trend accumulating")
         else:
-            add("ff", -5, f"FF trend distributing")
+            add("ff", -5, "FF trend distributing")
 
     if ff_accel is not None:
         if ff_accel > 0:
@@ -274,22 +341,26 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
     # ── NEWS SENTIMENT (max 10) ──
     sym = row["symbol"]
     ns  = news_scores.get(sym, {})
-    news_score = ns.get("total", 5.0)   # 5.0 = neutral nếu không có data
-    # clip về [0, 10]
+    news_score = float(ns.get("total", 5.0))
     news_score = round(max(0.0, min(10.0, news_score)), 2)
 
-    # Label để đưa vào signals string
-    if news_score >= 8:
-        news_label = "News VERY_POS"
-    elif news_score >= 6:
-        news_label = "News POS"
-    elif news_score >= 4:
-        news_label = "News NEUTRAL"
-    elif news_score >= 2:
-        news_label = "News NEG"
+    if news_score >= 8:   news_label = "News VERY_POS"
+    elif news_score >= 6: news_label = "News POS"
+    elif news_score >= 4: news_label = "News NEUTRAL"
+    elif news_score >= 2: news_label = "News NEG"
+    else:                 news_label = "News VERY_NEG"
+
+    # Embed tin đầu tiên vào signals string để đọc nhanh
+    evidence   = ns.get("evidence", [])
+    top_article = evidence[0] if evidence else None
+    if top_article:
+        art_hint = (f"[{top_article['title'][:40]}... "
+                    f"· {top_article['source']} "
+                    f"· {top_article['time'][11:16]}]")   # chỉ lấy HH:MM
     else:
-        news_label = "News VERY_NEG"
-    sigs.append(f"{news_label} +{news_score}")
+        art_hint = "[no news]"
+
+    sigs.append(f"{news_label} +{news_score} {art_hint}")
 
     # ── TOTAL ──
     trend_score       = max(-25, min(25, s.get("trend",       0)))
@@ -299,23 +370,17 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
     fundamental_score = max(-15, min(15, s.get("fundamental", 0)))
     cf_score          = max(-10, min(10, s.get("cf",          0)))
     context_score     = max(-5,  min(5,  s.get("context",     0)))
-    # news không clip âm — sàn đã là 0
-    news_score_final  = news_score  # 0–10
+    news_score_final  = news_score   # 0–10, sàn đã là 0
 
     total = (trend_score + momentum_score + volume_score +
              ff_score + fundamental_score + cf_score +
              context_score + news_score_final)
 
-    if total >= 70:
-        decision = "STRONG BUY"
-    elif total >= 50:
-        decision = "BUY"
-    elif total >= 30:
-        decision = "NEUTRAL"
-    elif total >= 10:
-        decision = "SELL"
-    else:
-        decision = "STRONG SELL"
+    if total >= 70:   decision = "STRONG BUY"
+    elif total >= 50: decision = "BUY"
+    elif total >= 30: decision = "NEUTRAL"
+    elif total >= 10: decision = "SELL"
+    else:             decision = "STRONG SELL"
 
     return {
         "symbol"              : row["symbol"],
@@ -338,10 +403,11 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         "fundamental_score"   : fundamental_score,
         "cf_score"            : cf_score,
         "context_score"       : context_score,
-        "news_score"          : news_score_final,        # ← MỚI
-        "news_industry"       : ns.get("industry", 5.0), # ← MỚI (breakdown)
-        "news_mention"        : ns.get("mention",  5.0), # ← MỚI (breakdown)
-        "news_macro"          : ns.get("macro",    1.0), # ← MỚI (breakdown)
+        "news_score"          : news_score_final,
+        "news_industry"       : ns.get("industry", 2.0),
+        "news_mention"        : ns.get("mention",  2.0),
+        "news_macro"          : ns.get("macro",    1.0),
+        "news_evidence"       : evidence,          # ← list of dicts
         "total_score"         : total,
         "decision"            : decision,
         "signals"             : " | ".join(sigs),
@@ -355,11 +421,10 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
 if __name__ == "__main__":
     log.info(f"Time: {now_ict():%Y-%m-%d %H:%M:%S} ICT")
 
-    # Load inputs
-    deep_raw  = load_json("deep_raw.json")
-    context   = load_json("context.json")
-    news_raw  = load_json("news_raw.json")   # ← MỚI (None nếu daily chưa chạy)
-    ctx       = context[0] if context else {}
+    deep_raw = load_json("deep_raw.json")
+    context  = load_json("context.json")
+    news_raw = load_json("news_raw.json")
+    ctx      = context[0] if context else {}
 
     if not deep_raw:
         log.error("Không tìm thấy deep_raw.json")
@@ -368,7 +433,6 @@ if __name__ == "__main__":
     if news_raw is None:
         log.warning("news_raw.json không tìm thấy — news_score sẽ là neutral (5.0)")
 
-    # Build news scores cho tất cả symbols 1 lần — không tính lại trong loop
     symbols_with_industry = [
         {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
         for r in deep_raw
@@ -377,34 +441,50 @@ if __name__ == "__main__":
 
     log.info(f"Scoring {len(deep_raw)} symbols...")
 
-    # Score từng symbol
     scored_rows = []
     for row in deep_raw:
         result = score_symbol(row, ctx, news_scores)
         scored_rows.append(result)
+
+        # Log evidence để debug
+        ev_summary = "; ".join(
+            f"{e['type']}:{e['source']}:{e['title'][:30]}"
+            for e in result["news_evidence"]
+        ) or "no evidence"
         log.info(f"  [{result['symbol']}] "
                  f"score={result['total_score']} "
                  f"(news={result['news_score']}) "
-                 f"→ {result['decision']}")
+                 f"→ {result['decision']} | {ev_summary}")
 
     df_signals = pd.DataFrame(scored_rows)
 
-    # ── File 1: signals.json ──
+    # ── signals.json — giữ news_evidence đầy đủ (list of dicts) ──
     save_json("signals.json",
               df_signals.to_dict(orient="records"))
 
-    # ── File 2: signals.csv ──
-    save_csv("signals.csv", df_signals)
+    # ── signals.csv — news_evidence serialize thành string ──
+    df_csv = df_signals.copy()
+    df_csv["news_evidence"] = df_csv["news_evidence"].apply(
+        lambda evs: " | ".join(
+            f"{e['type']}·{e['source']}·{e['title'][:40]}·{e['time'][5:16]}·{e['contribution']:+.2f}"
+            for e in (evs or [])
+        )
+    )
+    save_csv("signals.csv", df_csv)
 
-    # ── File 3: signals_display.csv ──
+    # ── signals_display.csv — chỉ columns có trong INDICATORS_META ──
     display_cols = [c for c in df_signals.columns
                     if c in INDICATORS_META]
     df_display = df_signals[display_cols].copy()
-    save_display_csv(
-        "signals_display.csv",
-        df_display,
-        INDICATORS_META
-    )
+    # serialize news_evidence nếu có trong display_cols
+    if "news_evidence" in df_display.columns:
+        df_display["news_evidence"] = df_display["news_evidence"].apply(
+            lambda evs: " | ".join(
+                f"[{e['type']}] {e['source']}: {e['title'][:50]} ({e['time'][5:16]}) {e['contribution']:+.2f}"
+                for e in (evs or [])
+            )
+        )
+    save_display_csv("signals_display.csv", df_display, INDICATORS_META)
 
     log.info(f"Exported {len(df_signals)} rows")
     log.info("=== SCORING DONE ===")
