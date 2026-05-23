@@ -8,7 +8,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60       # tăng từ 30 → 60 cho finance scan
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Cache vnstock venv + user.json
+      - name: Restore vnstock cache
         id: cache-venv
         uses: actions/cache@v4
         with:
@@ -37,18 +37,14 @@ jobs:
             /home/runner/.vnstock
           key: vnstock-stable-v4
 
-      - name: Install installer dependencies
-        if: steps.cache-venv.outputs.cache-hit != 'true'
-        run: pip install requests
-
-      - name: Install VNStock Premium + user.json
+      - name: Fallback install nếu cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
+          pip install requests
           mkdir -p /home/runner/.vnstock
-          mkdir -p /home/runner/.config/matplotlib
           wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
             -O installer.run
           chmod +x installer.run
@@ -62,14 +58,13 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python3 generate_user_info.min.py \
             --api-key "$VNSTOCK_API_KEY"
-          echo "✅ Install done"
 
       - name: Install extra dependencies
         run: |
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
 
-      - name: Step 3 — Market Context + Industry + Foreign Flow
+      - name: Step Context — Market PE/PB + Industry Map
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
@@ -78,17 +73,19 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step3_context.py
 
-      - name: Debug — check RSS support
-        run: |
-          source /opt/vnstock/.venv/bin/activate
-          python scripts/debug_rss.py
-
-      - name: Step News — Daily crawl
+      - name: Step Finance Scan — Quarterly cache (TTL-based)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_finance_scan.py
+
+      - name: Step News — Daily crawl + index
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
           source /opt/vnstock/.venv/bin/activate
           python steps/step_news_daily.py
 
