@@ -2,13 +2,18 @@ name: VNStock Intraday
 
 on:
   schedule:
-    - cron: '25 1 * * 1-5'
+    - cron: '25 1 * * 1-5'   # 08:25 ICT
+    - cron: '25 2 * * 1-5'   # 09:25 ICT
+    - cron: '25 3 * * 1-5'   # 10:25 ICT
+    - cron: '25 4 * * 1-5'   # 11:25 ICT
+    - cron: '25 5 * * 1-5'   # 12:25 ICT
+    - cron: '25 6 * * 1-5'   # 13:25 ICT
   workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 480
+    timeout-minutes: 30       # giảm từ 480 — concurrent ~35-45s total
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
@@ -64,14 +69,14 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
 
-      - name: Step All — Ranking + Deep
+      - name: Step Snapshot — Ranking + Deep (concurrent)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
           source /opt/vnstock/.venv/bin/activate
-          python steps/step_all.py
+          python steps/step_snapshot.py
 
       - name: Step Scoring
         env:
@@ -81,7 +86,7 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step_scoring.py
 
-      - name: Step Order Flow
+      - name: Step Order Flow (concurrent)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
