@@ -3,9 +3,9 @@
     "symbol": "HRC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:50",
-    "date": "2026-05-23",
-    "snap_time": "23:50",
+    "time": "2026-05-24 00:21",
+    "date": "2026-05-24",
+    "snap_time": "00:21",
     "price": 50.7,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -84,22 +84,35 @@
     "fundamental_score": 3,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -25.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -25.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=25.34 strong +5 | ST=58.57 bearish -5 | RSI=54.12 neutral +5 | MACD hist=0.28>0 +10 | Stoch K<63.3 cross down -3 | MFI=67.93 neutral 0 | OBV divergence -5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=25.34 strong +5 | ST=58.57 bearish -5 | RSI=54.12 neutral +5 | MACD hist=0.28>0 +10 | Stoch K<63.3 cross down -3 | MFI=67.93 neutral 0 | OBV divergence -5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "TNT",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:50",
-    "date": "2026-05-23",
-    "snap_time": "23:50",
+    "time": "2026-05-24 00:21",
+    "date": "2026-05-24",
+    "snap_time": "00:21",
     "price": 11.7,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -178,22 +191,35 @@
     "fundamental_score": -3,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 7.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 6.83,
     "decision": "STRONG SELL",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=18.48 sideways 0 | ST=9.97 bullish +5 | RSI=74.14 overbought -10 | MACD hist=0.33>0 +10 | Stoch K=88.51 overbought -5 | CMF=0.67 inflow +10 | MFI=92.18 overbought -5 | OBV confirms trend +5 | BB pos=-0.42 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=18.48 sideways 0 | ST=9.97 bullish +5 | RSI=74.14 overbought -10 | MACD hist=0.33>0 +10 | Stoch K=88.51 overbought -5 | CMF=0.67 inflow +10 | MFI=92.18 overbought -5 | OBV confirms trend +5 | BB pos=-0.42 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "VPH",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:50",
-    "date": "2026-05-23",
-    "snap_time": "23:50",
+    "time": "2026-05-24 00:22",
+    "date": "2026-05-24",
+    "snap_time": "00:21",
     "price": 3.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -272,22 +298,35 @@
     "fundamental_score": 12,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 50.0,
-    "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=32.74 strong +5 | ST=3.38 bullish +5 | MACD hist=0.07>0 +10 | Stoch K>35.71 cross up +3 | MFI=61.28 neutral 0 | OBV confirms trend +5 | BB pos=-0.02 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=-21.79 very cheap +10 | PB=0.42 below book +5 | ROE=-0.03% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 49.83,
+    "decision": "NEUTRAL",
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=32.74 strong +5 | ST=3.38 bullish +5 | MACD hist=0.07>0 +10 | Stoch K>35.71 cross up +3 | MFI=61.28 neutral 0 | OBV confirms trend +5 | BB pos=-0.02 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=-21.79 very cheap +10 | PB=0.42 below book +5 | ROE=-0.03% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "VND",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:50",
-    "date": "2026-05-23",
-    "snap_time": "23:50",
+    "time": "2026-05-24 00:22",
+    "date": "2026-05-24",
+    "snap_time": "00:22",
     "price": 17.45,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -366,22 +405,35 @@
     "fundamental_score": 7,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 10.0,
-    "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=11.51 sideways 0 | ST=15.75 bullish +5 | MACD hist=0.02>0 +10 | Stoch K>51.49 cross up +3 | CMF=-0.11 outflow -10 | MFI=64.8 neutral 0 | OBV confirms trend +5 | BB pos=-0.28 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=14.64 cheap +7 | PB=1.42 fair +3 | ROE=1.65% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 9.83,
+    "decision": "STRONG SELL",
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=11.51 sideways 0 | ST=15.75 bullish +5 | MACD hist=0.02>0 +10 | Stoch K>51.49 cross up +3 | CMF=-0.11 outflow -10 | MFI=64.8 neutral 0 | OBV confirms trend +5 | BB pos=-0.28 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=14.64 cheap +7 | PB=1.42 fair +3 | ROE=1.65% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "VRC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:51",
-    "date": "2026-05-23",
-    "snap_time": "23:50",
+    "time": "2026-05-24 00:22",
+    "date": "2026-05-24",
+    "snap_time": "00:22",
     "price": 13.65,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -460,22 +512,35 @@
     "fundamental_score": -3,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -5.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -5.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=30.92 strong +5 | ST=11.92 bullish +5 | MACD hist=-0.07<0 -10 | Stoch K>46.18 cross up +3 | CMF=0.68 inflow +10 | MFI=62.83 neutral 0 | OBV divergence -5 | BB pos=-0.41 near lower (oversold zone) +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=68.47 expensive -5 | PB=0.59 below book +5 | ROE=0.03% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=30.92 strong +5 | ST=11.92 bullish +5 | MACD hist=-0.07<0 -10 | Stoch K>46.18 cross up +3 | CMF=0.68 inflow +10 | MFI=62.83 neutral 0 | OBV divergence -5 | BB pos=-0.41 near lower (oversold zone) +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=68.47 expensive -5 | PB=0.59 below book +5 | ROE=0.03% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "CRE",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:51",
-    "date": "2026-05-23",
-    "snap_time": "23:51",
+    "time": "2026-05-24 00:22",
+    "date": "2026-05-24",
+    "snap_time": "00:22",
     "price": 7.86,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -554,22 +619,35 @@
     "fundamental_score": -3,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 35.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 34.83,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=10.49 sideways 0 | ST=6.98 bullish +5 | RSI=57.97 neutral +5 | MACD hist=-0.01<0 -10 | Stoch K>33.53 cross up +3 | CMF=0.27 inflow +10 | MFI=59.32 neutral 0 | OBV confirms trend +5 | BB pos=-0.12 near lower (oversold zone) +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=53.0 expensive -5 | PB=0.67 below book +5 | ROE=0.16% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=10.49 sideways 0 | ST=6.98 bullish +5 | RSI=57.97 neutral +5 | MACD hist=-0.01<0 -10 | Stoch K>33.53 cross up +3 | CMF=0.27 inflow +10 | MFI=59.32 neutral 0 | OBV confirms trend +5 | BB pos=-0.12 near lower (oversold zone) +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=53.0 expensive -5 | PB=0.67 below book +5 | ROE=0.16% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "CNG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:51",
-    "date": "2026-05-23",
-    "snap_time": "23:51",
+    "time": "2026-05-24 00:22",
+    "date": "2026-05-24",
+    "snap_time": "00:22",
     "price": 23.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -648,22 +726,35 @@
     "fundamental_score": 7,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -40.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -40.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=14.17 sideways 0 | ST=24.02 bearish -5 | RSI=46.92 neutral +5 | MACD hist=-0.42<0 -10 | Stoch K>31.62 cross up +3 | MFI=26.68 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=12.38 cheap +7 | PB=1.35 fair +3 | ROE=0.71% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=14.17 sideways 0 | ST=24.02 bearish -5 | RSI=46.92 neutral +5 | MACD hist=-0.42<0 -10 | Stoch K>31.62 cross up +3 | MFI=26.68 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=12.38 cheap +7 | PB=1.35 fair +3 | ROE=0.71% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "C32",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:51",
-    "date": "2026-05-23",
-    "snap_time": "23:51",
+    "time": "2026-05-24 00:22",
+    "date": "2026-05-24",
+    "snap_time": "00:22",
     "price": 14.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -742,22 +833,35 @@
     "fundamental_score": 15,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 32.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 31.83,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=30.99 strong +5 | ST=15.12 bearish -5 | MACD hist=0.63>0 +10 | Stoch K<37.7 cross down -3 | CMF=0.36 inflow +10 | MFI=45.27 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=30.99 strong +5 | ST=15.12 bearish -5 | MACD hist=0.63>0 +10 | Stoch K<37.7 cross down -3 | CMF=0.36 inflow +10 | MFI=45.27 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "HSL",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:51",
-    "date": "2026-05-23",
-    "snap_time": "23:51",
+    "time": "2026-05-24 00:23",
+    "date": "2026-05-24",
+    "snap_time": "00:22",
     "price": 4.87,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -836,22 +940,35 @@
     "fundamental_score": -3,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -41.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -41.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ST=5.35 bearish -5 | MACD hist=-0.09<0 -10 | Stoch K<27.76 cross down -3 | CMF=0.17 inflow +10 | MFI=52.25 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=691.36 expensive -5 | PB=0.6 below book +5 | ROE=-0.21% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ST=5.35 bearish -5 | MACD hist=-0.09<0 -10 | Stoch K<27.76 cross down -3 | CMF=0.17 inflow +10 | MFI=52.25 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=691.36 expensive -5 | PB=0.6 below book +5 | ROE=-0.21% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "ABS",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:51",
-    "date": "2026-05-23",
-    "snap_time": "23:51",
+    "time": "2026-05-24 00:23",
+    "date": "2026-05-24",
+    "snap_time": "00:23",
     "price": 3.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -930,22 +1047,35 @@
     "fundamental_score": 12,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -10.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -10.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=25.13 strong +5 | ST=2.78 bullish +5 | MACD hist=-0.03<0 -10 | Stoch K>53.08 cross up +3 | MFI=70.36 neutral 0 | OBV confirms trend +5 | BB pos=-0.04 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=-0.51 very cheap +10 | PB=0.61 below book +5 | ROE=-42.4% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=25.13 strong +5 | ST=2.78 bullish +5 | MACD hist=-0.03<0 -10 | Stoch K>53.08 cross up +3 | MFI=70.36 neutral 0 | OBV confirms trend +5 | BB pos=-0.04 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=-0.51 very cheap +10 | PB=0.61 below book +5 | ROE=-42.4% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "VNE",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:51",
+    "time": "2026-05-24 00:23",
+    "date": "2026-05-24",
+    "snap_time": "00:23",
     "price": 2.39,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1024,22 +1154,35 @@
     "fundamental_score": 18,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -7.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -7.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=41.65 strong +5 | ST=2.91 bearish -5 | RSI=20.24 oversold +15 | MACD hist=-0.29<0 -10 | Stoch K=0.0 oversold +5 | CMF=-0.29 outflow -10 | MFI=12.53 oversold +10 | OBV confirms trend +5 | BB pos=0.95 near upper (overbought zone) -5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.12% excellent +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=41.65 strong +5 | ST=2.91 bearish -5 | RSI=20.24 oversold +15 | MACD hist=-0.29<0 -10 | Stoch K=0.0 oversold +5 | CMF=-0.29 outflow -10 | MFI=12.53 oversold +10 | OBV confirms trend +5 | BB pos=0.95 near upper (overbought zone) -5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.12% excellent +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "NHT",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:23",
+    "date": "2026-05-24",
+    "snap_time": "00:23",
     "price": 12.65,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1118,22 +1261,35 @@
     "fundamental_score": 15,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 57.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 56.83,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=33.24 strong +5 | ST=12.51 bullish +5 | RSI=55.2 neutral +5 | MACD hist=0.7>0 +10 | Stoch K<66.54 cross down -3 | CMF=0.53 inflow +10 | MFI=56.07 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=5.67 very cheap +10 | PB=0.66 below book +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=33.24 strong +5 | ST=12.51 bullish +5 | RSI=55.2 neutral +5 | MACD hist=0.7>0 +10 | Stoch K<66.54 cross down -3 | CMF=0.53 inflow +10 | MFI=56.07 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=5.67 very cheap +10 | PB=0.66 below book +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "GEX",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:24",
+    "date": "2026-05-24",
+    "snap_time": "00:23",
     "price": 32.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1212,22 +1368,35 @@
     "fundamental_score": -5,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 67.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 66.83,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=33.92 strong +5 | ST=31.22 bullish +5 | RSI=56.35 neutral +5 | MACD hist=2.13>0 +10 | Stoch K<81.38 cross down -3 | CMF=0.13 inflow +10 | MFI=63.69 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.08 expensive -5 | PB=1.31 fair +3 | ROE=0.06% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=33.92 strong +5 | ST=31.22 bullish +5 | RSI=56.35 neutral +5 | MACD hist=2.13>0 +10 | Stoch K<81.38 cross down -3 | CMF=0.13 inflow +10 | MFI=63.69 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.08 expensive -5 | PB=1.31 fair +3 | ROE=0.06% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "DQC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:24",
+    "date": "2026-05-24",
+    "snap_time": "00:24",
     "price": 11.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1306,22 +1475,35 @@
     "fundamental_score": -3,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 50.0,
-    "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=31.38 strong +5 | ST=10.78 bullish +5 | RSI=50.56 neutral +5 | MACD hist=0.38>0 +10 | Stoch K>30.98 cross up +3 | CMF=0.5 inflow +10 | MFI=19.1 oversold +10 | OBV confirms trend +5 | BB pos=0.84 near upper (overbought zone) -5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=34.91 expensive -5 | PB=0.36 below book +5 | ROE=0.16% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 49.83,
+    "decision": "NEUTRAL",
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=31.38 strong +5 | ST=10.78 bullish +5 | RSI=50.56 neutral +5 | MACD hist=0.38>0 +10 | Stoch K>30.98 cross up +3 | CMF=0.5 inflow +10 | MFI=19.1 oversold +10 | OBV confirms trend +5 | BB pos=0.84 near upper (overbought zone) -5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend distributing -5 | FF decelerating -5 | PE=34.91 expensive -5 | PB=0.36 below book +5 | ROE=0.16% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "TV2",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:24",
+    "date": "2026-05-24",
+    "snap_time": "00:24",
     "price": 30.5,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1400,22 +1582,35 @@
     "fundamental_score": -5,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -28.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -28.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=36.09 strong +5 | ST=33.85 bearish -5 | RSI=24.33 oversold +15 | MACD hist=-1.04<0 -10 | Stoch K<33.34 cross down -3 | MFI=20.8 neutral 0 | OBV confirms trend +5 | BB pos=1.05 near upper (overbought zone) -5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend accumulating +5 | FF decelerating -5 | PE=28.49 expensive -5 | PB=1.74 fair +3 | ROE=3.7% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=36.09 strong +5 | ST=33.85 bearish -5 | RSI=24.33 oversold +15 | MACD hist=-1.04<0 -10 | Stoch K<33.34 cross down -3 | MFI=20.8 neutral 0 | OBV confirms trend +5 | BB pos=1.05 near upper (overbought zone) -5 | FF net sell 5d -5 | FF net buy 20d +5 | FF trend accumulating +5 | FF decelerating -5 | PE=28.49 expensive -5 | PB=1.74 fair +3 | ROE=3.7% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "GEE",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:24",
+    "date": "2026-05-24",
+    "snap_time": "00:24",
     "price": 108.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1494,22 +1689,35 @@
     "fundamental_score": -8,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 39.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 38.83,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=19.69 sideways 0 | ST=132.76 bearish -5 | RSI=44.46 neutral +5 | MACD hist=4.08>0 +10 | Stoch K<47.51 cross down -3 | CMF=0.15 inflow +10 | MFI=58.33 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.93 expensive -5 | PB=10.72 expensive -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=19.69 sideways 0 | ST=132.76 bearish -5 | RSI=44.46 neutral +5 | MACD hist=4.08>0 +10 | Stoch K<47.51 cross down -3 | CMF=0.15 inflow +10 | MFI=58.33 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.93 expensive -5 | PB=10.72 expensive -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "FDC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:52",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:24",
+    "date": "2026-05-24",
+    "snap_time": "00:24",
     "price": 23.9,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1588,22 +1796,35 @@
     "fundamental_score": 18,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 0.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -0.16999999999999993,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=36.55 strong +5 | ST=20.12 bullish +5 | MACD hist=1.09>0 +10 | Stoch K=91.38 overbought -5 | Stoch K<92.54 cross down -3 | CMF=0.12 inflow +10 | MFI=90.44 overbought -5 | OBV divergence -5 | BB pos=0.09 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=2.94 very cheap +10 | PB=0.95 below book +5 | ROE=31.82% excellent +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=36.55 strong +5 | ST=20.12 bullish +5 | MACD hist=1.09>0 +10 | Stoch K=91.38 overbought -5 | Stoch K<92.54 cross down -3 | CMF=0.12 inflow +10 | MFI=90.44 overbought -5 | OBV divergence -5 | BB pos=0.09 near lower (oversold zone) +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF decelerating -5 | PE=2.94 very cheap +10 | PB=0.95 below book +5 | ROE=31.82% excellent +5 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "VHM",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:53",
-    "date": "2026-05-23",
-    "snap_time": "23:52",
+    "time": "2026-05-24 00:24",
+    "date": "2026-05-24",
+    "snap_time": "00:24",
     "price": 153.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1682,22 +1903,35 @@
     "fundamental_score": 7,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 49.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 48.83,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=31.31 strong +5 | ST=140.55 bullish +5 | RSI=55.85 neutral +5 | MACD hist=8.98>0 +10 | Stoch K<52.18 cross down -3 | MFI=61.95 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=12.38 cheap +7 | PB=2.05 neutral 0 | ROE=11.07% neutral 0 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=31.31 strong +5 | ST=140.55 bullish +5 | RSI=55.85 neutral +5 | MACD hist=8.98>0 +10 | Stoch K<52.18 cross down -3 | MFI=61.95 neutral 0 | OBV confirms trend +5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=12.38 cheap +7 | PB=2.05 neutral 0 | ROE=11.07% neutral 0 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "PVP",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:53",
-    "date": "2026-05-23",
-    "snap_time": "23:53",
+    "time": "2026-05-24 00:25",
+    "date": "2026-05-24",
+    "snap_time": "00:24",
     "price": 18.05,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1776,22 +2010,35 @@
     "fundamental_score": 12,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": 69.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": 68.83,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ST=17.56 bullish +5 | RSI=51.35 neutral +5 | MACD hist=0.88>0 +10 | Stoch K<51.58 cross down -3 | CMF=0.15 inflow +10 | MFI=60.44 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend accumulating +5 | FF accelerating +5 | PE=7.27 very cheap +10 | PB=0.75 below book +5 | ROE=2.31% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ST=17.56 bullish +5 | RSI=51.35 neutral +5 | MACD hist=0.88>0 +10 | Stoch K<51.58 cross down -3 | CMF=0.15 inflow +10 | MFI=60.44 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net buy 20d +5 | FF trend accumulating +5 | FF accelerating +5 | PE=7.27 very cheap +10 | PB=0.75 below book +5 | ROE=2.31% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "QCG",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-23 23:53",
-    "date": "2026-05-23",
-    "snap_time": "23:53",
+    "time": "2026-05-24 00:25",
+    "date": "2026-05-24",
+    "snap_time": "00:25",
     "price": 12.9,
     "price_type": "last_close",
     "price_date": "2026-05-22",
@@ -1870,13 +2117,26 @@
     "fundamental_score": 5,
     "cf_score": -10,
     "context_score": 0,
-    "news_score": 5.0,
+    "news_score": 4.83,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 1.0,
-    "news_evidence": [],
-    "total_score": -52.0,
+    "news_macro": 0.83,
+    "news_evidence": [
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0,
+        "type": "macro"
+      }
+    ],
+    "total_score": -52.17,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=16.17 sideways 0 | ST=13.92 bearish -5 | MACD hist=-0.09<0 -10 | Stoch K>27.84 cross up +3 | MFI=25.54 neutral 0 | OBV divergence -5 | BB pos=1.09 near upper (overbought zone) -5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF accelerating +5 | PE=23.88 fair +3 | PB=0.88 below book +5 | ROE=2.85% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +5.0 [no news]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=16.17 sideways 0 | ST=13.92 bearish -5 | MACD hist=-0.09<0 -10 | Stoch K>27.84 cross up +3 | MFI=25.54 neutral 0 | OBV divergence -5 | BB pos=1.09 near upper (overbought zone) -5 | FF net sell 5d -5 | FF net sell 20d -5 | FF trend distributing -5 | FF accelerating +5 | PE=23.88 fair +3 | PB=0.88 below book +5 | ROE=2.85% weak -3 | CFO<0 cash burn -10 | Market FAIR 0 | News NEUTRAL +4.83 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   }
 ]
