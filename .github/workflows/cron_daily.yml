@@ -2,7 +2,7 @@ name: VNStock Daily
 
 on:
   schedule:
-    - cron: '0 1 * * 1-5'    # 8h00 ICT
+    - cron: '0 1 * * 1-5'    # 8h00 ICT new
   workflow_dispatch:
 
 jobs:
