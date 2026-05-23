@@ -257,3 +257,61 @@ MACRO_KEYWORDS: dict[str, int] = {
     "room ngoại nới": +2,
     "margin siết": -1,
 }
+# ═══════════════════════════════════════════════════
+# NEWS TYPE KEYWORDS
+# ═══════════════════════════════════════════════════
+
+NEWS_TYPE_KEYWORDS: dict[str, list[str]] = {
+    "immediate": [
+        "kết quả", "báo lãi", "báo lỗ", "kỷ lục", "đột biến",
+        "bắt giữ", "khởi tố", "vi phạm", "bị phạt", "bị xử phạt",
+        "thâu tóm", "sáp nhập", "M&A", "phát hành thêm",
+        "chia cổ tức", "trả cổ tức", "chốt danh sách",
+        "công bố", "vừa công bố", "vừa ra mắt",
+        "tăng đột biến", "giảm đột biến",
+    ],
+    "delayed": [
+        "có hiệu lực", "từ ngày", "bắt đầu từ", "kể từ",
+        "thông tư", "nghị định", "quyết định số", "luật",
+        "lộ trình", "dự kiến", "kế hoạch", "đề xuất",
+        "trình Quốc hội", "chờ phê duyệt", "chờ thông qua",
+        "sẽ áp dụng", "sẽ có hiệu lực", "sẽ triển khai",
+        "dự thảo", "đề án", "phương án",
+        "từ tháng", "từ quý", "từ năm",
+        "chính thức áp dụng", "chính thức triển khai",
+    ],
+    "monitoring": [
+        "điều tra", "thanh tra", "xem xét", "cảnh báo",
+        "rủi ro", "lo ngại", "áp lực", "theo dõi",
+        "kiểm tra", "rà soát", "đánh giá lại",
+        "chưa rõ", "chưa xác định", "còn chờ",
+    ],
+}
+
+# ═══════════════════════════════════════════════════
+# EFFECTIVE DATE PATTERNS
+# Dùng để extract ngày hiệu lực từ title/sapo
+# ═══════════════════════════════════════════════════
+
+EFFECTIVE_DATE_PATTERNS: list[str] = [
+    # Dạng đầy đủ: 1/6/2026, 01/06/2026, 1-6-2026
+    r"từ ngày (\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
+    r"có hiệu lực (\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
+    r"kể từ (\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
+    r"bắt đầu từ (\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
+    r"áp dụng từ (\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
+    r"triển khai từ (\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
+
+    # Dạng thiếu năm: 1/6, 01/06
+    r"từ ngày (\d{1,2}[\/\-]\d{1,2})(?!\d)",
+    r"có hiệu lực (\d{1,2}[\/\-]\d{1,2})(?!\d)",
+    r"kể từ (\d{1,2}[\/\-]\d{1,2})(?!\d)",
+    r"bắt đầu từ (\d{1,2}[\/\-]\d{1,2})(?!\d)",
+
+    # Dạng tháng: "từ tháng 6", "từ tháng 6/2026"
+    r"từ tháng (\d{1,2})(?:[\/\-](\d{4}))?",
+    r"kể từ tháng (\d{1,2})(?:[\/\-](\d{4}))?",
+
+    # Dạng quý: "từ quý 3", "từ quý 3/2026"
+    r"từ quý (\d)[\/\-]?(\d{4})?",
+]
