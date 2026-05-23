@@ -139,7 +139,9 @@ def get_ta(symbol: str) -> dict:
     ta  = Indicator(data=df)
     res = {"symbol": symbol}
 
-    # Trend
+    last_close = float(df["close"].iloc[-1])
+
+    # ── Trend ──
     ema20 = ta.trend.ema(length=20)
     ema50 = ta.trend.ema(length=50)
     res["ema20"]      = safe_val(ema20)
@@ -152,12 +154,11 @@ def get_ta(symbol: str) -> dict:
     if res["ema20"] and res["ema50"] and res["ema50"] != 0:
         res["ema_cross_pct"] = round(
             (res["ema20"] - res["ema50"]) / res["ema50"] * 100, 2)
-    last_close = float(df["close"].iloc[-1])
     if res.get("ema20") and res["ema20"] != 0:
         res["price_vs_ema20_pct"] = round(
             (last_close - res["ema20"]) / res["ema20"] * 100, 2)
 
-    # Momentum
+    # ── Momentum ──
     res["rsi"]       = safe_val(ta.momentum.rsi(length=14))
     macd = ta.momentum.macd(fast=12, slow=26, signal=9)
     res["macd"]      = safe_val(macd, 0)
@@ -167,21 +168,25 @@ def get_ta(symbol: str) -> dict:
     res["stoch_k"]   = safe_val(stoch, 0)
     res["stoch_d"]   = safe_val(stoch, 1)
 
-    # Volatility
+    # ── Volatility ──
     bb = ta.volatility.bbands(length=20, std=2.0)
     res["bb_upper"]  = safe_val(bb, 0)
     res["bb_mid"]    = safe_val(bb, 1)
     res["bb_lower"]  = safe_val(bb, 2)
     res["atr"]       = safe_val(ta.volatility.atr(length=14))
 
-    # BB position
+    # BB position: 0 = lower band, 1 = upper band, >1 = breakout trên, <0 = breakdown
     if res["bb_upper"] and res["bb_lower"] and \
        (res["bb_upper"] - res["bb_lower"]) != 0:
         res["bb_position"] = round(
             (last_close - res["bb_lower"]) /
             (res["bb_upper"] - res["bb_lower"]), 2)
 
-    # Volume
+    # ATR% — biến động tương đối, dùng để filter flat market
+    if res.get("atr") and last_close:
+        res["atr_pct"] = round(res["atr"] / last_close * 100, 2)
+
+    # ── Volume ──
     res["obv"]  = safe_val(ta.volume.obv())
     res["cmf"]  = safe_val(ta.volume.cmf(length=20))
     res["mfi"]  = safe_val(ta.volume.mfi(length=14))
@@ -511,7 +516,8 @@ if __name__ == "__main__":
             log.info(f"  [{symbol}] "
                      f"RSI={row.get('rsi')}, "
                      f"PE={row.get('r_pe')}, "
-                     f"FF5d={fmt_money_bil(row.get('ff_net_val_5d'))}tỷ")
+                     f"FF5d={fmt_money_bil(row.get('ff_net_val_5d'))}tỷ, "
+                     f"ATR%={row.get('atr_pct')}")
 
     # ── Export Ranking ──
     if all_ranking_rows:
