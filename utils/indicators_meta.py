@@ -3,6 +3,12 @@ Metadata cho tất cả indicators:
   desc     : mô tả ngắn gọn
   formula  : công thức tính
   baseline : ngưỡng tham chiếu + điểm
+
+Quy tắc thêm indicator mới:
+  1. step_all.py   → tính indicator, thêm vào res dict trong get_ta()
+  2. file này      → thêm entry desc/formula/baseline
+  3. formatter.py  → thêm vào MONEY_COLS / PCT_COLS / RATIO_COLS tùy loại
+  step_scoring.py  → KHÔNG cần sửa (pass-through tự động)
 """
 
 INDICATORS_META = {
@@ -38,37 +44,38 @@ INDICATORS_META = {
     "ema_cross_pct"  : {"desc": "% EMA20 vs EMA50",       "formula": "(EMA20-EMA50)/EMA50×100",    "baseline": ">0 bullish <0 bearish"},
     "price_vs_ema20_pct":{"desc":"% giá vs EMA20",        "formula": "(price-EMA20)/EMA20×100",    "baseline": ">0 trên EMA20"},
     "adx"            : {"desc": "Sức mạnh xu hướng",      "formula": "ADX(14)",                    "baseline": ">25 mạnh <20 sideways"},
-    "supertrend"     : {"desc": "Supertrend level",       "formula": "ST(10,3)",                   "baseline": "Giá>ST = uptrend"},
+    "supertrend"     : {"desc": "Supertrend level",       "formula": "ST(10,3)",                   "baseline": "Giá>ST = uptrend +5đ | Giá<ST = bearish -5đ"},
 
     # ── TA — Momentum ──
-    "rsi"            : {"desc": "Relative Strength Index","formula": "RSI(14)",                    "baseline": "<30 oversold >70 overbought"},
+    "rsi"            : {"desc": "Relative Strength Index","formula": "RSI(14)",                    "baseline": "<30 oversold +15đ | >70 overbought -10đ | 40-60 neutral +5đ"},
     "macd"           : {"desc": "MACD line",              "formula": "EMA12-EMA26",                "baseline": ">0 bullish"},
     "macd_sig"       : {"desc": "MACD signal line",       "formula": "EMA9(MACD)",                 "baseline": "MACD cross up = buy"},
-    "macd_hist"      : {"desc": "MACD histogram",         "formula": "MACD-signal",                "baseline": ">0 tăng <0 giảm"},
-    "stoch_k"        : {"desc": "Stochastic %K",          "formula": "Stoch(14,3,3).K",            "baseline": "<20 oversold >80 overbought"},
-    "stoch_d"        : {"desc": "Stochastic %D",          "formula": "Stoch(14,3,3).D",            "baseline": "K cross D up = buy"},
+    "macd_hist"      : {"desc": "MACD histogram",         "formula": "MACD-signal",                "baseline": ">0 +10đ(×0.5 nếu flat) | <0 -10đ(×0.5 nếu flat)"},
+    "stoch_k"        : {"desc": "Stochastic %K",          "formula": "Stoch(14,3,3).K",            "baseline": "<20 oversold +5đ | >80 overbought -5đ"},
+    "stoch_d"        : {"desc": "Stochastic %D",          "formula": "Stoch(14,3,3).D",            "baseline": "K>D cross up +3đ | K<D cross down -3đ (vùng không cực đoan)"},
 
     # ── TA — Volatility ──
     "bb_upper"       : {"desc": "Bollinger Band trên",    "formula": "BB(20,2).upper",             "baseline": "Giá chạm = quá mua"},
     "bb_mid"         : {"desc": "Bollinger Band giữa",    "formula": "BB(20,2).mid=SMA20",         "baseline": "Hỗ trợ/kháng cự"},
     "bb_lower"       : {"desc": "Bollinger Band dưới",    "formula": "BB(20,2).lower",             "baseline": "Giá chạm = quá bán"},
-    "bb_position"    : {"desc": "Vị trí giá trong BB",   "formula": "(price-lower)/(upper-lower)","baseline": "<0.2 đáy >0.8 đỉnh >1 breakout"},
+    "bb_position"    : {"desc": "Vị trí giá trong BB",   "formula": "(price-lower)/(upper-lower)","baseline": "<0.2 oversold zone +5đ | >0.8 overbought zone -5đ | >1 breakout"},
     "atr"            : {"desc": "Average True Range",     "formula": "ATR(14)",                    "baseline": "Cao = biến động lớn"},
+    "atr_pct"        : {"desc": "ATR% biến động tương đối","formula": "ATR(14)/price×100",         "baseline": "<0.5% flat market (EMA/MACD weight×0.5) | >1.5% biến động mạnh"},
 
     # ── TA — Volume ──
-    "obv"            : {"desc": "On Balance Volume",      "formula": "Σ±volume theo giá",          "baseline": "Tăng cùng giá = xác nhận"},
-    "cmf"            : {"desc": "Chaikin Money Flow",     "formula": "CMF(20)",                    "baseline": ">0.1 inflow <-0.1 outflow"},
-    "mfi"            : {"desc": "Money Flow Index",       "formula": "MFI(14)",                    "baseline": "<20 oversold >80 overbought"},
+    "obv"            : {"desc": "On Balance Volume",      "formula": "Σ±volume theo giá",          "baseline": "OBV & EMA cross cùng chiều +5đ | divergence -5đ"},
+    "cmf"            : {"desc": "Chaikin Money Flow",     "formula": "CMF(20)",                    "baseline": ">0.1 inflow +10đ | <-0.1 outflow -10đ"},
+    "mfi"            : {"desc": "Money Flow Index",       "formula": "MFI(14)",                    "baseline": "<20 oversold +10đ | >80 overbought -5đ"},
 
     # ── Foreign Flow ──
     "ff_buy_val_5d"  : {"desc": "FF mua 5 ngày (tỷ)",    "formula": "Σ fr_buy_val_matched 5d",    "baseline": "Cao = ngoại mua mạnh"},
     "ff_sell_val_5d" : {"desc": "FF bán 5 ngày (tỷ)",    "formula": "Σ fr_sell_val_matched 5d",   "baseline": "Cao = ngoại bán mạnh"},
-    "ff_net_val_5d"  : {"desc": "FF ròng 5 ngày (tỷ)",   "formula": "buy-sell 5d",                "baseline": ">0 mua ròng <0 bán ròng"},
-    "ff_net_val_20d" : {"desc": "FF ròng 20 ngày (tỷ)",  "formula": "buy-sell 20d",               "baseline": ">0 tích lũy <0 phân phối"},
+    "ff_net_val_5d"  : {"desc": "FF ròng 5 ngày (tỷ)",   "formula": "buy-sell 5d",                "baseline": ">0 mua ròng +5đ | <0 bán ròng -5đ"},
+    "ff_net_val_20d" : {"desc": "FF ròng 20 ngày (tỷ)",  "formula": "buy-sell 20d",               "baseline": ">0 tích lũy +5đ | <0 phân phối -5đ"},
     "ff_room"        : {"desc": "Room ngoại còn lại",     "formula": "fr_current_room",            "baseline": ">0 còn room mua"},
-    "ff_trend"       : {"desc": "Xu hướng FF 20 ngày",   "formula": "slope(ff_net_20d)",          "baseline": ">0 tích lũy dần <0 phân phối"},
+    "ff_trend"       : {"desc": "Xu hướng FF 20 ngày",   "formula": "slope(ff_net_20d)",          "baseline": ">0 tích lũy dần +5đ | <0 phân phối -5đ"},
     "ff_consistency" : {"desc": "Tỷ lệ ngày FF dương",   "formula": "count(ff>0)/20",             "baseline": ">0.6 ngoại mua liên tục"},
-    "ff_acceleration": {"desc": "FF tăng tốc",           "formula": "ff_net_5d vs ff_net_20d/4",  "baseline": ">0 đang tăng tốc mua"},
+    "ff_acceleration": {"desc": "FF tăng tốc",           "formula": "ff_net_5d vs ff_net_20d/4",  "baseline": ">0 đang tăng tốc mua +5đ | <0 giảm tốc -5đ"},
 
     # ── Insider ──
     "insider_count"  : {"desc": "Số GD nội bộ gần đây",  "formula": "count insider_deal(5)",      "baseline": "Mua = tin tưởng nội bộ"},
@@ -76,11 +83,11 @@ INDICATORS_META = {
     "insider_name"   : {"desc": "Người GD nội bộ",       "formula": "trader_name.last",           "baseline": "-"},
 
     # ── Fundamental — Ratio ──
-    "r_pe"           : {"desc": "P/E ratio",              "formula": "price/EPS",                  "baseline": "<15 rẻ 15-25 hợp lý >25 đắt"},
-    "r_pb"           : {"desc": "P/B ratio",              "formula": "price/BVPS",                 "baseline": "<1 dưới sổ sách 1-3 hợp lý"},
+    "r_pe"           : {"desc": "P/E ratio",              "formula": "price/EPS",                  "baseline": "<10 +10đ | <15 +7đ | ≤25 +3đ | >25 -5đ"},
+    "r_pb"           : {"desc": "P/B ratio",              "formula": "price/BVPS",                 "baseline": "<1 +5đ | ≤2 +3đ | ≤3 0đ | >3 -3đ"},
     "r_eps"          : {"desc": "Earnings Per Share",     "formula": "net_profit/shares",          "baseline": "Càng cao càng tốt"},
     "r_bvps"         : {"desc": "Book Value Per Share",   "formula": "equity/shares",              "baseline": "Cao = tài sản thực nhiều"},
-    "r_roe"          : {"desc": "Return on Equity %",     "formula": "net_profit/equity×100",      "baseline": ">15% tốt >20% rất tốt"},
+    "r_roe"          : {"desc": "Return on Equity %",     "formula": "net_profit/equity×100",      "baseline": ">20% +5đ | >15% +3đ | >10% 0đ | <5% -3đ"},
     "r_roa"          : {"desc": "Return on Assets %",     "formula": "net_profit/assets×100",      "baseline": ">5% tốt >10% rất tốt"},
     "r_beta"         : {"desc": "Beta - độ biến động",   "formula": "cov(stock,market)/var(market)","baseline": "<1 ít biến động >1 biến động nhiều"},
     "r_div_yield"    : {"desc": "Tỷ suất cổ tức %",      "formula": "dividend/price×100",         "baseline": ">3% hấp dẫn"},
@@ -107,11 +114,11 @@ INDICATORS_META = {
     "bs_long_debt"   : {"desc": "Nợ vay dài hạn (tỷ)", "formula": "long_term_borrowing Q",      "baseline": "Vừa phải tùy ngành"},
 
     # ── Cash Flow ──
-    "cf_operating"   : {"desc": "CF hoạt động KD (tỷ)", "formula": "operating_cash_flow Q",      "baseline": ">0 tạo tiền thật"},
+    "cf_operating"   : {"desc": "CF hoạt động KD (tỷ)", "formula": "operating_cash_flow Q",      "baseline": ">0 +5đ | <0 -10đ"},
     "cf_investing"   : {"desc": "CF đầu tư (tỷ)",       "formula": "investing_cash_flow Q",      "baseline": "<0 đầu tư mở rộng bình thường"},
     "cf_financing"   : {"desc": "CF tài chính (tỷ)",    "formula": "financing_cash_flow Q",      "baseline": "<0 trả nợ tốt >0 vay thêm"},
     "cf_free"        : {"desc": "Free Cash Flow (tỷ)",  "formula": "CFO - CapEx",                "baseline": ">0 tự chủ tài chính"},
-    "cf_quality_ratio":{"desc": "Chất lượng LN",        "formula": "cf_operating/net_profit",    "baseline": ">1 LN chất lượng cao <0.5 cảnh báo"},
+    "cf_quality_ratio":{"desc": "Chất lượng LN",        "formula": "cf_operating/net_profit",    "baseline": ">1 +5đ | <0.5 -5đ"},
 
     # ── Fundamental vs Industry ──
     "market_cap"     : {"desc": "Vốn hóa (tỷ)",         "formula": "price×shares",               "baseline": ">10000 large <1000 small"},
@@ -120,16 +127,16 @@ INDICATORS_META = {
     # ── Market Context ──
     "vnindex_pe"     : {"desc": "PE VNINDEX hiện tại",   "formula": "Analytics VND",              "baseline": "So với mean 5Y"},
     "pe_percentile_5y":{"desc": "PE percentile 5 năm",  "formula": "rank PE trong 5Y",           "baseline": "<30% rẻ >70% đắt"},
-    "market_valuation":{"desc": "Định giá thị trường",  "formula": "pe_percentile phân loại",    "baseline": "CHEAP/FAIR/EXPENSIVE"},
+    "market_valuation":{"desc": "Định giá thị trường",  "formula": "pe_percentile phân loại",    "baseline": "CHEAP +5đ | FAIR 0đ | EXPENSIVE -5đ"},
 
     # ── Scoring ──
-    "trend_score"    : {"desc": "Điểm xu hướng",         "formula": "EMA+ADX+ST+price_ema",      "baseline": "Max 25đ"},
-    "momentum_score" : {"desc": "Điểm momentum",         "formula": "RSI+MACD+Stoch",             "baseline": "Max 20đ"},
-    "volume_score"   : {"desc": "Điểm volume",           "formula": "CMF+MFI+OBV",               "baseline": "Max 15đ"},
-    "ff_score"       : {"desc": "Điểm dòng tiền ngoại",  "formula": "FF net+trend+accel",         "baseline": "Max 20đ"},
-    "fundamental_score":{"desc":"Điểm cơ bản",           "formula": "PE+PB+ROE",                  "baseline": "Max 15đ"},
-    "cf_score"       : {"desc": "Điểm chất lượng CF",    "formula": "CFO+CF quality",             "baseline": "Max 10đ"},
-    "context_score"  : {"desc": "Điểm context thị trường","formula":"market_valuation",           "baseline": "Max 5đ"},
+    "trend_score"    : {"desc": "Điểm xu hướng",         "formula": "EMA cross + Price>EMA + ADX + Supertrend", "baseline": "Max ±30đ | flat market: EMA×0.5"},
+    "momentum_score" : {"desc": "Điểm momentum",         "formula": "RSI + MACD hist + Stoch zone + Stoch cross","baseline": "Max ±23đ | flat market: MACD×0.5"},
+    "volume_score"   : {"desc": "Điểm volume",           "formula": "CMF + MFI + OBV + BB position",            "baseline": "Max ±20đ"},
+    "ff_score"       : {"desc": "Điểm dòng tiền ngoại",  "formula": "FF net5d + net20d + trend + accel",        "baseline": "Max ±20đ"},
+    "fundamental_score":{"desc":"Điểm cơ bản",           "formula": "PE + PB + ROE",                            "baseline": "Max ±18đ"},
+    "cf_score"       : {"desc": "Điểm chất lượng CF",    "formula": "CFO + CF quality",                         "baseline": "Max ±10đ"},
+    "context_score"  : {"desc": "Điểm context thị trường","formula": "market_valuation",                        "baseline": "Max ±5đ"},
 
     # ── News Sentiment ──
     "news_score"     : {"desc": "Điểm tin tức tổng hợp", "formula": "industry+mention+macro",     "baseline": "0-10đ | 5=neutral 8+=tích cực 2-=tiêu cực"},
@@ -137,7 +144,7 @@ INDICATORS_META = {
     "news_mention"   : {"desc": "Tin đề cập trực tiếp",  "formula": "avg(weighted_sentiment×1.5) khi symbol trong title/tags", "baseline": "0-4đ | 2=neutral boost 1.5×"},
     "news_macro"     : {"desc": "Tin vĩ mô thị trường",  "formula": "MACRO_KEYWORDS matched × bias / total_articles", "baseline": "0-2đ | 1=neutral | dùng chung toàn thị trường"},
     "news_evidence"  : {"desc": "Dẫn chứng tin tức",     "formula": "top 3 articles by |contribution| per symbol", "baseline": "format: [type] source: title (HH:MM) score | type=mention/industry/macro"},
-    "total_score"    : {"desc": "Tổng điểm",             "formula": "Σ all scores",               "baseline": ">=50 BUY >=70 STRONG BUY | Max 120đ"},
+    "total_score"    : {"desc": "Tổng điểm",             "formula": "Σ all scores",               "baseline": "≥70 STRONG BUY | ≥50 BUY | ≥30 NEUTRAL | ≥10 SELL | <10 STRONG SELL"},
     "decision"       : {"desc": "Quyết định",            "formula": "total_score phân loại",      "baseline": "STRONG BUY/BUY/NEUTRAL/SELL/STRONG SELL"},
     "signals"        : {"desc": "Chi tiết tín hiệu",     "formula": "list signals",               "baseline": "-"},
 }
