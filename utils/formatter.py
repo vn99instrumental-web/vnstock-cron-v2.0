@@ -26,6 +26,7 @@ PCT_COLS = [
     "pe_percentile_5y", "pb_percentile_5y",
     "ema_cross_pct", "price_vs_ema20_pct",
     "ff_consistency",
+    "atr_pct",          # ATR% — biến động tương đối so với giá
 ]
 
 RATIO_COLS = [
