@@ -248,7 +248,11 @@ MACRO_KEYWORDS: dict[str, int] = {
     "phá sản": -2,
     "thanh tra": -1,
     "điều tra": -1,
-    "bắt giữ": -2,
+    "bắt giữ lãnh đạo": -2,
+    "bắt giữ chủ tịch": -2,
+    "bắt giữ tổng giám đốc": -2,
+    "khởi tố lãnh đạo": -2,
+    "khởi tố doanh nghiệp": -2,
 
     # TTCK
     "nâng hạng thị trường": +3,
