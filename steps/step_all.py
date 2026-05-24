@@ -246,26 +246,75 @@ def get_ta(symbol: str) -> dict:
 # FLOW — CafeF trực tiếp (VCI 100% fail)
 # =====================================================
 
+def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
+    """
+    Chuẩn hóa CafeF foreign_trade DataFrame.
+    CafeF trả về toàn bộ lịch sử (23765 records), sort DESC.
+    tail(5) của dữ liệu DESC = 5 rows cũ nhất ≈ 0.
+    Fix: filter 25 ngày gần nhất + sort ASC + normalize column names.
+    """
+    if df is None or df.empty:
+        return None
+    date_col = next(
+        (c for c in df.columns if c in ("date","time","trading_date","trade_date")),
+        None
+    )
+    if date_col:
+        df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
+        cutoff        = pd.Timestamp.now() - pd.Timedelta(days=25)
+        df            = df[df[date_col] >= cutoff].sort_values(date_col, ascending=True)
+
+    cols   = set(df.columns)
+    rename = {}
+    for c in ("fr_buy_value","fr_buy_volume","buy_value","buy_vol","fr_buy_value_matched"):
+        if c in cols: rename[c] = "ff_buy"; break
+    for c in ("fr_sell_value","fr_sell_volume","sell_value","sell_vol","fr_sell_value_matched"):
+        if c in cols: rename[c] = "ff_sell"; break
+    for c in ("fr_net_value","fr_net_volume","net_value","net_vol","fr_net_value_total"):
+        if c in cols: rename[c] = "ff_net"; break
+    for c in ("fr_current_room","current_room","room"):
+        if c in cols: rename[c] = "ff_room"; break
+
+    if rename:
+        df = df.rename(columns=rename)
+
+    if "ff_net" not in df.columns:
+        if "ff_buy" in df.columns and "ff_sell" in df.columns:
+            df["ff_net"] = (pd.to_numeric(df["ff_buy"],  errors="coerce").fillna(0)
+                          - pd.to_numeric(df["ff_sell"], errors="coerce").fillna(0))
+
+    if "ff_net" not in df.columns:
+        log.warning(f"  CafeF FF: unknown cols {list(df.columns)[:8]}")
+        return None
+
+    for c in ("ff_buy", "ff_sell", "ff_net"):
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
+
+    return df.reset_index(drop=True)
+
+
 def get_flow(symbol: str) -> dict:
     res = {"symbol": symbol}
 
-    df_ft = safe_run(f"foreign_trade {symbol}",
-             lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
-                 start=start_str(20), end=today_str()))
+    df_raw = safe_run(f"foreign_trade {symbol}",
+              lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
+                  start=start_str(20), end=today_str()))
+
+    df_ft = _parse_cafef_ff(df_raw)
 
     if df_ft is not None and not df_ft.empty:
-        df_ft = df_ft.rename(columns={
-            "fr_buy_volume" : "fr_buy_value_matched",
-            "fr_sell_volume": "fr_sell_value_matched",
-            "fr_net_volume" : "fr_net_value_total",
-        })
-        net = df_ft["fr_net_value_total"]
-        res["ff_buy_val_5d"]  = float(df_ft["fr_buy_value_matched"].tail(5).sum())
-        res["ff_sell_val_5d"] = float(df_ft["fr_sell_value_matched"].tail(5).sum())
+        net  = df_ft["ff_net"]
+        buy  = df_ft["ff_buy"]  if "ff_buy"  in df_ft.columns else pd.Series(dtype=float)
+        sell = df_ft["ff_sell"] if "ff_sell" in df_ft.columns else pd.Series(dtype=float)
+
+        res["ff_buy_val_5d"]  = float(buy.tail(5).sum())  if not buy.empty  else 0.0
+        res["ff_sell_val_5d"] = float(sell.tail(5).sum()) if not sell.empty else 0.0
         res["ff_net_val_5d"]  = float(net.tail(5).sum())
         res["ff_net_val_20d"] = float(net.sum())
-        if "fr_current_room" in df_ft.columns:
-            res["ff_room"] = float(df_ft["fr_current_room"].iloc[-1])
+
+        if "ff_room" in df_ft.columns:
+            res["ff_room"] = float(df_ft["ff_room"].iloc[-1])
 
         if len(net) >= 5:
             x     = np.arange(len(net))
@@ -276,9 +325,12 @@ def get_flow(symbol: str) -> dict:
             ff_5d_avg  = net.tail(5).mean()
             ff_20d_avg = net.mean()
             res["ff_acceleration"] = round(
-                float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
-                if ff_20d_avg != 0 else 0
+                float(ff_5d_avg - ff_20d_avg) / 1e9, 2)                 if ff_20d_avg != 0 else 0.0
 
+        log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
+                 f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
+
+    # Insider
     df_id = safe_run(f"insider_deal_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=5))
     if df_id is None:
@@ -293,17 +345,11 @@ def get_flow(symbol: str) -> dict:
 
     if df_id is not None and not df_id.empty:
         res["insider_count"]  = len(df_id)
-        res["insider_latest"] = str(df_id["action_type"].iloc[0]) \
-                                if "action_type" in df_id.columns else None
-        res["insider_name"]   = str(df_id["trader_name"].iloc[0]) \
-                                if "trader_name" in df_id.columns else None
+        res["insider_latest"] = str(df_id["action_type"].iloc[0])                                 if "action_type" in df_id.columns else None
+        res["insider_name"]   = str(df_id["trader_name"].iloc[0])                                 if "trader_name" in df_id.columns else None
 
     return res
 
-
-# =====================================================
-# FUNDAMENTAL — Finance(KBS)
-# =====================================================
 
 def get_fundamental(symbol: str) -> dict:
     log.info(f"  Fundamental: {symbol}")
