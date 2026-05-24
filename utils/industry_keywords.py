@@ -237,8 +237,12 @@ MACRO_KEYWORDS: dict[str, int] = {
     "PMI tăng": +1,
 
     # Rủi ro vĩ mô
-    "suy thoái": -2,
-    "khủng hoảng": -2,
+    "suy thoái kinh tế": -2,
+    "suy thoái GDP": -2,
+    "nguy cơ suy thoái": -2,
+    "khủng hoảng tài chính": -2,
+    "khủng hoảng kinh tế": -2,
+    "khủng hoảng ngân hàng": -2,
     "lạm phát tăng": -1,
     "CPI tăng cao": -1,
     "chiến tranh thương mại": -2,
