@@ -142,6 +142,11 @@ def _dedupe_period_cols(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float | None:
+    """
+    Tìm item_id trong keys, lấy giá trị tại cột col.
+    FIX: skip nan values — không dừng lại khi gặp nan,
+    tiếp tục thử key tiếp theo trong list.
+    """
     if df is None or df.empty:
         return None
     df = _dedupe_period_cols(df.copy())
@@ -158,7 +163,9 @@ def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float |
         df_idx = df_idx.iloc[:, 0]
     for k in keys:
         if k in df_idx.index:
-            return to_float(df_idx[k])
+            val = to_float(df_idx[k])
+            if val is not None:   # FIX: skip nan, try next key
+                return val
     return None
 
 def _kbs_growth(df: pd.DataFrame, keys: list) -> float | None:
@@ -276,7 +283,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
              "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
 
-    # ── CALL 3: BALANCE SHEET (+ CF items mixed in by KBS) ───
+    # ── CALL 3: BALANCE SHEET ─────────────────────────────────
     df_bs = None
     try:
         df_bs = Finance(source="KBS", symbol=symbol).balance_sheet(period="quarter", limit=1)
@@ -289,7 +296,6 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
 
     if df_bs is not None and not df_bs.empty:
         b = result["balance"]
-        # total_assets: header row = nan, compute from sub-items
         short_assets = _kbs_lookup(df_bs, ["a_short_term_assets"])
         long_assets  = _kbs_lookup(df_bs, ["b_long_term_assets"])
         if short_assets is not None and long_assets is not None:
@@ -307,22 +313,48 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         if b.get("total_assets") and b.get("equity") and b["equity"] != 0:
             b["debt_to_equity"] = round((b["total_assets"] - b["equity"]) / b["equity"], 3)
 
-        # CF items mixed into BS by KBS design
+    # ── CALL 4: CASH FLOW — đọc riêng từ cash_flow() ─────────
+    # FIX: CF KHÔNG nằm trong balance_sheet() — confirmed từ debug.
+    # Item_ids đúng (confirmed từ debug_vci_finance.py log):
+    #   operating_cash_flow = 269,326,998  (dòng tổng I)
+    #   investing_cash_flow = -880,995,905 (dòng tổng II)
+    #   financing_cash_flow = 895,708,334  (dòng tổng III)
+    # Header rows (i_cash_flows_from_operating_activities) = nan → skip
+    df_cf = None
+    try:
+        df_cf = Finance(source="KBS", symbol=symbol).cash_flow(period="quarter", limit=1)
+        log.info(f"  ✅ cash_flow {symbol}")
+    except ValueError:
+        return None
+    except Exception as e:
+        log.warning(f"  ⚠️ cash_flow {symbol}: {e}")
+    time.sleep(API_CALL_DELAY)
+
+    if df_cf is not None and not df_cf.empty:
         c = result["cashflow"]
-        c["cf_operating"] = _kbs_lookup(df_bs,
-            ["i_cash_flows_from_operating_activities",
-             "operating_cash_flow", "net_cash_flows_from_operating_activities"])
-        c["cf_investing"]  = _kbs_lookup(df_bs,
-            ["investing_cash_flow", "ii_cash_flows_from_investing_activities",
+        # _kbs_lookup skips nan → tự động bỏ qua header rows (nan)
+        # và lấy đúng dòng tổng có giá trị
+        c["cf_operating"] = _kbs_lookup(df_cf,
+            ["operating_cash_flow",
+             "i_cash_flows_from_operating_activities",
+             "net_cash_flows_from_operating_activities"])
+        c["cf_investing"]  = _kbs_lookup(df_cf,
+            ["investing_cash_flow",
+             "ii_cash_flows_from_investing_activities",
              "net_cash_flows_from_investing_activities"])
-        c["cf_financing"]  = _kbs_lookup(df_bs,
-            ["financing_cash_flow", "iii_cash_flows_from_financing_activities",
+        c["cf_financing"]  = _kbs_lookup(df_cf,
+            ["financing_cash_flow",
+             "iii_cash_flows_from_financing_activities",
              "net_cash_flows_from_financing_activities"])
+
         net_profit = result["income"].get("net_profit")
         if c.get("cf_operating") and net_profit and net_profit != 0:
             c["cf_quality"] = round(c["cf_operating"] / net_profit, 2)
         if c.get("cf_operating") and c.get("cf_investing"):
             c["cf_free"] = round(c["cf_operating"] + c["cf_investing"], 2)
+
+        log.info(f"  CF {symbol}: op={c.get('cf_operating')} "
+                 f"inv={c.get('cf_investing')} fin={c.get('cf_financing')}")
 
     # ── has_data: relax — chỉ cần 1 trong ratio/income có data ──
     has_data = any([
@@ -331,6 +363,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         result["income"].get("revenue"),
         result["income"].get("net_profit"),
         result["balance"].get("total_assets"),
+        result["cashflow"].get("cf_operating"),  # now from cash_flow()
     ])
     if not has_data:
         log.warning(f"  [{symbol}] no finance data — marking as non-stock (warrant/special)")
