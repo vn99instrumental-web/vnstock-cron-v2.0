@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-25T00:53:49.291440+07:00",
+  "generated_at": "2026-05-25T01:02:35.406710+07:00",
   "ttl_days": 3,
-  "count": 170,
+  "count": 171,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -7637,6 +7637,49 @@
       "symbol": "VIM",
       "non_stock": true,
       "fetched_at": "2026-05-25T00:53:49.290938+07:00"
+    },
+    "C32": {
+      "symbol": "C32",
+      "fetched_at": "2026-05-25T01:02:29.374026+07:00",
+      "ratio": {
+        "pe": 4.13,
+        "pb": 0.28,
+        "roe": 5.49,
+        "roa": 4.94,
+        "eps": 2614.01,
+        "bvps": 38723.0,
+        "beta": 0.35,
+        "div_yield": 0.0,
+        "gross_margin": 12.91,
+        "net_margin": 14.13,
+        "quick_ratio": 1.03,
+        "interest_cov": 12.91,
+        "ev_ebitda": 0.0
+      },
+      "income": {
+        "revenue": 128133448.0,
+        "gross_profit": 19392900.0,
+        "net_profit": -6422758.0,
+        "operating_profit": 11181097.0,
+        "eps": -427.0,
+        "rev_growth_qoq": 0.7183,
+        "profit_growth_qoq": -5.1866,
+        "rev_growth_yoy": 0.7183,
+        "profit_growth_yoy": -5.1866
+      },
+      "balance": {
+        "total_assets": 851701001.0,
+        "equity": null,
+        "total_liab": 269725533.0,
+        "short_debt": 195364500.0,
+        "long_debt": null
+      },
+      "cashflow": {
+        "cf_operating": null,
+        "cf_investing": null,
+        "cf_financing": null
+      },
+      "period": "2026-Q1"
     }
   }
 }
