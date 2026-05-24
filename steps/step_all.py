@@ -15,12 +15,12 @@ from vnstock_data import TopStock, Quote, Trading, Finance
 from vnstock_ta import Indicator
 
 from utils.helpers import (
-    now_ict, is_market_open, last_trading_date,
+    now_ict, is_market_open,
     load_exchange_map, get_exchange,
     safe_run, safe_val, to_float,
     start_str, today_str
 )
-from utils.cache import save_json, load_json, save_csv
+from utils.cache import save_json, save_csv, load_json
 from utils.formatter import clean_for_export, fmt_money_bil
 
 logging.basicConfig(
@@ -30,19 +30,12 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # =====================================================
-# KBS Wide-form lookup helpers
+# KBS helpers
 # =====================================================
 
-def _kbs_latest_col(df: pd.DataFrame) -> str | None:
-    """Trả về tên cột kỳ mới nhất (cột cuối không phải item/item_id)."""
-    period_cols = [c for c in df.columns if c not in ["item", "item_id"]]
-    return period_cols[-1] if period_cols else None
-
-def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float | None:
-    """
-    Tìm item_id trong danh sách keys, lấy giá trị tại cột col.
-    Nếu col=None thì lấy kỳ mới nhất.
-    """
+def _kbs_lookup(df: pd.DataFrame, keys: list,
+                col: str | None = None) -> float | None:
+    """Tìm item_id trong keys, lấy giá trị cột col (mặc định kỳ mới nhất)."""
     if df is None or df.empty:
         return None
     period_cols = [c for c in df.columns if c not in ["item", "item_id"]]
@@ -60,23 +53,20 @@ def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float |
     return None
 
 def _kbs_growth(df: pd.DataFrame, keys: list) -> float | None:
-    """
-    Tính tăng trưởng QoQ: (kỳ[-1] - kỳ[-2]) / abs(kỳ[-2]).
-    Cần ít nhất 2 kỳ (limit>=2 khi fetch).
-    """
+    """QoQ growth: (kỳ[-1] - kỳ[-2]) / abs(kỳ[-2]). Cần limit>=2."""
     if df is None or df.empty:
         return None
     period_cols = [c for c in df.columns if c not in ["item", "item_id"]]
     if len(period_cols) < 2:
         return None
-    v_latest = _kbs_lookup(df, keys, period_cols[-1])
-    v_prev   = _kbs_lookup(df, keys, period_cols[-2])
-    if v_latest is None or v_prev is None or v_prev == 0:
+    v_new  = _kbs_lookup(df, keys, period_cols[-1])
+    v_prev = _kbs_lookup(df, keys, period_cols[-2])
+    if v_new is None or v_prev is None or v_prev == 0:
         return None
-    return round((v_latest - v_prev) / abs(v_prev), 4)
+    return round((v_new - v_prev) / abs(v_prev), 4)
 
 # =====================================================
-# RANKING — TopStock(VND)
+# RANKING
 # =====================================================
 
 def get_ranking() -> dict:
@@ -90,7 +80,7 @@ def get_ranking() -> dict:
     }
 
 # =====================================================
-# SNAPSHOT — Quote(VCI)
+# SNAPSHOT
 # =====================================================
 
 def get_snapshot(symbol: str, market_open: bool) -> dict:
@@ -141,22 +131,20 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
     return row
 
 # =====================================================
-# TA INDICATORS — vnstock_ta
+# TA INDICATORS + store ohlcv_5d cho order_flow reuse
 # =====================================================
 
 def get_ta(symbol: str) -> dict:
-    log.info(f"  TA: {symbol}")
     df = safe_run(f"ohlcv {symbol}",
          lambda: Quote(source="VCI", symbol=symbol).history(length="4M", interval="1D"))
 
     if df is None or df.empty or len(df) < 20:
         return {"symbol": symbol, "ta_error": "Không đủ data"}
 
-    ta          = Indicator(data=df)
-    res         = {"symbol": symbol}
-    last_close  = float(df["close"].iloc[-1])
+    ta         = Indicator(data=df)
+    res        = {"symbol": symbol}
+    last_close = float(df["close"].iloc[-1])
 
-    # Trend
     ema20 = ta.trend.ema(length=20)
     ema50 = ta.trend.ema(length=50)
     res["ema20"]      = safe_val(ema20)
@@ -171,7 +159,6 @@ def get_ta(symbol: str) -> dict:
         res["price_vs_ema20_pct"] = round(
             (last_close - res["ema20"]) / res["ema20"] * 100, 2)
 
-    # Momentum
     res["rsi"]       = safe_val(ta.momentum.rsi(length=14))
     macd = ta.momentum.macd(fast=12, slow=26, signal=9)
     res["macd"]      = safe_val(macd, 0)
@@ -181,7 +168,6 @@ def get_ta(symbol: str) -> dict:
     res["stoch_k"]   = safe_val(stoch, 0)
     res["stoch_d"]   = safe_val(stoch, 1)
 
-    # Volatility
     bb = ta.volatility.bbands(length=20, std=2.0)
     res["bb_upper"] = safe_val(bb, 0)
     res["bb_mid"]   = safe_val(bb, 1)
@@ -196,58 +182,70 @@ def get_ta(symbol: str) -> dict:
     if res.get("atr") and last_close:
         res["atr_pct"] = round(res["atr"] / last_close * 100, 2)
 
-    # Volume
     res["obv"] = safe_val(ta.volume.obv())
     res["cmf"] = safe_val(ta.volume.cmf(length=20))
     res["mfi"] = safe_val(ta.volume.mfi(length=14))
 
+    # Lưu 5D OHLCV để step_order_flow reuse, không fetch lại
+    df["volume"] = pd.to_numeric(df["volume"], errors="coerce")
+    df_5d    = df.tail(5)
+    avg_vol  = float(df_5d["volume"].mean()) if not df_5d.empty else 0
+    ohlcv_5d = []
+    for _, row in df_5d.iterrows():
+        vol = float(row["volume"]) if pd.notna(row["volume"]) else 0
+        ohlcv_5d.append({
+            "date"        : str(row["time"])[:10],
+            "open"        : round(float(row["open"]),  2),
+            "high"        : round(float(row["high"]),  2),
+            "low"         : round(float(row["low"]),   2),
+            "close"       : round(float(row["close"]), 2),
+            "volume"      : int(vol),
+            "vs_avg5d_pct": round(vol / avg_vol * 100 - 100, 1)
+                            if avg_vol > 0 else None,
+        })
+    res["_ohlcv_5d"] = ohlcv_5d
+
     return res
 
 # =====================================================
-# FLOW — Trading
-# FIX: Bỏ VCI attempt cho foreign_trade — luôn fail do
-#      bug `.str accessor` trong thư viện (100% fail, xác nhận từ log).
-#      Dùng CafeF trực tiếp, tiết kiệm ~5s retry/symbol.
+# FLOW — CafeF trực tiếp (VCI 100% fail, confirmed từ log)
 # =====================================================
 
 def get_flow(symbol: str) -> dict:
-    log.info(f"  Flow: {symbol}")
     res = {"symbol": symbol}
 
-    # Foreign trade — CafeF trực tiếp (VCI luôn fail do bug thư viện)
     df_ft = safe_run(f"foreign_trade {symbol}",
              lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
                  start=start_str(20), end=today_str()))
 
     if df_ft is not None and not df_ft.empty:
-        # CafeF column mapping
+        # CafeF columns: fr_buy_volume, fr_sell_volume, fr_net_volume
+        # Đơn vị: VND (đồng) — confirmed từ log analysis
         df_ft = df_ft.rename(columns={
             "fr_buy_volume" : "fr_buy_value_matched",
             "fr_sell_volume": "fr_sell_value_matched",
             "fr_net_volume" : "fr_net_value_total",
         })
-        net_series = df_ft["fr_net_value_total"]
+        net = df_ft["fr_net_value_total"]
         res["ff_buy_val_5d"]  = float(df_ft["fr_buy_value_matched"].tail(5).sum())
         res["ff_sell_val_5d"] = float(df_ft["fr_sell_value_matched"].tail(5).sum())
-        res["ff_net_val_5d"]  = float(net_series.tail(5).sum())
-        res["ff_net_val_20d"] = float(net_series.sum())
+        res["ff_net_val_5d"]  = float(net.tail(5).sum())
+        res["ff_net_val_20d"] = float(net.sum())
         if "fr_current_room" in df_ft.columns:
             res["ff_room"] = float(df_ft["fr_current_room"].iloc[-1])
 
-        # FF derived metrics
-        if len(net_series) >= 5:
-            x     = np.arange(len(net_series))
-            y     = net_series.fillna(0).values
+        if len(net) >= 5:
+            x     = np.arange(len(net))
+            y     = net.fillna(0).values
             slope = np.polyfit(x, y, 1)[0]
             res["ff_trend"]       = round(float(slope) / 1e9, 2)
-            res["ff_consistency"] = round((net_series > 0).sum() / len(net_series), 2)
-            ff_5d_avg  = net_series.tail(5).mean()
-            ff_20d_avg = net_series.mean()
+            res["ff_consistency"] = round((net > 0).sum() / len(net), 2)
+            ff_5d_avg  = net.tail(5).mean()
+            ff_20d_avg = net.mean()
             res["ff_acceleration"] = round(
                 float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
                 if ff_20d_avg != 0 else 0
 
-    # Insider deal — VCI trước, fallback CafeF
     df_id = safe_run(f"insider_deal_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=5))
     if df_id is None:
@@ -271,30 +269,37 @@ def get_flow(symbol: str) -> dict:
 
 # =====================================================
 # FUNDAMENTAL — Finance(KBS)
-# FIX 1: income_statement limit=4 → tính được QoQ growth
-# FIX 2: BS lookup keys dùng confirmed item_ids từ project context
-# FIX 3: CF lookup keys dùng confirmed item_ids (i_cash_flows_from_operating_activities)
-# FIX 4: Log item_ids thực tế để debug nếu vẫn còn miss
+#
+# FIXES từ debug_kbs.py log:
+# 1. Income: profit_after_tax_for_shareholders_of_parent_company
+#    (không có _the_ — đây là key thực tế KBS trả về)
+# 2. Income: limit=4 để tính QoQ growth
+# 3. BS: total_assets = nan (header row) → tính a_short + b_long
+# 4. CF: KBS trộn CF items vào balance_sheet() DataFrame
+#    → đọc cf_operating/investing/financing từ df_bs, không phải df_cf
+# 5. Đơn vị KBS = NGHÌN ĐỒNG (không phải triệu, không phải đồng)
+#    → scoring dùng raw nên không ảnh hưởng
+#    → formatter.py phải chia 1e6 để ra tỷ
 # =====================================================
 
 def get_fundamental(symbol: str) -> dict:
     log.info(f"  Fundamental: {symbol}")
     res = {"symbol": symbol}
 
-    # --- RATIO ---
+    # ── RATIO ──
     df_ratio = safe_run(f"ratio {symbol}",
                 lambda: Finance(source="KBS", symbol=symbol).ratio(
                     period="quarter", limit=1))
     if df_ratio is not None and not df_ratio.empty:
-        period_cols       = [c for c in df_ratio.columns if c not in ["item", "item_id"]]
-        res["r_period"]   = period_cols[-1] if period_cols else ""
-        res["r_pe"]       = _kbs_lookup(df_ratio, ["pe_ratio"])
-        res["r_pb"]       = _kbs_lookup(df_ratio, ["pb_ratio"])
-        res["r_eps"]      = _kbs_lookup(df_ratio, ["trailing_eps", "eps"])
-        res["r_bvps"]     = _kbs_lookup(df_ratio, ["book_value_per_share_bvps", "bvps"])
-        res["r_roe"]      = _kbs_lookup(df_ratio, ["roe", "roe_trailling"])
-        res["r_roa"]      = _kbs_lookup(df_ratio, ["roa_trailling", "roa"])
-        res["r_beta"]     = _kbs_lookup(df_ratio, ["beta"])
+        period_cols     = [c for c in df_ratio.columns if c not in ["item", "item_id"]]
+        res["r_period"] = period_cols[-1] if period_cols else ""
+        res["r_pe"]     = _kbs_lookup(df_ratio, ["pe_ratio"])
+        res["r_pb"]     = _kbs_lookup(df_ratio, ["pb_ratio"])
+        res["r_eps"]    = _kbs_lookup(df_ratio, ["trailing_eps", "eps"])
+        res["r_bvps"]   = _kbs_lookup(df_ratio, ["book_value_per_share_bvps", "bvps"])
+        res["r_roe"]    = _kbs_lookup(df_ratio, ["roe", "roe_trailling"])
+        res["r_roa"]    = _kbs_lookup(df_ratio, ["roa_trailling", "roa"])
+        res["r_beta"]         = _kbs_lookup(df_ratio, ["beta"])
         res["r_div_yield"]    = _kbs_lookup(df_ratio, ["dividend_yield"])
         res["r_gross_margin"] = _kbs_lookup(df_ratio, ["gross_margin"])
         res["r_net_margin"]   = _kbs_lookup(df_ratio, ["net_margin"])
@@ -302,83 +307,103 @@ def get_fundamental(symbol: str) -> dict:
         res["r_interest_cov"] = _kbs_lookup(df_ratio, ["interest_coverage"])
         res["r_ev_ebitda"]    = _kbs_lookup(df_ratio, ["ev_ebitda"])
 
-    # --- INCOME STATEMENT — limit=4 để tính QoQ growth ---
+    # ── INCOME STATEMENT — limit=4 cho QoQ growth ──
     df_is = safe_run(f"income {symbol}",
              lambda: Finance(source="KBS", symbol=symbol).income_statement(
                  period="quarter", limit=4))
     if df_is is not None and not df_is.empty:
         idx_col = "item_id" if "item_id" in df_is.columns else df_is.columns[0]
-        log.info(f"  income items: {df_is[idx_col].tolist()[:10]}")
+        log.info(f"  income items: {df_is[idx_col].tolist()[:8]}")
 
         res["is_revenue"]          = _kbs_lookup(df_is,
-            ["3_net_revenue", "net_revenue", "revenue"])
+            ["3_net_revenue", "net_revenue", "1_revenue"])
         res["is_gross_profit"]     = _kbs_lookup(df_is,
             ["5_gross_profit", "gross_profit"])
         res["is_net_profit"]       = _kbs_lookup(df_is,
-            ["profit_after_tax_for_shareholders_of_the_parent_company",
-             "18_net_profit_after_tax", "net_profit"])
+            # FIX: không có _the_ — confirmed từ debug log
+            ["profit_after_tax_for_shareholders_of_parent_company",
+             "18_net_profit_after_tax",
+             "profit_after_tax_for_shareholders_of_the_parent_company"])
         res["is_operating_profit"] = _kbs_lookup(df_is,
             ["11_operating_profit", "operating_profit"])
         res["is_eps"]              = _kbs_lookup(df_is,
             ["19_earnings_per_share_vnd", "earnings_per_share"])
 
-        # QoQ growth — cần ít nhất 2 kỳ
+        # QoQ growth — cần ít nhất 2 kỳ (limit=4)
         res["is_rev_growth"]    = _kbs_growth(df_is,
-            ["3_net_revenue", "net_revenue", "revenue"])
+            ["3_net_revenue", "net_revenue", "1_revenue"])
         res["is_profit_growth"] = _kbs_growth(df_is,
-            ["profit_after_tax_for_shareholders_of_the_parent_company",
-             "18_net_profit_after_tax", "net_profit"])
+            ["profit_after_tax_for_shareholders_of_parent_company",
+             "18_net_profit_after_tax",
+             "profit_after_tax_for_shareholders_of_the_parent_company"])
 
-    # --- BALANCE SHEET ---
+    # ── BALANCE SHEET ──
+    # FIX: KBS trộn CF items vào BS DataFrame.
+    # Đọc tất cả từ df_bs: BS fields + CF fields cùng 1 call.
     df_bs = safe_run(f"balance_sheet {symbol}",
              lambda: Finance(source="KBS", symbol=symbol).balance_sheet(
                  period="quarter", limit=1))
     if df_bs is not None and not df_bs.empty:
-        idx_col = "item_id" if "item_id" in df_bs.columns else df_bs.columns[0]
-        log.info(f"  bs items: {df_bs[idx_col].tolist()[:10]}")
+        idx_col  = "item_id" if "item_id" in df_bs.columns else df_bs.columns[0]
+        bs_items = df_bs[idx_col].tolist()
+        log.info(f"  bs items (first 15): {bs_items[:15]}")
+        log.info(f"  bs items (all CF-related): "
+                 f"{[x for x in bs_items if 'cash' in str(x).lower() or 'flow' in str(x).lower()]}")
 
-        # confirmed item_ids từ project context
-        res["bs_total_assets"] = _kbs_lookup(df_bs, ["total_assets"])
-        res["bs_equity"]       = _kbs_lookup(df_bs,
+        # BS — total_assets = nan (header), tính tổng 2 dòng con
+        short_assets = _kbs_lookup(df_bs, ["a_short_term_assets"])
+        long_assets  = _kbs_lookup(df_bs, ["b_long_term_assets"])
+        if short_assets is not None and long_assets is not None:
+            res["bs_total_assets"] = round(short_assets + long_assets, 2)
+        else:
+            # Fallback: thử total_assets (có thể không nan trên một số symbols)
+            res["bs_total_assets"] = _kbs_lookup(df_bs, ["total_assets"])
+
+        res["bs_equity"] = _kbs_lookup(df_bs,
             ["owner_s_equity", "d_owner_s_equity",
-             "total_owner_s_equity_and_liabilities"])
-        res["bs_total_liab"]   = _kbs_lookup(df_bs,
-            ["c_liabilities", "i_short_term_liabilities"])
-        res["bs_short_debt"]   = _kbs_lookup(df_bs,
-            ["11_short_term_borrowings_and_financial_leases",
+             "total_equity", "equity"])
+        res["bs_total_liab"] = _kbs_lookup(df_bs,
+            ["c_liabilities", "total_liabilities",
              "i_short_term_liabilities"])
-        res["bs_long_debt"]    = _kbs_lookup(df_bs,
+        res["bs_short_debt"] = _kbs_lookup(df_bs,
+            ["11_short_term_borrowings_and_financial_leases",
+             "short_term_borrowings"])
+        res["bs_long_debt"]  = _kbs_lookup(df_bs,
             ["9_long_term_borrowings_and_financial_leases",
-             "ii_long_term_liabilities"])
+             "long_term_borrowings"])
 
-    # --- CASH FLOW ---
-    df_cf = safe_run(f"cash_flow {symbol}",
-             lambda: Finance(source="KBS", symbol=symbol).cash_flow(
-                 period="quarter", limit=1))
-    if df_cf is not None and not df_cf.empty:
-        idx_col = "item_id" if "item_id" in df_cf.columns else df_cf.columns[0]
-        # Log TẤT CẢ item_ids để debug — critical cho CF vì chưa confirm
-        log.info(f"  cf items ALL: {df_cf[idx_col].tolist()}")
-
-        res["cf_operating"] = _kbs_lookup(df_cf,
+        # CF — đọc từ df_bs vì KBS trộn CF vào đây
+        # FIX: dùng key thực tế từ log
+        res["cf_operating"] = _kbs_lookup(df_bs,
             ["i_cash_flows_from_operating_activities",
-             "net_cash_flows_from_operating_activities",
-             "operating_cash_flow", "cash_flow_from_operations"])
-        res["cf_investing"]  = _kbs_lookup(df_cf,
-            ["ii_cash_flows_from_investing_activities",
-             "net_cash_flows_from_investing_activities",
-             "investing_cash_flow", "cash_flow_from_investing"])
-        res["cf_financing"]  = _kbs_lookup(df_cf,
-            ["iii_cash_flows_from_financing_activities",
-             "net_cash_flows_from_financing_activities",
-             "financing_cash_flow", "cash_flow_from_financing"])
-        res["cf_free"]       = _kbs_lookup(df_cf, ["free_cash_flow", "fcf"])
+             "operating_cash_flow",
+             "net_cash_flows_from_operating_activities"])
+        res["cf_investing"]  = _kbs_lookup(df_bs,
+            ["investing_cash_flow",
+             "ii_cash_flows_from_investing_activities",
+             "net_cash_flows_from_investing_activities"])
+        res["cf_financing"]  = _kbs_lookup(df_bs,
+            ["financing_cash_flow",
+             "iii_cash_flows_from_financing_activities",
+             "net_cash_flows_from_financing_activities"])
 
-        # CF quality ratio — chỉ tính nếu cả 2 có data
-        if res.get("cf_operating") and res.get("is_net_profit") \
-           and res["is_net_profit"] != 0:
-            res["cf_quality_ratio"] = round(
-                res["cf_operating"] / res["is_net_profit"], 2)
+        log.info(f"  BS: assets={res.get('bs_total_assets')}, "
+                 f"equity={res.get('bs_equity')}, "
+                 f"cf_op={res.get('cf_operating')}, "
+                 f"cf_inv={res.get('cf_investing')}, "
+                 f"cf_fin={res.get('cf_financing')}")
+
+    # ── CF quality ratio ──
+    # Cả 2 cùng đơn vị nghìn đồng → ratio đúng
+    if res.get("cf_operating") and res.get("is_net_profit") \
+       and res["is_net_profit"] != 0:
+        res["cf_quality_ratio"] = round(
+            res["cf_operating"] / res["is_net_profit"], 2)
+
+    # cf_free = cf_operating + cf_investing (capex âm)
+    if res.get("cf_operating") and res.get("cf_investing"):
+        res["cf_free"] = round(
+            res["cf_operating"] + res["cf_investing"], 2)
 
     return res
 
@@ -387,9 +412,8 @@ def get_fundamental(symbol: str) -> dict:
 # =====================================================
 
 def enrich_metadata(row: dict, industry_map: list) -> dict:
-    symbol  = row["symbol"]
-    ind_row = next(
-        (r for r in industry_map if r.get("symbol") == symbol), {})
+    sym     = row["symbol"]
+    ind_row = next((r for r in industry_map if r.get("symbol") == sym), {})
     row["industry"] = ind_row.get("icb_name", "")
     row["icb_code"] = ind_row.get("icb_code", "")
     return row
@@ -399,8 +423,7 @@ def enrich_metadata(row: dict, industry_map: list) -> dict:
 # =====================================================
 
 def build_deep_row(symbol: str, group: str,
-                   market_open: bool,
-                   industry_map: list) -> dict:
+                   market_open: bool, industry_map: list) -> dict:
     log.info(f"\n--- {symbol} ({group}) ---")
 
     snap = get_snapshot(symbol, market_open)
@@ -420,13 +443,23 @@ def build_deep_row(symbol: str, group: str,
         **{k: v for k, v in fund.items()  if k != "symbol"},
     }
     row = enrich_metadata(row, industry_map)
+
+    log.info(
+        f"  [{symbol}] "
+        f"RSI={row.get('rsi')} "
+        f"PE={row.get('r_pe')} "
+        f"ROE={row.get('r_roe')}% "
+        f"FF5d={fmt_money_bil(row.get('ff_net_val_5d'))}tỷ "
+        f"CF_op={row.get('cf_operating')} "
+        f"CF_q={row.get('cf_quality_ratio')} "
+        f"RevG={row.get('is_rev_growth')} "
+        f"ATR%={row.get('atr_pct')}"
+    )
     return row
 
 # =====================================================
 # MAIN
-# FIX: Bỏ get_foreign_flow_for_symbols() — duplicate của
-#      ff_* fields trong deep_raw, tốn ~200s/run (100% VCI fail
-#      + CafeF fallback × 20 symbols), không được dùng trong scoring.
+# REMOVED: get_foreign_flow_for_symbols() — duplicate + VCI bug
 # =====================================================
 
 if __name__ == "__main__":
@@ -436,10 +469,8 @@ if __name__ == "__main__":
 
     load_exchange_map()
 
-    # Load daily context
     industry_map = load_json("industry_map.json") or []
-
-    ranking = get_ranking()
+    ranking      = get_ranking()
 
     all_ranking_rows = []
     all_deep_rows    = []
@@ -459,38 +490,25 @@ if __name__ == "__main__":
         all_ranking_rows.append(df_rank)
 
         log.info(f"\n=== {group}: {symbols} ===")
-
         for symbol in symbols:
             row = build_deep_row(symbol, group, trading, industry_map)
             all_deep_rows.append(row)
-            log.info(
-                f"  [{symbol}] "
-                f"RSI={row.get('rsi')}, "
-                f"PE={row.get('r_pe')}, "
-                f"FF5d={fmt_money_bil(row.get('ff_net_val_5d'))}tỷ, "
-                f"ATR%={row.get('atr_pct')}, "
-                f"CFO={fmt_money_bil(row.get('cf_operating'))}tỷ, "
-                f"RevGrowth={row.get('is_rev_growth')}"
-            )
 
-    # Export Ranking
+    # Export ranking
     if all_ranking_rows:
         df_rank_all = pd.concat(all_ranking_rows, ignore_index=True)
         save_json("ranking.json", df_rank_all.to_dict(orient="records"))
         save_csv("ranking.csv", clean_for_export(df_rank_all))
 
-    # Export Deep
+    # Export deep
     if all_deep_rows:
         df_deep = pd.DataFrame(all_deep_rows)
         save_json("deep_raw.json", df_deep.to_dict(orient="records"))
-        df_clean = clean_for_export(df_deep)
+
+        df_export = df_deep.drop(columns=["_ohlcv_5d"], errors="ignore")
+        df_clean  = clean_for_export(df_export)
         save_json("deep.json", df_clean.to_dict(orient="records"))
         save_csv("deep.csv",   df_clean)
         log.info(f"Deep: {len(df_deep)} rows, {len(df_deep.columns)} cols")
-
-    # REMOVED: get_foreign_flow_for_symbols()
-    # Lý do: duplicate data (ff_* đã có trong deep_raw từ get_flow()),
-    # VCI 100% fail do bug .str accessor, 20 CafeF fallback calls = ~200s wasted.
-    # foreign_flow.json không được dùng trong step_scoring hay step_order_flow.
 
     log.info("=== STEP ALL DONE ===")
