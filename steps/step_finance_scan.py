@@ -45,13 +45,32 @@ log = logging.getLogger(__name__)
 # Config
 # =====================================================
 
-MAX_SYMBOLS    = 150        # top N từ industry_map
-MAX_WORKERS    = 8          # concurrent KBS calls
+MAX_SYMBOLS     = 150       # top N từ industry_map
+MAX_WORKERS     = 4         # concurrent KBS calls — giảm để tránh rate limit
+API_CALL_DELAY  = 0.25      # giây giữa các API calls (4 calls/sec = 240/min < 300 Silver)
 EARNINGS_MONTHS = {1, 2, 4, 5, 7, 8, 10, 11}  # mùa BCTC
-TTL_EARNINGS   = 3          # ngày
-TTL_NORMAL     = 30         # ngày
+TTL_EARNINGS    = 3         # ngày
+TTL_NORMAL      = 30        # ngày
 
 CACHE_FILE = "finance/cache.json"
+
+# Pattern của non-stock symbols cần bỏ qua
+# ETF: E1VFVN30, FUEVFVND...  Derivatives: VN30F2401...  Index: VNINDEX, HNXINDEX
+import re as _re
+_NON_STOCK_PATTERN = _re.compile(
+    r'^(VN30F|VNINDEX|HNXINDEX|HNX30|VHNDEX|E1|FUED|FUEV|SSIAM|DCDS)', _re.IGNORECASE
+)
+
+def _is_valid_stock(symbol: str) -> bool:
+    """Bỏ qua ETF, derivatives, index — KBS chỉ hỗ trợ cổ phiếu thường."""
+    if not symbol or len(symbol) < 2 or len(symbol) > 5:
+        return False
+    if _NON_STOCK_PATTERN.match(symbol):
+        return False
+    # VN30F2401 pattern: chứa số dài
+    if _re.search(r'[0-9]{3,}', symbol):
+        return False
+    return True
 
 # =====================================================
 # TTL helpers
@@ -151,10 +170,16 @@ def _kbs_yoy_growth(df: pd.DataFrame, keys: list) -> float | None:
 
 def fetch_one(symbol: str) -> dict | None:
     """
-    Fetch ratio + income + balance + cashflow từ KBS.
-    Trả về dict với raw metrics và precomputed finance_scores.
-    None nếu fetch thất bại hoàn toàn.
+    Fetch ratio + income + balance từ KBS với rate limiting.
+    Silver tier: 300 req/min → throttle với API_CALL_DELAY giữa mỗi call.
+    ValueError (non-stock symbol) → trả về None ngay, không retry.
     """
+    import time
+
+    if not _is_valid_stock(symbol):
+        log.debug(f"  [{symbol}] skipped — non-stock pattern")
+        return None
+
     result = {
         "symbol"    : symbol,
         "fetched_at": now_ict().isoformat(),
@@ -165,9 +190,17 @@ def fetch_one(symbol: str) -> dict | None:
     }
 
     # RATIO
-    df_ratio = safe_run(f"ratio {symbol}",
-                lambda: Finance(source="KBS", symbol=symbol).ratio(
-                    period="quarter", limit=1))
+    try:
+        df_ratio = Finance(source="KBS", symbol=symbol).ratio(
+            period="quarter", limit=1)
+        log.info(f"  ✅ ratio {symbol}")
+    except ValueError as e:
+        log.warning(f"  [{symbol}] invalid stock: {e}")
+        return None
+    except Exception as e:
+        log.warning(f"  ⚠️ ratio {symbol}: {e}")
+        df_ratio = None
+    time.sleep(API_CALL_DELAY)
     if df_ratio is not None and not df_ratio.empty:
         period_cols = [c for c in df_ratio.columns if c not in ["item", "item_id"]]
         result["period"] = period_cols[-1] if period_cols else ""
@@ -186,10 +219,18 @@ def fetch_one(symbol: str) -> dict | None:
         r["interest_cov"]  = _kbs_lookup(df_ratio, ["interest_coverage"])
         r["ev_ebitda"]     = _kbs_lookup(df_ratio, ["ev_ebitda"])
 
-    # INCOME STATEMENT — limit=4 cho QoQ, limit=8 cho YoY
-    df_is = safe_run(f"income {symbol}",
-             lambda: Finance(source="KBS", symbol=symbol).income_statement(
-                 period="quarter", limit=4))
+    # INCOME STATEMENT — limit=4 cho QoQ growth
+    import time
+    try:
+        df_is = Finance(source="KBS", symbol=symbol).income_statement(
+            period="quarter", limit=4)
+        log.info(f"  ✅ income {symbol}")
+    except ValueError:
+        return None
+    except Exception as e:
+        log.warning(f"  ⚠️ income {symbol}: {e}")
+        df_is = None
+    time.sleep(API_CALL_DELAY)
     if df_is is not None and not df_is.empty:
         i = result["income"]
         i["revenue"]          = _kbs_lookup(df_is,
@@ -240,12 +281,18 @@ def fetch_one(symbol: str) -> dict | None:
                 if b["equity"] != 0 else None
 
     # BALANCE SHEET + CASH FLOW
-    # FIX: KBS trộn CF items vào balance_sheet() DataFrame.
-    # CF items (investing_cash_flow, financing_cash_flow, operating_cash_flow)
-    # nằm trong df_bs, KHÔNG nằm trong cash_flow() DataFrame riêng.
-    df_bs = safe_run(f"balance_sheet {symbol}",
-             lambda: Finance(source="KBS", symbol=symbol).balance_sheet(
-                 period="quarter", limit=1))
+    # KBS trộn CF items vào balance_sheet() DataFrame
+    import time
+    try:
+        df_bs = Finance(source="KBS", symbol=symbol).balance_sheet(
+            period="quarter", limit=1)
+        log.info(f"  ✅ balance_sheet {symbol}")
+    except ValueError:
+        return None
+    except Exception as e:
+        log.warning(f"  ⚠️ balance_sheet {symbol}: {e}")
+        df_bs = None
+    time.sleep(API_CALL_DELAY)
     if df_bs is not None and not df_bs.empty:
         b = result["balance"]
         short_assets = _kbs_lookup(df_bs, ["a_short_term_assets"])
@@ -409,17 +456,26 @@ def save_cache(symbols_dict: dict) -> None:
 
 def get_scan_universe(industry_map: list) -> list[str]:
     """Lấy danh sách symbols cần scan từ industry_map.
-    Robust: handle column name variations (symbol/ticker/code).
+    - Robust column name (symbol/ticker/code)
+    - Filter non-stock symbols (ETF, derivatives, index)
     """
     seen = set()
     symbols = []
+    skipped = 0
     for row in industry_map:
         sym = row.get("symbol") or row.get("ticker") or row.get("code")
-        if sym and sym not in seen:
+        if not sym:
+            continue
+        if not _is_valid_stock(sym):
+            skipped += 1
+            continue
+        if sym not in seen:
             seen.add(sym)
             symbols.append(sym)
         if len(symbols) >= MAX_SYMBOLS:
             break
+    if skipped:
+        log.info(f"  Skipped {skipped} non-stock symbols (ETF/derivatives)")
     return symbols
 
 def run(extra_symbols: list[str] | None = None) -> dict:
