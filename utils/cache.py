@@ -50,13 +50,20 @@ def save_csv(filename: str, df: pd.DataFrame) -> None:
 
 def save_display_csv(filename: str, df: pd.DataFrame, meta: dict) -> None:
     """
-    Lưu CSV với 4 dòng header:
+    Lưu CSV với 5 dòng header:
       Row 1: field name
       Row 2: description
       Row 3: formula
       Row 4: baseline
+      Row 5: unit  ← MỚI: derive từ formatter.MONEY_COLS + meta["unit"]
     Sau đó data rows.
+
+    unit tự động đúng khi đổi source:
+      - Money fields: derive từ formatter.MONEY_COLS_MIL / MONEY_COLS_VND
+      - Còn lại: lấy từ meta["unit"] trong indicators_meta.py
     """
+    from utils.indicators_meta import get_unit
+
     path = _resolve(filename)
     cols = list(df.columns)
 
@@ -65,6 +72,7 @@ def save_display_csv(filename: str, df: pd.DataFrame, meta: dict) -> None:
         ["description"] + [meta.get(c, {}).get("desc",     "") for c in cols],
         ["formula"]     + [meta.get(c, {}).get("formula",  "") for c in cols],
         ["baseline"]    + [meta.get(c, {}).get("baseline", "") for c in cols],
+        ["unit"]        + [get_unit(c)                          for c in cols],
     ]
 
     data_rows = []
