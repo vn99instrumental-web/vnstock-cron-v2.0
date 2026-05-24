@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       script:
-        description: 'Script to run (relative to repo root)'
-        required: true
-        default: 'scripts/debug_kbs.py'
+        description: 'Script to run. Để trống = chạy tất cả trong scripts/'
+        required: false
+        default: ''
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
@@ -57,11 +57,30 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python3 generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
 
-      - name: Run script
+      - name: Run single script
+        if: ${{ github.event.inputs.script != '' }}
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
           source /opt/vnstock/.venv/bin/activate
+          echo "=== Running: ${{ github.event.inputs.script }} ==="
           python ${{ github.event.inputs.script }}
+
+      - name: Run all scripts in scripts/
+        if: ${{ github.event.inputs.script == '' }}
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          for f in scripts/*.py; do
+            echo ""
+            echo "======================================"
+            echo "=== Running: $f ==="
+            echo "======================================"
+            python "$f" || echo "⚠️  $f exited with error"
+            echo ""
+          done
