@@ -388,9 +388,15 @@ def _build_today_index(all_articles: list) -> dict:
     macro_vals = [v for v, _ in macro_tuples]
 
     # Symbol mentions — FIX: word boundary regex
-    industry_map = load_json("market/industry_map.json") or \
-                   load_json("industry_map.json") or []
-    all_symbols  = list({r["symbol"] for r in industry_map if r.get("symbol")})
+    # Load from both paths (primary + backward-compat alias)
+    industry_map = load_json("market/industry_map.json") or                    load_json("industry_map.json") or []
+    # Robust symbol extraction — handle various column names
+    all_symbols = list({
+        r.get("symbol") or r.get("ticker") or r.get("code")
+        for r in industry_map
+        if r.get("symbol") or r.get("ticker") or r.get("code")
+    })
+    log.info(f"  Symbol universe for mention matching: {len(all_symbols)} symbols")
 
     # Pre-compile regex patterns for performance
     sym_patterns = {
