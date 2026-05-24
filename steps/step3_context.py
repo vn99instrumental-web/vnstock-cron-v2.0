@@ -93,7 +93,7 @@ def get_industry_map() -> pd.DataFrame:
     # Detect icb_code column (may be named differently)
     icb_col = next(
         (c for c in df_sym.columns
-         if c.lower() in ("icb_code", "industry_code", "sector_code")),
+         if c.lower() in ("icb_code", "icb_code2", "industry_code", "sector_code")),
         None
     )
     symbol_col = next(
