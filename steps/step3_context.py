@@ -34,23 +34,98 @@ log = logging.getLogger(__name__)
 # =====================================================
 
 def get_industry_map() -> pd.DataFrame:
+    """
+    Build symbol → {icb_code, icb_name, exchange} mapping.
+
+    VCI Reference.industry.list() chỉ trả về ICB hierarchy
+    (icb_code, icb_name, icb_level) — KHÔNG có symbol.
+
+    Fix: dùng Listing.symbols_by_exchange() để lấy symbol → icb_code,
+    sau đó join với industry.list() để lấy icb_name.
+    """
+    from vnstock_data import Listing
+
     log.info("=== INDUSTRY MAP ===")
-    df = safe_run("industry_list",
-         lambda: Reference().industry.list())
-    if df is None or df.empty:
+
+    # Step 1: ICB hierarchy từ Reference
+    df_ind = safe_run("industry_list", lambda: Reference().industry.list())
+    if df_ind is None or df_ind.empty:
         log.warning("  industry_list trả về empty")
+        df_ind = pd.DataFrame()
+
+    log.info(f"  industry_list cols: {list(df_ind.columns) if not df_ind.empty else '[]'}")
+
+    # Build icb_code → icb_name lookup
+    icb_name_map: dict = {}
+    if not df_ind.empty and "icb_code" in df_ind.columns and "icb_name" in df_ind.columns:
+        # Lấy icb_level=3 (subsector) ưu tiên, fallback level cao hơn
+        for _, row in df_ind.iterrows():
+            code = row.get("icb_code")
+            name = row.get("icb_name")
+            if code and name:
+                icb_name_map[str(code)] = str(name)
+
+    # Step 2: Symbol listing từ Listing API
+    all_frames = []
+    for exchange in ("HSX", "HNX", "UPCOM"):
+        df_ex = safe_run(f"symbols_{exchange}",
+                 lambda ex=exchange: Listing(source="VCI").symbols_by_exchange(exchange=ex))
+        if df_ex is not None and not df_ex.empty:
+            df_ex["exchange"] = exchange
+            all_frames.append(df_ex)
+
+    # Fallback: gọi không tham số
+    if not all_frames:
+        df_all_ex = safe_run("symbols_all",
+                    lambda: Listing(source="VCI").symbols_by_exchange())
+        if df_all_ex is not None and not df_all_ex.empty:
+            all_frames.append(df_all_ex)
+
+    if not all_frames:
+        log.warning("  Listing.symbols_by_exchange() failed — industry_map will be empty")
         return pd.DataFrame()
 
-    log.info(f"  cols: {list(df.columns)}")
-    log.info(f"  {len(df)} symbols")
+    df_sym = pd.concat(all_frames, ignore_index=True)
+    log.info(f"  symbols cols: {list(df_sym.columns)}")
+    log.info(f"  {len(df_sym)} symbols total")
 
-    records = df.to_dict(orient="records")
+    # Step 3: Join icb_name vào df_sym
+    # Detect icb_code column (may be named differently)
+    icb_col = next(
+        (c for c in df_sym.columns
+         if c.lower() in ("icb_code", "industry_code", "sector_code")),
+        None
+    )
+    symbol_col = next(
+        (c for c in df_sym.columns
+         if c.lower() in ("symbol", "ticker", "code")),
+        None
+    )
 
-    # Primary path
+    if symbol_col and symbol_col != "symbol":
+        df_sym = df_sym.rename(columns={symbol_col: "symbol"})
+
+    if icb_col:
+        df_sym["icb_code"] = df_sym[icb_col].astype(str)
+        df_sym["icb_name"] = df_sym["icb_code"].map(icb_name_map).fillna("")
+    else:
+        # API không trả về icb_code — log để debug
+        log.warning(f"  No icb_code column found in {list(df_sym.columns)}")
+        df_sym["icb_code"] = ""
+        df_sym["icb_name"] = ""
+
+    # Keep only relevant columns
+    keep_cols = [c for c in ["symbol", "exchange", "icb_code", "icb_name"]
+                 if c in df_sym.columns]
+    df_out = df_sym[keep_cols].drop_duplicates("symbol")
+
+    log.info(f"  Final map: {len(df_out)} symbols, "
+             f"icb_name filled: {(df_out['icb_name'] != '').sum()}")
+
+    records = df_out.to_dict(orient="records")
     save_json("market/industry_map.json", records)
-    # Backward-compat alias cho intraday steps đang dùng flat path
     save_json("industry_map.json", records)
-    return df
+    return df_out
 
 # =====================================================
 # MARKET CONTEXT — Analytics(VND) 5Y PE/PB
