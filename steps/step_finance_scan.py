@@ -239,35 +239,54 @@ def fetch_one(symbol: str) -> dict | None:
                 (b["total_assets"] - b["equity"]) / b["equity"], 3) \
                 if b["equity"] != 0 else None
 
-    # CASH FLOW
-    df_cf = safe_run(f"cash_flow {symbol}",
-             lambda: Finance(source="KBS", symbol=symbol).cash_flow(
+    # BALANCE SHEET + CASH FLOW
+    # FIX: KBS trộn CF items vào balance_sheet() DataFrame.
+    # CF items (investing_cash_flow, financing_cash_flow, operating_cash_flow)
+    # nằm trong df_bs, KHÔNG nằm trong cash_flow() DataFrame riêng.
+    df_bs = safe_run(f"balance_sheet {symbol}",
+             lambda: Finance(source="KBS", symbol=symbol).balance_sheet(
                  period="quarter", limit=1))
-    if df_cf is not None and not df_cf.empty:
-        # Log all items first time for debugging
-        idx_col = "item_id" if "item_id" in df_cf.columns else df_cf.columns[0]
-        cf_items = df_cf[idx_col].tolist()
-        log.debug(f"  [{symbol}] cf items: {cf_items}")
+    if df_bs is not None and not df_bs.empty:
+        b = result["balance"]
+        short_assets = _kbs_lookup(df_bs, ["a_short_term_assets"])
+        long_assets  = _kbs_lookup(df_bs, ["b_long_term_assets"])
+        if short_assets is not None and long_assets is not None:
+            b["total_assets"] = round(short_assets + long_assets, 2)
+        else:
+            b["total_assets"] = _kbs_lookup(df_bs, ["total_assets"])
+        b["equity"]     = _kbs_lookup(df_bs,
+            ["owner_s_equity", "d_owner_s_equity", "total_equity", "equity"])
+        b["total_liab"] = _kbs_lookup(df_bs,
+            ["c_liabilities", "total_liabilities", "i_short_term_liabilities"])
+        b["short_debt"] = _kbs_lookup(df_bs,
+            ["11_short_term_borrowings_and_financial_leases", "short_term_borrowings"])
+        b["long_debt"]  = _kbs_lookup(df_bs,
+            ["9_long_term_borrowings_and_financial_leases", "long_term_borrowings"])
+        if b.get("total_assets") and b.get("equity") and b["equity"] != 0:
+            b["debt_to_equity"] = round(
+                (b["total_assets"] - b["equity"]) / b["equity"], 3)
 
+        # CF — đọc từ df_bs (KBS design: CF items mixed into balance_sheet)
         c = result["cashflow"]
-        c["cf_operating"] = _kbs_lookup(df_cf,
+        c["cf_operating"] = _kbs_lookup(df_bs,
             ["i_cash_flows_from_operating_activities",
-             "net_cash_flows_from_operating_activities",
-             "operating_cash_flow", "cash_flow_from_operations"])
-        c["cf_investing"]  = _kbs_lookup(df_cf,
-            ["ii_cash_flows_from_investing_activities",
-             "net_cash_flows_from_investing_activities",
-             "investing_cash_flow", "cash_flow_from_investing"])
-        c["cf_financing"]  = _kbs_lookup(df_cf,
-            ["iii_cash_flows_from_financing_activities",
-             "net_cash_flows_from_financing_activities",
-             "financing_cash_flow", "cash_flow_from_financing"])
-        c["cf_free"]       = _kbs_lookup(df_cf, ["free_cash_flow", "fcf"])
+             "operating_cash_flow",
+             "net_cash_flows_from_operating_activities"])
+        c["cf_investing"]  = _kbs_lookup(df_bs,
+            ["investing_cash_flow",
+             "ii_cash_flows_from_investing_activities",
+             "net_cash_flows_from_investing_activities"])
+        c["cf_financing"]  = _kbs_lookup(df_bs,
+            ["financing_cash_flow",
+             "iii_cash_flows_from_financing_activities",
+             "net_cash_flows_from_financing_activities"])
 
-        # CF quality ratio
+        # CF quality + free CF
         net_profit = result["income"].get("net_profit")
         if c.get("cf_operating") and net_profit and net_profit != 0:
             c["cf_quality"] = round(c["cf_operating"] / net_profit, 2)
+        if c.get("cf_operating") and c.get("cf_investing"):
+            c["cf_free"] = round(c["cf_operating"] + c["cf_investing"], 2)
 
     # Precompute finance_scores — scoring dùng luôn, không tính lại
     result["finance_score"] = _compute_finance_score(result)
