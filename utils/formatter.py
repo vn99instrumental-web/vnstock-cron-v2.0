@@ -1,21 +1,40 @@
+"""
+formatter.py
+============
+Fix: KBS trả về đơn vị TRIỆU ĐỒNG cho income/balance/cashflow.
+     fmt_money_bil phải chia 1e3 (triệu → tỷ), không phải 1e9 (đồng → tỷ).
+
+     Các cols từ API khác (ff_*, market_cap, deal_value_avg_5d)
+     vẫn là đơn vị ĐỒNG → chia 1e9.
+"""
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 
 ICT = timezone(timedelta(hours=7))
 
-MONEY_COLS = [
+# ─── ĐỒNG → tỷ (chia 1e9) ─────────────────────────────────────────────────
+# FF values từ CafeF/VCI: đơn vị VND (đồng)
+MONEY_COLS_VND = [
     "ff_buy_val_5d", "ff_sell_val_5d",
     "ff_net_val_5d", "ff_net_val_20d", "ff_room",
-    "is_revenue", "is_gross_profit",
-    "is_net_profit", "is_ebitda",
-    "bs_total_assets", "bs_equity",
-    "bs_total_liab", "bs_short_debt", "bs_long_debt",
-    "cf_operating", "cf_investing",
-    "cf_financing", "cf_free",
     "net_value", "accumulated_value",
     "market_cap",
     "deal_value_avg_5d",
 ]
+
+# ─── TRIỆU ĐỒNG → tỷ (chia 1e3) ──────────────────────────────────────────
+# KBS Finance: đơn vị triệu VND
+MONEY_COLS_MIL = [
+    "is_revenue", "is_gross_profit",
+    "is_net_profit", "is_operating_profit", "is_ebitda",
+    "bs_total_assets", "bs_equity",
+    "bs_total_liab", "bs_short_debt", "bs_long_debt",
+    "cf_operating", "cf_investing",
+    "cf_financing", "cf_free",
+]
+
+# Union cho backward compat (ai check `col in MONEY_COLS`)
+MONEY_COLS = MONEY_COLS_VND + MONEY_COLS_MIL
 
 PCT_COLS = [
     "price_change_pct_1d", "volume_spike_20d_pct",
@@ -26,7 +45,7 @@ PCT_COLS = [
     "pe_percentile_5y", "pb_percentile_5y",
     "ema_cross_pct", "price_vs_ema20_pct",
     "ff_consistency",
-    "atr_pct",          # ATR% — biến động tương đối so với giá
+    "atr_pct",
 ]
 
 RATIO_COLS = [
@@ -37,14 +56,34 @@ RATIO_COLS = [
     "cf_quality_ratio", "bb_position", "ff_trend",
 ]
 
-def fmt_money_bil(val):
+
+def fmt_money_vnd(val):
+    """VND (đồng) → tỷ đồng."""
     if val is None or val == "":
         return ""
     try:
         f = float(val)
         return round(f / 1e9, 2) if not pd.isna(f) else ""
-    except:
+    except Exception:
         return ""
+
+
+def fmt_money_mil(val):
+    """Triệu VND → tỷ đồng."""
+    if val is None or val == "":
+        return ""
+    try:
+        f = float(val)
+        return round(f / 1e3, 2) if not pd.isna(f) else ""
+    except Exception:
+        return ""
+
+
+# Alias giữ backward compat
+def fmt_money_bil(val):
+    """Legacy alias — assumes VND input → tỷ."""
+    return fmt_money_vnd(val)
+
 
 def fmt_num(val, decimals=2):
     if val is None or val == "":
@@ -52,14 +91,17 @@ def fmt_num(val, decimals=2):
     try:
         f = float(val)
         return round(f, decimals) if not pd.isna(f) else ""
-    except:
+    except Exception:
         return ""
+
 
 def clean_for_export(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     for col in df.columns:
-        if col in MONEY_COLS:
-            df[col] = df[col].apply(fmt_money_bil)
+        if col in MONEY_COLS_MIL:
+            df[col] = df[col].apply(fmt_money_mil)   # triệu → tỷ
+        elif col in MONEY_COLS_VND:
+            df[col] = df[col].apply(fmt_money_vnd)   # đồng → tỷ
         elif col in PCT_COLS:
             df[col] = df[col].apply(lambda x: fmt_num(x, 2))
         elif col in RATIO_COLS:
