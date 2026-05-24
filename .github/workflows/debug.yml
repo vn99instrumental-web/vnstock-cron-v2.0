@@ -1,0 +1,67 @@
+name: Debug
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Script to run (relative to repo root)'
+        required: true
+        default: 'scripts/debug_kbs.py'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:   ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore vnstock cache
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4
+
+      - name: Fallback install nếu cache miss
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          pip install requests
+          mkdir -p /home/runner/.vnstock /home/runner/.config/matplotlib
+          wget -q https://vnstocks.com/files/vnstock-cli-installer.run -O installer.run
+          chmod +x installer.run
+          ./installer.run -- --non-interactive \
+            --api-key "$VNSTOCK_API_KEY" \
+            --venv-path "$VNSTOCK_VENV_PATH" \
+            --language en
+          wget -q https://vnstocks.com/files/generate_user_info.min.py \
+            -O generate_user_info.min.py
+          source /opt/vnstock/.venv/bin/activate
+          python3 generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
+
+      - name: Run script
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python ${{ github.event.inputs.script }}
