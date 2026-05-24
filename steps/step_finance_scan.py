@@ -98,7 +98,9 @@ def _current_ttl_days() -> int:
     return TTL_EARNINGS if month in EARNINGS_MONTHS else TTL_NORMAL
 
 def _is_stale(entry: dict) -> bool:
-    """True nếu entry chưa có hoặc đã quá TTL."""
+    """True nếu entry chưa có hoặc đã quá TTL.
+    non_stock entries: TTL = 90 ngày (retry rất hiếm, warrant không đổi loại).
+    """
     if not entry:
         return True
     fetched_at = entry.get("fetched_at")
@@ -107,7 +109,8 @@ def _is_stale(entry: dict) -> bool:
     try:
         dt = datetime.fromisoformat(fetched_at)
         age_days = (now_ict() - dt).total_seconds() / 86400
-        return age_days > _current_ttl_days()
+        ttl = 90 if entry.get("non_stock") else _current_ttl_days()
+        return age_days > ttl
     except Exception:
         return True
 
@@ -327,8 +330,9 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         result["balance"].get("total_assets"),
     ])
     if not has_data:
-        log.warning(f"  [{symbol}] no finance data fetched")
-        return None
+        log.warning(f"  [{symbol}] no finance data — marking as non-stock (warrant/special)")
+        # Return sentinel: cached với TTL dài để không retry lãng phí
+        return {"symbol": symbol, "non_stock": True, "fetched_at": now_ict().isoformat()}
 
     return result
 
@@ -437,30 +441,46 @@ def save_cache(symbols_dict: dict) -> None:
 # Main scan logic
 # =====================================================
 
+# Chỉ scan HSX và HNX — UPCOM không bao giờ vào top VNINDEX gainers/losers
+_VALID_EXCHANGES = {"HSX", "HOSE", "HNX", "HSX (HOSE)"}
+
+
 def get_scan_universe(industry_map: list) -> list[str]:
     """Lấy danh sách symbols cần scan từ industry_map.
-    - Filter bằng type column (chính xác) hoặc name-pattern (fallback)
-    - Robust column name: symbol/ticker/code
+    Filter:
+      1. Exchange: chỉ HSX + HNX (bỏ UPCOM — không vào VNINDEX top)
+      2. Type: chỉ stock (bỏ warrant/ETF)
+      3. Name pattern: fallback nếu type không có
     """
-    seen = set()
-    symbols = []
-    skipped = 0
+    seen     = set()
+    symbols  = []
+    skip_ex  = 0   # bỏ vì UPCOM
+    skip_type = 0  # bỏ vì warrant/ETF
+
     for row in industry_map:
         sym = row.get("symbol") or row.get("ticker") or row.get("code")
         if not sym:
             continue
-        # type column từ Listing API: "stock", "cw" (warrant), "etf"...
+
+        # Filter 1: Exchange
+        exchange = (row.get("exchange") or "").upper().strip()
+        if exchange and exchange not in _VALID_EXCHANGES:
+            skip_ex += 1
+            continue
+
+        # Filter 2: Type + name pattern
         asset_type = row.get("type") or row.get("asset_type")
         if not _is_valid_stock(sym, asset_type):
-            skipped += 1
+            skip_type += 1
             continue
+
         if sym not in seen:
             seen.add(sym)
             symbols.append(sym)
         if len(symbols) >= MAX_SYMBOLS:
             break
-    if skipped:
-        log.info(f"  Skipped {skipped} non-stock symbols (type filter + name pattern)")
+
+    log.info(f"  Skipped: {skip_ex} UPCOM, {skip_type} non-stock (warrant/ETF)")
     return symbols
 
 def run(extra_symbols: list[str] | None = None) -> dict:
@@ -518,7 +538,11 @@ def run(extra_symbols: list[str] | None = None) -> dict:
             sym = future_map[future]
             try:
                 result = future.result()
-                if result:
+                if result and result.get("non_stock"):
+                    cache[sym] = result   # cache sentinel, TTL=90d
+                    fetched_err += 1
+                    log.info(f"  ⏭️  {sym}: non-stock (warrant/special) — cached 90d")
+                elif result:
                     cache[sym] = result
                     fetched_ok += 1
                     log.info(
@@ -530,7 +554,7 @@ def run(extra_symbols: list[str] | None = None) -> dict:
                     )
                 else:
                     fetched_err += 1
-                    log.warning(f"  ⚠️ {sym}: no data")
+                    log.warning(f"  ⚠️ {sym}: fetch error")
             except Exception as e:
                 fetched_err += 1
                 log.error(f"  ❌ {sym}: {e}")
