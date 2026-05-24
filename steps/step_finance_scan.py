@@ -61,26 +61,31 @@ _NON_STOCK_PATTERN = _re.compile(
     r'^(VN30F|VNINDEX|HNXINDEX|HNX30|VHNDEX|E1|FUED|FUEV|SSIAM|DCDS)', _re.IGNORECASE
 )
 
-def _is_valid_stock(symbol: str) -> bool:
+# Valid stock types từ Listing API
+_STOCK_TYPES = {"stock", "s", "equity", "STOCK", "S", "EQUITY"}
+
+def _is_valid_stock(symbol: str, asset_type: str | None = None) -> bool:
     """
     Bỏ qua non-stock symbols — KBS chỉ hỗ trợ cổ phiếu thường.
 
-    Loại bỏ:
-    - ETF/Index: VN30F*, VNINDEX, E1*, FUEV*, SSIAM*
-    - Chứng quyền (covered warrants): X* (VD: XMD, XLV, X77, X26)
-      → KBS throws ValueError: Mã CK không hợp lệ
-    - Chứng quyền dạng khác: C + mã gốc + số (VD: CVPB2101)
-    - Derivatives với số dài: VN30F2401
+    Ưu tiên check cột 'type' từ Listing API (chính xác nhất).
+    Fallback về name-pattern nếu type không có.
     """
     if not symbol or len(symbol) < 2 or len(symbol) > 5:
         return False
+
+    # Primary: dùng type column từ Listing API
+    if asset_type is not None:
+        return str(asset_type).lower() in {"stock", "s", "equity"}
+
+    # Fallback: name-pattern (khi không có type)
     if _NON_STOCK_PATTERN.match(symbol):
         return False
-    # Chứng quyền: bắt đầu bằng X (VD: XMD, XLV, X77, X26, XPH, XMP...)
-    if symbol.startswith('X') and len(symbol) <= 5:
+    # Chứng quyền X* (XMD, XLV, X77...)
+    if symbol.startswith("X") and len(symbol) <= 5:
         return False
-    # Derivatives/warrants với số dài
-    if _re.search(r'[0-9]{3,}', symbol):
+    # Derivatives với số dài: VN30F2401
+    if _re.search(r"[0-9]{3,}", symbol):
         return False
     return True
 
@@ -468,8 +473,8 @@ def save_cache(symbols_dict: dict) -> None:
 
 def get_scan_universe(industry_map: list) -> list[str]:
     """Lấy danh sách symbols cần scan từ industry_map.
-    - Robust column name (symbol/ticker/code)
-    - Filter non-stock symbols (ETF, derivatives, index)
+    - Filter bằng type column (chính xác) hoặc name-pattern (fallback)
+    - Robust column name: symbol/ticker/code
     """
     seen = set()
     symbols = []
@@ -478,7 +483,9 @@ def get_scan_universe(industry_map: list) -> list[str]:
         sym = row.get("symbol") or row.get("ticker") or row.get("code")
         if not sym:
             continue
-        if not _is_valid_stock(sym):
+        # type column từ Listing API: "stock", "cw" (warrant), "etf"...
+        asset_type = row.get("type") or row.get("asset_type")
+        if not _is_valid_stock(sym, asset_type):
             skipped += 1
             continue
         if sym not in seen:
@@ -487,7 +494,7 @@ def get_scan_universe(industry_map: list) -> list[str]:
         if len(symbols) >= MAX_SYMBOLS:
             break
     if skipped:
-        log.info(f"  Skipped {skipped} non-stock symbols (ETF/derivatives)")
+        log.info(f"  Skipped {skipped} non-stock symbols (type filter + name pattern)")
     return symbols
 
 def run(extra_symbols: list[str] | None = None) -> dict:
