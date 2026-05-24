@@ -459,7 +459,11 @@ def get_fundamental(symbol: str) -> dict:
 
 def enrich_metadata(row: dict, industry_map: list) -> dict:
     sym     = row["symbol"]
-    ind_row = next((r for r in industry_map if r.get("symbol") == sym), {})
+    ind_row = next(
+        (r for r in industry_map
+         if r.get("symbol") == sym or r.get("ticker") == sym),
+        {}
+    )
     row["industry"] = ind_row.get("icb_name", "")
     row["icb_code"] = ind_row.get("icb_code", "")
     return row
