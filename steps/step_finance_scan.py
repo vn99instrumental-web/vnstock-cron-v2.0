@@ -62,12 +62,24 @@ _NON_STOCK_PATTERN = _re.compile(
 )
 
 def _is_valid_stock(symbol: str) -> bool:
-    """Bỏ qua ETF, derivatives, index — KBS chỉ hỗ trợ cổ phiếu thường."""
+    """
+    Bỏ qua non-stock symbols — KBS chỉ hỗ trợ cổ phiếu thường.
+
+    Loại bỏ:
+    - ETF/Index: VN30F*, VNINDEX, E1*, FUEV*, SSIAM*
+    - Chứng quyền (covered warrants): X* (VD: XMD, XLV, X77, X26)
+      → KBS throws ValueError: Mã CK không hợp lệ
+    - Chứng quyền dạng khác: C + mã gốc + số (VD: CVPB2101)
+    - Derivatives với số dài: VN30F2401
+    """
     if not symbol or len(symbol) < 2 or len(symbol) > 5:
         return False
     if _NON_STOCK_PATTERN.match(symbol):
         return False
-    # VN30F2401 pattern: chứa số dài
+    # Chứng quyền: bắt đầu bằng X (VD: XMD, XLV, X77, X26, XPH, XMP...)
+    if symbol.startswith('X') and len(symbol) <= 5:
+        return False
+    # Derivatives/warrants với số dài
     if _re.search(r'[0-9]{3,}', symbol):
         return False
     return True
