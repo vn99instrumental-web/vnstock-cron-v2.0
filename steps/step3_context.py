@@ -114,13 +114,30 @@ def get_industry_map() -> pd.DataFrame:
         df_sym["icb_code"] = ""
         df_sym["icb_name"] = ""
 
-    # Keep only relevant columns
-    keep_cols = [c for c in ["symbol", "exchange", "icb_code", "icb_name"]
+    # Save 'type' column (stock/cw/etf) — used by step_finance_scan to filter
+    type_col = next(
+        (c for c in df_sym.columns if c.lower() in ("type", "asset_type")),
+        None
+    )
+    if type_col and type_col != "type":
+        df_sym = df_sym.rename(columns={type_col: "type"})
+
+    keep_cols = [c for c in ["symbol", "exchange", "type", "icb_code", "icb_name"]
                  if c in df_sym.columns]
     df_out = df_sym[keep_cols].drop_duplicates("symbol")
 
-    log.info(f"  Final map: {len(df_out)} symbols, "
-             f"icb_name filled: {(df_out['icb_name'] != '').sum()}")
+    # Debug icb_code2 vs icb_code matching
+    if icb_col and not df_out.empty and "icb_name" in df_out.columns:
+        filled = (df_out["icb_name"] != "").sum()
+        sample = df_out[df_out["icb_name"] == ""].head(3)[["symbol", "icb_code"]].to_dict("records")
+        log.info(f"  Final map: {len(df_out)} symbols, icb_name filled: {filled}")
+        if sample:
+            log.info(f"  Sample unfilled icb_codes: {sample}")
+            # Also log sample of icb_name_map keys for comparison
+            sample_keys = list(icb_name_map.keys())[:5]
+            log.info(f"  Sample icb_name_map keys: {sample_keys}")
+    else:
+        log.info(f"  Final map: {len(df_out)} symbols, icb_name filled: 0")
 
     records = df_out.to_dict(orient="records")
     save_json("market/industry_map.json", records)
