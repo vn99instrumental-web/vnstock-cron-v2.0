@@ -201,11 +201,28 @@ def _score_sentiment(text: str) -> float:
     neg = sum(1 for w in NEGATIVE_WORDS if w in t)
     return float(pos - neg)
 
-def _score_macro(text: str) -> float:
+def _score_macro(text: str, industries: list | None = None) -> float:
+    """
+    Score macro sentiment. Chỉ áp dụng negative bias từ rủi ro chung
+    nếu bài viết thuộc ngành tài chính/kinh tế (để tránh false positive).
+    Positive macro signals không cần filter.
+    """
     t = text.lower()
-    return float(sum(
-        bias for kw, bias in MACRO_KEYWORDS.items() if kw.lower() in t
-    ))
+    total = 0.0
+    # Neutral keywords (kw có bias 0) hoặc positive (>0): áp dụng luôn
+    # Negative keywords generic (<0, ngắn): chỉ áp dụng nếu có industry tag
+    has_fin_context = bool(industries)
+
+    for kw, bias in MACRO_KEYWORDS.items():
+        if kw.lower() in t:
+            if bias >= 0:
+                total += bias  # positive always counts
+            elif has_fin_context:
+                total += bias  # negative only if article has industry tag
+            else:
+                # Generic negative without financial context → skip
+                pass
+    return float(total)
 
 def _tag_industries(text: str) -> list[str]:
     t = text.lower()
@@ -239,7 +256,7 @@ def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
                              if news_type == "delayed" else None
             industries     = _tag_industries(text)
             raw_sentiment  = _score_sentiment(text)
-            macro_score    = _score_macro(text)
+            macro_score    = _score_macro(text, industries)
 
             art_meta = {
                 "publish_time"  : str(art.get("publish_time", "")),
