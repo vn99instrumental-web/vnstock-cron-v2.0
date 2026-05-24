@@ -388,8 +388,12 @@ def build_one(symbol: str, group: str, market_open: bool,
         flow    = get_flow(symbol)
         finance = enrich_finance(symbol, fin_cache)
 
-        # Industry
-        ind_row  = next((r for r in industry_map if r.get("symbol") == symbol), {})
+        # Industry — robust lookup (column may be 'symbol' or 'ticker')
+        ind_row  = next(
+            (r for r in industry_map
+             if r.get("symbol") == symbol or r.get("ticker") == symbol),
+            {}
+        )
         industry = ind_row.get("icb_name", "")
         icb_code = ind_row.get("icb_code", "")
 
