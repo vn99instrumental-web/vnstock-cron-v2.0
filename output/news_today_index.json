@@ -1,10 +1,10 @@
 {
   "date": "2026-05-24",
-  "generated_at": "14:02",
+  "generated_at": "16:15",
   "by_industry": {
     "Công nghệ Thông tin": {
       "score": 2.02,
-      "article_count": 51,
+      "article_count": 58,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -44,7 +44,7 @@
     },
     "Kim loại": {
       "score": 1.97,
-      "article_count": 28,
+      "article_count": 31,
       "delayed_count": 3,
       "top_articles": [
         {
@@ -84,8 +84,8 @@
       ]
     },
     "Dịch vụ tài chính": {
-      "score": 2.01,
-      "article_count": 33,
+      "score": 2.0,
+      "article_count": 39,
       "delayed_count": 2,
       "top_articles": [
         {
@@ -152,13 +152,12 @@
           "contribution": 0.0
         },
         {
-          "title": "Xóa 'điểm nóng' lấn chiếm vỉa hè, lòng đường ở chợ An Thới, Phú Quốc",
-          "source": "tuoitre",
-          "time": "Sun, 24 May 2026",
+          "title": "Trang phục ngọt ngào cho những chuyến du lịch đáng nhớ",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Sản xuất thực phẩm",
             "Du lịch và Giải trí"
           ],
           "contribution": 0.0
@@ -167,7 +166,7 @@
     },
     "Sản xuất thực phẩm": {
       "score": 1.99,
-      "article_count": 15,
+      "article_count": 16,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -182,6 +181,17 @@
           "contribution": 0.5
         },
         {
+          "title": "Xây cổng hoành tráng lấn đất đường bộ: Vi phạm nghiêm trọng kéo dài, sao địa phư",
+          "source": "tuoitre",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất thực phẩm"
+          ],
+          "contribution": -0.5
+        },
+        {
           "title": "Xây cổng hoành tráng lấn quốc lộ, yêu cầu tháo dỡ than khó khăn; Đường 20 tỉ mới",
           "source": "tuoitre",
           "time": "Sun, 24 May 2026",
@@ -189,17 +199,6 @@
           "effective_date": null,
           "industries": [
             "Khai khoáng",
-            "Sản xuất thực phẩm"
-          ],
-          "contribution": -0.5
-        },
-        {
-          "title": "Xây cổng hoành tráng lấn đất đường bộ: Vi phạm nghiêm trọng kéo dài, sao địa phư",
-          "source": "tuoitre",
-          "time": "Sat, 23 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
             "Sản xuất thực phẩm"
           ],
           "contribution": -0.5
@@ -286,6 +285,106 @@
         }
       ]
     },
+    "Ngân hàng": {
+      "score": 1.98,
+      "article_count": 13,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Ngân hàng cảnh báo khẩn về một thủ đoạn lừa chuyển tiền mới nhất",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng"
+          ],
+          "contribution": -0.4
+        },
+        {
+          "title": "Ngân hàng Nhà nước yêu cầu kiểm tra các ngân hàng tăng lãi suất trái chỉ đạo",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng"
+          ],
+          "contribution": 0.4
+        },
+        {
+          "title": "50 cảnh sát đồng loạt kiểm tra, bắt giữ 11 Youtuber: Thu 3 ô tô, phong tỏa 8 tài",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Ô tô và phụ tùng",
+            "Ngân hàng"
+          ],
+          "contribution": -0.4
+        }
+      ]
+    },
+    "Khai khoáng": {
+      "score": 1.98,
+      "article_count": 25,
+      "delayed_count": 1,
+      "top_articles": [
+        {
+          "title": "4 món rau này là lựa chọn hàng đầu để ăn trong mùa hè: Dễ nấu lại ngon miệng và ",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Khai khoáng"
+          ],
+          "contribution": 0.5
+        },
+        {
+          "title": "Phố Wall dự báo giá vàng sẽ giảm tuần tới",
+          "source": "vnexpress",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Khai khoáng"
+          ],
+          "contribution": -0.5
+        },
+        {
+          "title": "Việc cần làm khi giá vàng giảm",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Khai khoáng"
+          ],
+          "contribution": -0.5
+        }
+      ]
+    },
+    "Hàng cá nhân": {
+      "score": 2.0,
+      "article_count": 1,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Ra quyết định khởi tố chủ công ty bán giày dép giả Lưu Phát Thuận SN 1991",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hàng cá nhân"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
     "Hóa chất": {
       "score": 2.0,
       "article_count": 2,
@@ -316,8 +415,8 @@
       ]
     },
     "Hàng gia dụng": {
-      "score": 1.92,
-      "article_count": 2,
+      "score": 1.95,
+      "article_count": 3,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -332,6 +431,17 @@
           "contribution": -0.4
         },
         {
+          "title": "Có nên lắp phun sương cho dàn nóng điều hòa?",
+          "source": "vnexpress",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hàng gia dụng"
+          ],
+          "contribution": 0.0
+        },
+        {
           "title": "3 loại gia vị nhất định phải cất trong tủ lạnh, nếu không thứ ăn vào toàn… vi kh",
           "source": "cafebiz",
           "time": "Sat, 23 May 2026",
@@ -341,47 +451,6 @@
             "Hàng gia dụng"
           ],
           "contribution": 0.0
-        }
-      ]
-    },
-    "Khai khoáng": {
-      "score": 1.97,
-      "article_count": 23,
-      "delayed_count": 1,
-      "top_articles": [
-        {
-          "title": "Việc cần làm khi giá vàng giảm",
-          "source": "cafebiz",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Khai khoáng"
-          ],
-          "contribution": -0.5
-        },
-        {
-          "title": "Xây cổng hoành tráng lấn quốc lộ, yêu cầu tháo dỡ than khó khăn; Đường 20 tỉ mới",
-          "source": "tuoitre",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Khai khoáng",
-            "Sản xuất thực phẩm"
-          ],
-          "contribution": -0.5
-        },
-        {
-          "title": "Phố Wall dự báo giá vàng sẽ giảm tuần tới",
-          "source": "vnexpress",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Khai khoáng"
-          ],
-          "contribution": -0.5
         }
       ]
     },
@@ -420,50 +489,6 @@
           "effective_date": null,
           "industries": [
             "Bảo hiểm"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Ô tô và phụ tùng": {
-      "score": 1.98,
-      "article_count": 14,
-      "delayed_count": 2,
-      "top_articles": [
-        {
-          "title": "Quay đầu ô tô ngay trên cao tốc, nam tài xế bị phạt 35 triệu đồng",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Ô tô và phụ tùng"
-          ],
-          "contribution": -0.45
-        },
-        {
-          "title": "50 cảnh sát đồng loạt kiểm tra, bắt giữ 11 Youtuber: Thu 3 ô tô, phong tỏa 8 tài",
-          "source": "cafebiz",
-          "time": "Sat, 23 May 2026",
-          "news_type": "monitoring",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Ô tô và phụ tùng",
-            "Ngân hàng"
-          ],
-          "contribution": -0.4
-        },
-        {
-          "title": "Gã khổng lồ ô tô Nhật Bản tiếp tục khai tử dự án nhà máy linh kiện triệu USD, có",
-          "source": "cafebiz",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Ô tô và phụ tùng",
-            "Công nghệ Thông tin"
           ],
           "contribution": 0.0
         }
@@ -511,6 +536,54 @@
         }
       ]
     },
+    "Xây dựng và Vật liệu": {
+      "score": 2.0,
+      "article_count": 1,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Khởi công xây dựng công viên Bình Hưng Hòa Xanh ở TP.HCM",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Xây dựng và Vật liệu",
+            "Dịch vụ tài chính"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Bất động sản": {
+      "score": 2.0,
+      "article_count": 2,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Thị trường bất động sản Mỹ vẫn 'mắc kẹt' dù điều kiện mua cải thiện",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Bất động sản"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Bất động sản"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
     "Thiết bị và Dịch vụ Y tế": {
       "score": 1.98,
       "article_count": 8,
@@ -552,21 +625,22 @@
         }
       ]
     },
-    "Ngân hàng": {
+    "Ô tô và phụ tùng": {
       "score": 1.98,
-      "article_count": 10,
-      "delayed_count": 0,
+      "article_count": 17,
+      "delayed_count": 2,
       "top_articles": [
         {
-          "title": "Ngân hàng Nhà nước yêu cầu kiểm tra các ngân hàng tăng lãi suất trái chỉ đạo",
-          "source": "cafebiz",
-          "time": "Sat, 23 May 2026",
-          "news_type": "monitoring",
+          "title": "Quay đầu ô tô ngay trên cao tốc, nam tài xế bị phạt 35 triệu đồng",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Ngân hàng"
+            "Kim loại",
+            "Ô tô và phụ tùng"
           ],
-          "contribution": 0.4
+          "contribution": -0.45
         },
         {
           "title": "50 cảnh sát đồng loạt kiểm tra, bắt giữ 11 Youtuber: Thu 3 ô tô, phong tỏa 8 tài",
@@ -582,15 +656,146 @@
           "contribution": -0.4
         },
         {
-          "title": "Tin tức kinh tế ngày 22 5 Ngân hàng Nhà nước yêu cầu kiểm tra việc giảm mặt bằng",
-          "source": "petrotimes",
-          "time": "Fri, 22 May 2026",
-          "news_type": "monitoring",
+          "title": "Chiếc xe Toyota đắt nhất thế giới, dù cũ vẫn cao hơn cả Rolls-Royce Cullinan",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Ngân hàng"
+            "Ô tô và phụ tùng"
           ],
-          "contribution": -0.4
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Lâm nghiệp và Giấy": {
+      "score": 2.0,
+      "article_count": 2,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Người phụ nữ mất 400 triệu đồng khi góp vốn mua bán gỗ ở nước ngoài",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Lâm nghiệp và Giấy",
+            "Kim loại"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Thí sinh khóc vì quên giấy tờ, cả điểm thi cùng vào cuộc",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Lâm nghiệp và Giấy"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Điện tử & Thiết bị điện": {
+      "score": 2.0,
+      "article_count": 1,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Điện tử & Thiết bị điện",
+            "Thuốc lá",
+            "Dược phẩm",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Thuốc lá": {
+      "score": 2.0,
+      "article_count": 2,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Điện tử & Thiết bị điện",
+            "Thuốc lá",
+            "Dược phẩm",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Anh Nguyễn Minh Triết: Thuốc lá thế hệ mới đang đánh lừa nhận thức của người trẻ",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Thuốc lá",
+            "Dược phẩm"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Dược phẩm": {
+      "score": 1.95,
+      "article_count": 4,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Xử phạt 2 công ty 140 triệu vì sản xuất 2 lô thuốc xương khớp vi phạm chất lượng",
+          "source": "tuoitre",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Dược phẩm"
+          ],
+          "contribution": -0.5
+        },
+        {
+          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Điện tử & Thiết bị điện",
+            "Thuốc lá",
+            "Dược phẩm",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Anh Nguyễn Minh Triết: Thuốc lá thế hệ mới đang đánh lừa nhận thức của người trẻ",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Thuốc lá",
+            "Dược phẩm"
+          ],
+          "contribution": 0.0
         }
       ]
     },
@@ -635,67 +840,30 @@
         }
       ]
     },
-    "Bất động sản": {
-      "score": 2.0,
-      "article_count": 1,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Bất động sản"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Lâm nghiệp và Giấy": {
-      "score": 2.0,
+    "Bia và đồ uống": {
+      "score": 2.09,
       "article_count": 2,
       "delayed_count": 0,
       "top_articles": [
         {
-          "title": "Thí sinh khóc vì quên giấy tờ, cả điểm thi cùng vào cuộc",
+          "title": "Tăng cường tiếng Anh có liên hệ gì với sự ra đời Trường THPT chuyên Trần Đại Ngh",
           "source": "thanhnien",
           "time": "Sun, 24 May 26 1",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Lâm nghiệp và Giấy"
+            "Bia và đồ uống"
           ],
-          "contribution": 0.0
+          "contribution": 0.45
         },
         {
-          "title": "Người phụ nữ mất 400 triệu đồng khi góp vốn mua bán gỗ ở nước ngoài",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
+          "title": "Bia gây béo bụng?",
+          "source": "vnexpress",
+          "time": "Sun, 24 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Lâm nghiệp và Giấy",
-            "Kim loại"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Tư vấn & Hỗ trợ Kinh doanh": {
-      "score": 2.0,
-      "article_count": 1,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Hơn 3.000 người dân đổ về Dinh Độc Lập để được tư vấn sức khỏe miễn phí",
-          "source": "thanhnien",
-          "time": "Sun, 24 May 26 1",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Tư vấn & Hỗ trợ Kinh doanh"
+            "Bia và đồ uống"
           ],
           "contribution": 0.0
         }
@@ -741,94 +909,6 @@
         }
       ]
     },
-    "Dược phẩm": {
-      "score": 1.93,
-      "article_count": 3,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Xử phạt 2 công ty 140 triệu vì sản xuất 2 lô thuốc xương khớp vi phạm chất lượng",
-          "source": "tuoitre",
-          "time": "Sat, 23 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Dược phẩm"
-          ],
-          "contribution": -0.5
-        },
-        {
-          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Điện tử & Thiết bị điện",
-            "Thuốc lá",
-            "Dược phẩm",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Vì sao không hút thuốc vẫn ung thư miệng?",
-          "source": "vnexpress",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Dược phẩm"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Điện tử & Thiết bị điện": {
-      "score": 2.0,
-      "article_count": 1,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Điện tử & Thiết bị điện",
-            "Thuốc lá",
-            "Dược phẩm",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Thuốc lá": {
-      "score": 2.0,
-      "article_count": 1,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Điện tử & Thiết bị điện",
-            "Thuốc lá",
-            "Dược phẩm",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
     "Nước & Khí đốt": {
       "score": 2.6,
       "article_count": 1,
@@ -847,19 +927,19 @@
         }
       ]
     },
-    "Bia và đồ uống": {
+    "Tư vấn & Hỗ trợ Kinh doanh": {
       "score": 2.0,
       "article_count": 1,
       "delayed_count": 0,
       "top_articles": [
         {
-          "title": "Bia gây béo bụng?",
-          "source": "vnexpress",
-          "time": "Sun, 24 May 2026",
+          "title": "Hơn 3.000 người dân đổ về Dinh Độc Lập để được tư vấn sức khỏe miễn phí",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Bia và đồ uống"
+            "Tư vấn & Hỗ trợ Kinh doanh"
           ],
           "contribution": 0.0
         }
@@ -867,8 +947,8 @@
     }
   },
   "macro": {
-    "score": 0.84,
-    "article_count": 8,
+    "score": 0.83,
+    "article_count": 6,
     "top_articles": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -882,9 +962,9 @@
         "contribution": -1.0
       },
       {
-        "title": "Bắt giữ nghi phạm sát hại một phụ nữ tại nhà nghỉ",
-        "source": "dantri",
-        "time": "Wed, 20 May 2026",
+        "title": "Bắt giữ đối tượng liều lĩnh lấy tiền trong 4 thùng công đức ở chùa Hải Quang",
+        "source": "nld",
+        "time": "Sat, 23 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [],
@@ -892,5 +972,421 @@
       }
     ]
   },
-  "symbol_mentions": {}
+  "symbol_mentions": {
+    "HAI": {
+      "score": 2.14,
+      "article_count": 9,
+      "top_articles": [
+        {
+          "title": "Năng lượng - Động lực chiến lược cho khát vọng tăng trưởng hai con số của Việt N",
+          "source": "vietstock",
+          "time": "Fri, 22 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 1.95
+        },
+        {
+          "title": "Việt Nam cần bao nhiêu vốn để tăng trưởng hai con số?",
+          "source": "vietstock",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 1.95
+        }
+      ]
+    },
+    "THU": {
+      "score": 1.99,
+      "article_count": 14,
+      "top_articles": [
+        {
+          "title": "Hà Nội muốn tăng tiền bồi thường khi thu hồi đất dự án",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Bảo hiểm"
+          ],
+          "contribution": 0.675
+        },
+        {
+          "title": "Chính thức đề xuất mức giảm trừ tối đa 47 triệu đồng/năm chi phí y tế, giáo dục ",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Thiết bị và Dịch vụ Y tế"
+          ],
+          "contribution": -0.6
+        }
+      ]
+    },
+    "HCM": {
+      "score": 2.01,
+      "article_count": 20,
+      "top_articles": [
+        {
+          "title": "Highlight Ninh Bình 1-1 CLB Công an TP.HCM: Bỏ lỡ cơ hội tốp 2",
+          "source": "thanhnien",
+          "time": "Sat, 23 May 26 2",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Dịch vụ tài chính"
+          ],
+          "contribution": 0.675
+        },
+        {
+          "title": "Người dân TP.HCM mong gì từ Luật Đô thị đặc biệt?",
+          "source": "vietstock",
+          "time": "Wed, 20 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Dịch vụ tài chính"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "TIN": {
+      "score": 1.97,
+      "article_count": 16,
+      "top_articles": [
+        {
+          "title": "Cảnh báo tình trạng tin tặc tấn công dữ liệu số của bệnh viện, lộ thông tin bác ",
+          "source": "tuoitre",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Thiết bị và Dịch vụ Y tế"
+          ],
+          "contribution": -0.6
+        },
+        {
+          "title": "Tin tức kinh tế ngày 22 5 Ngân hàng Nhà nước yêu cầu kiểm tra việc giảm mặt bằng",
+          "source": "petrotimes",
+          "time": "Fri, 22 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng"
+          ],
+          "contribution": -0.6
+        }
+      ]
+    },
+    "BOT": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Hoàn vốn sớm, BOT cầu Rạch Miễu dừng thu phí từ tháng 9/2026",
+          "source": "vietstock",
+          "time": "Fri, 22 May 2026",
+          "news_type": "delayed",
+          "effective_date": "2026-09-01",
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "THI": {
+      "score": 2.0,
+      "article_count": 22,
+      "top_articles": [
+        {
+          "title": "Sắp thi đại học đến nơi vẫn chưa biết chọn ngành nào, hãy tự trả lời 7 câu hỏi n",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        },
+        {
+          "title": "170.000 thí sinh thi đánh giá năng lực đợt 2, ngày 6-6 công bố kết quả",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "USD": {
+      "score": 2.0,
+      "article_count": 4,
+      "top_articles": [
+        {
+          "title": "Smartphone 1.500 USD vẫn phải \"vừa dùng vừa run\": Apple và Samsung đang tụt hậu ",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        },
+        {
+          "title": "Những 'khối màu' chục triệu USD của Mark Rothko",
+          "source": "vnexpress",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "TOP": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Top nhạc sĩ người Mỹ vĩ đại nhất còn sống của New York Times: Sáng ta",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "NHA": {
+      "score": 2.0,
+      "article_count": 3,
+      "top_articles": [
+        {
+          "title": "Top nhạc sĩ người Mỹ vĩ đại nhất còn sống của New York Times: Sáng ta",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        },
+        {
+          "title": "Khu đô thị hỗn hợp TP Nha Trang đủ điều kiện bán, cho thuê mua 197 căn hình thàn",
+          "source": "tuoitre",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "TRA": {
+      "score": 1.93,
+      "article_count": 7,
+      "top_articles": [
+        {
+          "title": "Ngân hàng Nhà nước yêu cầu kiểm tra các ngân hàng tăng lãi suất trái chỉ đạo",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng"
+          ],
+          "contribution": 0.6
+        },
+        {
+          "title": "50 cảnh sát đồng loạt kiểm tra, bắt giữ 11 Youtuber: Thu 3 ô tô, phong tỏa 8 tài",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Ô tô và phụ tùng",
+            "Ngân hàng"
+          ],
+          "contribution": -0.6
+        }
+      ]
+    },
+    "LAI": {
+      "score": 2.0,
+      "article_count": 4,
+      "top_articles": [
+        {
+          "title": "Tỉnh đoàn Gia Lai huy động 200.000 lượt đoàn viên, thanh niên tham gia tình nguy",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Khai khoáng",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Thầy giáo Ấn Độ bị tố tát học sinh lớp 4 trong lớp học thêm ở Gia Lai",
+          "source": "nld",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "BSR": {
+      "score": 2.1,
+      "article_count": 3,
+      "top_articles": [
+        {
+          "title": "Đảng bộ BSR phát huy vai trò hạt nhân chính trị tích cực triển khai các nghị quy",
+          "source": "petrotimes",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.75
+        },
+        {
+          "title": "Tự hào Tiếp nguồn năng lượng Khát vọng vươn tầm trong hành trình phát triển của ",
+          "source": "petrotimes",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "PVI": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Bảo hiểm PVI và VCCI thiết lập hợp tác toàn diện nâng cao năng lực cạnh tranh ch",
+          "source": "petrotimes",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Bảo hiểm"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "VUA": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Liên đoàn Cờ vua Thế giới đề nghị giải trình việc thu tiền khóa học HLV ở Việt N",
+          "source": "vnexpress",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "VPI": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "VPI trước yêu cầu mới về phát triển khoa học công nghệ đổi mới sáng tạo và chuyể",
+          "source": "petrotimes",
+          "time": "Fri, 22 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "PPP": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Chuyển đổi xanh nông nghiệp PPP mở đường cho dòng vốn và công nghệ",
+          "source": "petrotimes",
+          "time": "Fri, 22 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất thực phẩm"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "GAS": {
+      "score": 2.9,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "VIDEO PV GAS bứt phá tăng trưởng tăng tốc chuyển dịch năng lượng xanh",
+          "source": "petrotimes",
+          "time": "Fri, 22 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Nước & Khí đốt"
+          ],
+          "contribution": 2.25
+        }
+      ]
+    },
+    "VAT": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Tài xế công nghệ đóng VAT 10% trên doanh thu: “Người kiếm tiền bằng sức lao động",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "APP": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Chuyển động 12h: Nhiều quán ‘nói không’ với app giao đồ ăn | Nắng nóng tiếp tục ",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        }
+      ]
+    }
+  }
 }
