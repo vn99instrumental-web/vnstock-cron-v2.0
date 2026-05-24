@@ -79,10 +79,31 @@ def _is_stale(entry: dict) -> bool:
 # KBS helpers — same pattern as step_all.py
 # =====================================================
 
+def _dedupe_period_cols(df: pd.DataFrame) -> pd.DataFrame:
+    """KBS đôi khi trả về duplicate column names (vd: 2025-Q4 × 4).
+    Rename để đảm bảo unique: 2025-Q4, 2025-Q4_1, 2025-Q4_2..."""
+    cols = list(df.columns)
+    seen: dict = {}
+    new_cols = []
+    for c in cols:
+        if c in ("item", "item_id"):
+            new_cols.append(c)
+            continue
+        if c in seen:
+            seen[c] += 1
+            new_cols.append(f"{c}_{seen[c]}")
+        else:
+            seen[c] = 0
+            new_cols.append(c)
+    df.columns = new_cols
+    return df
+
+
 def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float | None:
     if df is None or df.empty:
         return None
-    period_cols = [c for c in df.columns if c not in ["item", "item_id"]]
+    df = _dedupe_period_cols(df.copy())
+    period_cols = [c for c in df.columns if c not in ("item", "item_id")]
     if not period_cols:
         return None
     target_col = col if col else period_cols[-1]
@@ -91,6 +112,8 @@ def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float |
         df_idx = df.set_index(idx_col)[target_col]
     except Exception:
         return None
+    if isinstance(df_idx, pd.DataFrame):
+        df_idx = df_idx.iloc[:, 0]
     for k in keys:
         if k in df_idx.index:
             return to_float(df_idx[k])
@@ -166,7 +189,7 @@ def fetch_one(symbol: str) -> dict | None:
     # INCOME STATEMENT — limit=4 cho QoQ, limit=8 cho YoY
     df_is = safe_run(f"income {symbol}",
              lambda: Finance(source="KBS", symbol=symbol).income_statement(
-                 period="quarter", limit=8))
+                 period="quarter", limit=4))
     if df_is is not None and not df_is.empty:
         i = result["income"]
         i["revenue"]          = _kbs_lookup(df_is,
@@ -174,7 +197,7 @@ def fetch_one(symbol: str) -> dict | None:
         i["gross_profit"]     = _kbs_lookup(df_is,
             ["5_gross_profit", "gross_profit"])
         i["net_profit"]       = _kbs_lookup(df_is,
-            ["profit_after_tax_for_shareholders_of_the_parent_company",
+            ["profit_after_tax_for_shareholders_of_parent_company", "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
         i["operating_profit"] = _kbs_lookup(df_is,
             ["11_operating_profit", "operating_profit"])
@@ -184,12 +207,12 @@ def fetch_one(symbol: str) -> dict | None:
         i["rev_growth_qoq"]    = _kbs_growth(df_is,
             ["3_net_revenue", "net_revenue", "revenue"])
         i["profit_growth_qoq"] = _kbs_growth(df_is,
-            ["profit_after_tax_for_shareholders_of_the_parent_company",
+            ["profit_after_tax_for_shareholders_of_parent_company", "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
         i["rev_growth_yoy"]    = _kbs_yoy_growth(df_is,
             ["3_net_revenue", "net_revenue", "revenue"])
         i["profit_growth_yoy"] = _kbs_yoy_growth(df_is,
-            ["profit_after_tax_for_shareholders_of_the_parent_company",
+            ["profit_after_tax_for_shareholders_of_parent_company", "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
 
     # BALANCE SHEET
