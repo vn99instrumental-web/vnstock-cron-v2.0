@@ -185,16 +185,18 @@ def _kbs_yoy_growth(df: pd.DataFrame, keys: list) -> float | None:
 # Fetch finance for one symbol
 # =====================================================
 
-def fetch_one(symbol: str) -> dict | None:
+def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
     """
-    Fetch ratio + income + balance từ KBS với rate limiting.
-    Silver tier: 300 req/min → throttle với API_CALL_DELAY giữa mỗi call.
-    ValueError (non-stock symbol) → trả về None ngay, không retry.
+    Fetch ratio + income + balance_sheet từ KBS.
+    - 3 calls/symbol với API_CALL_DELAY throttle
+    - balance_sheet gọi đúng 1 lần (fix bug gọi 2 lần)
+    - has_data check relax: chỉ cần có ratio.pe HOẶC income.revenue HOẶC ratio.roe
+    - ValueError (non-stock) → skip ngay
     """
     import time
 
-    if not _is_valid_stock(symbol):
-        log.debug(f"  [{symbol}] skipped — non-stock pattern")
+    if not _is_valid_stock(symbol, asset_type):
+        log.debug(f"  [{symbol}] skipped — non-stock")
         return None
 
     result = {
@@ -206,112 +208,82 @@ def fetch_one(symbol: str) -> dict | None:
         "cashflow"  : {},
     }
 
-    # RATIO
+    # ── CALL 1: RATIO ────────────────────────────────────────
+    df_ratio = None
     try:
-        df_ratio = Finance(source="KBS", symbol=symbol).ratio(
-            period="quarter", limit=1)
+        df_ratio = Finance(source="KBS", symbol=symbol).ratio(period="quarter", limit=1)
         log.info(f"  ✅ ratio {symbol}")
     except ValueError as e:
-        log.warning(f"  [{symbol}] invalid stock: {e}")
+        log.warning(f"  [{symbol}] invalid: {e}")
         return None
     except Exception as e:
         log.warning(f"  ⚠️ ratio {symbol}: {e}")
-        df_ratio = None
     time.sleep(API_CALL_DELAY)
+
     if df_ratio is not None and not df_ratio.empty:
-        period_cols = [c for c in df_ratio.columns if c not in ["item", "item_id"]]
+        period_cols      = [c for c in df_ratio.columns if c not in ("item", "item_id")]
         result["period"] = period_cols[-1] if period_cols else ""
         r = result["ratio"]
-        r["pe"]            = _kbs_lookup(df_ratio, ["pe_ratio"])
-        r["pb"]            = _kbs_lookup(df_ratio, ["pb_ratio"])
-        r["roe"]           = _kbs_lookup(df_ratio, ["roe", "roe_trailling"])
-        r["roa"]           = _kbs_lookup(df_ratio, ["roa_trailling", "roa"])
-        r["eps"]           = _kbs_lookup(df_ratio, ["trailing_eps", "eps"])
-        r["bvps"]          = _kbs_lookup(df_ratio, ["book_value_per_share_bvps", "bvps"])
-        r["beta"]          = _kbs_lookup(df_ratio, ["beta"])
-        r["div_yield"]     = _kbs_lookup(df_ratio, ["dividend_yield"])
-        r["gross_margin"]  = _kbs_lookup(df_ratio, ["gross_margin"])
-        r["net_margin"]    = _kbs_lookup(df_ratio, ["net_margin"])
-        r["quick_ratio"]   = _kbs_lookup(df_ratio, ["quick_ratio"])
-        r["interest_cov"]  = _kbs_lookup(df_ratio, ["interest_coverage"])
-        r["ev_ebitda"]     = _kbs_lookup(df_ratio, ["ev_ebitda"])
+        r["pe"]           = _kbs_lookup(df_ratio, ["pe_ratio"])
+        r["pb"]           = _kbs_lookup(df_ratio, ["pb_ratio"])
+        r["roe"]          = _kbs_lookup(df_ratio, ["roe", "roe_trailling"])
+        r["roa"]          = _kbs_lookup(df_ratio, ["roa_trailling", "roa"])
+        r["eps"]          = _kbs_lookup(df_ratio, ["trailing_eps", "eps"])
+        r["bvps"]         = _kbs_lookup(df_ratio, ["book_value_per_share_bvps", "bvps"])
+        r["beta"]         = _kbs_lookup(df_ratio, ["beta"])
+        r["div_yield"]    = _kbs_lookup(df_ratio, ["dividend_yield"])
+        r["gross_margin"] = _kbs_lookup(df_ratio, ["gross_margin"])
+        r["net_margin"]   = _kbs_lookup(df_ratio, ["net_margin"])
+        r["quick_ratio"]  = _kbs_lookup(df_ratio, ["quick_ratio"])
+        r["interest_cov"] = _kbs_lookup(df_ratio, ["interest_coverage"])
+        r["ev_ebitda"]    = _kbs_lookup(df_ratio, ["ev_ebitda"])
 
-    # INCOME STATEMENT — limit=4 cho QoQ growth
-    import time
+    # ── CALL 2: INCOME STATEMENT ─────────────────────────────
+    df_is = None
     try:
-        df_is = Finance(source="KBS", symbol=symbol).income_statement(
-            period="quarter", limit=4)
+        df_is = Finance(source="KBS", symbol=symbol).income_statement(period="quarter", limit=4)
         log.info(f"  ✅ income {symbol}")
     except ValueError:
         return None
     except Exception as e:
         log.warning(f"  ⚠️ income {symbol}: {e}")
-        df_is = None
     time.sleep(API_CALL_DELAY)
+
     if df_is is not None and not df_is.empty:
         i = result["income"]
-        i["revenue"]          = _kbs_lookup(df_is,
-            ["3_net_revenue", "net_revenue", "revenue"])
-        i["gross_profit"]     = _kbs_lookup(df_is,
-            ["5_gross_profit", "gross_profit"])
+        i["revenue"]          = _kbs_lookup(df_is, ["3_net_revenue", "net_revenue", "revenue"])
+        i["gross_profit"]     = _kbs_lookup(df_is, ["5_gross_profit", "gross_profit"])
         i["net_profit"]       = _kbs_lookup(df_is,
-            ["profit_after_tax_for_shareholders_of_parent_company", "profit_after_tax_for_shareholders_of_the_parent_company",
+            ["profit_after_tax_for_shareholders_of_parent_company",
+             "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
-        i["operating_profit"] = _kbs_lookup(df_is,
-            ["11_operating_profit", "operating_profit"])
-        i["eps"]              = _kbs_lookup(df_is,
-            ["19_earnings_per_share_vnd", "earnings_per_share"])
-        # Growth
-        i["rev_growth_qoq"]    = _kbs_growth(df_is,
-            ["3_net_revenue", "net_revenue", "revenue"])
+        i["operating_profit"] = _kbs_lookup(df_is, ["11_operating_profit", "operating_profit"])
+        i["eps"]              = _kbs_lookup(df_is, ["19_earnings_per_share_vnd", "earnings_per_share"])
+        i["rev_growth_qoq"]    = _kbs_growth(df_is, ["3_net_revenue", "net_revenue", "revenue"])
         i["profit_growth_qoq"] = _kbs_growth(df_is,
-            ["profit_after_tax_for_shareholders_of_parent_company", "profit_after_tax_for_shareholders_of_the_parent_company",
+            ["profit_after_tax_for_shareholders_of_parent_company",
+             "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
-        i["rev_growth_yoy"]    = _kbs_yoy_growth(df_is,
-            ["3_net_revenue", "net_revenue", "revenue"])
+        i["rev_growth_yoy"]    = _kbs_yoy_growth(df_is, ["3_net_revenue", "net_revenue", "revenue"])
         i["profit_growth_yoy"] = _kbs_yoy_growth(df_is,
-            ["profit_after_tax_for_shareholders_of_parent_company", "profit_after_tax_for_shareholders_of_the_parent_company",
+            ["profit_after_tax_for_shareholders_of_parent_company",
+             "profit_after_tax_for_shareholders_of_the_parent_company",
              "18_net_profit_after_tax", "net_profit"])
 
-    # BALANCE SHEET
-    df_bs = safe_run(f"balance_sheet {symbol}",
-             lambda: Finance(source="KBS", symbol=symbol).balance_sheet(
-                 period="quarter", limit=1))
-    if df_bs is not None and not df_bs.empty:
-        b = result["balance"]
-        b["total_assets"] = _kbs_lookup(df_bs, ["total_assets"])
-        b["equity"]       = _kbs_lookup(df_bs,
-            ["owner_s_equity", "d_owner_s_equity",
-             "total_owner_s_equity_and_liabilities"])
-        b["total_liab"]   = _kbs_lookup(df_bs,
-            ["c_liabilities", "i_short_term_liabilities"])
-        b["short_debt"]   = _kbs_lookup(df_bs,
-            ["11_short_term_borrowings_and_financial_leases",
-             "i_short_term_liabilities"])
-        b["long_debt"]    = _kbs_lookup(df_bs,
-            ["9_long_term_borrowings_and_financial_leases",
-             "ii_long_term_liabilities"])
-        # Derived
-        if b["total_assets"] and b["equity"] and b["total_assets"] != 0:
-            b["debt_to_equity"] = round(
-                (b["total_assets"] - b["equity"]) / b["equity"], 3) \
-                if b["equity"] != 0 else None
-
-    # BALANCE SHEET + CASH FLOW
-    # KBS trộn CF items vào balance_sheet() DataFrame
-    import time
+    # ── CALL 3: BALANCE SHEET (+ CF items mixed in by KBS) ───
+    df_bs = None
     try:
-        df_bs = Finance(source="KBS", symbol=symbol).balance_sheet(
-            period="quarter", limit=1)
+        df_bs = Finance(source="KBS", symbol=symbol).balance_sheet(period="quarter", limit=1)
         log.info(f"  ✅ balance_sheet {symbol}")
     except ValueError:
         return None
     except Exception as e:
         log.warning(f"  ⚠️ balance_sheet {symbol}: {e}")
-        df_bs = None
     time.sleep(API_CALL_DELAY)
+
     if df_bs is not None and not df_bs.empty:
         b = result["balance"]
+        # total_assets: header row = nan, compute from sub-items
         short_assets = _kbs_lookup(df_bs, ["a_short_term_assets"])
         long_assets  = _kbs_lookup(df_bs, ["b_long_term_assets"])
         if short_assets is not None and long_assets is not None:
@@ -327,38 +299,31 @@ def fetch_one(symbol: str) -> dict | None:
         b["long_debt"]  = _kbs_lookup(df_bs,
             ["9_long_term_borrowings_and_financial_leases", "long_term_borrowings"])
         if b.get("total_assets") and b.get("equity") and b["equity"] != 0:
-            b["debt_to_equity"] = round(
-                (b["total_assets"] - b["equity"]) / b["equity"], 3)
+            b["debt_to_equity"] = round((b["total_assets"] - b["equity"]) / b["equity"], 3)
 
-        # CF — đọc từ df_bs (KBS design: CF items mixed into balance_sheet)
+        # CF items mixed into BS by KBS design
         c = result["cashflow"]
         c["cf_operating"] = _kbs_lookup(df_bs,
             ["i_cash_flows_from_operating_activities",
-             "operating_cash_flow",
-             "net_cash_flows_from_operating_activities"])
+             "operating_cash_flow", "net_cash_flows_from_operating_activities"])
         c["cf_investing"]  = _kbs_lookup(df_bs,
-            ["investing_cash_flow",
-             "ii_cash_flows_from_investing_activities",
+            ["investing_cash_flow", "ii_cash_flows_from_investing_activities",
              "net_cash_flows_from_investing_activities"])
         c["cf_financing"]  = _kbs_lookup(df_bs,
-            ["financing_cash_flow",
-             "iii_cash_flows_from_financing_activities",
+            ["financing_cash_flow", "iii_cash_flows_from_financing_activities",
              "net_cash_flows_from_financing_activities"])
-
-        # CF quality + free CF
         net_profit = result["income"].get("net_profit")
         if c.get("cf_operating") and net_profit and net_profit != 0:
             c["cf_quality"] = round(c["cf_operating"] / net_profit, 2)
         if c.get("cf_operating") and c.get("cf_investing"):
             c["cf_free"] = round(c["cf_operating"] + c["cf_investing"], 2)
 
-    # Precompute finance_scores — scoring dùng luôn, không tính lại
-    result["finance_score"] = _compute_finance_score(result)
-
-    # Kiểm tra có data không
+    # ── has_data: relax — chỉ cần 1 trong ratio/income có data ──
     has_data = any([
         result["ratio"].get("pe"),
+        result["ratio"].get("roe"),
         result["income"].get("revenue"),
+        result["income"].get("net_profit"),
         result["balance"].get("total_assets"),
     ])
     if not has_data:
@@ -366,6 +331,7 @@ def fetch_one(symbol: str) -> dict | None:
         return None
 
     return result
+
 
 # =====================================================
 # Precompute finance scores
