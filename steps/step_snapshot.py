@@ -248,6 +248,9 @@ def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
             df["ff_net"] = (pd.to_numeric(df["ff_buy"],  errors="coerce").fillna(0)
                           - pd.to_numeric(df["ff_sell"], errors="coerce").fillna(0))
 
+    # Log columns for debugging (removed after confirmed working)
+    log.debug(f"  CafeF FF cols after rename: {list(df.columns)[:10]}")
+
     if "ff_net" not in df.columns:
         log.warning(f"  CafeF FF: unknown cols {list(df.columns)[:8]}")
         return None
@@ -294,6 +297,26 @@ def get_flow(symbol: str) -> dict:
 
         log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
                  f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
+
+    # Insider deal
+    df_id = safe_run(f"insider_deal_vci {symbol}",
+             lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=5))
+    if df_id is None:
+        df_id = safe_run(f"insider_deal_cafef {symbol}",
+                 lambda: Trading(symbol=symbol, source="CafeF").insider_deal(limit=5))
+        if df_id is not None and not df_id.empty:
+            df_id = df_id.rename(columns={
+                "transaction_man"         : "trader_name",
+                "transaction_man_position": "trader_position",
+                "transaction_note"        : "action_type",
+            })
+
+    if df_id is not None and not df_id.empty:
+        res["insider_count"]  = len(df_id)
+        res["insider_latest"] = str(df_id["action_type"].iloc[0])                                 if "action_type" in df_id.columns else None
+        res["insider_name"]   = str(df_id["trader_name"].iloc[0])                                 if "trader_name" in df_id.columns else None
+
+    return res  # ← FIX: was missing, caused None return → AttributeError
 
 def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     """
