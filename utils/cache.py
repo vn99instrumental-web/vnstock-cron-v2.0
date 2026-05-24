@@ -26,10 +26,32 @@ def _resolve(filename: str) -> str:
     return path
 
 
+# Per-file locks để tránh race condition khi concurrent writes
+import threading
+_file_locks: dict[str, threading.Lock] = {}
+_locks_meta = threading.Lock()
+
+def _get_lock(path: str) -> threading.Lock:
+    with _locks_meta:
+        if path not in _file_locks:
+            _file_locks[path] = threading.Lock()
+        return _file_locks[path]
+
+
 def save_json(filename: str, data) -> None:
     path = _resolve(filename)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+    lock = _get_lock(path)
+    with lock:
+        # Atomic write: ghi ra .tmp trước, rename sau
+        tmp_path = path + ".tmp"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+            os.replace(tmp_path, path)  # atomic on same filesystem
+        except Exception:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            raise
     log.info(f"  💾 {path}")
 
 
@@ -38,8 +60,16 @@ def load_json(filename: str):
     if not os.path.exists(path):
         log.warning(f"  ⚠️ Not found: {path}")
         return None
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        log.error(f"  ❌ Corrupt JSON {path}: {e} — deleting and returning None")
+        try:
+            os.remove(path)
+        except Exception:
+            pass
+        return None
 
 
 def save_csv(filename: str, df: pd.DataFrame) -> None:
