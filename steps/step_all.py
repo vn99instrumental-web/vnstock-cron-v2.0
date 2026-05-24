@@ -79,7 +79,9 @@ def _kbs_lookup(df: pd.DataFrame, keys: list,
         df_idx = df_idx.iloc[:, 0]
     for k in keys:
         if k in df_idx.index:
-            return to_float(df_idx[k])
+            val = to_float(df_idx[k])
+            if val is not None:   # skip nan, try next key
+                return val
     return None
 
 
@@ -422,19 +424,26 @@ def get_fundamental(symbol: str) -> dict:
         res["bs_long_debt"]  = _kbs_lookup(df_bs,
             ["9_long_term_borrowings_and_financial_leases", "long_term_borrowings"])
 
-        # CF — nằm trong BS DataFrame (KBS design)
-        res["cf_operating"] = _kbs_lookup(df_bs,
-            ["i_cash_flows_from_operating_activities",
-             "operating_cash_flow",
-             "net_cash_flows_from_operating_activities"])
-        res["cf_investing"]  = _kbs_lookup(df_bs,
+        log.info(f"  BS: assets={res.get('bs_total_assets')}, equity={res.get('bs_equity')}")
+
+    # CASH FLOW — đọc từ cash_flow() riêng (KHÔNG phải balance_sheet)
+    # Confirmed: CF KHÔNG có trong BS DataFrame (debug_vci_finance.py)
+    # item_ids đúng: operating_cash_flow, investing_cash_flow, financing_cash_flow
+    df_cf = safe_run(f"cash_flow {symbol}",
+             lambda: Finance(source="KBS", symbol=symbol).cash_flow(
+                 period="quarter", limit=1))
+    if df_cf is not None and not df_cf.empty:
+        res["cf_operating"] = _kbs_lookup(df_cf,
+            ["operating_cash_flow",
+             "i_cash_flows_from_operating_activities"])
+        res["cf_investing"]  = _kbs_lookup(df_cf,
             ["investing_cash_flow",
-             "ii_cash_flows_from_investing_activities",
-             "net_cash_flows_from_investing_activities"])
-        res["cf_financing"]  = _kbs_lookup(df_bs,
+             "ii_cash_flows_from_investing_activities"])
+        res["cf_financing"]  = _kbs_lookup(df_cf,
             ["financing_cash_flow",
-             "iii_cash_flows_from_financing_activities",
-             "net_cash_flows_from_financing_activities"])
+             "iii_cash_flows_from_financing_activities"])
+        log.info(f"  CF: op={res.get('cf_operating')}, "
+                 f"inv={res.get('cf_investing')}, fin={res.get('cf_financing')}")
 
     # CF derived
     if res.get("cf_operating") and res.get("is_net_profit") \
