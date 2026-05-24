@@ -408,11 +408,13 @@ def save_cache(symbols_dict: dict) -> None:
 # =====================================================
 
 def get_scan_universe(industry_map: list) -> list[str]:
-    """Lấy danh sách symbols cần scan từ industry_map."""
+    """Lấy danh sách symbols cần scan từ industry_map.
+    Robust: handle column name variations (symbol/ticker/code).
+    """
     seen = set()
     symbols = []
     for row in industry_map:
-        sym = row.get("symbol")
+        sym = row.get("symbol") or row.get("ticker") or row.get("code")
         if sym and sym not in seen:
             seen.add(sym)
             symbols.append(sym)
