@@ -236,7 +236,7 @@ MACRO_KEYWORDS: dict[str, int] = {
     "vốn FDI": +1,
     "PMI tăng": +1,
 
-    # Rủi ro
+    # Rủi ro vĩ mô
     "suy thoái": -2,
     "khủng hoảng": -2,
     "lạm phát tăng": -1,
@@ -245,14 +245,21 @@ MACRO_KEYWORDS: dict[str, int] = {
     "thuế quan": -1,
     "trừng phạt": -1,
     "vỡ nợ": -3,
-    "phá sản": -2,
-    "thanh tra": -1,
-    "điều tra": -1,
+    # Rủi ro doanh nghiệp — chỉ match khi có context tài chính/kinh doanh
+    "phá sản doanh nghiệp": -2,
+    "mất khả năng thanh toán": -2,
     "bắt giữ lãnh đạo": -2,
     "bắt giữ chủ tịch": -2,
     "bắt giữ tổng giám đốc": -2,
     "khởi tố lãnh đạo": -2,
-    "khởi tố doanh nghiệp": -2,
+    "khởi tố giám đốc": -2,
+    "khởi tố chủ tịch": -2,
+    "thao túng chứng khoán": -3,
+    "gian lận tài chính": -2,
+    "thanh tra ngân hàng": -1,
+    "thanh tra tài chính": -1,
+    "điều tra chứng khoán": -2,
+    "điều tra tài chính": -2,
 
     # TTCK
     "nâng hạng thị trường": +3,
