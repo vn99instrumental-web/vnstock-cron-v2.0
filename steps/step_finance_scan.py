@@ -68,25 +68,28 @@ def _is_valid_stock(symbol: str, asset_type: str | None = None) -> bool:
     """
     Bỏ qua non-stock symbols — KBS chỉ hỗ trợ cổ phiếu thường.
 
-    Ưu tiên check cột 'type' từ Listing API (chính xác nhất).
-    Fallback về name-pattern nếu type không có.
+    Name-pattern được check TRƯỚC vì VCI Listing API đôi khi
+    đánh sai type="stock" cho warrant/ETF.
+    Type column chỉ dùng để bổ sung, không override name-pattern.
     """
     if not symbol or len(symbol) < 2 or len(symbol) > 5:
         return False
 
-    # Primary: dùng type column từ Listing API
-    if asset_type is not None:
-        return str(asset_type).lower() in {"stock", "s", "equity"}
-
-    # Fallback: name-pattern (khi không có type)
+    # Name-pattern LUÔN check (VCI API sai type cho một số warrants)
     if _NON_STOCK_PATTERN.match(symbol):
         return False
-    # Chứng quyền X* (XMD, XLV, X77...)
-    if symbol.startswith("X") and len(symbol) <= 5:
+    # X* = covered warrants (XMD, XLV, X77, X26, XDC...)
+    # VCI đánh type="stock" nhưng thực ra là warrant
+    if symbol.startswith("X"):
         return False
     # Derivatives với số dài: VN30F2401
     if _re.search(r"[0-9]{3,}", symbol):
         return False
+
+    # Type column từ Listing API: bổ sung thêm
+    if asset_type is not None:
+        return str(asset_type).lower() in {"stock", "s", "equity"}
+
     return True
 
 # =====================================================
