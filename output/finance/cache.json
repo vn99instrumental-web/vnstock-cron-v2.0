@@ -1,5 +1,6 @@
 {
-  "generated_at": "2026-05-25T07:40:10.948236+07:00",
+  "generated_at": "2026-05-25T08:31:23.445708+07:00",
+  "schema_version": 3,
   "ttl_days": 3,
   "count": 171,
   "symbols": {
@@ -55,8 +56,8 @@
     },
     "VND": {
       "symbol": "VND",
-      "fetched_at": "2026-05-25T07:38:00.275624+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:13.355924+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 14.64,
         "pb": 1.42,
@@ -95,7 +96,14 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 7,
+        "max": 38
+      }
     },
     "HSL": {
       "symbol": "HSL",
@@ -149,8 +157,8 @@
     },
     "VNE": {
       "symbol": "VNE",
-      "fetched_at": "2026-05-25T07:37:58.676567+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:11.992563+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.88,
         "pb": 0.55,
@@ -190,7 +198,14 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 18,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 18,
+        "max": 38
+      }
     },
     "NHT": {
       "symbol": "NHT",
@@ -444,8 +459,8 @@
     },
     "VHM": {
       "symbol": "VHM",
-      "fetched_at": "2026-05-25T07:39:08.367543+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:20.215543+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 12.38,
         "pb": 2.05,
@@ -485,7 +500,14 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 17,
+        "max": 38
+      }
     },
     "PVP": {
       "symbol": "PVP",
@@ -589,8 +611,8 @@
     },
     "YBC": {
       "symbol": "YBC",
-      "fetched_at": "2026-05-25T07:35:43.007570+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:26:53.937137+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -1.17,
         "pb": 0.0,
@@ -632,12 +654,19 @@
         "cf_quality": 1.07,
         "cf_free": -17705108.0
       },
-      "period": "2013-Q4"
+      "period": "2013-Q4",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": -5,
+        "growth": -4,
+        "total": -2,
+        "max": 38
+      }
     },
     "YBM": {
       "symbol": "YBM",
-      "fetched_at": "2026-05-25T07:35:43.007232+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:26:53.936717+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 5.47,
         "pb": 0.85,
@@ -677,12 +706,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 22,
+        "max": 38
+      }
     },
     "YEG": {
       "symbol": "YEG",
-      "fetched_at": "2026-05-25T07:35:43.006770+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:26:53.936288+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 27.16,
         "pb": 1.1,
@@ -722,12 +758,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 1,
+        "max": 38
+      }
     },
     "YTC": {
       "symbol": "YTC",
-      "fetched_at": "2026-05-25T07:35:43.006197+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:26:53.935490+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -763,7 +806,14 @@
         "debt_to_equity": 7.637
       },
       "cashflow": {},
-      "period": "2012-Q3"
+      "period": "2012-Q3",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -3,
+        "max": 38
+      }
     },
     "XPH": {
       "symbol": "XPH",
@@ -1067,8 +1117,8 @@
     },
     "WTC": {
       "symbol": "WTC",
-      "fetched_at": "2026-05-25T07:35:52.831096+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:02.891235+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 167.61,
         "pb": 0.56,
@@ -1110,12 +1160,19 @@
         "cf_quality": -12.23,
         "cf_free": -156511476.0
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -3,
+        "max": 38
+      }
     },
     "WSB": {
       "symbol": "WSB",
-      "fetched_at": "2026-05-25T07:35:53.065069+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:03.095213+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.31,
         "pb": 1.04,
@@ -1155,12 +1212,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 18,
+        "max": 38
+      }
     },
     "WSS": {
       "symbol": "WSS",
-      "fetched_at": "2026-05-25T07:35:53.052051+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:03.045896+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 7.44,
         "pb": 0.64,
@@ -1195,12 +1259,19 @@
         "long_debt": null
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 12,
+        "max": 38
+      }
     },
     "WCS": {
       "symbol": "WCS",
-      "fetched_at": "2026-05-25T07:35:53.840243+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:03.518495+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.8,
         "pb": 2.93,
@@ -1236,12 +1307,19 @@
         "debt_to_equity": 0.152
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 12,
+        "max": 38
+      }
     },
     "VXT": {
       "symbol": "VXT",
-      "fetched_at": "2026-05-25T07:36:00.641403+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:11.111975+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 45.43,
         "pb": 1.79,
@@ -1277,12 +1355,19 @@
         "debt_to_equity": 1.391
       },
       "cashflow": {},
-      "period": "2022-Q3"
+      "period": "2022-Q3",
+      "finance_score": {
+        "fundamental": -2,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -8,
+        "max": 38
+      }
     },
     "VXB": {
       "symbol": "VXB",
-      "fetched_at": "2026-05-25T07:36:01.206509+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:11.961432+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 89.44,
         "pb": 4.95,
@@ -1318,12 +1403,19 @@
         "debt_to_equity": 4.065
       },
       "cashflow": {},
-      "period": "2022-Q1"
+      "period": "2022-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 0,
+        "max": 38
+      }
     },
     "VVS": {
       "symbol": "VVS",
-      "fetched_at": "2026-05-25T07:36:07.388505+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:19.843618+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 4.32,
         "pb": 2.14,
@@ -1363,12 +1455,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 25,
+        "max": 38
+      }
     },
     "VVN": {
       "symbol": "VVN",
-      "fetched_at": "2026-05-25T07:36:08.360433+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:19.958628+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.26,
         "pb": -0.06,
@@ -1408,12 +1507,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 19,
+        "max": 38
+      }
     },
     "VUA": {
       "symbol": "VUA",
-      "fetched_at": "2026-05-25T07:36:08.417851+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:20.170102+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 174.34,
         "pb": 2.13,
@@ -1452,12 +1558,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -8,
+        "max": 38
+      }
     },
     "VTZ": {
       "symbol": "VTZ",
-      "fetched_at": "2026-05-25T07:36:13.808803+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:25.145277+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 24.6,
         "pb": 1.71,
@@ -1497,12 +1610,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 9,
+        "max": 38
+      }
     },
     "VTX": {
       "symbol": "VTX",
-      "fetched_at": "2026-05-25T07:36:14.324577+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:26.506600+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -4.39,
         "pb": 3.13,
@@ -1542,12 +1662,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 14,
+        "max": 38
+      }
     },
     "VTV": {
       "symbol": "VTV",
-      "fetched_at": "2026-05-25T07:36:15.083669+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:26.626065+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 722.88,
         "pb": 1.16,
@@ -1587,12 +1714,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 1,
+        "max": 38
+      }
     },
     "VTS": {
       "symbol": "VTS",
-      "fetched_at": "2026-05-25T07:36:15.827032+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:27.147307+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -1.03,
         "pb": 1.7,
@@ -1634,12 +1768,19 @@
         "cf_quality": -0.93,
         "cf_free": 168685.0
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 12,
+        "max": 38
+      }
     },
     "VTR": {
       "symbol": "VTR",
-      "fetched_at": "2026-05-25T07:36:20.756290+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:33.137795+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 324.62,
         "pb": 1.08,
@@ -1675,12 +1816,19 @@
         "debt_to_equity": 2.721
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -3,
+        "max": 38
+      }
     },
     "VTQ": {
       "symbol": "VTQ",
-      "fetched_at": "2026-05-25T07:36:21.257073+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:34.162246+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 22.7,
         "pb": 1.29,
@@ -1716,12 +1864,19 @@
         "debt_to_equity": 0.652
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 13,
+        "max": 38
+      }
     },
     "VTP": {
       "symbol": "VTP",
-      "fetched_at": "2026-05-25T07:36:21.979157+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:34.517731+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 29.51,
         "pb": 6.8,
@@ -1761,12 +1916,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 4,
+        "total": -4,
+        "max": 38
+      }
     },
     "VTO": {
       "symbol": "VTO",
-      "fetched_at": "2026-05-25T07:36:22.543719+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:35.125822+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.13,
         "pb": 0.77,
@@ -1806,12 +1968,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 16,
+        "max": 38
+      }
     },
     "VTL": {
       "symbol": "VTL",
-      "fetched_at": "2026-05-25T07:36:28.441727+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:40.798131+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -5.12,
         "pb": -4.29,
@@ -1853,12 +2022,19 @@
         "cf_quality": 0.11,
         "cf_free": -255052.0
       },
-      "period": "2023-Q1"
+      "period": "2023-Q1",
+      "finance_score": {
+        "fundamental": 18,
+        "cashflow": -10,
+        "growth": 2,
+        "total": 10,
+        "max": 38
+      }
     },
     "VTJ": {
       "symbol": "VTJ",
-      "fetched_at": "2026-05-25T07:36:29.478938+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:43.220838+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 260.31,
         "pb": 0.43,
@@ -1898,12 +2074,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 5,
+        "total": 2,
+        "max": 38
+      }
     },
     "VTK": {
       "symbol": "VTK",
-      "fetched_at": "2026-05-25T07:36:28.914997+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:42.294338+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -1939,12 +2122,19 @@
         "debt_to_equity": 0.231
       },
       "cashflow": {},
-      "period": "2018-Q3"
+      "period": "2018-Q3",
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 6,
+        "max": 38
+      }
     },
     "VTH": {
       "symbol": "VTH",
-      "fetched_at": "2026-05-25T07:36:35.462454+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:48.296024+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.06,
         "pb": 0.61,
@@ -1980,12 +2170,19 @@
         "debt_to_equity": 6.103
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 22,
+        "max": 38
+      }
     },
     "VTG": {
       "symbol": "VTG",
-      "fetched_at": "2026-05-25T07:36:36.226628+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:49.470856+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -14.34,
         "pb": 0.82,
@@ -2025,12 +2222,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 14,
+        "max": 38
+      }
     },
     "VTE": {
       "symbol": "VTE",
-      "fetched_at": "2026-05-25T07:36:36.595139+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:49.901032+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 54.72,
         "pb": 0.73,
@@ -2066,12 +2270,19 @@
         "debt_to_equity": 0.905
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -1,
+        "max": 38
+      }
     },
     "VTD": {
       "symbol": "VTD",
-      "fetched_at": "2026-05-25T07:36:40.881519+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:53.895208+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -177.11,
         "pb": 0.58,
@@ -2107,12 +2318,19 @@
         "debt_to_equity": 0.537
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 14,
+        "max": 38
+      }
     },
     "VTC": {
       "symbol": "VTC",
-      "fetched_at": "2026-05-25T07:36:42.623490+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:55.730703+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 19.85,
         "pb": 0.72,
@@ -2152,12 +2370,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 13,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 23,
+        "max": 38
+      }
     },
     "VTA": {
       "symbol": "VTA",
-      "fetched_at": "2026-05-25T07:36:43.766612+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:56.953108+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.86,
         "pb": 4.5,
@@ -2199,12 +2424,19 @@
         "cf_quality": 0.25,
         "cf_free": -1010825.0
       },
-      "period": "2024-Q4"
+      "period": "2024-Q4",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": -10,
+        "growth": 6,
+        "total": 0,
+        "max": 38
+      }
     },
     "VTB": {
       "symbol": "VTB",
-      "fetched_at": "2026-05-25T07:36:43.159574+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:27:56.668534+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 13.89,
         "pb": 1.22,
@@ -2240,12 +2472,19 @@
         "debt_to_equity": 0.229
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 17,
+        "max": 38
+      }
     },
     "VST": {
       "symbol": "VST",
-      "fetched_at": "2026-05-25T07:36:47.561912+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:00.015577+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 0.84,
         "pb": -0.49,
@@ -2285,12 +2524,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 0,
+        "growth": -2,
+        "total": 13,
+        "max": 38
+      }
     },
     "VSM": {
       "symbol": "VSM",
-      "fetched_at": "2026-05-25T07:36:50.840374+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:04.251344+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 5.05,
         "pb": 0.76,
@@ -2330,12 +2576,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 16,
+        "max": 38
+      }
     },
     "VSN": {
       "symbol": "VSN",
-      "fetched_at": "2026-05-25T07:36:49.814138+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:04.145711+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 15.17,
         "pb": 0.98,
@@ -2371,12 +2624,19 @@
         "debt_to_equity": 0.448
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 5,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -1,
+        "max": 38
+      }
     },
     "VSI": {
       "symbol": "VSI",
-      "fetched_at": "2026-05-25T07:36:54.555612+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:06.942879+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.86,
         "pb": 1.55,
@@ -2412,12 +2672,19 @@
         "debt_to_equity": 1.67
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 13,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 21,
+        "max": 38
+      }
     },
     "VSH": {
       "symbol": "VSH",
-      "fetched_at": "2026-05-25T07:36:54.754409+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:07.963118+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 12.19,
         "pb": 2.12,
@@ -2457,12 +2724,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -2,
+        "max": 38
+      }
     },
     "VSF": {
       "symbol": "VSF",
-      "fetched_at": "2026-05-25T07:36:57.284980+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:11.550074+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 433.17,
         "pb": 5.04,
@@ -2502,12 +2776,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": 10,
+        "total": -1,
+        "max": 38
+      }
     },
     "VSG": {
       "symbol": "VSG",
-      "fetched_at": "2026-05-25T07:36:56.999876+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:11.129613+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.3,
         "pb": 0.0,
@@ -2549,12 +2830,19 @@
         "cf_quality": 0.13,
         "cf_free": -2105636.0
       },
-      "period": "2015-Q3"
+      "period": "2015-Q3",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": -10,
+        "growth": -2,
+        "total": -2,
+        "max": 38
+      }
     },
     "VSC": {
       "symbol": "VSC",
-      "fetched_at": "2026-05-25T07:37:01.714093+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:14.840335+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 19.7,
         "pb": 1.17,
@@ -2594,12 +2882,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 11,
+        "max": 38
+      }
     },
     "VSA": {
       "symbol": "VSA",
-      "fetched_at": "2026-05-25T07:37:03.940692+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:18.283191+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 12.31,
         "pb": 0.84,
@@ -2639,12 +2934,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 9,
+        "cashflow": 0,
+        "growth": -2,
+        "total": 7,
+        "max": 38
+      }
     },
     "VRG": {
       "symbol": "VRG",
-      "fetched_at": "2026-05-25T07:37:04.233632+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:18.288462+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 12.92,
         "pb": 1.33,
@@ -2680,12 +2982,19 @@
         "debt_to_equity": 1.69
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": -2,
+        "total": 8,
+        "max": 38
+      }
     },
     "VRE": {
       "symbol": "VRE",
-      "fetched_at": "2026-05-25T07:37:08.122377+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:20.834823+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 11.86,
         "pb": 1.58,
@@ -2725,12 +3034,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 12,
+        "max": 38
+      }
     },
     "VRC": {
       "symbol": "VRC",
-      "fetched_at": "2026-05-25T07:37:08.664920+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:21.051540+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 68.47,
         "pb": 0.59,
@@ -2770,12 +3086,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -1,
+        "max": 38
+      }
     },
     "VQC": {
       "symbol": "VQC",
-      "fetched_at": "2026-05-25T07:37:10.852307+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:24.999550+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 15.32,
         "pb": 0.49,
@@ -2811,12 +3134,19 @@
         "debt_to_equity": 0.303
       },
       "cashflow": {},
-      "period": "2019-Q2"
+      "period": "2019-Q2",
+      "finance_score": {
+        "fundamental": 8,
+        "cashflow": 0,
+        "growth": -6,
+        "total": 2,
+        "max": 38
+      }
     },
     "VPX": {
       "symbol": "VPX",
-      "fetched_at": "2026-05-25T07:37:11.429941+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:25.663560+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 15.66,
         "pb": 1.65,
@@ -2855,12 +3185,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 3,
+        "max": 38
+      }
     },
     "VPS": {
       "symbol": "VPS",
-      "fetched_at": "2026-05-25T07:37:15.348206+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:27.222991+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 10.11,
         "pb": 0.66,
@@ -2900,12 +3237,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 9,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 19,
+        "max": 38
+      }
     },
     "VPL": {
       "symbol": "VPL",
-      "fetched_at": "2026-05-25T07:37:18.911392+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:33.193259+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 149.63,
         "pb": 4.61,
@@ -2945,12 +3289,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": 4,
+        "total": -7,
+        "max": 38
+      }
     },
     "VPI": {
       "symbol": "VPI",
-      "fetched_at": "2026-05-25T07:37:21.742584+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:33.392877+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 46.85,
         "pb": 3.38,
@@ -2990,12 +3341,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -17,
+        "max": 38
+      }
     },
     "VPH": {
       "symbol": "VPH",
-      "fetched_at": "2026-05-25T07:37:22.254820+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:34.112336+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -21.79,
         "pb": 0.42,
@@ -3035,12 +3393,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 22,
+        "max": 38
+      }
     },
     "VPG": {
       "symbol": "VPG",
-      "fetched_at": "2026-05-25T07:37:23.905818+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:38.034126+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.73,
         "pb": 0.44,
@@ -3080,12 +3445,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 16,
+        "max": 38
+      }
     },
     "VPD": {
       "symbol": "VPD",
-      "fetched_at": "2026-05-25T07:37:25.838687+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:40.263013+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 10.25,
         "pb": 1.68,
@@ -3121,12 +3493,19 @@
         "debt_to_equity": 0.1
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 17,
+        "max": 38
+      }
     },
     "VPC": {
       "symbol": "VPC",
-      "fetched_at": "2026-05-25T07:37:28.714077+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:41.045796+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -1.04,
         "pb": 0.0,
@@ -3162,12 +3541,19 @@
         "debt_to_equity": 1.378
       },
       "cashflow": {},
-      "period": "2015-Q1"
+      "period": "2015-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 9,
+        "max": 38
+      }
     },
     "VPB": {
       "symbol": "VPB",
-      "fetched_at": "2026-05-25T07:37:29.420790+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:41.062306+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 9.48,
         "pb": 1.26,
@@ -3206,12 +3592,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 10,
+        "max": 38
+      }
     },
     "VPA": {
       "symbol": "VPA",
-      "fetched_at": "2026-05-25T07:37:30.838255+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:45.178837+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.96,
         "pb": -0.34,
@@ -3251,12 +3644,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 0,
+        "growth": -2,
+        "total": 13,
+        "max": 38
+      }
     },
     "VOS": {
       "symbol": "VOS",
-      "fetched_at": "2026-05-25T07:37:33.023163+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:46.869556+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 5.67,
         "pb": 0.82,
@@ -3296,12 +3696,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 25,
+        "max": 38
+      }
     },
     "VOC": {
       "symbol": "VOC",
-      "fetched_at": "2026-05-25T07:37:35.884650+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:47.982706+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 20.98,
         "pb": 0.71,
@@ -3343,12 +3750,19 @@
         "cf_quality": 3.97,
         "cf_free": 65659478.0
       },
-      "period": "2025-Q3"
+      "period": "2025-Q3",
+      "finance_score": {
+        "fundamental": 5,
+        "cashflow": 10,
+        "growth": 10,
+        "total": 25,
+        "max": 38
+      }
     },
     "VNZ": {
       "symbol": "VNZ",
-      "fetched_at": "2026-05-25T07:37:36.367401+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:48.053768+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -62.9,
         "pb": 10.97,
@@ -3388,12 +3802,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 12,
+        "max": 38
+      }
     },
     "VNY": {
       "symbol": "VNY",
-      "fetched_at": "2026-05-25T07:37:37.785125+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:51.868827+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 10.76,
         "pb": 0.83,
@@ -3433,12 +3854,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 9,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 17,
+        "max": 38
+      }
     },
     "VNT": {
       "symbol": "VNT",
-      "fetched_at": "2026-05-25T07:37:42.864353+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:55.352730+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 25.45,
         "pb": 1.92,
@@ -3478,12 +3906,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 5,
+        "max": 38
+      }
     },
     "VNS": {
       "symbol": "VNS",
-      "fetched_at": "2026-05-25T07:37:43.307074+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:57.052537+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 16.14,
         "pb": 0.55,
@@ -3523,12 +3958,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 5,
+        "cashflow": 0,
+        "growth": -4,
+        "total": 1,
+        "max": 38
+      }
     },
     "VNR": {
       "symbol": "VNR",
-      "fetched_at": "2026-05-25T07:37:44.526352+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:28:59.017026+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.65,
         "pb": 2.03,
@@ -3567,12 +4009,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 10,
+        "max": 38
+      }
     },
     "VNP": {
       "symbol": "VNP",
-      "fetched_at": "2026-05-25T07:37:46.444786+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:00.010611+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 22.2,
         "pb": 1.5,
@@ -3612,12 +4061,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -3,
+        "max": 38
+      }
     },
     "VNM": {
       "symbol": "VNM",
-      "fetched_at": "2026-05-25T07:37:49.822776+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:01.712753+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 13.59,
         "pb": 3.71,
@@ -3657,12 +4113,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 14,
+        "max": 38
+      }
     },
     "VNL": {
       "symbol": "VNL",
-      "fetched_at": "2026-05-25T07:37:50.301519+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:03.437476+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 5.13,
         "pb": 0.89,
@@ -3702,12 +4165,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 20,
+        "max": 38
+      }
     },
     "VNI": {
       "symbol": "VNI",
-      "fetched_at": "2026-05-25T07:37:51.476779+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:05.363629+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -3.44,
         "pb": 0.0,
@@ -3743,12 +4213,19 @@
         "debt_to_equity": 1.822
       },
       "cashflow": {},
-      "period": "2014-Q4"
+      "period": "2014-Q4",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 11,
+        "max": 38
+      }
     },
     "VNH": {
       "symbol": "VNH",
-      "fetched_at": "2026-05-25T07:37:53.432947+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:06.372760+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 0.66,
         "pb": 1.02,
@@ -3788,12 +4265,19 @@
         "cf_financing": null,
         "cf_quality": 0.0
       },
-      "period": "2018-Q1"
+      "period": "2018-Q1",
+      "finance_score": {
+        "fundamental": 18,
+        "cashflow": -10,
+        "growth": -6,
+        "total": 2,
+        "max": 38
+      }
     },
     "VNG": {
       "symbol": "VNG",
-      "fetched_at": "2026-05-25T07:37:56.705414+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:08.048115+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 81.2,
         "pb": 0.69,
@@ -3833,12 +4317,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -1,
+        "max": 38
+      }
     },
     "VNF": {
       "symbol": "VNF",
-      "fetched_at": "2026-05-25T07:37:57.231865+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:09.786481+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.31,
         "pb": 0.78,
@@ -3878,12 +4369,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 22,
+        "max": 38
+      }
     },
     "VNC": {
       "symbol": "VNC",
-      "fetched_at": "2026-05-25T07:38:03.626403+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:14.455486+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.23,
         "pb": 2.25,
@@ -3923,12 +4421,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 18,
+        "max": 38
+      }
     },
     "VNB": {
       "symbol": "VNB",
-      "fetched_at": "2026-05-25T07:38:04.114935+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:17.015614+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 14.17,
         "pb": 0.99,
@@ -3968,12 +4473,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 9,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 13,
+        "max": 38
+      }
     },
     "VNA": {
       "symbol": "VNA",
-      "fetched_at": "2026-05-25T07:38:05.644898+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:18.438421+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 13.75,
         "pb": 1.01,
@@ -4013,12 +4525,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 20,
+        "max": 38
+      }
     },
     "VMS": {
       "symbol": "VMS",
-      "fetched_at": "2026-05-25T07:38:10.311466+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:20.848089+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 16.68,
         "pb": 1.47,
@@ -4060,12 +4579,19 @@
         "cf_quality": -1.01,
         "cf_free": 25457032.0
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": -10,
+        "growth": 8,
+        "total": 1,
+        "max": 38
+      }
     },
     "VMG": {
       "symbol": "VMG",
-      "fetched_at": "2026-05-25T07:38:14.121952+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:26.584210+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -7.55,
         "pb": 0.58,
@@ -4107,12 +4633,19 @@
         "cf_quality": -4.32,
         "cf_free": -8275060.0
       },
-      "period": "2019-Q2"
+      "period": "2019-Q2",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": -10,
+        "growth": 6,
+        "total": 8,
+        "max": 38
+      }
     },
     "VMA": {
       "symbol": "VMA",
-      "fetched_at": "2026-05-25T07:38:17.641864+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:30.466223+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -4143,12 +4676,19 @@
         "cf_financing": null,
         "cf_free": -1373769.0
       },
-      "period": "2015-Q1"
+      "period": "2015-Q1",
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 5,
+        "growth": 0,
+        "total": 5,
+        "max": 38
+      }
     },
     "VMD": {
       "symbol": "VMD",
-      "fetched_at": "2026-05-25T07:38:17.230202+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:28.180266+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 9.78,
         "pb": 0.62,
@@ -4190,12 +4730,19 @@
         "cf_quality": -0.83,
         "cf_free": -166769647.0
       },
-      "period": "2025-Q1"
+      "period": "2025-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": -10,
+        "growth": -2,
+        "total": 0,
+        "max": 38
+      }
     },
     "VMC": {
       "symbol": "VMC",
-      "fetched_at": "2026-05-25T07:38:17.283898+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:30.236698+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 62.26,
         "pb": 0.42,
@@ -4235,12 +4782,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 1,
+        "max": 38
+      }
     },
     "VLW": {
       "symbol": "VLW",
-      "fetched_at": "2026-05-25T07:38:21.017306+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:33.447135+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 13.02,
         "pb": 1.81,
@@ -4276,12 +4830,19 @@
         "debt_to_equity": 0.27
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 20,
+        "max": 38
+      }
     },
     "VLP": {
       "symbol": "VLP",
-      "fetched_at": "2026-05-25T07:38:25.200981+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:36.497446+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -4317,12 +4878,19 @@
         "debt_to_equity": 0.2
       },
       "cashflow": {},
-      "period": "2017-Q2"
+      "period": "2017-Q2",
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 0,
+        "growth": -4,
+        "total": -4,
+        "max": 38
+      }
     },
     "VLG": {
       "symbol": "VLG",
-      "fetched_at": "2026-05-25T07:38:25.204549+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:37.162894+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 18.8,
         "pb": 0.73,
@@ -4362,12 +4930,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 5,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 15,
+        "max": 38
+      }
     },
     "VLS": {
       "symbol": "VLS",
-      "fetched_at": "2026-05-25T07:38:24.962285+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:34.727435+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 24.39,
         "pb": 1.53,
@@ -4409,12 +4984,19 @@
         "cf_quality": 1.61,
         "cf_free": 28111769.0
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 10,
+        "growth": 10,
+        "total": 23,
+        "max": 38
+      }
     },
     "VLF": {
       "symbol": "VLF",
-      "fetched_at": "2026-05-25T07:38:29.663670+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:42.130074+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -23.97,
         "pb": -0.42,
@@ -4450,12 +5032,19 @@
         "debt_to_equity": -1.337
       },
       "cashflow": {},
-      "period": "2021-Q4"
+      "period": "2021-Q4",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 5,
+        "total": 17,
+        "max": 38
+      }
     },
     "VLC": {
       "symbol": "VLC",
-      "fetched_at": "2026-05-25T07:38:32.698501+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:42.282190+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6083.14,
         "pb": 0.49,
@@ -4495,12 +5084,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 7,
+        "max": 38
+      }
     },
     "VLB": {
       "symbol": "VLB",
-      "fetched_at": "2026-05-25T07:38:33.438721+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:44.512563+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 7.46,
         "pb": 3.19,
@@ -4540,12 +5136,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 17,
+        "max": 38
+      }
     },
     "VLA": {
       "symbol": "VLA",
-      "fetched_at": "2026-05-25T07:38:34.452801+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:45.381189+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 38.84,
         "pb": 0.76,
@@ -4585,12 +5188,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -9,
+        "max": 38
+      }
     },
     "VKC": {
       "symbol": "VKC",
-      "fetched_at": "2026-05-25T07:38:40.535863+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:52.801733+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.36,
         "pb": -0.06,
@@ -4626,12 +5236,19 @@
         "debt_to_equity": -1.79
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": -6,
+        "total": 6,
+        "max": 38
+      }
     },
     "VJC": {
       "symbol": "VJC",
-      "fetched_at": "2026-05-25T07:38:41.344440+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:53.744877+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 54.93,
         "pb": 4.98,
@@ -4671,12 +5288,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -11,
+        "max": 38
+      }
     },
     "VIX": {
       "symbol": "VIX",
-      "fetched_at": "2026-05-25T07:38:43.948757+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:56.485663+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.22,
         "pb": 1.61,
@@ -4715,12 +5339,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 13,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 13,
+        "max": 38
+      }
     },
     "VIW": {
       "symbol": "VIW",
-      "fetched_at": "2026-05-25T07:38:44.744390+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:56.732073+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 42.21,
         "pb": 1.13,
@@ -4760,12 +5391,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -3,
+        "max": 38
+      }
     },
     "VIT": {
       "symbol": "VIT",
-      "fetched_at": "2026-05-25T07:38:47.698980+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:29:59.822926+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 16.33,
         "pb": 1.84,
@@ -4805,12 +5443,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 13,
+        "max": 38
+      }
     },
     "VIP": {
       "symbol": "VIP",
-      "fetched_at": "2026-05-25T07:38:51.670622+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:04.427895+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 9.73,
         "pb": 0.65,
@@ -4850,12 +5495,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 18,
+        "max": 38
+      }
     },
     "VIN": {
       "symbol": "VIN",
-      "fetched_at": "2026-05-25T07:38:53.412511+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:06.059515+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 38.87,
         "pb": 0.8,
@@ -4895,12 +5547,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 7,
+        "max": 38
+      }
     },
     "VIH": {
       "symbol": "VIH",
-      "fetched_at": "2026-05-25T07:38:57.706319+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:10.659196+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 526.14,
         "pb": 2.44,
@@ -4942,12 +5601,19 @@
         "cf_quality": -396.57,
         "cf_free": -65748413.0
       },
-      "period": "2018-Q2"
+      "period": "2018-Q2",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": -10,
+        "growth": 0,
+        "total": -15,
+        "max": 38
+      }
     },
     "VIG": {
       "symbol": "VIG",
-      "fetched_at": "2026-05-25T07:38:58.674413+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:11.342386+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -117.52,
         "pb": 0.72,
@@ -4986,12 +5652,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 12,
+        "max": 38
+      }
     },
     "VIF": {
       "symbol": "VIF",
-      "fetched_at": "2026-05-25T07:39:00.346548+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:12.414790+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 17.46,
         "pb": 1.1,
@@ -5031,12 +5704,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 3,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 13,
+        "max": 38
+      }
     },
     "VIE": {
       "symbol": "VIE",
-      "fetched_at": "2026-05-25T07:39:01.236664+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:13.491919+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -26.2,
         "pb": 1.27,
@@ -5072,12 +5752,19 @@
         "debt_to_equity": 0.417
       },
       "cashflow": {},
-      "period": "2022-Q2"
+      "period": "2022-Q2",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": -6,
+        "total": 4,
+        "max": 38
+      }
     },
     "VID": {
       "symbol": "VID",
-      "fetched_at": "2026-05-25T07:39:05.429876+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:18.202403+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 31.68,
         "pb": 0.32,
@@ -5119,12 +5806,19 @@
         "cf_quality": 6.07,
         "cf_free": -16161614.0
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 10,
+        "growth": 8,
+        "total": 15,
+        "max": 38
+      }
     },
     "VIC": {
       "symbol": "VIC",
-      "fetched_at": "2026-05-25T07:39:06.080620+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:18.377872+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 49.13,
         "pb": 8.66,
@@ -5164,12 +5858,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -17,
+        "max": 38
+      }
     },
     "VIB": {
       "symbol": "VIB",
-      "fetched_at": "2026-05-25T07:39:07.294566+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:18.720975+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 7.65,
         "pb": 1.29,
@@ -5208,12 +5909,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 10,
+        "max": 38
+      }
     },
     "VHL": {
       "symbol": "VHL",
-      "fetched_at": "2026-05-25T07:39:12.383052+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:24.359325+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 8.94,
         "pb": 0.53,
@@ -5253,12 +5961,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 20,
+        "max": 38
+      }
     },
     "VHH": {
       "symbol": "VHH",
-      "fetched_at": "2026-05-25T07:39:14.209566+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:25.081548+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -6.79,
         "pb": 0.0,
@@ -5294,12 +6009,19 @@
         "debt_to_equity": 1.396
       },
       "cashflow": {},
-      "period": "2014-Q1"
+      "period": "2014-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 17,
+        "max": 38
+      }
     },
     "VHG": {
       "symbol": "VHG",
-      "fetched_at": "2026-05-25T07:39:15.265808+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:26.730966+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 149.1,
         "pb": 2.16,
@@ -5339,12 +6061,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": -3,
+        "total": -11,
+        "max": 38
+      }
     },
     "VHF": {
       "symbol": "VHF",
-      "fetched_at": "2026-05-25T07:39:18.139947+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:30.036976+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 65.23,
         "pb": 1.8,
@@ -5384,12 +6113,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": -2,
+        "total": -7,
+        "max": 38
+      }
     },
     "VHE": {
       "symbol": "VHE",
-      "fetched_at": "2026-05-25T07:39:19.283127+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:32.480243+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 7.18,
         "pb": 0.33,
@@ -5429,12 +6165,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 22,
+        "max": 38
+      }
     },
     "VHD": {
       "symbol": "VHD",
-      "fetched_at": "2026-05-25T07:39:21.407896+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:33.492720+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -1.43,
         "pb": -7.5,
@@ -5474,12 +6217,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 18,
+        "cashflow": 0,
+        "growth": -6,
+        "total": 12,
+        "max": 38
+      }
     },
     "VHC": {
       "symbol": "VHC",
-      "fetched_at": "2026-05-25T07:39:22.229158+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:33.604252+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 9.35,
         "pb": 1.26,
@@ -5519,12 +6269,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 10,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 20,
+        "max": 38
+      }
     },
     "VGV": {
       "symbol": "VGV",
-      "fetched_at": "2026-05-25T07:39:25.016903+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:38.251939+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 39.89,
         "pb": 3.49,
@@ -5564,12 +6321,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": 10,
+        "total": -1,
+        "max": 38
+      }
     },
     "VGT": {
       "symbol": "VGT",
-      "fetched_at": "2026-05-25T07:39:26.362320+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:40.425111+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 7.19,
         "pb": 0.6,
@@ -5609,12 +6373,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": -2,
+        "total": 10,
+        "max": 38
+      }
     },
     "VGS": {
       "symbol": "VGS",
-      "fetched_at": "2026-05-25T07:39:29.209437+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:42.646904+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.85,
         "pb": 1.23,
@@ -5654,12 +6425,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 13,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 13,
+        "max": 38
+      }
     },
     "VGR": {
       "symbol": "VGR",
-      "fetched_at": "2026-05-25T07:39:29.325643+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:42.652254+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 12.08,
         "pb": 6.06,
@@ -5699,12 +6477,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 10,
+        "max": 38
+      }
     },
     "VGP": {
       "symbol": "VGP",
-      "fetched_at": "2026-05-25T07:39:33.206351+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:45.655625+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 12.48,
         "pb": 0.87,
@@ -5744,12 +6529,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 9,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 11,
+        "max": 38
+      }
     },
     "VGL": {
       "symbol": "VGL",
-      "fetched_at": "2026-05-25T07:39:33.237897+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:48.241069+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.92,
         "pb": 0.45,
@@ -5791,12 +6583,19 @@
         "cf_quality": -0.81,
         "cf_free": -6588401.0
       },
-      "period": "2018-Q1"
+      "period": "2018-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": -10,
+        "growth": 2,
+        "total": 4,
+        "max": 38
+      }
     },
     "VGI": {
       "symbol": "VGI",
-      "fetched_at": "2026-05-25T07:39:36.130915+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:49.029246+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 23.05,
         "pb": 5.03,
@@ -5836,12 +6635,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 6,
+        "max": 38
+      }
     },
     "VGG": {
       "symbol": "VGG",
-      "fetched_at": "2026-05-25T07:39:36.251064+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:49.478703+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 4.52,
         "pb": 0.78,
@@ -5877,12 +6683,19 @@
         "debt_to_equity": 1.405
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 18,
+        "max": 38
+      }
     },
     "VGC": {
       "symbol": "VGC",
-      "fetched_at": "2026-05-25T07:39:40.132983+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:52.049034+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 13.37,
         "pb": 1.63,
@@ -5922,12 +6735,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 15,
+        "max": 38
+      }
     },
     "VFS": {
       "symbol": "VFS",
-      "fetched_at": "2026-05-25T07:39:41.238226+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:55.357834+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 13.25,
         "pb": 1.24,
@@ -5966,12 +6786,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 7,
+        "max": 38
+      }
     },
     "VFR": {
       "symbol": "VFR",
-      "fetched_at": "2026-05-25T07:39:43.070500+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:55.619764+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.65,
         "pb": 0.47,
@@ -6011,12 +6838,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 20,
+        "max": 38
+      }
     },
     "VFG": {
       "symbol": "VFG",
-      "fetched_at": "2026-05-25T07:39:43.456351+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:56.706146+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.51,
         "pb": 1.28,
@@ -6056,7 +6890,14 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 13,
+        "cashflow": 0,
+        "growth": -6,
+        "total": 7,
+        "max": 38
+      }
     },
     "HRC": {
       "symbol": "HRC",
@@ -6310,8 +7151,8 @@
     },
     "VFC": {
       "symbol": "VFC",
-      "fetched_at": "2026-05-25T07:39:47.087870+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:30:58.439735+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 236.69,
         "pb": 4.66,
@@ -6351,12 +7192,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -11,
+        "cashflow": 0,
+        "growth": -2,
+        "total": -13,
+        "max": 38
+      }
     },
     "VET": {
       "symbol": "VET",
-      "fetched_at": "2026-05-25T07:39:48.647242+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:02.019426+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 15.14,
         "pb": 0.89,
@@ -6396,12 +7244,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 5,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 15,
+        "max": 38
+      }
     },
     "VES": {
       "symbol": "VES",
-      "fetched_at": "2026-05-25T07:39:49.943582+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:03.021664+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.55,
         "pb": 0.0,
@@ -6437,12 +7292,19 @@
         "debt_to_equity": 1.643
       },
       "cashflow": {},
-      "period": "2013-Q1"
+      "period": "2013-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 9,
+        "max": 38
+      }
     },
     "VEF": {
       "symbol": "VEF",
-      "fetched_at": "2026-05-25T07:39:50.392140+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:04.572568+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 1.42,
         "pb": 3.27,
@@ -6482,12 +7344,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": -6,
+        "total": -2,
+        "max": 38
+      }
     },
     "VEC": {
       "symbol": "VEC",
-      "fetched_at": "2026-05-25T07:39:54.001666+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:05.521933+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 33.77,
         "pb": 3.8,
@@ -6523,12 +7392,19 @@
         "debt_to_equity": 0.333
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -6,
+        "max": 38
+      }
     },
     "VEA": {
       "symbol": "VEA",
-      "fetched_at": "2026-05-25T07:39:55.572833+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:08.584647+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 6.2,
         "pb": 1.67,
@@ -6568,12 +7444,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 13,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 17,
+        "max": 38
+      }
     },
     "VE8": {
       "symbol": "VE8",
-      "fetched_at": "2026-05-25T07:39:57.311734+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:10.946059+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -0.47,
         "pb": -0.37,
@@ -6609,12 +7492,19 @@
         "debt_to_equity": -5.172
       },
       "cashflow": {},
-      "period": "2025-Q1"
+      "period": "2025-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 0,
+        "growth": 2,
+        "total": 17,
+        "max": 38
+      }
     },
     "VE4": {
       "symbol": "VE4",
-      "fetched_at": "2026-05-25T07:40:00.812955+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:11.660190+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 3730.03,
         "pb": 26.77,
@@ -6650,12 +7540,19 @@
         "debt_to_equity": 5.075
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 6,
+        "total": -2,
+        "max": 38
+      }
     },
     "VE9": {
       "symbol": "VE9",
-      "fetched_at": "2026-05-25T07:39:57.095896+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:09.804867+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 16.81,
         "pb": 3.88,
@@ -6695,12 +7592,19 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 0,
+        "growth": -3,
+        "total": -3,
+        "max": 38
+      }
     },
     "VE3": {
       "symbol": "VE3",
-      "fetched_at": "2026-05-25T07:40:02.634108+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:15.562729+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": 4.5,
         "pb": 0.28,
@@ -6736,12 +7640,19 @@
         "debt_to_equity": 4.618
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 18,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 28,
+        "max": 38
+      }
     },
     "VE2": {
       "symbol": "VE2",
-      "fetched_at": "2026-05-25T07:40:03.781942+07:00",
-      "schema_version": 2,
+      "fetched_at": "2026-05-25T08:31:16.007938+07:00",
+      "schema_version": 3,
       "ratio": {
         "pe": -9.22,
         "pb": 24.51,
@@ -6777,121 +7688,128 @@
         "debt_to_equity": 81.165
       },
       "cashflow": {},
-      "period": "2026-Q1"
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 4,
+        "cashflow": 0,
+        "growth": -3,
+        "total": 1,
+        "max": 38
+      }
     },
     "VW3": {
       "symbol": "VW3",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:36:13.808707+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:27:25.145185+07:00",
+      "schema_version": 3
     },
     "VTM": {
       "symbol": "VTM",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:36:34.427013+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:27:47.125064+07:00",
+      "schema_version": 3
     },
     "VXP": {
       "symbol": "VXP",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:36:07.388422+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:27:19.958533+07:00",
+      "schema_version": 3
     },
     "VWS": {
       "symbol": "VWS",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:36:08.360356+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:27:19.237491+07:00",
+      "schema_version": 3
     },
     "VSP": {
       "symbol": "VSP",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:36:54.754308+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:28:07.963026+07:00",
+      "schema_version": 3
     },
     "VSE": {
       "symbol": "VSE",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:37:08.122266+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:28:20.834731+07:00",
+      "schema_version": 3
     },
     "VPW": {
       "symbol": "VPW",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:37:21.742516+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:28:33.193141+07:00",
+      "schema_version": 3
     },
     "VTI": {
       "symbol": "VTI",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:36:40.881421+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:27:53.895094+07:00",
+      "schema_version": 3
     },
     "VMT": {
       "symbol": "VMT",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:14.121874+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:29:26.584093+07:00",
+      "schema_version": 3
     },
     "VNX": {
       "symbol": "VNX",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:37:46.444690+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:29:00.010513+07:00",
+      "schema_version": 3
     },
     "VPR": {
       "symbol": "VPR",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:37:23.905729+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:28:38.034037+07:00",
+      "schema_version": 3
     },
     "VMK": {
       "symbol": "VMK",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:17.283827+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:29:30.236617+07:00",
+      "schema_version": 3
     },
     "VMI": {
       "symbol": "VMI",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:17.641794+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:29:30.466136+07:00",
+      "schema_version": 3
     },
     "VKD": {
       "symbol": "VKD",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:44.744303+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:29:56.732011+07:00",
+      "schema_version": 3
     },
     "VIS": {
       "symbol": "VIS",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:53.412441+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:30:06.059433+07:00",
+      "schema_version": 3
     },
     "VKP": {
       "symbol": "VKP",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:43.948670+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:29:56.485589+07:00",
+      "schema_version": 3
     },
     "VIR": {
       "symbol": "VIR",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:38:57.706221+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:30:10.659107+07:00",
+      "schema_version": 3
     },
     "VHI": {
       "symbol": "VHI",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:39:18.139874+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:30:30.036901+07:00",
+      "schema_version": 3
     },
     "VIM": {
       "symbol": "VIM",
       "non_stock": true,
-      "fetched_at": "2026-05-25T07:39:01.236563+07:00",
-      "schema_version": 2
+      "fetched_at": "2026-05-25T08:30:13.491824+07:00",
+      "schema_version": 3
     },
     "C32": {
       "symbol": "C32",
