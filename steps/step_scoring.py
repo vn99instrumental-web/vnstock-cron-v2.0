@@ -8,6 +8,14 @@ Thay đổi từ bản cũ:
 2. Thêm Growth group (max 10đ) dùng is_rev_growth, is_profit_growth
 3. Fix news symbol_mentions: dùng \b word boundary regex thay vì simple `in`
 4. Pass-through architecture giữ nguyên — không cần sửa khi thêm field mới
+
+CHANGELOG:
+  2026-05-25 — FIX BUG negative PE/PB scoring:
+    - PE < 0 (loss) trước đây vẫn được bonus "very cheap +10" → SAI
+      Real examples từ log: VPH PE=-21.79 score=22, VVN PE=-0.26 score=19
+    - Fix: PE > 0 mới áp dụng thang bonus, PE < 0 → -5đ penalty
+    - Tương tự PB: PB < 0 = vốn chủ âm → -5đ
+    - Đồng bộ với fix v4 trong step_finance_scan._compute_finance_score
 """
 import os
 import sys
@@ -218,21 +226,32 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
     if ff_accel   is not None: add("ff",  5 if ff_accel   > 0 else -5, "FF accelerating" if ff_accel > 0 else "FF decelerating")
 
     # ── FUNDAMENTAL (max 18) ──
+    # FIX 2026-05-25: PE/PB âm KHÔNG được bonus "cheap" — phải penalty.
+    # Đồng bộ với step_finance_scan._compute_finance_score v4.
     r_pe = row.get("r_pe")
     r_pb = row.get("r_pb")
     roe  = row.get("r_roe")
 
-    if r_pe:
+    # PE: chỉ POSITIVE mới được scoring thang bonus
+    if r_pe is not None and r_pe > 0:
         if r_pe < 10:    add("fundamental",  10, f"PE={r_pe} very cheap")
         elif r_pe < 15:  add("fundamental",   7, f"PE={r_pe} cheap")
         elif r_pe <= 25: add("fundamental",   3, f"PE={r_pe} fair")
         else:            add("fundamental",  -5, f"PE={r_pe} expensive")
+    elif r_pe is not None and r_pe < 0:
+        # PE âm = công ty thua lỗ, KHÔNG phải "cheap"
+        add("fundamental", -5, f"PE={r_pe} negative (loss)")
+    # r_pe == 0 hoặc None: skip (ambiguous)
 
-    if r_pb:
+    # PB: chỉ POSITIVE mới scoring
+    if r_pb is not None and r_pb > 0:
         if r_pb < 1:     add("fundamental",  5, f"PB={r_pb} below book")
         elif r_pb <= 2:  add("fundamental",  3, f"PB={r_pb} fair")
         elif r_pb <= 3:  add("fundamental",  0, f"PB={r_pb} neutral")
         else:            add("fundamental", -3, f"PB={r_pb} expensive")
+    elif r_pb is not None and r_pb < 0:
+        # PB âm = vốn chủ âm (technically insolvent)
+        add("fundamental", -5, f"PB={r_pb} negative equity")
 
     if roe:
         if roe > 20:     add("fundamental",  5, f"ROE={roe}% excellent")
