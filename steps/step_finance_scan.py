@@ -54,6 +54,13 @@ TTL_NORMAL      = 30        # ngày
 
 CACHE_FILE = "finance/cache.json"
 
+# Schema version — bump khi đổi structure/fields trong cache entry
+# Khi version trong code khác version trong cache entry → re-fetch tự động
+# Lịch sử:
+#   1 = initial
+#   2 = CF đọc từ cash_flow() thay vì balance_sheet() (2026-05-25)
+SCHEMA_VERSION = 2
+
 # Pattern của non-stock symbols cần bỏ qua
 # ETF: E1VFVN30, FUEVFVND...  Derivatives: VN30F2401...  Index: VNINDEX, HNXINDEX
 import re as _re
@@ -101,19 +108,47 @@ def _current_ttl_days() -> int:
     return TTL_EARNINGS if month in EARNINGS_MONTHS else TTL_NORMAL
 
 def _is_stale(entry: dict) -> bool:
-    """True nếu entry chưa có hoặc đã quá TTL.
-    non_stock entries: TTL = 90 ngày (retry rất hiếm, warrant không đổi loại).
+    """True nếu entry cần re-fetch. Stale khi:
+    1. Không có entry hoặc không có fetched_at
+    2. Quá TTL (3 ngày earnings season / 30 ngày bình thường)
+       — non_stock: 90 ngày
+    3. Schema version cũ → code đã đổi structure → invalid
+    4. Missing critical field (cf_operating) trong entry không phải non_stock
+       → data quality issue từ schema cũ → force re-fetch
     """
     if not entry:
         return True
     fetched_at = entry.get("fetched_at")
     if not fetched_at:
         return True
+
+    # Check schema version — invalid nếu khác current
+    entry_version = entry.get("schema_version", 0)
+    if entry_version < SCHEMA_VERSION:
+        return True
+
+    # non_stock: cache 90 ngày, không cần check field
+    if entry.get("non_stock"):
+        try:
+            dt = datetime.fromisoformat(fetched_at)
+            age_days = (now_ict() - dt).total_seconds() / 86400
+            return age_days > 90
+        except Exception:
+            return True
+
+    # Data quality check: nếu có ratio nhưng thiếu cf_operating
+    # → cache từ schema cũ với bug CF reading → force refresh
+    ratio = entry.get("ratio", {})
+    cf    = entry.get("cashflow", {})
+    if ratio.get("pe") is not None and cf.get("cf_operating") is None:
+        # Có data ratio = stock thực, nhưng thiếu CF = bug schema cũ
+        return True
+
+    # TTL check
     try:
         dt = datetime.fromisoformat(fetched_at)
         age_days = (now_ict() - dt).total_seconds() / 86400
-        ttl = 90 if entry.get("non_stock") else _current_ttl_days()
-        return age_days > ttl
+        return age_days > _current_ttl_days()
     except Exception:
         return True
 
@@ -213,12 +248,13 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         return None
 
     result = {
-        "symbol"    : symbol,
-        "fetched_at": now_ict().isoformat(),
-        "ratio"     : {},
-        "income"    : {},
-        "balance"   : {},
-        "cashflow"  : {},
+        "symbol"        : symbol,
+        "fetched_at"    : now_ict().isoformat(),
+        "schema_version": SCHEMA_VERSION,
+        "ratio"         : {},
+        "income"        : {},
+        "balance"       : {},
+        "cashflow"      : {},
     }
 
     # ── CALL 1: RATIO ────────────────────────────────────────
@@ -368,7 +404,12 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
     if not has_data:
         log.warning(f"  [{symbol}] no finance data — marking as non-stock (warrant/special)")
         # Return sentinel: cached với TTL dài để không retry lãng phí
-        return {"symbol": symbol, "non_stock": True, "fetched_at": now_ict().isoformat()}
+        return {
+            "symbol"        : symbol,
+            "non_stock"     : True,
+            "fetched_at"    : now_ict().isoformat(),
+            "schema_version": SCHEMA_VERSION,
+        }
 
     return result
 
