@@ -6,6 +6,28 @@ Thay đổi từ bản cũ:
     thay vì simple `if sym in text` → 0 matches trước đây
   - Output paths: news/today_index.json, news/history.json, news/raw.json
   - Backward-compat alias: news_today_index.json, news_history.json, news_raw.json
+
+CHANGELOG:
+  2026-05-25 — FIX BUG "No RSS URLs configured" (3 sites missing):
+    Vấn đề: baodautu/tienphong/nhandan log warning "No RSS URLs configured"
+    mỗi lần chạy daily. Theo docs vnstock_news v2.2.0 (April 2026),
+    cả 3 sites này ĐỀU có sẵn config — vấn đề là runner có thể đang dùng
+    version cũ chưa update.
+
+    Multi-layer fix:
+    Layer 1: Switch get_articles_from_feed() → get_articles() unified crawler
+      → Built-in RSS + Sitemap fallback (theo doc v2.2.0+)
+    Layer 2: Manual RSS via RSS class với hardcoded URLs cho 3 sites
+      → Cover case version cũ chưa có RSS config
+    Layer 3: Log vnstock_news version để debug compatibility
+
+  Manual RSS URLs đã verify:
+    - baodautu:  https://baodautu.vn/rss/tin-moi-nhat.rss
+                 (confirmed từ docs vnstocks.com)
+    - tienphong: https://tienphong.vn/rss/kinh-te-3.rss
+                 https://tienphong.vn/rss/tai-chinh-chung-khoan-105.rss
+                 (confirmed từ https://tienphong.vn/rss.html)
+    - nhandan:   chưa confirm endpoint → để Layer 1 unified handle
 """
 import os
 import re
@@ -55,6 +77,23 @@ FINANCE_SITES = [
 
 LIMIT_PER_FEED = 30
 HISTORY_DAYS   = 30
+
+# ─── Manual RSS fallback URLs (Layer 2) ──────────────────────────────────────
+# Khi vnstock_news Crawler fail cho 1 site, thử dùng RSS class với URL hardcoded.
+# Chỉ dùng cho 3 sites báo "No RSS URLs configured" trong log.
+# Verified URLs từ official RSS pages.
+_RSS_FALLBACK_URLS = {
+    "baodautu": [
+        "https://baodautu.vn/rss/tin-moi-nhat.rss",
+    ],
+    "tienphong": [
+        "https://tienphong.vn/rss/kinh-te-3.rss",
+        "https://tienphong.vn/rss/tai-chinh-chung-khoan-105.rss",
+        "https://tienphong.vn/rss/doanh-nghiep-22.rss",
+    ],
+    # nhandan: chưa confirm — để Layer 1 unified xử lý
+}
+
 
 # ─── Time helpers ─────────────────────────────────────────────────────────────
 
@@ -209,19 +248,14 @@ def _score_macro(text: str, industries: list | None = None) -> float:
     """
     t = text.lower()
     total = 0.0
-    # Neutral keywords (kw có bias 0) hoặc positive (>0): áp dụng luôn
-    # Negative keywords generic (<0, ngắn): chỉ áp dụng nếu có industry tag
     has_fin_context = bool(industries)
 
     for kw, bias in MACRO_KEYWORDS.items():
         if kw.lower() in t:
             if bias >= 0:
-                total += bias  # positive always counts
+                total += bias
             elif has_fin_context:
-                total += bias  # negative only if article has industry tag
-            else:
-                # Generic negative without financial context → skip
-                pass
+                total += bias
     return float(total)
 
 def _tag_industries(text: str) -> list[str]:
@@ -231,67 +265,155 @@ def _tag_industries(text: str) -> list[str]:
         if any(kw.lower() in t for kw in keywords)
     ]
 
-# ─── Crawl ────────────────────────────────────────────────────────────────────
+# ─── Article normalization helpers ────────────────────────────────────────────
 
-def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
+def _enrich_article(art: dict, site_name: str, source_weight: float,
+                    now: datetime) -> dict:
+    """Enrich raw article dict với sentiment, decay, industry tags."""
+    title = art.get("title") or ""
+    desc  = art.get("short_description") or art.get("description") or \
+            art.get("summary") or ""
+    text  = f"{title} {desc}"
+
+    news_type      = _classify_news_type(text)
+    effective_date = _extract_effective_date(text) \
+                     if news_type == "delayed" else None
+    industries     = _tag_industries(text)
+    raw_sentiment  = _score_sentiment(text)
+    macro_score    = _score_macro(text, industries)
+
+    art_meta = {
+        "publish_time"  : str(art.get("publish_time", "")),
+        "news_type"     : news_type,
+        "effective_date": effective_date,
+    }
+    decay = _impact_decay(art_meta, now)
+
+    # URL có thể ở 'url' (Crawler output) hoặc 'link' (RSS class output)
+    url = art.get("url") or art.get("link") or ""
+
+    return {
+        "url"               : url,
+        "title"             : title,
+        "short_description" : desc,
+        "publish_time"      : str(art.get("publish_time")
+                                  or art.get("pubDate")
+                                  or art.get("published") or ""),
+        "category"          : art.get("category", ""),
+        "tags"              : art.get("tags", ""),
+        "source"            : site_name,
+        "source_weight"     : source_weight,
+        "news_type"         : news_type,
+        "effective_date"    : effective_date,
+        "matched_industries": industries,
+        "raw_sentiment"     : raw_sentiment,
+        "macro_score"       : macro_score,
+        "time_decay"        : decay,
+        "weighted_sentiment": round(raw_sentiment * source_weight * decay, 4),
+    }
+
+
+def _try_unified_crawler(site_name: str) -> list | None:
+    """
+    Layer 1: vnstock_news Crawler.get_articles() — built-in RSS+Sitemap fallback.
+
+    Theo docs v2.2.0+: get_articles() unified crawler tự động:
+      - Try RSS trước
+      - Fallback sang Sitemap nếu RSS fail
+      - Return List[Dict] với keys: url, title, short_description, ...
+    """
     try:
         from vnstock_news import Crawler
         crawler = Crawler(site_name=site_name)
-        raw     = crawler.get_articles_from_feed(limit_per_feed=LIMIT_PER_FEED)
+        # IMPORTANT: get_articles() != get_articles_from_feed()
+        # get_articles_from_feed() = RSS only (old behavior)
+        # get_articles() = unified RSS + Sitemap fallback (v2.2.0+)
+        raw = crawler.get_articles(limit=LIMIT_PER_FEED)
 
         if not isinstance(raw, list):
-            try:   raw = raw.to_dict("records")
-            except Exception: raw = []
-
-        enriched = []
-        now      = now_ict()
-
-        for art in raw:
-            title = art.get("title") or ""
-            desc  = art.get("short_description") or ""
-            text  = f"{title} {desc}"
-
-            news_type      = _classify_news_type(text)
-            effective_date = _extract_effective_date(text) \
-                             if news_type == "delayed" else None
-            industries     = _tag_industries(text)
-            raw_sentiment  = _score_sentiment(text)
-            macro_score    = _score_macro(text, industries)
-
-            art_meta = {
-                "publish_time"  : str(art.get("publish_time", "")),
-                "news_type"     : news_type,
-                "effective_date": effective_date,
-            }
-            decay = _impact_decay(art_meta, now)
-
-            enriched.append({
-                "url"               : art.get("url", ""),
-                "title"             : title,
-                "short_description" : desc,
-                "publish_time"      : str(art.get("publish_time", "")),
-                "category"          : art.get("category", ""),
-                "tags"              : art.get("tags", ""),
-                "source"            : site_name,
-                "source_weight"     : source_weight,
-                "news_type"         : news_type,
-                "effective_date"    : effective_date,
-                "matched_industries": industries,
-                "raw_sentiment"     : raw_sentiment,
-                "macro_score"       : macro_score,
-                "time_decay"        : decay,
-                "weighted_sentiment": round(raw_sentiment * source_weight * decay, 4),
-            })
-
-        tagged  = sum(1 for a in enriched if a["matched_industries"])
-        delayed = sum(1 for a in enriched if a["news_type"] == "delayed")
-        log.info(f"  ✅ {site_name}: {len(enriched)} articles, "
-                 f"{tagged} tagged, {delayed} delayed")
-        return enriched
-
+            try:
+                raw = raw.to_dict("records")
+            except Exception:
+                raw = []
+        return raw if raw else None
     except Exception as e:
-        log.warning(f"  ⚠️ {site_name} failed: {e}")
+        log.debug(f"  {site_name}: Layer 1 (unified) error: {e}")
+        return None
+
+
+def _try_manual_rss(site_name: str) -> list | None:
+    """
+    Layer 2: Manual RSS với hardcoded URLs.
+    Chỉ áp dụng cho sites trong _RSS_FALLBACK_URLS.
+    """
+    if site_name not in _RSS_FALLBACK_URLS:
+        return None
+
+    try:
+        from vnstock_news.core.rss import RSS
+    except Exception as e:
+        log.warning(f"  {site_name}: Layer 2 import RSS failed: {e}")
+        return None
+
+    for rss_url in _RSS_FALLBACK_URLS[site_name]:
+        try:
+            rss = RSS(rss_url=rss_url, description_format='text')
+            items = rss.fetch()
+            if items and isinstance(items, list) and len(items) > 0:
+                log.info(f"  {site_name}: Layer 2 RSS {rss_url} returned "
+                         f"{len(items)} items")
+                return items
+        except Exception as e:
+            log.debug(f"  {site_name}: RSS {rss_url} failed: {e}")
+            continue
+
+    return None
+
+
+def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
+    """
+    Multi-layer crawl với fallback strategy:
+      Layer 1: Crawler.get_articles() unified (RSS + sitemap fallback)
+      Layer 2: Manual RSS với hardcoded URLs (cho 3 sites broken)
+    """
+    raw_articles = None
+    layer_used   = None
+
+    # Layer 1
+    raw_articles = _try_unified_crawler(site_name)
+    if raw_articles:
+        layer_used = "L1 unified"
+
+    # Layer 2 (only if Layer 1 failed AND site has fallback URL)
+    if not raw_articles:
+        raw_articles = _try_manual_rss(site_name)
+        if raw_articles:
+            layer_used = "L2 manual RSS"
+
+    # All layers exhausted
+    if not raw_articles:
+        log.warning(f"  ⚠️ {site_name} failed: all layers exhausted "
+                    f"(check RSS config or update vnstock_news)")
         return []
+
+    # Enrich articles
+    enriched = []
+    now      = now_ict()
+    for art in raw_articles[:LIMIT_PER_FEED]:
+        if not isinstance(art, dict):
+            continue
+        try:
+            enriched.append(_enrich_article(art, site_name, source_weight, now))
+        except Exception as e:
+            log.debug(f"  {site_name}: enrich article failed: {e}")
+            continue
+
+    tagged  = sum(1 for a in enriched if a["matched_industries"])
+    delayed = sum(1 for a in enriched if a["news_type"] == "delayed")
+    log.info(f"  ✅ {site_name} ({layer_used}): {len(enriched)} articles, "
+             f"{tagged} tagged, {delayed} delayed")
+    return enriched
+
 
 # ─── History ──────────────────────────────────────────────────────────────────
 
@@ -405,9 +527,8 @@ def _build_today_index(all_articles: list) -> dict:
     macro_vals = [v for v, _ in macro_tuples]
 
     # Symbol mentions — FIX: word boundary regex
-    # Load from both paths (primary + backward-compat alias)
-    industry_map = load_json("market/industry_map.json") or                    load_json("industry_map.json") or []
-    # Robust symbol extraction — handle various column names
+    industry_map = load_json("market/industry_map.json") or \
+                   load_json("industry_map.json") or []
     all_symbols = list({
         r.get("symbol") or r.get("ticker") or r.get("code")
         for r in industry_map
@@ -456,8 +577,37 @@ def _build_today_index(all_articles: list) -> dict:
 
 # ─── Entry point ──────────────────────────────────────────────────────────────
 
+def _log_vnstock_news_version():
+    """
+    Layer 3: Log vnstock_news version để debug RSS issues.
+    v2.2.0+ (April 2026) fix RSS cho baodautu/tienphong/nhandan/...
+    Nếu version cũ hơn → user nên upgrade.
+    """
+    try:
+        import vnstock_news
+        version = getattr(vnstock_news, "__version__", None) or \
+                  getattr(vnstock_news, "VERSION", None) or \
+                  "unknown"
+        log.info(f"  vnstock_news version: {version}")
+        if version != "unknown" and isinstance(version, str):
+            # Cảnh báo nếu version cũ
+            try:
+                major, minor = map(int, version.split(".")[:2])
+                if (major, minor) < (2, 2):
+                    log.warning(
+                        f"  ⚠️ vnstock_news {version} is older than v2.2.0 — "
+                        f"baodautu/tienphong/nhandan RSS có thể fail. "
+                        f"Consider upgrading."
+                    )
+            except (ValueError, AttributeError):
+                pass
+    except Exception as e:
+        log.debug(f"  Could not detect vnstock_news version: {e}")
+
+
 def run():
     log.info("=== step_news_daily: START ===")
+    _log_vnstock_news_version()
 
     all_articles: list[dict] = []
     for site_name, weight in FINANCE_SITES:
