@@ -3,15 +3,12 @@
     "symbol": "HRC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 50.7,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 33700.0,
-    "depth_sell": 14400.0,
-    "depth_buy_ratio": 0.7,
     "ema20": 47.87,
     "ema50": 49.93,
     "adx": 25.34,
@@ -114,7 +111,7 @@
     "is_rev_growth_yoy": 0.5921,
     "is_profit_growth_yoy": 1.327,
     "bs_total_assets": 857818565.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 228512780.0,
     "bs_short_debt": 114168050.0,
     "bs_long_debt": 45251140.0,
@@ -138,15 +135,15 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
-        "title": "Vụ rò rỉ hóa chất quận Cam: Thống đốc California ban bố tình trạng khẩn cấp",
-        "source": "tuoitre",
-        "time": "Sun, 24 May 2026",
+        "title": "Loại phân bón đặc biệt của cây cà phê",
+        "source": "znews",
+        "time": "Fri, 22 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
@@ -156,9 +153,9 @@
         "type": "industry"
       },
       {
-        "title": "Loại phân bón đặc biệt của cây cà phê",
-        "source": "znews",
-        "time": "Fri, 22 May 2026",
+        "title": "Người Nhật cũng từng 'giờ cao su', vì sao hiện tại luôn đúng giờ tuyệt đối?",
+        "source": "cafebiz",
+        "time": "Sun, 24 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
@@ -180,23 +177,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 24.82,
+    "total_score": 24.81,
     "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=25.34 strong +5 | ST=58.57 bearish -5 | RSI=54.12 neutral +5 | MACD hist=0.28>0 +10 | Stoch K<63.3 cross down -3 | MFI=67.93 neutral 0 | OBV divergence -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | RevGrowth=59.2% strong +5 | ProfitGrowth=132.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.82 [Vụ rò rỉ hóa chất quận Cam: Thống đốc Ca... · tuoitre ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=25.34 strong +5 | ST=58.57 bearish -5 | RSI=54.12 neutral +5 | MACD hist=0.28>0 +10 | Stoch K<63.3 cross down -3 | MFI=67.93 neutral 0 | OBV divergence -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | RevGrowth=59.2% strong +5 | ProfitGrowth=132.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.81 [Loại phân bón đặc biệt của cây cà phê... · znews ·  2026]"
   },
   {
     "symbol": "TNT",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 11.7,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 99900.0,
-    "depth_sell": 258500.0,
-    "depth_buy_ratio": 0.28,
     "ema20": 10.37,
     "ema50": 9.88,
     "adx": 18.42,
@@ -210,7 +204,7 @@
     "stoch_k": 88.51,
     "stoch_d": 72.84,
     "bb_upper": 9.78,
-    "bb_mid": 10.46,
+    "bb_mid": 10.45,
     "bb_lower": 11.13,
     "atr": 0.55,
     "bb_position": -0.42,
@@ -299,7 +293,7 @@
     "is_rev_growth_yoy": 0.2881,
     "is_profit_growth_yoy": -0.8895,
     "bs_total_assets": 832849837.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 188230876.0,
     "bs_short_debt": 70605589.0,
     "bs_long_debt": 520000.0,
@@ -323,11 +317,23 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
+      {
+        "title": "Khi ranh giới thẩm mỹ bị xô lệch: Xây dựng rào cản văn hóa đủ mạnh",
+        "source": "nld",
+        "time": "Mon, 25 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Xây dựng và Vật liệu"
+        ],
+        "contribution": 0.0,
+        "type": "industry"
+      },
       {
         "title": "Khởi công xây dựng công viên Bình Hưng Hòa Xanh ở TP.HCM",
         "source": "tuoitre",
@@ -354,23 +360,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 48.82,
+    "total_score": 48.81,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=18.42 sideways 0 | ST=9.97 bullish +5 | RSI=74.01 overbought -10 | MACD hist=0.33>0 +10 | Stoch K=88.51 overbought -5 | CMF=0.67 inflow +10 | MFI=92.18 overbought -5 | OBV confirms trend +5 | BB pos=-0.42 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | RevGrowth=28.8% strong +5 | ProfitGrowth=-88.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Khởi công xây dựng công viên Bình Hưng H... · tuoitre ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=18.42 sideways 0 | ST=9.97 bullish +5 | RSI=74.01 overbought -10 | MACD hist=0.33>0 +10 | Stoch K=88.51 overbought -5 | CMF=0.67 inflow +10 | MFI=92.18 overbought -5 | OBV confirms trend +5 | BB pos=-0.42 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | RevGrowth=28.8% strong +5 | ProfitGrowth=-88.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Khi ranh giới thẩm mỹ bị xô lệch: Xây dự... · nld ·  2026]"
   },
   {
     "symbol": "VPH",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 3.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 119400.0,
-    "depth_sell": 8000.0,
-    "depth_buy_ratio": 0.94,
     "ema20": 3.55,
     "ema50": 3.51,
     "adx": 32.85,
@@ -389,9 +392,9 @@
     "atr": 0.15,
     "bb_position": -0.02,
     "atr_pct": 3.95,
-    "obv": 901459.0,
+    "obv": 901705.0,
     "cmf": 0.09,
-    "mfi": 61.28,
+    "mfi": 61.29,
     "_ohlcv_5d": [
       {
         "date": "2026-05-18",
@@ -400,7 +403,7 @@
         "low": 3.51,
         "close": 3.51,
         "volume": 67707,
-        "vs_avg5d_pct": -16.5
+        "vs_avg5d_pct": -16.6
       },
       {
         "date": "2026-05-19",
@@ -409,7 +412,7 @@
         "low": 3.5,
         "close": 3.58,
         "volume": 61603,
-        "vs_avg5d_pct": -24.0
+        "vs_avg5d_pct": -24.1
       },
       {
         "date": "2026-05-20",
@@ -418,7 +421,7 @@
         "low": 3.47,
         "close": 3.47,
         "volume": 67276,
-        "vs_avg5d_pct": -17.0
+        "vs_avg5d_pct": -17.1
       },
       {
         "date": "2026-05-21",
@@ -435,8 +438,8 @@
         "high": 3.8,
         "low": 3.47,
         "close": 3.8,
-        "volume": 195000,
-        "vs_avg5d_pct": 140.4
+        "volume": 195246,
+        "vs_avg5d_pct": 140.6
       }
     ],
     "ff_buy_val_5d": 1378314000.0,
@@ -473,7 +476,7 @@
     "is_rev_growth_yoy": 2.6817,
     "is_profit_growth_yoy": 0.9874,
     "bs_total_assets": 1956432616.0,
-    "bs_equity": null,
+    "bs_equity": 1027697060.0,
     "bs_total_liab": 928735556.0,
     "bs_short_debt": 536894851.0,
     "bs_long_debt": NaN,
@@ -482,10 +485,10 @@
     "cf_financing": null,
     "cf_free": null,
     "cf_quality_ratio": null,
-    "finance_score": 22.0,
-    "finance_score_fund": 12.0,
-    "finance_score_cf": 0.0,
-    "finance_score_growth": 10.0,
+    "finance_score": NaN,
+    "finance_score_fund": NaN,
+    "finance_score_cf": NaN,
+    "finance_score_growth": NaN,
     "industry": "Bất động sản",
     "icb_code": "8600",
     "market_valuation": "FAIR",
@@ -498,9 +501,9 @@
     "growth_score": 10,
     "context_score": 0,
     "news_score": 4.79,
-    "news_industry": 1.97,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
@@ -515,13 +518,12 @@
         "type": "industry"
       },
       {
-        "title": "Siêu tuyến đường 10 làn xe xuyên qua khu đô thị đắt đỏ nhất Hà Nội, kết nối tới ",
+        "title": "5 năm 'đáng kinh ngạc' của Vinhomes: Từ các KĐT 100-400ha đến các đại đô thị 5.0",
         "source": "cafebiz",
-        "time": "Sun, 24 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Sản xuất thực phẩm",
           "Bất động sản"
         ],
         "contribution": 0.0,
@@ -542,21 +544,18 @@
     ],
     "total_score": 89.79,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=32.85 strong +5 | ST=3.38 bullish +5 | MACD hist=0.07>0 +10 | Stoch K>35.71 cross up +3 | MFI=61.28 neutral 0 | OBV confirms trend +5 | BB pos=-0.02 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=-21.79 very cheap +10 | PB=0.42 below book +5 | ROE=-0.03% weak -3 | RevGrowth=268.2% strong +5 | ProfitGrowth=98.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.79 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=32.85 strong +5 | ST=3.38 bullish +5 | MACD hist=0.07>0 +10 | Stoch K>35.71 cross up +3 | MFI=61.29 neutral 0 | OBV confirms trend +5 | BB pos=-0.02 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=-21.79 very cheap +10 | PB=0.42 below book +5 | ROE=-0.03% weak -3 | RevGrowth=268.2% strong +5 | ProfitGrowth=98.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.79 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
   },
   {
     "symbol": "VND",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 17.45,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 27612700.0,
-    "depth_sell": 17596800.0,
-    "depth_buy_ratio": 0.61,
     "ema20": 16.55,
     "ema50": 16.76,
     "adx": 9.86,
@@ -659,7 +658,7 @@
     "is_rev_growth_yoy": NaN,
     "is_profit_growth_yoy": NaN,
     "bs_total_assets": 51628903138.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 28656048680.0,
     "bs_short_debt": NaN,
     "bs_long_debt": NaN,
@@ -668,10 +667,10 @@
     "cf_financing": null,
     "cf_free": null,
     "cf_quality_ratio": null,
-    "finance_score": 7.0,
-    "finance_score_fund": 7.0,
-    "finance_score_cf": 0.0,
-    "finance_score_growth": 0.0,
+    "finance_score": NaN,
+    "finance_score_fund": NaN,
+    "finance_score_cf": NaN,
+    "finance_score_growth": NaN,
     "industry": "Dịch vụ tài chính",
     "icb_code": "8700",
     "market_valuation": "FAIR",
@@ -683,11 +682,23 @@
     "cf_score": 0,
     "growth_score": -2,
     "context_score": 0,
-    "news_score": 4.83,
+    "news_score": 4.82,
     "news_industry": 2.01,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
+      {
+        "title": "Hàng ngàn tăng ni, Phật tử, nghệ sĩ tham gia lễ rước và tắm Phật mùa Phật đản tạ",
+        "source": "tuoitre",
+        "time": "Mon, 25 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.5,
+        "type": "industry"
+      },
       {
         "title": "Còn hơn 2 tuần thi tốt nghiệp THPT, TP.HCM yêu cầu trường làm gì để hỗ trợ học s",
         "source": "tuoitre",
@@ -696,18 +707,6 @@
         "effective_date": null,
         "industries": [
           "Bia và đồ uống",
-          "Dịch vụ tài chính"
-        ],
-        "contribution": 0.5,
-        "type": "industry"
-      },
-      {
-        "title": "Chương trình tiếng Anh tăng cường ở TP.HCM: 28 năm từ một ý tưởng tiên phong",
-        "source": "tuoitre",
-        "time": "Sun, 24 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
           "Dịch vụ tài chính"
         ],
         "contribution": 0.5,
@@ -726,23 +725,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 17.83,
+    "total_score": 17.82,
     "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=9.86 sideways 0 | ST=15.75 bullish +5 | MACD hist=0.02>0 +10 | Stoch K>51.49 cross up +3 | CMF=-0.11 outflow -10 | MFI=64.8 neutral 0 | OBV divergence -5 | BB pos=-0.28 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=14.64 cheap +7 | PB=1.42 fair +3 | ROE=1.65% weak -3 | RevGrowth=nan% slight decline -1 | ProfitGrowth=nan% slight decline -1 | Market FAIR 0 | News NEUTRAL +4.83 [Còn hơn 2 tuần thi tốt nghiệp THPT, TP.H... · tuoitre ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=9.86 sideways 0 | ST=15.75 bullish +5 | MACD hist=0.02>0 +10 | Stoch K>51.49 cross up +3 | CMF=-0.11 outflow -10 | MFI=64.8 neutral 0 | OBV divergence -5 | BB pos=-0.28 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=14.64 cheap +7 | PB=1.42 fair +3 | ROE=1.65% weak -3 | RevGrowth=nan% slight decline -1 | ProfitGrowth=nan% slight decline -1 | Market FAIR 0 | News NEUTRAL +4.82 [Hàng ngàn tăng ni, Phật tử, nghệ sĩ tham... · tuoitre ·  2026]"
   },
   {
     "symbol": "VRC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 13.65,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 57500.0,
-    "depth_sell": 4800.0,
-    "depth_buy_ratio": 0.92,
     "ema20": 12.83,
     "ema50": 12.98,
     "adx": 30.92,
@@ -845,7 +841,7 @@
     "is_rev_growth_yoy": 5.5228,
     "is_profit_growth_yoy": -0.9717,
     "bs_total_assets": 1745869777.0,
-    "bs_equity": null,
+    "bs_equity": 1273667257.0,
     "bs_total_liab": 472202521.0,
     "bs_short_debt": 334955977.0,
     "bs_long_debt": NaN,
@@ -854,10 +850,10 @@
     "cf_financing": null,
     "cf_free": null,
     "cf_quality_ratio": null,
-    "finance_score": -1.0,
-    "finance_score_fund": -3.0,
-    "finance_score_cf": 0.0,
-    "finance_score_growth": 2.0,
+    "finance_score": NaN,
+    "finance_score_fund": NaN,
+    "finance_score_cf": NaN,
+    "finance_score_growth": NaN,
     "industry": "Bất động sản",
     "icb_code": "8600",
     "market_valuation": "FAIR",
@@ -870,9 +866,9 @@
     "growth_score": 2,
     "context_score": 0,
     "news_score": 4.79,
-    "news_industry": 1.97,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
@@ -887,13 +883,12 @@
         "type": "industry"
       },
       {
-        "title": "Siêu tuyến đường 10 làn xe xuyên qua khu đô thị đắt đỏ nhất Hà Nội, kết nối tới ",
+        "title": "5 năm 'đáng kinh ngạc' của Vinhomes: Từ các KĐT 100-400ha đến các đại đô thị 5.0",
         "source": "cafebiz",
-        "time": "Sun, 24 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Sản xuất thực phẩm",
           "Bất động sản"
         ],
         "contribution": 0.0,
@@ -920,15 +915,12 @@
     "symbol": "CRE",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 7.86,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 554500.0,
-    "depth_sell": 205100.0,
-    "depth_buy_ratio": 0.73,
     "ema20": 7.57,
     "ema50": 7.52,
     "adx": 10.11,
@@ -1031,7 +1023,7 @@
     "is_rev_growth_yoy": 1.2599,
     "is_profit_growth_yoy": 12.1836,
     "bs_total_assets": 7583220385.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 1641596452.0,
     "bs_short_debt": 736904777.0,
     "bs_long_debt": 97757942.0,
@@ -1056,9 +1048,9 @@
     "growth_score": 10,
     "context_score": 0,
     "news_score": 4.79,
-    "news_industry": 1.97,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
@@ -1073,13 +1065,12 @@
         "type": "industry"
       },
       {
-        "title": "Siêu tuyến đường 10 làn xe xuyên qua khu đô thị đắt đỏ nhất Hà Nội, kết nối tới ",
+        "title": "5 năm 'đáng kinh ngạc' của Vinhomes: Từ các KĐT 100-400ha đến các đại đô thị 5.0",
         "source": "cafebiz",
-        "time": "Sun, 24 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Sản xuất thực phẩm",
           "Bất động sản"
         ],
         "contribution": 0.0,
@@ -1106,15 +1097,12 @@
     "symbol": "CNG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 23.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 7200.0,
-    "depth_sell": 32700.0,
-    "depth_buy_ratio": 0.18,
     "ema20": 23.02,
     "ema50": 23.87,
     "adx": 14.4,
@@ -1217,7 +1205,7 @@
     "is_rev_growth_yoy": 0.288,
     "is_profit_growth_yoy": 26.7035,
     "bs_total_assets": 1720622128.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 1083656068.0,
     "bs_short_debt": 17201600.0,
     "bs_long_debt": 43257200.0,
@@ -1241,10 +1229,10 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -1259,23 +1247,20 @@
         "type": "macro"
       }
     ],
-    "total_score": -0.17999999999999972,
+    "total_score": -0.1900000000000004,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=14.4 sideways 0 | ST=24.02 bearish -5 | RSI=47.32 neutral +5 | MACD hist=-0.42<0 -10 | Stoch K>31.62 cross up +3 | MFI=26.68 neutral 0 | OBV divergence -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=12.38 cheap +7 | PB=1.35 fair +3 | ROE=0.71% weak -3 | RevGrowth=28.8% strong +5 | ProfitGrowth=2670.3% strong +5 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=14.4 sideways 0 | ST=24.02 bearish -5 | RSI=47.32 neutral +5 | MACD hist=-0.42<0 -10 | Stoch K>31.62 cross up +3 | MFI=26.68 neutral 0 | OBV divergence -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=12.38 cheap +7 | PB=1.35 fair +3 | ROE=0.71% weak -3 | RevGrowth=28.8% strong +5 | ProfitGrowth=2670.3% strong +5 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "C32",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 14.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 500.0,
-    "depth_sell": 6000.0,
-    "depth_buy_ratio": 0.08,
     "ema20": 13.21,
     "ema50": 12.49,
     "adx": 31.66,
@@ -1378,7 +1363,7 @@
     "is_rev_growth_yoy": 0.7183,
     "is_profit_growth_yoy": -5.1866,
     "bs_total_assets": 851701001.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 269725533.0,
     "bs_short_debt": 195364500.0,
     "bs_long_debt": NaN,
@@ -1402,11 +1387,23 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
+      {
+        "title": "Khi ranh giới thẩm mỹ bị xô lệch: Xây dựng rào cản văn hóa đủ mạnh",
+        "source": "nld",
+        "time": "Mon, 25 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Xây dựng và Vật liệu"
+        ],
+        "contribution": 0.0,
+        "type": "industry"
+      },
       {
         "title": "Khởi công xây dựng công viên Bình Hưng Hòa Xanh ở TP.HCM",
         "source": "tuoitre",
@@ -1433,23 +1430,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 73.82,
+    "total_score": 73.81,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=31.66 strong +5 | ST=15.12 bearish -5 | MACD hist=0.63>0 +10 | Stoch K<37.7 cross down -3 | CMF=0.36 inflow +10 | MFI=45.27 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | RevGrowth=71.8% strong +5 | ProfitGrowth=-518.7% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Khởi công xây dựng công viên Bình Hưng H... · tuoitre ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=31.66 strong +5 | ST=15.12 bearish -5 | MACD hist=0.63>0 +10 | Stoch K<37.7 cross down -3 | CMF=0.36 inflow +10 | MFI=45.27 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | RevGrowth=71.8% strong +5 | ProfitGrowth=-518.7% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Khi ranh giới thẩm mỹ bị xô lệch: Xây dự... · nld ·  2026]"
   },
   {
     "symbol": "HSL",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 4.87,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 38500.0,
-    "depth_sell": 35300.0,
-    "depth_buy_ratio": 0.52,
     "ema20": 5.0,
     "ema50": 5.37,
     "adx": 20.32,
@@ -1552,7 +1546,7 @@
     "is_rev_growth_yoy": 2.1481,
     "is_profit_growth_yoy": -1.6152,
     "bs_total_assets": 468128033.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 21063522.0,
     "bs_short_debt": NaN,
     "bs_long_debt": NaN,
@@ -1576,10 +1570,10 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -1594,23 +1588,20 @@
         "type": "macro"
       }
     ],
-    "total_score": -9.18,
+    "total_score": -9.190000000000001,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ST=5.35 bearish -5 | MACD hist=-0.09<0 -10 | Stoch K<27.76 cross down -3 | CMF=0.17 inflow +10 | MFI=52.25 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=691.36 expensive -5 | PB=0.6 below book +5 | ROE=-0.21% weak -3 | RevGrowth=214.8% strong +5 | ProfitGrowth=-161.5% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ST=5.35 bearish -5 | MACD hist=-0.09<0 -10 | Stoch K<27.76 cross down -3 | CMF=0.17 inflow +10 | MFI=52.25 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=691.36 expensive -5 | PB=0.6 below book +5 | ROE=-0.21% weak -3 | RevGrowth=214.8% strong +5 | ProfitGrowth=-161.5% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "ABS",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:43",
     "price": 3.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 333300.0,
-    "depth_sell": 366700.0,
-    "depth_buy_ratio": 0.48,
     "ema20": 2.87,
     "ema50": 2.88,
     "adx": 24.91,
@@ -1713,7 +1704,7 @@
     "is_rev_growth_yoy": -0.4645,
     "is_profit_growth_yoy": -157.4051,
     "bs_total_assets": 492692411.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 87531456.0,
     "bs_short_debt": 63561942.0,
     "bs_long_debt": 160000.0,
@@ -1737,15 +1728,15 @@
     "cf_score": 0,
     "growth_score": -6,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
-        "title": "Vụ rò rỉ hóa chất quận Cam: Thống đốc California ban bố tình trạng khẩn cấp",
-        "source": "tuoitre",
-        "time": "Sun, 24 May 2026",
+        "title": "Loại phân bón đặc biệt của cây cà phê",
+        "source": "znews",
+        "time": "Fri, 22 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
@@ -1755,9 +1746,9 @@
         "type": "industry"
       },
       {
-        "title": "Loại phân bón đặc biệt của cây cà phê",
-        "source": "znews",
-        "time": "Fri, 22 May 2026",
+        "title": "Người Nhật cũng từng 'giờ cao su', vì sao hiện tại luôn đúng giờ tuyệt đối?",
+        "source": "cafebiz",
+        "time": "Sun, 24 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
@@ -1779,23 +1770,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 8.82,
+    "total_score": 8.809999999999999,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ST=2.78 bullish +5 | MACD hist=-0.03<0 -10 | Stoch K>53.08 cross up +3 | MFI=70.36 neutral 0 | OBV divergence -5 | BB pos=-0.04 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=-0.51 very cheap +10 | PB=0.61 below book +5 | ROE=-42.4% weak -3 | RevGrowth=-46.5% declining -3 | ProfitGrowth=-15740.5% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Vụ rò rỉ hóa chất quận Cam: Thống đốc Ca... · tuoitre ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ST=2.78 bullish +5 | MACD hist=-0.03<0 -10 | Stoch K>53.08 cross up +3 | MFI=70.36 neutral 0 | OBV divergence -5 | BB pos=-0.04 near lower +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=-0.51 very cheap +10 | PB=0.61 below book +5 | ROE=-42.4% weak -3 | RevGrowth=-46.5% declining -3 | ProfitGrowth=-15740.5% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Loại phân bón đặc biệt của cây cà phê... · znews ·  2026]"
   },
   {
     "symbol": "VNE",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 2.39,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 466800.0,
-    "depth_sell": 0.0,
-    "depth_buy_ratio": 1.0,
     "ema20": 3.15,
     "ema50": 3.78,
     "adx": 40.33,
@@ -1877,7 +1865,7 @@
     "r_period": "2026-Q1",
     "r_pe": 6.88,
     "r_pb": 0.55,
-    "r_roe": 28.62,
+    "r_roe": 28.12,
     "r_roa": 2.09,
     "r_eps": 801.76,
     "r_bvps": 10015.0,
@@ -1898,7 +1886,7 @@
     "is_rev_growth_yoy": 0.1556,
     "is_profit_growth_yoy": -1.9702,
     "bs_total_assets": 3149468908.0,
-    "bs_equity": null,
+    "bs_equity": 821780642.0,
     "bs_total_liab": 2327688267.0,
     "bs_short_debt": 896541731.0,
     "bs_long_debt": 543717345.0,
@@ -1907,10 +1895,10 @@
     "cf_financing": null,
     "cf_free": null,
     "cf_quality_ratio": null,
-    "finance_score": 18.0,
-    "finance_score_fund": 18.0,
-    "finance_score_cf": 0.0,
-    "finance_score_growth": 0.0,
+    "finance_score": NaN,
+    "finance_score_fund": NaN,
+    "finance_score_cf": NaN,
+    "finance_score_growth": NaN,
     "industry": "Xây dựng và Vật liệu",
     "icb_code": "2300",
     "market_valuation": "FAIR",
@@ -1922,11 +1910,23 @@
     "cf_score": 0,
     "growth_score": 0,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
+      {
+        "title": "Khi ranh giới thẩm mỹ bị xô lệch: Xây dựng rào cản văn hóa đủ mạnh",
+        "source": "nld",
+        "time": "Mon, 25 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Xây dựng và Vật liệu"
+        ],
+        "contribution": 0.0,
+        "type": "industry"
+      },
       {
         "title": "Khởi công xây dựng công viên Bình Hưng Hòa Xanh ở TP.HCM",
         "source": "tuoitre",
@@ -1953,23 +1953,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 22.82,
+    "total_score": 22.81,
     "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=40.33 strong +5 | ST=2.91 bearish -5 | RSI=20.2 oversold +15 | MACD hist=-0.3<0 -10 | Stoch K=0.0 oversold +5 | CMF=-0.29 outflow -10 | MFI=12.53 oversold +10 | OBV confirms trend +5 | BB pos=0.95 near upper -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.62% excellent +5 | RevGrowth=15.6% good +3 | ProfitGrowth=-197.0% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Khởi công xây dựng công viên Bình Hưng H... · tuoitre ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=40.33 strong +5 | ST=2.91 bearish -5 | RSI=20.2 oversold +15 | MACD hist=-0.3<0 -10 | Stoch K=0.0 oversold +5 | CMF=-0.29 outflow -10 | MFI=12.53 oversold +10 | OBV confirms trend +5 | BB pos=0.95 near upper -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.12% excellent +5 | RevGrowth=15.6% good +3 | ProfitGrowth=-197.0% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Khi ranh giới thẩm mỹ bị xô lệch: Xây dự... · nld ·  2026]"
   },
   {
     "symbol": "NHT",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 12.65,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 37600.0,
-    "depth_sell": 0.0,
-    "depth_buy_ratio": 1.0,
     "ema20": 12.47,
     "ema50": 11.25,
     "adx": 35.93,
@@ -1988,9 +1985,9 @@
     "atr": 0.61,
     "bb_position": 0.5,
     "atr_pct": 4.82,
-    "obv": 913882.0,
+    "obv": 913462.0,
     "cmf": 0.53,
-    "mfi": 56.07,
+    "mfi": 56.05,
     "_ohlcv_5d": [
       {
         "date": "2026-05-18",
@@ -1999,7 +1996,7 @@
         "low": 12.61,
         "close": 13.14,
         "volume": 299516,
-        "vs_avg5d_pct": 98.7
+        "vs_avg5d_pct": 98.6
       },
       {
         "date": "2026-05-19",
@@ -2008,7 +2005,7 @@
         "low": 13.88,
         "close": 14.04,
         "volume": 178538,
-        "vs_avg5d_pct": 18.5
+        "vs_avg5d_pct": 18.4
       },
       {
         "date": "2026-05-20",
@@ -2017,7 +2014,7 @@
         "low": 13.06,
         "close": 13.14,
         "volume": 40478,
-        "vs_avg5d_pct": -73.1
+        "vs_avg5d_pct": -73.2
       },
       {
         "date": "2026-05-21",
@@ -2026,7 +2023,7 @@
         "low": 12.28,
         "close": 13.55,
         "volume": 192301,
-        "vs_avg5d_pct": 27.6
+        "vs_avg5d_pct": 27.5
       },
       {
         "date": "2026-05-22",
@@ -2034,8 +2031,8 @@
         "high": 12.65,
         "low": 12.65,
         "close": 12.65,
-        "volume": 42700,
-        "vs_avg5d_pct": -71.7
+        "volume": 43120,
+        "vs_avg5d_pct": -71.4
       }
     ],
     "ff_buy_val_5d": 1378314000.0,
@@ -2072,7 +2069,7 @@
     "is_rev_growth_yoy": 0.4366,
     "is_profit_growth_yoy": -1.1994,
     "bs_total_assets": 538784640.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 141210440.0,
     "bs_short_debt": 58375582.0,
     "bs_long_debt": 2400000.0,
@@ -2096,10 +2093,10 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -2114,23 +2111,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 88.82,
+    "total_score": 88.81,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=35.93 strong +5 | ST=12.51 bullish +5 | RSI=55.42 neutral +5 | MACD hist=0.7>0 +10 | Stoch K<66.54 cross down -3 | CMF=0.53 inflow +10 | MFI=56.07 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=5.67 very cheap +10 | PB=0.66 below book +5 | RevGrowth=43.7% strong +5 | ProfitGrowth=-119.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=35.93 strong +5 | ST=12.51 bullish +5 | RSI=55.42 neutral +5 | MACD hist=0.7>0 +10 | Stoch K<66.54 cross down -3 | CMF=0.53 inflow +10 | MFI=56.05 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=5.67 very cheap +10 | PB=0.66 below book +5 | RevGrowth=43.7% strong +5 | ProfitGrowth=-119.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "GEX",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 32.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 6550100.0,
-    "depth_sell": 16812400.0,
-    "depth_buy_ratio": 0.28,
     "ema20": 32.37,
     "ema50": 29.35,
     "adx": 34.97,
@@ -2233,7 +2227,7 @@
     "is_rev_growth_yoy": 0.2797,
     "is_profit_growth_yoy": 1.8466,
     "bs_total_assets": 73557072927.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 43382833429.0,
     "bs_short_debt": 12164352870.0,
     "bs_long_debt": 16672408024.0,
@@ -2257,10 +2251,10 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -2275,23 +2269,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 76.82,
+    "total_score": 76.81,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=34.97 strong +5 | ST=31.22 bullish +5 | RSI=56.79 neutral +5 | MACD hist=2.13>0 +10 | Stoch K<81.38 cross down -3 | CMF=0.13 inflow +10 | MFI=63.69 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.08 expensive -5 | PB=1.31 fair +3 | ROE=0.06% weak -3 | RevGrowth=28.0% strong +5 | ProfitGrowth=184.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=34.97 strong +5 | ST=31.22 bullish +5 | RSI=56.79 neutral +5 | MACD hist=2.13>0 +10 | Stoch K<81.38 cross down -3 | CMF=0.13 inflow +10 | MFI=63.69 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.08 expensive -5 | PB=1.31 fair +3 | ROE=0.06% weak -3 | RevGrowth=28.0% strong +5 | ProfitGrowth=184.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "DQC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 11.0,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 1000.0,
-    "depth_sell": 20900.0,
-    "depth_buy_ratio": 0.05,
     "ema20": 11.11,
     "ema50": 10.65,
     "adx": 29.52,
@@ -2394,7 +2385,7 @@
     "is_rev_growth_yoy": 0.0845,
     "is_profit_growth_yoy": 0.2654,
     "bs_total_assets": 1200985031.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 401494021.0,
     "bs_short_debt": 84099797.0,
     "bs_long_debt": 3845924.0,
@@ -2418,10 +2409,10 @@
     "cf_score": 0,
     "growth_score": 6,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -2436,23 +2427,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 75.82,
+    "total_score": 75.81,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=29.52 strong +5 | ST=10.78 bullish +5 | RSI=51.08 neutral +5 | MACD hist=0.38>0 +10 | Stoch K>30.98 cross up +3 | CMF=0.5 inflow +10 | MFI=19.1 oversold +10 | OBV confirms trend +5 | BB pos=0.84 near upper -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=34.91 expensive -5 | PB=0.36 below book +5 | ROE=0.16% weak -3 | RevGrowth=8.5% positive +1 | ProfitGrowth=26.5% strong +5 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=29.52 strong +5 | ST=10.78 bullish +5 | RSI=51.08 neutral +5 | MACD hist=0.38>0 +10 | Stoch K>30.98 cross up +3 | CMF=0.5 inflow +10 | MFI=19.1 oversold +10 | OBV confirms trend +5 | BB pos=0.84 near upper -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=34.91 expensive -5 | PB=0.36 below book +5 | ROE=0.16% weak -3 | RevGrowth=8.5% positive +1 | ProfitGrowth=26.5% strong +5 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "TV2",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 30.5,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 457700.0,
-    "depth_sell": 661100.0,
-    "depth_buy_ratio": 0.41,
     "ema20": 33.34,
     "ema50": 35.0,
     "adx": 37.25,
@@ -2555,7 +2543,7 @@
     "is_rev_growth_yoy": -0.2804,
     "is_profit_growth_yoy": -0.6342,
     "bs_total_assets": 2978277222.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 1640118019.0,
     "bs_short_debt": 81229042.0,
     "bs_long_debt": NaN,
@@ -2579,10 +2567,10 @@
     "cf_score": 0,
     "growth_score": -6,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -2597,23 +2585,20 @@
         "type": "macro"
       }
     ],
-    "total_score": -24.18,
+    "total_score": -24.19,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=37.25 strong +5 | ST=33.85 bearish -5 | RSI=24.83 oversold +15 | MACD hist=-1.05<0 -10 | Stoch K<33.34 cross down -3 | MFI=20.8 neutral 0 | OBV divergence -5 | BB pos=1.05 near upper -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=28.49 expensive -5 | PB=1.74 fair +3 | ROE=3.7% weak -3 | RevGrowth=-28.0% declining -3 | ProfitGrowth=-63.4% declining -3 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=37.25 strong +5 | ST=33.85 bearish -5 | RSI=24.83 oversold +15 | MACD hist=-1.05<0 -10 | Stoch K<33.34 cross down -3 | MFI=20.8 neutral 0 | OBV divergence -5 | BB pos=1.05 near upper -5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=28.49 expensive -5 | PB=1.74 fair +3 | ROE=3.7% weak -3 | RevGrowth=-28.0% declining -3 | ProfitGrowth=-63.4% declining -3 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "GEE",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 108.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 509400.0,
-    "depth_sell": 1080000.0,
-    "depth_buy_ratio": 0.32,
     "ema20": 115.47,
     "ema50": 109.1,
     "adx": 19.68,
@@ -2716,7 +2701,7 @@
     "is_rev_growth_yoy": 0.2327,
     "is_profit_growth_yoy": 0.1689,
     "bs_total_assets": 16330582068.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 7949194221.0,
     "bs_short_debt": 4466889240.0,
     "bs_long_debt": 1047942820.0,
@@ -2740,10 +2725,10 @@
     "cf_score": 0,
     "growth_score": 8,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -2758,23 +2743,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 46.82,
+    "total_score": 46.81,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=19.68 sideways 0 | ST=132.76 bearish -5 | RSI=44.87 neutral +5 | MACD hist=4.08>0 +10 | Stoch K<47.51 cross down -3 | CMF=0.15 inflow +10 | MFI=58.33 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.93 expensive -5 | PB=10.72 expensive -3 | RevGrowth=23.3% strong +5 | ProfitGrowth=16.9% good +3 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=19.68 sideways 0 | ST=132.76 bearish -5 | RSI=44.87 neutral +5 | MACD hist=4.08>0 +10 | Stoch K<47.51 cross down -3 | CMF=0.15 inflow +10 | MFI=58.33 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=25.93 expensive -5 | PB=10.72 expensive -3 | RevGrowth=23.3% strong +5 | ProfitGrowth=16.9% good +3 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "FDC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 23.9,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 0.0,
-    "depth_sell": 100.0,
-    "depth_buy_ratio": 0.0,
     "ema20": 20.86,
     "ema50": NaN,
     "adx": 36.55,
@@ -2877,7 +2859,7 @@
     "is_rev_growth_yoy": 0.0155,
     "is_profit_growth_yoy": 0.0275,
     "bs_total_assets": 1067502725.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 402541253.0,
     "bs_short_debt": 4000000.0,
     "bs_long_debt": 49000000.0,
@@ -2902,9 +2884,9 @@
     "growth_score": 2,
     "context_score": 0,
     "news_score": 4.79,
-    "news_industry": 1.97,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
@@ -2919,13 +2901,12 @@
         "type": "industry"
       },
       {
-        "title": "Siêu tuyến đường 10 làn xe xuyên qua khu đô thị đắt đỏ nhất Hà Nội, kết nối tới ",
+        "title": "5 năm 'đáng kinh ngạc' của Vinhomes: Từ các KĐT 100-400ha đến các đại đô thị 5.0",
         "source": "cafebiz",
-        "time": "Sun, 24 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Sản xuất thực phẩm",
           "Bất động sản"
         ],
         "contribution": 0.0,
@@ -2952,15 +2933,12 @@
     "symbol": "VHM",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 153.8,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 2476900.0,
-    "depth_sell": 3891500.0,
-    "depth_buy_ratio": 0.39,
     "ema20": 151.6,
     "ema50": 135.67,
     "adx": 31.12,
@@ -3063,7 +3041,7 @@
     "is_rev_growth_yoy": 0.2118,
     "is_profit_growth_yoy": 1.8091,
     "bs_total_assets": 786375247000.0,
-    "bs_equity": null,
+    "bs_equity": 247905598000.0,
     "bs_total_liab": 538469649000.0,
     "bs_short_debt": 43376867000.0,
     "bs_long_debt": 102878889000.0,
@@ -3072,10 +3050,10 @@
     "cf_financing": null,
     "cf_free": null,
     "cf_quality_ratio": null,
-    "finance_score": 17.0,
-    "finance_score_fund": 7.0,
-    "finance_score_cf": 0.0,
-    "finance_score_growth": 10.0,
+    "finance_score": NaN,
+    "finance_score_fund": NaN,
+    "finance_score_cf": NaN,
+    "finance_score_growth": NaN,
     "industry": "Bất động sản",
     "icb_code": "8600",
     "market_valuation": "FAIR",
@@ -3088,9 +3066,9 @@
     "growth_score": 10,
     "context_score": 0,
     "news_score": 4.79,
-    "news_industry": 1.97,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
@@ -3105,13 +3083,12 @@
         "type": "industry"
       },
       {
-        "title": "Siêu tuyến đường 10 làn xe xuyên qua khu đô thị đắt đỏ nhất Hà Nội, kết nối tới ",
+        "title": "5 năm 'đáng kinh ngạc' của Vinhomes: Từ các KĐT 100-400ha đến các đại đô thị 5.0",
         "source": "cafebiz",
-        "time": "Sun, 24 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Sản xuất thực phẩm",
           "Bất động sản"
         ],
         "contribution": 0.0,
@@ -3138,15 +3115,12 @@
     "symbol": "PVP",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 18.05,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 188900.0,
-    "depth_sell": 611100.0,
-    "depth_buy_ratio": 0.24,
     "ema20": 18.24,
     "ema50": 17.12,
     "adx": 24.96,
@@ -3249,7 +3223,7 @@
     "is_rev_growth_yoy": 0.3163,
     "is_profit_growth_yoy": 0.1348,
     "bs_total_assets": 3146587333.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 1214993520.0,
     "bs_short_debt": 157590961.0,
     "bs_long_debt": 574737333.0,
@@ -3273,10 +3247,10 @@
     "cf_score": 0,
     "growth_score": 8,
     "context_score": 0,
-    "news_score": 4.82,
+    "news_score": 4.81,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
@@ -3291,23 +3265,20 @@
         "type": "macro"
       }
     ],
-    "total_score": 76.82,
+    "total_score": 76.81,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ST=17.56 bullish +5 | RSI=51.53 neutral +5 | MACD hist=0.88>0 +10 | Stoch K<51.58 cross down -3 | CMF=0.15 inflow +10 | MFI=60.44 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=7.27 very cheap +10 | PB=0.75 below book +5 | ROE=2.31% weak -3 | RevGrowth=31.6% strong +5 | ProfitGrowth=13.5% good +3 | Market FAIR 0 | News NEUTRAL +4.82 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ST=17.56 bullish +5 | RSI=51.53 neutral +5 | MACD hist=0.88>0 +10 | Stoch K<51.58 cross down -3 | CMF=0.15 inflow +10 | MFI=60.44 neutral 0 | OBV confirms trend +5 | FF net buy 5d +5 | FF net sell 20d -5 | FF trend accumulating +5 | FF accelerating +5 | PE=7.27 very cheap +10 | PB=0.75 below book +5 | ROE=2.31% weak -3 | RevGrowth=31.6% strong +5 | ProfitGrowth=13.5% good +3 | Market FAIR 0 | News NEUTRAL +4.81 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
   },
   {
     "symbol": "QCG",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-05-25 01:49",
+    "time": "2026-05-25 07:44",
     "date": "2026-05-25",
-    "snap_time": "01:49",
+    "snap_time": "07:44",
     "price": 12.9,
     "price_type": "last_close",
     "price_date": "2026-05-22",
-    "depth_buy": 25000.0,
-    "depth_sell": 118900.0,
-    "depth_buy_ratio": 0.17,
     "ema20": 13.44,
     "ema50": 13.64,
     "adx": 16.94,
@@ -3410,7 +3381,7 @@
     "is_rev_growth_yoy": 0.1755,
     "is_profit_growth_yoy": -0.221,
     "bs_total_assets": 8743821873.0,
-    "bs_equity": null,
+    "bs_equity": NaN,
     "bs_total_liab": 3998597610.0,
     "bs_short_debt": 79923564.0,
     "bs_long_debt": 14000000.0,
@@ -3435,9 +3406,9 @@
     "growth_score": 0,
     "context_score": 0,
     "news_score": 4.79,
-    "news_industry": 1.97,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.82,
+    "news_macro": 0.81,
     "news_evidence": [
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
@@ -3452,13 +3423,12 @@
         "type": "industry"
       },
       {
-        "title": "Siêu tuyến đường 10 làn xe xuyên qua khu đô thị đắt đỏ nhất Hà Nội, kết nối tới ",
+        "title": "5 năm 'đáng kinh ngạc' của Vinhomes: Từ các KĐT 100-400ha đến các đại đô thị 5.0",
         "source": "cafebiz",
-        "time": "Sun, 24 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Sản xuất thực phẩm",
           "Bất động sản"
         ],
         "contribution": 0.0,
