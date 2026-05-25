@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-25T01:02:35.406710+07:00",
+  "generated_at": "2026-05-25T07:40:10.948236+07:00",
   "ttl_days": 3,
   "count": 171,
   "symbols": {
@@ -55,7 +55,8 @@
     },
     "VND": {
       "symbol": "VND",
-      "fetched_at": "2026-05-24T16:00:58.481558+07:00",
+      "fetched_at": "2026-05-25T07:38:00.275624+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 14.64,
         "pb": 1.42,
@@ -94,14 +95,7 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "HSL": {
       "symbol": "HSL",
@@ -155,11 +149,12 @@
     },
     "VNE": {
       "symbol": "VNE",
-      "fetched_at": "2026-05-24T16:01:07.379673+07:00",
+      "fetched_at": "2026-05-25T07:37:58.676567+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.88,
         "pb": 0.55,
-        "roe": 28.62,
+        "roe": 28.12,
         "roa": 2.09,
         "eps": 801.76,
         "bvps": 10015.0,
@@ -184,24 +179,18 @@
       },
       "balance": {
         "total_assets": 3149468908.0,
-        "equity": null,
+        "equity": 821780642.0,
         "total_liab": 2327688267.0,
         "short_debt": 896541731.0,
-        "long_debt": 543717345.0
+        "long_debt": 543717345.0,
+        "debt_to_equity": 2.832
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 18,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 18,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "NHT": {
       "symbol": "NHT",
@@ -455,7 +444,8 @@
     },
     "VHM": {
       "symbol": "VHM",
-      "fetched_at": "2026-05-24T16:01:09.171049+07:00",
+      "fetched_at": "2026-05-25T07:39:08.367543+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 12.38,
         "pb": 2.05,
@@ -484,24 +474,18 @@
       },
       "balance": {
         "total_assets": 786375247000.0,
-        "equity": null,
+        "equity": 247905598000.0,
         "total_liab": 538469649000.0,
         "short_debt": 43376867000.0,
-        "long_debt": 102878889000.0
+        "long_debt": 102878889000.0,
+        "debt_to_equity": 2.172
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 17,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "PVP": {
       "symbol": "PVP",
@@ -605,7 +589,8 @@
     },
     "YBC": {
       "symbol": "YBC",
-      "fetched_at": "2026-05-24T16:10:36.620382+07:00",
+      "fetched_at": "2026-05-25T07:35:43.007570+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -1.17,
         "pb": 0.0,
@@ -634,28 +619,25 @@
       },
       "balance": {
         "total_assets": 380781779.0,
-        "equity": null,
+        "equity": 13501544.0,
         "total_liab": 367280235.0,
         "short_debt": 140703250.0,
-        "long_debt": 125400165.0
+        "long_debt": 125400165.0,
+        "debt_to_equity": 27.203
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -8393852.0,
+        "cf_investing": -9311256.0,
+        "cf_financing": 19055865.0,
+        "cf_quality": 1.07,
+        "cf_free": -17705108.0
       },
-      "period": "2013-Q4",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": -4,
-        "total": 3,
-        "max": 38
-      }
+      "period": "2013-Q4"
     },
     "YBM": {
       "symbol": "YBM",
-      "fetched_at": "2026-05-24T16:10:36.619925+07:00",
+      "fetched_at": "2026-05-25T07:35:43.007232+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 5.47,
         "pb": 0.85,
@@ -684,28 +666,23 @@
       },
       "balance": {
         "total_assets": 712608828.0,
-        "equity": null,
+        "equity": 214631528.0,
         "total_liab": 497977300.0,
         "short_debt": 259801015.0,
-        "long_debt": 94939435.0
+        "long_debt": 94939435.0,
+        "debt_to_equity": 2.32
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 22,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "YEG": {
       "symbol": "YEG",
-      "fetched_at": "2026-05-24T16:10:36.619476+07:00",
+      "fetched_at": "2026-05-25T07:35:43.006770+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 27.16,
         "pb": 1.1,
@@ -734,28 +711,23 @@
       },
       "balance": {
         "total_assets": 2815734129.0,
-        "equity": null,
+        "equity": 2135054677.0,
         "total_liab": 680679452.0,
         "short_debt": 306829038.0,
-        "long_debt": 34308836.0
+        "long_debt": 34308836.0,
+        "debt_to_equity": 0.319
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "YTC": {
       "symbol": "YTC",
-      "fetched_at": "2026-05-24T16:10:36.618588+07:00",
+      "fetched_at": "2026-05-25T07:35:43.006197+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -784,24 +756,14 @@
       },
       "balance": {
         "total_assets": 466993499.0,
-        "equity": null,
+        "equity": 54071088.0,
         "total_liab": 412922411.0,
         "short_debt": 136533806.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 7.637
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2012-Q3",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -3,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2012-Q3"
     },
     "XPH": {
       "symbol": "XPH",
@@ -1105,7 +1067,8 @@
     },
     "WTC": {
       "symbol": "WTC",
-      "fetched_at": "2026-05-24T16:11:01.065039+07:00",
+      "fetched_at": "2026-05-25T07:35:52.831096+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 167.61,
         "pb": 0.56,
@@ -1134,28 +1097,25 @@
       },
       "balance": {
         "total_assets": 1288766163.0,
-        "equity": null,
+        "equity": 303149846.0,
         "total_liab": 985616316.0,
         "short_debt": 229586376.0,
-        "long_debt": 685960727.0
+        "long_debt": 685960727.0,
+        "debt_to_equity": 3.251
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": 37092634.0,
+        "cf_investing": -193604110.0,
+        "cf_financing": 167696694.0,
+        "cf_quality": -12.23,
+        "cf_free": -156511476.0
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 0,
-        "total": -3,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "WSB": {
       "symbol": "WSB",
-      "fetched_at": "2026-05-24T16:11:05.605940+07:00",
+      "fetched_at": "2026-05-25T07:35:53.065069+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.31,
         "pb": 1.04,
@@ -1184,28 +1144,23 @@
       },
       "balance": {
         "total_assets": 936331340.0,
-        "equity": null,
+        "equity": 785154336.0,
         "total_liab": 151177004.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.193
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 18,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "WSS": {
       "symbol": "WSS",
-      "fetched_at": "2026-05-24T16:11:05.570856+07:00",
+      "fetched_at": "2026-05-25T07:35:53.052051+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 7.44,
         "pb": 0.64,
@@ -1239,23 +1194,13 @@
         "short_debt": null,
         "long_debt": null
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 12,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "WCS": {
       "symbol": "WCS",
-      "fetched_at": "2026-05-24T16:11:06.929843+07:00",
+      "fetched_at": "2026-05-25T07:35:53.840243+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.8,
         "pb": 2.93,
@@ -1284,28 +1229,19 @@
       },
       "balance": {
         "total_assets": 329685151.0,
-        "equity": null,
+        "equity": 286123514.0,
         "total_liab": 43561636.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.152
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 12,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VXT": {
       "symbol": "VXT",
-      "fetched_at": "2026-05-24T16:11:08.154982+07:00",
+      "fetched_at": "2026-05-25T07:36:00.641403+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 45.43,
         "pb": 1.79,
@@ -1334,28 +1270,19 @@
       },
       "balance": {
         "total_assets": 99895621.0,
-        "equity": null,
+        "equity": 41785977.0,
         "total_liab": 58109643.0,
         "short_debt": 32121594.0,
-        "long_debt": 3603898.0
+        "long_debt": 3603898.0,
+        "debt_to_equity": 1.391
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2022-Q3",
-      "finance_score": {
-        "fundamental": -2,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -8,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2022-Q3"
     },
     "VXB": {
       "symbol": "VXB",
-      "fetched_at": "2026-05-24T16:11:12.762335+07:00",
+      "fetched_at": "2026-05-25T07:36:01.206509+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 89.44,
         "pb": 4.95,
@@ -1384,28 +1311,19 @@
       },
       "balance": {
         "total_assets": 165692198.0,
-        "equity": null,
+        "equity": 32714334.0,
         "total_liab": 132977865.0,
         "short_debt": 86098670.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 4.065
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2022-Q1",
-      "finance_score": {
-        "fundamental": -8,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 0,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2022-Q1"
     },
     "VVS": {
       "symbol": "VVS",
-      "fetched_at": "2026-05-24T16:11:18.094164+07:00",
+      "fetched_at": "2026-05-25T07:36:07.388505+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 4.32,
         "pb": 2.14,
@@ -1434,28 +1352,23 @@
       },
       "balance": {
         "total_assets": 5116020761.0,
-        "equity": null,
+        "equity": 657331672.0,
         "total_liab": 4458689089.0,
         "short_debt": 557846793.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 6.783
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 15,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 25,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VVN": {
       "symbol": "VVN",
-      "fetched_at": "2026-05-24T16:11:18.776338+07:00",
+      "fetched_at": "2026-05-25T07:36:08.360433+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.26,
         "pb": -0.06,
@@ -1484,28 +1397,23 @@
       },
       "balance": {
         "total_assets": 4505761397.0,
-        "equity": null,
+        "equity": -2744678027.0,
         "total_liab": 7250439425.0,
         "short_debt": 835161478.0,
-        "long_debt": 3918346400.0
+        "long_debt": 3918346400.0,
+        "debt_to_equity": -2.642
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 15,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 19,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VUA": {
       "symbol": "VUA",
-      "fetched_at": "2026-05-24T16:11:19.003092+07:00",
+      "fetched_at": "2026-05-25T07:36:08.417851+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 174.34,
         "pb": 2.13,
@@ -1544,18 +1452,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -8,
-        "cashflow": 0,
-        "growth": 0,
-        "total": -8,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTZ": {
       "symbol": "VTZ",
-      "fetched_at": "2026-05-24T16:11:20.304896+07:00",
+      "fetched_at": "2026-05-25T07:36:13.808803+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 24.6,
         "pb": 1.71,
@@ -1584,28 +1486,23 @@
       },
       "balance": {
         "total_assets": 3240123267.0,
-        "equity": null,
+        "equity": 867488016.0,
         "total_liab": 2372635250.0,
         "short_debt": 2173463092.0,
-        "long_debt": 15425684.0
+        "long_debt": 15425684.0,
+        "debt_to_equity": 2.735
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 9,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTX": {
       "symbol": "VTX",
-      "fetched_at": "2026-05-24T16:11:24.110622+07:00",
+      "fetched_at": "2026-05-25T07:36:14.324577+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -4.39,
         "pb": 3.13,
@@ -1634,28 +1531,23 @@
       },
       "balance": {
         "total_assets": 190641055.0,
-        "equity": null,
+        "equity": 49658566.0,
         "total_liab": 140982488.0,
         "short_debt": 73297889.0,
-        "long_debt": 9177000.0
+        "long_debt": 9177000.0,
+        "debt_to_equity": 2.839
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 14,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTV": {
       "symbol": "VTV",
-      "fetched_at": "2026-05-24T16:11:24.788820+07:00",
+      "fetched_at": "2026-05-25T07:36:15.083669+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 722.88,
         "pb": 1.16,
@@ -1684,28 +1576,23 @@
       },
       "balance": {
         "total_assets": 713603910.0,
-        "equity": null,
+        "equity": 396746215.0,
         "total_liab": 316857695.0,
         "short_debt": 101129076.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.799
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTS": {
       "symbol": "VTS",
-      "fetched_at": "2026-05-24T16:11:25.271743+07:00",
+      "fetched_at": "2026-05-25T07:36:15.827032+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -1.03,
         "pb": 1.7,
@@ -1734,28 +1621,25 @@
       },
       "balance": {
         "total_assets": 16914061.0,
-        "equity": null,
+        "equity": 11556441.0,
         "total_liab": 5357620.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.464
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": 1149065.0,
+        "cf_investing": -980380.0,
+        "cf_financing": null,
+        "cf_quality": -0.93,
+        "cf_free": 168685.0
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 12,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTR": {
       "symbol": "VTR",
-      "fetched_at": "2026-05-24T16:11:26.059261+07:00",
+      "fetched_at": "2026-05-25T07:36:20.756290+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 324.62,
         "pb": 1.08,
@@ -1784,28 +1668,19 @@
       },
       "balance": {
         "total_assets": 2947071563.0,
-        "equity": null,
+        "equity": 791987114.0,
         "total_liab": 2155084448.0,
         "short_debt": 744537261.0,
-        "long_debt": 95362355.0
+        "long_debt": 95362355.0,
+        "debt_to_equity": 2.721
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": 2,
-        "total": -3,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VTQ": {
       "symbol": "VTQ",
-      "fetched_at": "2026-05-24T16:11:30.057956+07:00",
+      "fetched_at": "2026-05-25T07:36:21.257073+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 22.7,
         "pb": 1.29,
@@ -1834,28 +1709,19 @@
       },
       "balance": {
         "total_assets": 221667552.0,
-        "equity": null,
+        "equity": 134172960.0,
         "total_liab": 87494592.0,
         "short_debt": 45428925.0,
-        "long_debt": 8264312.0
+        "long_debt": 8264312.0,
+        "debt_to_equity": 0.652
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 13,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VTP": {
       "symbol": "VTP",
-      "fetched_at": "2026-05-24T16:11:30.778611+07:00",
+      "fetched_at": "2026-05-25T07:36:21.979157+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 29.51,
         "pb": 6.8,
@@ -1884,28 +1750,23 @@
       },
       "balance": {
         "total_assets": 7529014106.0,
-        "equity": null,
+        "equity": 1768228278.0,
         "total_liab": 5760785829.0,
         "short_debt": 1363784324.0,
-        "long_debt": 487045561.0
+        "long_debt": 487045561.0,
+        "debt_to_equity": 3.258
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -8,
-        "cashflow": 0,
-        "growth": 4,
-        "total": -4,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTO": {
       "symbol": "VTO",
-      "fetched_at": "2026-05-24T16:11:31.286890+07:00",
+      "fetched_at": "2026-05-25T07:36:22.543719+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.13,
         "pb": 0.77,
@@ -1934,28 +1795,23 @@
       },
       "balance": {
         "total_assets": 1556847176.0,
-        "equity": null,
+        "equity": 1180134188.0,
         "total_liab": 376712988.0,
         "short_debt": 67829724.0,
-        "long_debt": 79180300.0
+        "long_debt": 79180300.0,
+        "debt_to_equity": 0.319
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 16,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTL": {
       "symbol": "VTL",
-      "fetched_at": "2026-05-24T16:11:36.051266+07:00",
+      "fetched_at": "2026-05-25T07:36:28.441727+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -5.12,
         "pb": -4.29,
@@ -1984,28 +1840,25 @@
       },
       "balance": {
         "total_assets": 94972658.0,
-        "equity": null,
+        "equity": -16282163.0,
         "total_liab": 111254821.0,
         "short_debt": 61030926.0,
-        "long_debt": 76480.0
+        "long_debt": 76480.0,
+        "debt_to_equity": -6.833
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -261946.0,
+        "cf_investing": 6894.0,
+        "cf_financing": 1357921.0,
+        "cf_quality": 0.11,
+        "cf_free": -255052.0
       },
-      "period": "2023-Q1",
-      "finance_score": {
-        "fundamental": 18,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 20,
-        "max": 38
-      }
+      "period": "2023-Q1"
     },
     "VTJ": {
       "symbol": "VTJ",
-      "fetched_at": "2026-05-24T16:11:37.320723+07:00",
+      "fetched_at": "2026-05-25T07:36:29.478938+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 260.31,
         "pb": 0.43,
@@ -2034,28 +1887,23 @@
       },
       "balance": {
         "total_assets": 105023030.0,
-        "equity": null,
+        "equity": 97230455.0,
         "total_liab": 7792575.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.08
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 5,
-        "total": 2,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTK": {
       "symbol": "VTK",
-      "fetched_at": "2026-05-24T16:11:36.806902+07:00",
+      "fetched_at": "2026-05-25T07:36:28.914997+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -2084,28 +1932,19 @@
       },
       "balance": {
         "total_assets": 110780368.0,
-        "equity": null,
+        "equity": 89985275.0,
         "total_liab": 20795093.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.231
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2018-Q3",
-      "finance_score": {
-        "fundamental": 0,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 6,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2018-Q3"
     },
     "VTH": {
       "symbol": "VTH",
-      "fetched_at": "2026-05-24T16:11:42.050236+07:00",
+      "fetched_at": "2026-05-25T07:36:35.462454+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.06,
         "pb": 0.61,
@@ -2134,28 +1973,19 @@
       },
       "balance": {
         "total_assets": 766700882.0,
-        "equity": null,
+        "equity": 107943652.0,
         "total_liab": 658757231.0,
         "short_debt": 314472988.0,
-        "long_debt": 197555124.0
+        "long_debt": 197555124.0,
+        "debt_to_equity": 6.103
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 22,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VTG": {
       "symbol": "VTG",
-      "fetched_at": "2026-05-24T16:11:43.329453+07:00",
+      "fetched_at": "2026-05-25T07:36:36.226628+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -14.34,
         "pb": 0.82,
@@ -2184,28 +2014,23 @@
       },
       "balance": {
         "total_assets": 194808590.0,
-        "equity": null,
+        "equity": 158917156.0,
         "total_liab": 35891435.0,
         "short_debt": null,
-        "long_debt": 14052343.0
+        "long_debt": 14052343.0,
+        "debt_to_equity": 0.226
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 14,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTE": {
       "symbol": "VTE",
-      "fetched_at": "2026-05-24T16:11:43.555874+07:00",
+      "fetched_at": "2026-05-25T07:36:36.595139+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 54.72,
         "pb": 0.73,
@@ -2234,28 +2059,19 @@
       },
       "balance": {
         "total_assets": 326317235.0,
-        "equity": null,
+        "equity": 171328829.0,
         "total_liab": 154988406.0,
         "short_debt": 42441277.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.905
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 2,
-        "total": -1,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VTD": {
       "symbol": "VTD",
-      "fetched_at": "2026-05-24T16:11:43.941739+07:00",
+      "fetched_at": "2026-05-25T07:36:40.881519+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -177.11,
         "pb": 0.58,
@@ -2284,28 +2100,19 @@
       },
       "balance": {
         "total_assets": 403675110.0,
-        "equity": null,
+        "equity": 262665121.0,
         "total_liab": 141009989.0,
         "short_debt": 60308559.0,
-        "long_debt": 18003561.0
+        "long_debt": 18003561.0,
+        "debt_to_equity": 0.537
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 14,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VTC": {
       "symbol": "VTC",
-      "fetched_at": "2026-05-24T16:11:48.095371+07:00",
+      "fetched_at": "2026-05-25T07:36:42.623490+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 19.85,
         "pb": 0.72,
@@ -2334,28 +2141,23 @@
       },
       "balance": {
         "total_assets": 607754666.0,
-        "equity": null,
+        "equity": 80946409.0,
         "total_liab": 526808257.0,
         "short_debt": 232362598.0,
-        "long_debt": 6480340.0
+        "long_debt": 6480340.0,
+        "debt_to_equity": 6.508
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 13,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 23,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VTA": {
       "symbol": "VTA",
-      "fetched_at": "2026-05-24T16:11:49.567738+07:00",
+      "fetched_at": "2026-05-25T07:36:43.766612+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.86,
         "pb": 4.5,
@@ -2384,28 +2186,25 @@
       },
       "balance": {
         "total_assets": 116686964.0,
-        "equity": null,
+        "equity": 6395324.0,
         "total_liab": 110291640.0,
         "short_debt": 43232450.0,
-        "long_debt": 1076608.0
+        "long_debt": 1076608.0,
+        "debt_to_equity": 17.246
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -1011114.0,
+        "cf_investing": 289.0,
+        "cf_financing": -1485605.0,
+        "cf_quality": 0.25,
+        "cf_free": -1010825.0
       },
-      "period": "2024-Q4",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2024-Q4"
     },
     "VTB": {
       "symbol": "VTB",
-      "fetched_at": "2026-05-24T16:11:49.359696+07:00",
+      "fetched_at": "2026-05-25T07:36:43.159574+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 13.89,
         "pb": 1.22,
@@ -2434,28 +2233,19 @@
       },
       "balance": {
         "total_assets": 235344757.0,
-        "equity": null,
+        "equity": 191481251.0,
         "total_liab": 43863507.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.229
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 17,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VST": {
       "symbol": "VST",
-      "fetched_at": "2026-05-24T16:11:49.951669+07:00",
+      "fetched_at": "2026-05-25T07:36:47.561912+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 0.84,
         "pb": -0.49,
@@ -2484,28 +2274,23 @@
       },
       "balance": {
         "total_assets": 517367123.0,
-        "equity": null,
+        "equity": -423167202.0,
         "total_liab": 940534326.0,
         "short_debt": 211496500.0,
-        "long_debt": 144160000.0
+        "long_debt": 144160000.0,
+        "debt_to_equity": -2.223
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 15,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VSM": {
       "symbol": "VSM",
-      "fetched_at": "2026-05-24T16:11:55.315914+07:00",
+      "fetched_at": "2026-05-25T07:36:50.840374+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 5.05,
         "pb": 0.76,
@@ -2534,28 +2319,23 @@
       },
       "balance": {
         "total_assets": 133080151.0,
-        "equity": null,
+        "equity": 98949280.0,
         "total_liab": 34130871.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.345
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 16,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VSN": {
       "symbol": "VSN",
-      "fetched_at": "2026-05-24T16:11:55.286998+07:00",
+      "fetched_at": "2026-05-25T07:36:49.814138+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 15.17,
         "pb": 0.98,
@@ -2584,28 +2364,19 @@
       },
       "balance": {
         "total_assets": 1848486544.0,
-        "equity": null,
+        "equity": 1276948244.0,
         "total_liab": 571538300.0,
         "short_debt": 119567772.0,
-        "long_debt": 4228351.0
+        "long_debt": 4228351.0,
+        "debt_to_equity": 0.448
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 5,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -1,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VSI": {
       "symbol": "VSI",
-      "fetched_at": "2026-05-24T16:11:55.947606+07:00",
+      "fetched_at": "2026-05-25T07:36:54.555612+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.86,
         "pb": 1.55,
@@ -2634,28 +2405,19 @@
       },
       "balance": {
         "total_assets": 547145040.0,
-        "equity": null,
+        "equity": 204955604.0,
         "total_liab": 342189436.0,
         "short_debt": 10752806.0,
-        "long_debt": 76151077.0
+        "long_debt": 76151077.0,
+        "debt_to_equity": 1.67
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 13,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 21,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VSH": {
       "symbol": "VSH",
-      "fetched_at": "2026-05-24T16:11:59.305550+07:00",
+      "fetched_at": "2026-05-25T07:36:54.754409+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 12.19,
         "pb": 2.12,
@@ -2684,28 +2446,23 @@
       },
       "balance": {
         "total_assets": 8171336734.0,
-        "equity": null,
+        "equity": 4949775273.0,
         "total_liab": 3221561461.0,
         "short_debt": 111911229.0,
-        "long_debt": 2592985162.0
+        "long_debt": 2592985162.0,
+        "debt_to_equity": 0.651
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -2,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VSF": {
       "symbol": "VSF",
-      "fetched_at": "2026-05-24T16:12:01.302343+07:00",
+      "fetched_at": "2026-05-25T07:36:57.284980+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 433.17,
         "pb": 5.04,
@@ -2734,28 +2491,23 @@
       },
       "balance": {
         "total_assets": 7029015916.0,
-        "equity": null,
+        "equity": 2452476417.0,
         "total_liab": 4576539500.0,
         "short_debt": 2353278079.0,
-        "long_debt": 3442300.0
+        "long_debt": 3442300.0,
+        "debt_to_equity": 1.866
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": 10,
-        "total": -1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VSG": {
       "symbol": "VSG",
-      "fetched_at": "2026-05-24T16:12:01.291595+07:00",
+      "fetched_at": "2026-05-25T07:36:56.999876+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.3,
         "pb": 0.0,
@@ -2784,28 +2536,25 @@
       },
       "balance": {
         "total_assets": 330806705.0,
-        "equity": null,
+        "equity": -170177325.0,
         "total_liab": 500984030.0,
         "short_debt": 418417952.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": -2.944
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -2154529.0,
+        "cf_investing": 48893.0,
+        "cf_financing": -1289666.0,
+        "cf_quality": 0.13,
+        "cf_free": -2105636.0
       },
-      "period": "2015-Q3",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 8,
-        "max": 38
-      }
+      "period": "2015-Q3"
     },
     "VSC": {
       "symbol": "VSC",
-      "fetched_at": "2026-05-24T16:12:05.290321+07:00",
+      "fetched_at": "2026-05-25T07:37:01.714093+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 19.7,
         "pb": 1.17,
@@ -2834,28 +2583,23 @@
       },
       "balance": {
         "total_assets": 12962909058.0,
-        "equity": null,
+        "equity": 6386601108.0,
         "total_liab": 6576307950.0,
         "short_debt": 2380486821.0,
-        "long_debt": 2993027004.0
+        "long_debt": 2993027004.0,
+        "debt_to_equity": 1.03
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 11,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VSA": {
       "symbol": "VSA",
-      "fetched_at": "2026-05-24T16:12:07.318850+07:00",
+      "fetched_at": "2026-05-25T07:37:03.940692+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 12.31,
         "pb": 0.84,
@@ -2884,28 +2628,23 @@
       },
       "balance": {
         "total_assets": 640143908.0,
-        "equity": null,
+        "equity": 338892990.0,
         "total_liab": 301250918.0,
         "short_debt": 1674868.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.889
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 9,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VRG": {
       "symbol": "VRG",
-      "fetched_at": "2026-05-24T16:12:07.723067+07:00",
+      "fetched_at": "2026-05-25T07:37:04.233632+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 12.92,
         "pb": 1.33,
@@ -2934,28 +2673,19 @@
       },
       "balance": {
         "total_assets": 941788046.0,
-        "equity": null,
+        "equity": 350130230.0,
         "total_liab": 591657816.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 1.69
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 8,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VRE": {
       "symbol": "VRE",
-      "fetched_at": "2026-05-24T16:12:07.724755+07:00",
+      "fetched_at": "2026-05-25T07:37:08.122377+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 11.86,
         "pb": 1.58,
@@ -2984,28 +2714,23 @@
       },
       "balance": {
         "total_assets": 61279149000.0,
-        "equity": null,
+        "equity": 48368203000.0,
         "total_liab": 12910946000.0,
         "short_debt": 20626000.0,
-        "long_debt": 6380455000.0
+        "long_debt": 6380455000.0,
+        "debt_to_equity": 0.267
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 12,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VRC": {
       "symbol": "VRC",
-      "fetched_at": "2026-05-24T16:12:11.376170+07:00",
+      "fetched_at": "2026-05-25T07:37:08.664920+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 68.47,
         "pb": 0.59,
@@ -3034,28 +2759,23 @@
       },
       "balance": {
         "total_assets": 1745869777.0,
-        "equity": null,
+        "equity": 1273667257.0,
         "total_liab": 472202521.0,
         "short_debt": 334955977.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.371
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 2,
-        "total": -1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VQC": {
       "symbol": "VQC",
-      "fetched_at": "2026-05-24T16:12:13.067512+07:00",
+      "fetched_at": "2026-05-25T07:37:10.852307+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 15.32,
         "pb": 0.49,
@@ -3084,28 +2804,19 @@
       },
       "balance": {
         "total_assets": 108953461.0,
-        "equity": null,
+        "equity": 83643057.0,
         "total_liab": 25310404.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.303
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2019-Q2",
-      "finance_score": {
-        "fundamental": 8,
-        "cashflow": 0,
-        "growth": -6,
-        "total": 2,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2019-Q2"
     },
     "VPX": {
       "symbol": "VPX",
-      "fetched_at": "2026-05-24T16:12:13.751304+07:00",
+      "fetched_at": "2026-05-25T07:37:11.429941+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 15.66,
         "pb": 1.65,
@@ -3144,18 +2855,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 3,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPS": {
       "symbol": "VPS",
-      "fetched_at": "2026-05-24T16:12:17.353051+07:00",
+      "fetched_at": "2026-05-25T07:37:15.348206+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 10.11,
         "pb": 0.66,
@@ -3184,28 +2889,23 @@
       },
       "balance": {
         "total_assets": 549537179.0,
-        "equity": null,
+        "equity": 352004912.0,
         "total_liab": 197532267.0,
         "short_debt": 39844689.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.561
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 9,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 19,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPL": {
       "symbol": "VPL",
-      "fetched_at": "2026-05-24T16:12:19.489945+07:00",
+      "fetched_at": "2026-05-25T07:37:18.911392+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 149.63,
         "pb": 4.61,
@@ -3234,28 +2934,23 @@
       },
       "balance": {
         "total_assets": 86890381000.0,
-        "equity": null,
+        "equity": 36626998000.0,
         "total_liab": 50263383000.0,
         "short_debt": 2709625000.0,
-        "long_debt": 8882713000.0
+        "long_debt": 8882713000.0,
+        "debt_to_equity": 1.372
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": 4,
-        "total": -7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPI": {
       "symbol": "VPI",
-      "fetched_at": "2026-05-24T16:12:20.014926+07:00",
+      "fetched_at": "2026-05-25T07:37:21.742584+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 46.85,
         "pb": 3.38,
@@ -3284,28 +2979,23 @@
       },
       "balance": {
         "total_assets": 14707613144.0,
-        "equity": null,
+        "equity": 5479965055.0,
         "total_liab": 9227648089.0,
         "short_debt": 1292940786.0,
-        "long_debt": 4996186964.0
+        "long_debt": 4996186964.0,
+        "debt_to_equity": 1.684
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -17,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPH": {
       "symbol": "VPH",
-      "fetched_at": "2026-05-24T16:12:23.369606+07:00",
+      "fetched_at": "2026-05-25T07:37:22.254820+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -21.79,
         "pb": 0.42,
@@ -3334,28 +3024,23 @@
       },
       "balance": {
         "total_assets": 1956432616.0,
-        "equity": null,
+        "equity": 1027697060.0,
         "total_liab": 928735556.0,
         "short_debt": 536894851.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.904
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 22,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPG": {
       "symbol": "VPG",
-      "fetched_at": "2026-05-24T16:12:24.794050+07:00",
+      "fetched_at": "2026-05-25T07:37:23.905818+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.73,
         "pb": 0.44,
@@ -3384,28 +3069,23 @@
       },
       "balance": {
         "total_assets": 3339676091.0,
-        "equity": null,
+        "equity": 1004756636.0,
         "total_liab": 2334919455.0,
         "short_debt": 1675072816.0,
-        "long_debt": 160988000.0
+        "long_debt": 160988000.0,
+        "debt_to_equity": 2.324
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 16,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPD": {
       "symbol": "VPD",
-      "fetched_at": "2026-05-24T16:12:25.491655+07:00",
+      "fetched_at": "2026-05-25T07:37:25.838687+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 10.25,
         "pb": 1.68,
@@ -3434,28 +3114,19 @@
       },
       "balance": {
         "total_assets": 1793494132.0,
-        "equity": null,
+        "equity": 1629940131.0,
         "total_liab": 163554001.0,
         "short_debt": 20000000.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.1
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 17,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VPC": {
       "symbol": "VPC",
-      "fetched_at": "2026-05-24T16:12:25.981085+07:00",
+      "fetched_at": "2026-05-25T07:37:28.714077+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -1.04,
         "pb": 0.0,
@@ -3484,28 +3155,19 @@
       },
       "balance": {
         "total_assets": 94543363.0,
-        "equity": null,
+        "equity": 39751507.0,
         "total_liab": 54791856.0,
         "short_debt": 35670801.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 1.378
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2015-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 9,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2015-Q1"
     },
     "VPB": {
       "symbol": "VPB",
-      "fetched_at": "2026-05-24T16:12:29.349384+07:00",
+      "fetched_at": "2026-05-25T07:37:29.420790+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 9.48,
         "pb": 1.26,
@@ -3544,18 +3206,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VPA": {
       "symbol": "VPA",
-      "fetched_at": "2026-05-24T16:12:30.829920+07:00",
+      "fetched_at": "2026-05-25T07:37:30.838255+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.96,
         "pb": -0.34,
@@ -3584,28 +3240,23 @@
       },
       "balance": {
         "total_assets": 252994096.0,
-        "equity": null,
+        "equity": -94136319.0,
         "total_liab": 347130416.0,
         "short_debt": 10550800.0,
-        "long_debt": 270310065.0
+        "long_debt": 270310065.0,
+        "debt_to_equity": -3.688
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 15,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VOS": {
       "symbol": "VOS",
-      "fetched_at": "2026-05-24T16:12:31.517982+07:00",
+      "fetched_at": "2026-05-25T07:37:33.023163+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 5.67,
         "pb": 0.82,
@@ -3634,28 +3285,23 @@
       },
       "balance": {
         "total_assets": 3907346317.0,
-        "equity": null,
+        "equity": 2115743443.0,
         "total_liab": 1791602874.0,
         "short_debt": 134448078.0,
-        "long_debt": 624437294.0
+        "long_debt": 624437294.0,
+        "debt_to_equity": 0.847
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 15,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 25,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VOC": {
       "symbol": "VOC",
-      "fetched_at": "2026-05-24T16:12:31.998670+07:00",
+      "fetched_at": "2026-05-25T07:37:35.884650+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 20.98,
         "pb": 0.71,
@@ -3684,28 +3330,25 @@
       },
       "balance": {
         "total_assets": 2149138327.0,
-        "equity": null,
+        "equity": 2083886006.0,
         "total_liab": 65252320.0,
         "short_debt": 540858.0,
-        "long_debt": 5527407.0
+        "long_debt": 5527407.0,
+        "debt_to_equity": 0.031
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": 105140996.0,
+        "cf_investing": -39481518.0,
+        "cf_financing": null,
+        "cf_quality": 3.97,
+        "cf_free": 65659478.0
       },
-      "period": "2025-Q3",
-      "finance_score": {
-        "fundamental": 5,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 15,
-        "max": 38
-      }
+      "period": "2025-Q3"
     },
     "VNZ": {
       "symbol": "VNZ",
-      "fetched_at": "2026-05-24T16:12:35.151991+07:00",
+      "fetched_at": "2026-05-25T07:37:36.367401+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -62.9,
         "pb": 10.97,
@@ -3734,28 +3377,23 @@
       },
       "balance": {
         "total_assets": 11438672538.0,
-        "equity": null,
+        "equity": 980014734.0,
         "total_liab": 10458657804.0,
         "short_debt": 1295896618.0,
-        "long_debt": 1098487530.0
+        "long_debt": 1098487530.0,
+        "debt_to_equity": 10.672
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 12,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNY": {
       "symbol": "VNY",
-      "fetched_at": "2026-05-24T16:12:36.849845+07:00",
+      "fetched_at": "2026-05-25T07:37:37.785125+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 10.76,
         "pb": 0.83,
@@ -3784,28 +3422,23 @@
       },
       "balance": {
         "total_assets": 163216166.0,
-        "equity": null,
+        "equity": 109649191.0,
         "total_liab": 53566975.0,
         "short_debt": null,
-        "long_debt": 11800000.0
+        "long_debt": 11800000.0,
+        "debt_to_equity": 0.489
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 9,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 17,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNT": {
       "symbol": "VNT",
-      "fetched_at": "2026-05-24T16:12:37.970307+07:00",
+      "fetched_at": "2026-05-25T07:37:42.864353+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 25.45,
         "pb": 1.92,
@@ -3834,28 +3467,23 @@
       },
       "balance": {
         "total_assets": 699309452.0,
-        "equity": null,
+        "equity": 234512615.0,
         "total_liab": 464796837.0,
         "short_debt": 268679394.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 1.982
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 5,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNS": {
       "symbol": "VNS",
-      "fetched_at": "2026-05-24T16:12:41.217691+07:00",
+      "fetched_at": "2026-05-25T07:37:43.307074+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 16.14,
         "pb": 0.55,
@@ -3884,28 +3512,23 @@
       },
       "balance": {
         "total_assets": 1773640824.0,
-        "equity": null,
+        "equity": 1119263289.0,
         "total_liab": 654377535.0,
         "short_debt": 218227298.0,
-        "long_debt": 280634143.0
+        "long_debt": 280634143.0,
+        "debt_to_equity": 0.585
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 5,
-        "cashflow": 0,
-        "growth": -4,
-        "total": 1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNR": {
       "symbol": "VNR",
-      "fetched_at": "2026-05-24T16:12:42.835930+07:00",
+      "fetched_at": "2026-05-25T07:37:44.526352+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.65,
         "pb": 2.03,
@@ -3944,18 +3567,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNP": {
       "symbol": "VNP",
-      "fetched_at": "2026-05-24T16:12:43.345125+07:00",
+      "fetched_at": "2026-05-25T07:37:46.444786+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 22.2,
         "pb": 1.5,
@@ -3984,28 +3601,23 @@
       },
       "balance": {
         "total_assets": 301713439.0,
-        "equity": null,
+        "equity": 275047175.0,
         "total_liab": 26666264.0,
         "short_debt": 7505958.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.097
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -3,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNM": {
       "symbol": "VNM",
-      "fetched_at": "2026-05-24T16:12:43.716367+07:00",
+      "fetched_at": "2026-05-25T07:37:49.822776+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 13.59,
         "pb": 3.71,
@@ -4034,28 +3646,23 @@
       },
       "balance": {
         "total_assets": 53312370717.0,
-        "equity": null,
+        "equity": 34483015286.0,
         "total_liab": 18829355431.0,
         "short_debt": 9393736732.0,
-        "long_debt": 62907826.0
+        "long_debt": 62907826.0,
+        "debt_to_equity": 0.546
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 14,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNL": {
       "symbol": "VNL",
-      "fetched_at": "2026-05-24T16:12:47.004154+07:00",
+      "fetched_at": "2026-05-25T07:37:50.301519+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 5.13,
         "pb": 0.89,
@@ -4084,28 +3691,23 @@
       },
       "balance": {
         "total_assets": 522054038.0,
-        "equity": null,
+        "equity": 329511035.0,
         "total_liab": 192543003.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.584
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 20,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNI": {
       "symbol": "VNI",
-      "fetched_at": "2026-05-24T16:12:49.084324+07:00",
+      "fetched_at": "2026-05-25T07:37:51.476779+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -3.44,
         "pb": 0.0,
@@ -4134,28 +3736,19 @@
       },
       "balance": {
         "total_assets": 240546025.0,
-        "equity": null,
+        "equity": 85249547.0,
         "total_liab": 155156090.0,
         "short_debt": 45255562.0,
-        "long_debt": 83911519.0
+        "long_debt": 83911519.0,
+        "debt_to_equity": 1.822
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2014-Q4",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 11,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2014-Q4"
     },
     "VNH": {
       "symbol": "VNH",
-      "fetched_at": "2026-05-24T16:12:49.362510+07:00",
+      "fetched_at": "2026-05-25T07:37:53.432947+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 0.66,
         "pb": 1.02,
@@ -4184,28 +3777,23 @@
       },
       "balance": {
         "total_assets": null,
-        "equity": null,
+        "equity": 7833160.0,
         "total_liab": 4823826.0,
         "short_debt": null,
         "long_debt": null
       },
       "cashflow": {
-        "cf_operating": null,
+        "cf_operating": -8541.0,
         "cf_investing": null,
-        "cf_financing": null
+        "cf_financing": null,
+        "cf_quality": 0.0
       },
-      "period": "2018-Q1",
-      "finance_score": {
-        "fundamental": 18,
-        "cashflow": 0,
-        "growth": -6,
-        "total": 12,
-        "max": 38
-      }
+      "period": "2018-Q1"
     },
     "VNG": {
       "symbol": "VNG",
-      "fetched_at": "2026-05-24T16:12:49.726829+07:00",
+      "fetched_at": "2026-05-25T07:37:56.705414+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 81.2,
         "pb": 0.69,
@@ -4234,28 +3822,23 @@
       },
       "balance": {
         "total_assets": 4432724584.0,
-        "equity": null,
+        "equity": 1130657588.0,
         "total_liab": 3302066996.0,
         "short_debt": 859562622.0,
-        "long_debt": 1876983157.0
+        "long_debt": 1876983157.0,
+        "debt_to_equity": 2.92
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 2,
-        "total": -1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNF": {
       "symbol": "VNF",
-      "fetched_at": "2026-05-24T16:12:52.986051+07:00",
+      "fetched_at": "2026-05-25T07:37:57.231865+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.31,
         "pb": 0.78,
@@ -4284,28 +3867,23 @@
       },
       "balance": {
         "total_assets": 991235560.0,
-        "equity": null,
+        "equity": 627909580.0,
         "total_liab": 363325980.0,
         "short_debt": 34660609.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.579
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 22,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNC": {
       "symbol": "VNC",
-      "fetched_at": "2026-05-24T16:12:55.110582+07:00",
+      "fetched_at": "2026-05-25T07:38:03.626403+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.23,
         "pb": 2.25,
@@ -4334,28 +3912,23 @@
       },
       "balance": {
         "total_assets": 526480388.0,
-        "equity": null,
+        "equity": 331376404.0,
         "total_liab": 195103985.0,
         "short_debt": 1950393.0,
-        "long_debt": 1854581.0
+        "long_debt": 1854581.0,
+        "debt_to_equity": 0.589
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 18,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNB": {
       "symbol": "VNB",
-      "fetched_at": "2026-05-24T16:12:55.389299+07:00",
+      "fetched_at": "2026-05-25T07:38:04.114935+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 14.17,
         "pb": 0.99,
@@ -4384,28 +3957,23 @@
       },
       "balance": {
         "total_assets": 1216673464.0,
-        "equity": null,
+        "equity": 1185235784.0,
         "total_liab": 31437680.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.027
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 9,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VNA": {
       "symbol": "VNA",
-      "fetched_at": "2026-05-24T16:12:55.752853+07:00",
+      "fetched_at": "2026-05-25T07:38:05.644898+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 13.75,
         "pb": 1.01,
@@ -4434,28 +4002,23 @@
       },
       "balance": {
         "total_assets": 958843625.0,
-        "equity": null,
+        "equity": 589935850.0,
         "total_liab": 368907776.0,
         "short_debt": 42465357.0,
-        "long_debt": 233894986.0
+        "long_debt": 233894986.0,
+        "debt_to_equity": 0.625
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 20,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VMS": {
       "symbol": "VMS",
-      "fetched_at": "2026-05-24T16:13:01.122976+07:00",
+      "fetched_at": "2026-05-25T07:38:10.311466+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 16.68,
         "pb": 1.47,
@@ -4484,28 +4047,25 @@
       },
       "balance": {
         "total_assets": 253902409.0,
-        "equity": null,
+        "equity": 154558616.0,
         "total_liab": 99343793.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.643
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -4440254.0,
+        "cf_investing": 29897286.0,
+        "cf_financing": -8550.0,
+        "cf_quality": -1.01,
+        "cf_free": 25457032.0
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 11,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VMG": {
       "symbol": "VMG",
-      "fetched_at": "2026-05-24T16:13:04.787614+07:00",
+      "fetched_at": "2026-05-25T07:38:14.121952+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -7.55,
         "pb": 0.58,
@@ -4534,28 +4094,25 @@
       },
       "balance": {
         "total_assets": 125433036.0,
-        "equity": null,
+        "equity": 40043360.0,
         "total_liab": 85389676.0,
         "short_debt": 3948104.0,
-        "long_debt": 23773925.0
+        "long_debt": 23773925.0,
+        "debt_to_equity": 2.132
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -10098392.0,
+        "cf_investing": 1823332.0,
+        "cf_financing": 9427725.0,
+        "cf_quality": -4.32,
+        "cf_free": -8275060.0
       },
-      "period": "2019-Q2",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 18,
-        "max": 38
-      }
+      "period": "2019-Q2"
     },
     "VMA": {
       "symbol": "VMA",
-      "fetched_at": "2026-05-24T16:13:07.129762+07:00",
+      "fetched_at": "2026-05-25T07:38:17.641864+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -4574,28 +4131,24 @@
       "income": {},
       "balance": {
         "total_assets": 127748336.0,
-        "equity": null,
+        "equity": 29678510.0,
         "total_liab": 98069826.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 3.304
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": 783170.0,
+        "cf_investing": -2156939.0,
+        "cf_financing": null,
+        "cf_free": -1373769.0
       },
-      "period": "2015-Q1",
-      "finance_score": {
-        "fundamental": 0,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 0,
-        "max": 38
-      }
+      "period": "2015-Q1"
     },
     "VMD": {
       "symbol": "VMD",
-      "fetched_at": "2026-05-24T16:13:06.908608+07:00",
+      "fetched_at": "2026-05-25T07:38:17.230202+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 9.78,
         "pb": 0.62,
@@ -4624,28 +4177,25 @@
       },
       "balance": {
         "total_assets": 1299389325.0,
-        "equity": null,
+        "equity": 420526615.0,
         "total_liab": 878862710.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 2.09
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -1961396.0,
+        "cf_investing": -164808251.0,
+        "cf_financing": null,
+        "cf_quality": -0.83,
+        "cf_free": -166769647.0
       },
-      "period": "2025-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2025-Q1"
     },
     "VMC": {
       "symbol": "VMC",
-      "fetched_at": "2026-05-24T16:13:07.119054+07:00",
+      "fetched_at": "2026-05-25T07:38:17.283898+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 62.26,
         "pb": 0.42,
@@ -4674,28 +4224,23 @@
       },
       "balance": {
         "total_assets": 1208268079.0,
-        "equity": null,
+        "equity": 359424205.0,
         "total_liab": 848843874.0,
         "short_debt": 506499937.0,
-        "long_debt": 39771890.0
+        "long_debt": 39771890.0,
+        "debt_to_equity": 2.362
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VLW": {
       "symbol": "VLW",
-      "fetched_at": "2026-05-24T16:13:10.741021+07:00",
+      "fetched_at": "2026-05-25T07:38:21.017306+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 13.02,
         "pb": 1.81,
@@ -4724,28 +4269,19 @@
       },
       "balance": {
         "total_assets": 627138080.0,
-        "equity": null,
+        "equity": 493697475.0,
         "total_liab": 133440606.0,
         "short_debt": 10307480.0,
-        "long_debt": 43079477.0
+        "long_debt": 43079477.0,
+        "debt_to_equity": 0.27
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 20,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VLP": {
       "symbol": "VLP",
-      "fetched_at": "2026-05-24T16:13:12.932585+07:00",
+      "fetched_at": "2026-05-25T07:38:25.200981+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -4774,28 +4310,19 @@
       },
       "balance": {
         "total_assets": 45641955.0,
-        "equity": null,
+        "equity": 38021332.0,
         "total_liab": 7620624.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.2
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2017-Q2",
-      "finance_score": {
-        "fundamental": 0,
-        "cashflow": 0,
-        "growth": -4,
-        "total": -4,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2017-Q2"
     },
     "VLG": {
       "symbol": "VLG",
-      "fetched_at": "2026-05-24T16:13:13.156022+07:00",
+      "fetched_at": "2026-05-25T07:38:25.204549+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 18.8,
         "pb": 0.73,
@@ -4824,28 +4351,23 @@
       },
       "balance": {
         "total_assets": 272938294.0,
-        "equity": null,
+        "equity": 167792128.0,
         "total_liab": 105146166.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.627
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 5,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 15,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VLS": {
       "symbol": "VLS",
-      "fetched_at": "2026-05-24T16:13:12.885038+07:00",
+      "fetched_at": "2026-05-25T07:38:24.962285+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 24.39,
         "pb": 1.53,
@@ -4874,28 +4396,25 @@
       },
       "balance": {
         "total_assets": 1045082333.0,
-        "equity": null,
+        "equity": 262268549.0,
         "total_liab": 782813785.0,
         "short_debt": 489229494.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 2.985
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": 26111769.0,
+        "cf_investing": 2000000.0,
+        "cf_financing": -4402624.0,
+        "cf_quality": 1.61,
+        "cf_free": 28111769.0
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VLF": {
       "symbol": "VLF",
-      "fetched_at": "2026-05-24T16:13:16.791295+07:00",
+      "fetched_at": "2026-05-25T07:38:29.663670+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -23.97,
         "pb": -0.42,
@@ -4924,28 +4443,19 @@
       },
       "balance": {
         "total_assets": 28046122.0,
-        "equity": null,
+        "equity": -83147679.0,
         "total_liab": 111193801.0,
         "short_debt": 33356952.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": -1.337
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2021-Q4",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 5,
-        "total": 17,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2021-Q4"
     },
     "VLC": {
       "symbol": "VLC",
-      "fetched_at": "2026-05-24T16:13:18.902982+07:00",
+      "fetched_at": "2026-05-25T07:38:32.698501+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6083.14,
         "pb": 0.49,
@@ -4974,28 +4484,23 @@
       },
       "balance": {
         "total_assets": 6637273872.0,
-        "equity": null,
+        "equity": 5926986110.0,
         "total_liab": 710287762.0,
         "short_debt": 67000000.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.12
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VLB": {
       "symbol": "VLB",
-      "fetched_at": "2026-05-24T16:13:19.179153+07:00",
+      "fetched_at": "2026-05-25T07:38:33.438721+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 7.46,
         "pb": 3.19,
@@ -5024,28 +4529,23 @@
       },
       "balance": {
         "total_assets": 1169552115.0,
-        "equity": null,
+        "equity": 704010926.0,
         "total_liab": 465541189.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.661
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 17,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VLA": {
       "symbol": "VLA",
-      "fetched_at": "2026-05-24T16:13:19.993051+07:00",
+      "fetched_at": "2026-05-25T07:38:34.452801+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 38.84,
         "pb": 0.76,
@@ -5074,28 +4574,23 @@
       },
       "balance": {
         "total_assets": 47564293.0,
-        "equity": null,
+        "equity": 44944436.0,
         "total_liab": 2619857.0,
         "short_debt": 1793434.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.058
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -9,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VKC": {
       "symbol": "VKC",
-      "fetched_at": "2026-05-24T16:13:25.191136+07:00",
+      "fetched_at": "2026-05-25T07:38:40.535863+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.36,
         "pb": -0.06,
@@ -5124,28 +4619,19 @@
       },
       "balance": {
         "total_assets": 233317211.0,
-        "equity": null,
+        "equity": -295189496.0,
         "total_liab": 528506707.0,
         "short_debt": 361466253.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": -1.79
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": -6,
-        "total": 6,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VJC": {
       "symbol": "VJC",
-      "fetched_at": "2026-05-24T16:13:26.009039+07:00",
+      "fetched_at": "2026-05-25T07:38:41.344440+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 54.93,
         "pb": 4.98,
@@ -5174,28 +4660,23 @@
       },
       "balance": {
         "total_assets": 139458571644.0,
-        "equity": null,
+        "equity": 24850418970.0,
         "total_liab": 114608152674.0,
         "short_debt": 26056144282.0,
-        "long_debt": 42943549960.0
+        "long_debt": 42943549960.0,
+        "debt_to_equity": 4.612
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": 0,
-        "total": -11,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIX": {
       "symbol": "VIX",
-      "fetched_at": "2026-05-24T16:13:28.531760+07:00",
+      "fetched_at": "2026-05-25T07:38:43.948757+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.22,
         "pb": 1.61,
@@ -5234,18 +4715,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 13,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIW": {
       "symbol": "VIW",
-      "fetched_at": "2026-05-24T16:13:30.053295+07:00",
+      "fetched_at": "2026-05-25T07:38:44.744390+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 42.21,
         "pb": 1.13,
@@ -5274,28 +4749,23 @@
       },
       "balance": {
         "total_assets": 1969762788.0,
-        "equity": null,
+        "equity": 737091162.0,
         "total_liab": 1232671626.0,
         "short_debt": 202530229.0,
-        "long_debt": 76151077.0
+        "long_debt": 76151077.0,
+        "debt_to_equity": 1.672
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": 2,
-        "total": -3,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIT": {
       "symbol": "VIT",
-      "fetched_at": "2026-05-24T16:13:31.199561+07:00",
+      "fetched_at": "2026-05-25T07:38:47.698980+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 16.33,
         "pb": 1.84,
@@ -5324,28 +4794,23 @@
       },
       "balance": {
         "total_assets": 2118833246.0,
-        "equity": null,
+        "equity": 651506996.0,
         "total_liab": 1467326249.0,
         "short_debt": 654329276.0,
-        "long_debt": 337796586.0
+        "long_debt": 337796586.0,
+        "debt_to_equity": 2.252
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIP": {
       "symbol": "VIP",
-      "fetched_at": "2026-05-24T16:13:36.070812+07:00",
+      "fetched_at": "2026-05-25T07:38:51.670622+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 9.73,
         "pb": 0.65,
@@ -5374,28 +4839,23 @@
       },
       "balance": {
         "total_assets": 1410932728.0,
-        "equity": null,
+        "equity": 1279194470.0,
         "total_liab": 131738259.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.103
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 18,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIN": {
       "symbol": "VIN",
-      "fetched_at": "2026-05-24T16:13:37.214396+07:00",
+      "fetched_at": "2026-05-25T07:38:53.412511+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 38.87,
         "pb": 0.8,
@@ -5424,28 +4884,23 @@
       },
       "balance": {
         "total_assets": 596685598.0,
-        "equity": null,
+        "equity": 565319947.0,
         "total_liab": 31365651.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.055
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIH": {
       "symbol": "VIH",
-      "fetched_at": "2026-05-24T16:13:40.570534+07:00",
+      "fetched_at": "2026-05-25T07:38:57.706319+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 526.14,
         "pb": 2.44,
@@ -5474,28 +4929,25 @@
       },
       "balance": {
         "total_assets": 404858197.0,
-        "equity": null,
+        "equity": 32711309.0,
         "total_liab": 372146888.0,
         "short_debt": 229565592.0,
-        "long_debt": 55465403.0
+        "long_debt": 55465403.0,
+        "debt_to_equity": 11.377
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -60149304.0,
+        "cf_investing": -5599109.0,
+        "cf_financing": 63633499.0,
+        "cf_quality": -396.57,
+        "cf_free": -65748413.0
       },
-      "period": "2018-Q2",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": 0,
-        "total": -5,
-        "max": 38
-      }
+      "period": "2018-Q2"
     },
     "VIG": {
       "symbol": "VIG",
-      "fetched_at": "2026-05-24T16:13:42.088823+07:00",
+      "fetched_at": "2026-05-25T07:38:58.674413+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -117.52,
         "pb": 0.72,
@@ -5534,18 +4986,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 12,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIF": {
       "symbol": "VIF",
-      "fetched_at": "2026-05-24T16:13:42.922432+07:00",
+      "fetched_at": "2026-05-25T07:39:00.346548+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 17.46,
         "pb": 1.1,
@@ -5574,28 +5020,23 @@
       },
       "balance": {
         "total_assets": 5595946013.0,
-        "equity": null,
+        "equity": 5079137293.0,
         "total_liab": 516808720.0,
         "short_debt": 138373915.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.102
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 3,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIE": {
       "symbol": "VIE",
-      "fetched_at": "2026-05-24T16:13:43.199346+07:00",
+      "fetched_at": "2026-05-25T07:39:01.236664+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -26.2,
         "pb": 1.27,
@@ -5624,28 +5065,19 @@
       },
       "balance": {
         "total_assets": 20982356.0,
-        "equity": null,
+        "equity": 14807046.0,
         "total_liab": 6175309.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.417
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2022-Q2",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": -6,
-        "total": 4,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2022-Q2"
     },
     "VID": {
       "symbol": "VID",
-      "fetched_at": "2026-05-24T16:13:47.670345+07:00",
+      "fetched_at": "2026-05-25T07:39:05.429876+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 31.68,
         "pb": 0.32,
@@ -5674,28 +5106,25 @@
       },
       "balance": {
         "total_assets": 1125797513.0,
-        "equity": null,
+        "equity": 638744852.0,
         "total_liab": 487052661.0,
         "short_debt": 408920056.0,
-        "long_debt": 4100000.0
+        "long_debt": 4100000.0,
+        "debt_to_equity": 0.763
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": 10839993.0,
+        "cf_investing": -27001607.0,
+        "cf_financing": 21330702.0,
+        "cf_quality": 6.07,
+        "cf_free": -16161614.0
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -3,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 5,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIC": {
       "symbol": "VIC",
-      "fetched_at": "2026-05-24T16:13:48.330004+07:00",
+      "fetched_at": "2026-05-25T07:39:06.080620+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 49.13,
         "pb": 8.66,
@@ -5724,28 +5153,23 @@
       },
       "balance": {
         "total_assets": 1121457028000.0,
-        "equity": null,
+        "equity": 151455224000.0,
         "total_liab": 970001804000.0,
         "short_debt": 113955484000.0,
-        "long_debt": 221434236000.0
+        "long_debt": 221434236000.0,
+        "debt_to_equity": 6.405
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -17,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VIB": {
       "symbol": "VIB",
-      "fetched_at": "2026-05-24T16:13:48.909115+07:00",
+      "fetched_at": "2026-05-25T07:39:07.294566+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 7.65,
         "pb": 1.29,
@@ -5784,18 +5208,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VHL": {
       "symbol": "VHL",
-      "fetched_at": "2026-05-24T16:13:49.196064+07:00",
+      "fetched_at": "2026-05-25T07:39:12.383052+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 8.94,
         "pb": 0.53,
@@ -5824,28 +5242,23 @@
       },
       "balance": {
         "total_assets": 767751329.0,
-        "equity": null,
+        "equity": 501750367.0,
         "total_liab": 266000962.0,
         "short_debt": 32989533.0,
-        "long_debt": 2223800.0
+        "long_debt": 2223800.0,
+        "debt_to_equity": 0.53
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 20,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VHH": {
       "symbol": "VHH",
-      "fetched_at": "2026-05-24T16:13:54.338775+07:00",
+      "fetched_at": "2026-05-25T07:39:14.209566+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -6.79,
         "pb": 0.0,
@@ -5864,38 +5277,29 @@
       "income": {
         "revenue": 10479179.0,
         "gross_profit": 1929642.0,
-        "net_profit": null,
+        "net_profit": 243217.0,
         "operating_profit": 185573.0,
         "eps": 40.54,
         "rev_growth_qoq": 1.077,
-        "profit_growth_qoq": null,
+        "profit_growth_qoq": 1.1885,
         "rev_growth_yoy": null,
         "profit_growth_yoy": null
       },
       "balance": {
         "total_assets": 129885047.0,
-        "equity": null,
+        "equity": 54215744.0,
         "total_liab": 75669303.0,
         "short_debt": 13947717.0,
-        "long_debt": 28162387.0
+        "long_debt": 28162387.0,
+        "debt_to_equity": 1.396
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2014-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 5,
-        "total": 12,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2014-Q1"
     },
     "VHG": {
       "symbol": "VHG",
-      "fetched_at": "2026-05-24T16:13:54.653378+07:00",
+      "fetched_at": "2026-05-25T07:39:15.265808+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 149.1,
         "pb": 2.16,
@@ -5924,28 +5328,23 @@
       },
       "balance": {
         "total_assets": 145535610.0,
-        "equity": null,
+        "equity": 138669906.0,
         "total_liab": 6865704.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.05
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -8,
-        "cashflow": 0,
-        "growth": -3,
-        "total": -11,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VHF": {
       "symbol": "VHF",
-      "fetched_at": "2026-05-24T16:13:55.239519+07:00",
+      "fetched_at": "2026-05-25T07:39:18.139947+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 65.23,
         "pb": 1.8,
@@ -5974,28 +5373,23 @@
       },
       "balance": {
         "total_assets": 376857346.0,
-        "equity": null,
+        "equity": 230963175.0,
         "total_liab": 145894171.0,
         "short_debt": 119390662.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.632
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -5,
-        "cashflow": 0,
-        "growth": -2,
-        "total": -7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VHE": {
       "symbol": "VHE",
-      "fetched_at": "2026-05-24T16:13:58.787763+07:00",
+      "fetched_at": "2026-05-25T07:39:19.283127+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 7.18,
         "pb": 0.33,
@@ -6024,28 +5418,23 @@
       },
       "balance": {
         "total_assets": 620158917.0,
-        "equity": null,
+        "equity": 376925513.0,
         "total_liab": 243233404.0,
         "short_debt": 228909269.0,
-        "long_debt": 421237.0
+        "long_debt": 421237.0,
+        "debt_to_equity": 0.645
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 22,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VHD": {
       "symbol": "VHD",
-      "fetched_at": "2026-05-24T16:14:00.321300+07:00",
+      "fetched_at": "2026-05-25T07:39:21.407896+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -1.43,
         "pb": -7.5,
@@ -6074,28 +5463,23 @@
       },
       "balance": {
         "total_assets": 3391696885.0,
-        "equity": null,
+        "equity": -21288657.0,
         "total_liab": 3412985541.0,
         "short_debt": 801389413.0,
-        "long_debt": 276077908.0
+        "long_debt": 276077908.0,
+        "debt_to_equity": -160.319
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 18,
-        "cashflow": 0,
-        "growth": -6,
-        "total": 12,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VHC": {
       "symbol": "VHC",
-      "fetched_at": "2026-05-24T16:14:00.712051+07:00",
+      "fetched_at": "2026-05-25T07:39:22.229158+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 9.35,
         "pb": 1.26,
@@ -6124,28 +5508,23 @@
       },
       "balance": {
         "total_assets": 13421614625.0,
-        "equity": null,
+        "equity": 9986975706.0,
         "total_liab": 3434638919.0,
         "short_debt": 2046146063.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.344
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 10,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 20,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGV": {
       "symbol": "VGV",
-      "fetched_at": "2026-05-24T16:14:01.269982+07:00",
+      "fetched_at": "2026-05-25T07:39:25.016903+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 39.89,
         "pb": 3.49,
@@ -6174,28 +5553,23 @@
       },
       "balance": {
         "total_assets": 1367825140.0,
-        "equity": null,
+        "equity": 491753057.0,
         "total_liab": 876072083.0,
         "short_debt": 29438761.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 1.782
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": 10,
-        "total": -1,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGT": {
       "symbol": "VGT",
-      "fetched_at": "2026-05-24T16:14:04.805269+07:00",
+      "fetched_at": "2026-05-25T07:39:26.362320+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 7.19,
         "pb": 0.6,
@@ -6224,28 +5598,23 @@
       },
       "balance": {
         "total_assets": 20583738738.0,
-        "equity": null,
+        "equity": 10044772408.0,
         "total_liab": 10538966329.0,
         "short_debt": 4908126995.0,
-        "long_debt": 1870758225.0
+        "long_debt": 1870758225.0,
+        "debt_to_equity": 1.049
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": -2,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGS": {
       "symbol": "VGS",
-      "fetched_at": "2026-05-24T16:14:06.320266+07:00",
+      "fetched_at": "2026-05-25T07:39:29.209437+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.85,
         "pb": 1.23,
@@ -6274,28 +5643,23 @@
       },
       "balance": {
         "total_assets": 2329393902.0,
-        "equity": null,
+        "equity": 1295742236.0,
         "total_liab": 1033651665.0,
         "short_debt": 571928559.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.798
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 13,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGR": {
       "symbol": "VGR",
-      "fetched_at": "2026-05-24T16:14:06.699105+07:00",
+      "fetched_at": "2026-05-25T07:39:29.325643+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 12.08,
         "pb": 6.06,
@@ -6324,28 +5688,23 @@
       },
       "balance": {
         "total_assets": 1397226359.0,
-        "equity": null,
+        "equity": 1193713410.0,
         "total_liab": 203512948.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.17
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 10,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGP": {
       "symbol": "VGP",
-      "fetched_at": "2026-05-24T16:14:07.311998+07:00",
+      "fetched_at": "2026-05-25T07:39:33.206351+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 12.48,
         "pb": 0.87,
@@ -6374,28 +5733,23 @@
       },
       "balance": {
         "total_assets": 5494980197.0,
-        "equity": null,
+        "equity": 248530582.0,
         "total_liab": 5246449615.0,
         "short_debt": 803200000.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 21.11
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 9,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 11,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGL": {
       "symbol": "VGL",
-      "fetched_at": "2026-05-24T16:14:10.791140+07:00",
+      "fetched_at": "2026-05-25T07:39:33.237897+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.92,
         "pb": 0.45,
@@ -6424,28 +5778,25 @@
       },
       "balance": {
         "total_assets": 137349542.0,
-        "equity": null,
+        "equity": 123437465.0,
         "total_liab": 13912077.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.113
       },
       "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
+        "cf_operating": -4910806.0,
+        "cf_investing": -1677595.0,
+        "cf_financing": -285.0,
+        "cf_quality": -0.81,
+        "cf_free": -6588401.0
       },
-      "period": "2018-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 14,
-        "max": 38
-      }
+      "period": "2018-Q1"
     },
     "VGI": {
       "symbol": "VGI",
-      "fetched_at": "2026-05-24T16:14:12.325794+07:00",
+      "fetched_at": "2026-05-25T07:39:36.130915+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 23.05,
         "pb": 5.03,
@@ -6474,28 +5825,23 @@
       },
       "balance": {
         "total_assets": 81473834208.0,
-        "equity": null,
+        "equity": 42843242568.0,
         "total_liab": 38630591640.0,
         "short_debt": 2768030940.0,
-        "long_debt": 2259071761.0
+        "long_debt": 2259071761.0,
+        "debt_to_equity": 0.902
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 0,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 6,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VGG": {
       "symbol": "VGG",
-      "fetched_at": "2026-05-24T16:14:12.723193+07:00",
+      "fetched_at": "2026-05-25T07:39:36.251064+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 4.52,
         "pb": 0.78,
@@ -6524,28 +5870,19 @@
       },
       "balance": {
         "total_assets": 5872727656.0,
-        "equity": null,
+        "equity": 2442320212.0,
         "total_liab": 3430407444.0,
         "short_debt": 6594250.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 1.405
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 6,
-        "total": 18,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VGC": {
       "symbol": "VGC",
-      "fetched_at": "2026-05-24T16:14:13.349656+07:00",
+      "fetched_at": "2026-05-25T07:39:40.132983+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 13.37,
         "pb": 1.63,
@@ -6574,28 +5911,23 @@
       },
       "balance": {
         "total_assets": 26440901589.0,
-        "equity": null,
+        "equity": 11571170112.0,
         "total_liab": 14869731477.0,
         "short_debt": 2713004905.0,
-        "long_debt": 2872392766.0
+        "long_debt": 2872392766.0,
+        "debt_to_equity": 1.285
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 15,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VFS": {
       "symbol": "VFS",
-      "fetched_at": "2026-05-24T16:14:17.947226+07:00",
+      "fetched_at": "2026-05-25T07:39:41.238226+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 13.25,
         "pb": 1.24,
@@ -6634,18 +5966,12 @@
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 0,
-        "total": 7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VFR": {
       "symbol": "VFR",
-      "fetched_at": "2026-05-24T16:14:18.316127+07:00",
+      "fetched_at": "2026-05-25T07:39:43.070500+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.65,
         "pb": 0.47,
@@ -6674,28 +6000,23 @@
       },
       "balance": {
         "total_assets": 373436390.0,
-        "equity": null,
+        "equity": 325651857.0,
         "total_liab": 47784533.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.147
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 12,
-        "cashflow": 0,
-        "growth": 8,
-        "total": 20,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VFG": {
       "symbol": "VFG",
-      "fetched_at": "2026-05-24T16:14:18.640358+07:00",
+      "fetched_at": "2026-05-25T07:39:43.456351+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.51,
         "pb": 1.28,
@@ -6724,24 +6045,18 @@
       },
       "balance": {
         "total_assets": 2419378833.0,
-        "equity": null,
+        "equity": 1714735423.0,
         "total_liab": 704643410.0,
         "short_debt": 87449061.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.411
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 13,
-        "cashflow": 0,
-        "growth": -6,
-        "total": 7,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "HRC": {
       "symbol": "HRC",
@@ -6995,7 +6310,8 @@
     },
     "VFC": {
       "symbol": "VFC",
-      "fetched_at": "2026-05-25T00:19:32.045537+07:00",
+      "fetched_at": "2026-05-25T07:39:47.087870+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 236.69,
         "pb": 4.66,
@@ -7024,28 +6340,23 @@
       },
       "balance": {
         "total_assets": 1146001383.0,
-        "equity": null,
+        "equity": 698834854.0,
         "total_liab": 447166528.0,
         "short_debt": 91533592.0,
-        "long_debt": 42346032.0
+        "long_debt": 42346032.0,
+        "debt_to_equity": 0.64
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -11,
-        "cashflow": 0,
-        "growth": -2,
-        "total": -13,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VET": {
       "symbol": "VET",
-      "fetched_at": "2026-05-25T00:19:37.030373+07:00",
+      "fetched_at": "2026-05-25T07:39:48.647242+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 15.14,
         "pb": 0.89,
@@ -7074,28 +6385,23 @@
       },
       "balance": {
         "total_assets": 789662164.0,
-        "equity": null,
+        "equity": 318855821.0,
         "total_liab": 470806343.0,
         "short_debt": 97463568.0,
-        "long_debt": 201500000.0
+        "long_debt": 201500000.0,
+        "debt_to_equity": 1.477
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 5,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 15,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VES": {
       "symbol": "VES",
-      "fetched_at": "2026-05-25T00:19:37.280489+07:00",
+      "fetched_at": "2026-05-25T07:39:49.943582+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.55,
         "pb": 0.0,
@@ -7124,28 +6430,19 @@
       },
       "balance": {
         "total_assets": 201785444.0,
-        "equity": null,
+        "equity": 76340279.0,
         "total_liab": 125445165.0,
         "short_debt": null,
-        "long_debt": 76386229.0
+        "long_debt": 76386229.0,
+        "debt_to_equity": 1.643
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2013-Q1",
-      "finance_score": {
-        "fundamental": 7,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 9,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2013-Q1"
     },
     "VEF": {
       "symbol": "VEF",
-      "fetched_at": "2026-05-25T00:19:37.362556+07:00",
+      "fetched_at": "2026-05-25T07:39:50.392140+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 1.42,
         "pb": 3.27,
@@ -7174,28 +6471,23 @@
       },
       "balance": {
         "total_assets": 22556108000.0,
-        "equity": null,
+        "equity": 6676106000.0,
         "total_liab": 15880002000.0,
         "short_debt": null,
-        "long_debt": 1359809000.0
+        "long_debt": 1359809000.0,
+        "debt_to_equity": 2.379
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": -6,
-        "total": -2,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VEC": {
       "symbol": "VEC",
-      "fetched_at": "2026-05-25T00:19:37.504525+07:00",
+      "fetched_at": "2026-05-25T07:39:54.001666+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 33.77,
         "pb": 3.8,
@@ -7224,28 +6516,19 @@
       },
       "balance": {
         "total_assets": 821470463.0,
-        "equity": null,
+        "equity": 616054668.0,
         "total_liab": 205415795.0,
         "short_debt": 8665000.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.333
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -8,
-        "cashflow": 0,
-        "growth": 2,
-        "total": -6,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VEA": {
       "symbol": "VEA",
-      "fetched_at": "2026-05-25T00:19:42.492959+07:00",
+      "fetched_at": "2026-05-25T07:39:55.572833+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 6.2,
         "pb": 1.67,
@@ -7274,28 +6557,23 @@
       },
       "balance": {
         "total_assets": 28541992810.0,
-        "equity": null,
+        "equity": 27216710237.0,
         "total_liab": 1325282573.0,
         "short_debt": 108038660.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.049
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 13,
-        "cashflow": 0,
-        "growth": 4,
-        "total": 17,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VE8": {
       "symbol": "VE8",
-      "fetched_at": "2026-05-25T00:19:42.942868+07:00",
+      "fetched_at": "2026-05-25T07:39:57.311734+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -0.47,
         "pb": -0.37,
@@ -7324,28 +6602,19 @@
       },
       "balance": {
         "total_assets": 89980640.0,
-        "equity": null,
+        "equity": -21565362.0,
         "total_liab": 111546002.0,
         "short_debt": 60640926.0,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": -5.172
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2025-Q1",
-      "finance_score": {
-        "fundamental": 15,
-        "cashflow": 0,
-        "growth": 2,
-        "total": 17,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2025-Q1"
     },
     "VE4": {
       "symbol": "VE4",
-      "fetched_at": "2026-05-25T00:19:42.967253+07:00",
+      "fetched_at": "2026-05-25T07:40:00.812955+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 3730.03,
         "pb": 26.77,
@@ -7374,28 +6643,19 @@
       },
       "balance": {
         "total_assets": 60654475.0,
-        "equity": null,
+        "equity": 9983876.0,
         "total_liab": 50670598.0,
         "short_debt": 26234663.0,
-        "long_debt": 2400000.0
+        "long_debt": 2400000.0,
+        "debt_to_equity": 5.075
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": -8,
-        "cashflow": 0,
-        "growth": 6,
-        "total": -2,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VE9": {
       "symbol": "VE9",
-      "fetched_at": "2026-05-25T00:19:42.936056+07:00",
+      "fetched_at": "2026-05-25T07:39:57.095896+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 16.81,
         "pb": 3.88,
@@ -7424,28 +6684,23 @@
       },
       "balance": {
         "total_assets": 16932853.0,
-        "equity": null,
+        "equity": 12098821.0,
         "total_liab": 4834031.0,
         "short_debt": null,
-        "long_debt": null
+        "long_debt": null,
+        "debt_to_equity": 0.4
       },
       "cashflow": {
         "cf_operating": null,
         "cf_investing": null,
         "cf_financing": null
       },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 0,
-        "cashflow": 0,
-        "growth": -3,
-        "total": -3,
-        "max": 38
-      }
+      "period": "2026-Q1"
     },
     "VE3": {
       "symbol": "VE3",
-      "fetched_at": "2026-05-25T00:19:47.980761+07:00",
+      "fetched_at": "2026-05-25T07:40:02.634108+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": 4.5,
         "pb": 0.28,
@@ -7474,28 +6729,19 @@
       },
       "balance": {
         "total_assets": 225730855.0,
-        "equity": null,
+        "equity": 40183108.0,
         "total_liab": 185547747.0,
         "short_debt": 72634135.0,
-        "long_debt": 1050000.0
+        "long_debt": 1050000.0,
+        "debt_to_equity": 4.618
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 18,
-        "cashflow": 0,
-        "growth": 10,
-        "total": 28,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VE2": {
       "symbol": "VE2",
-      "fetched_at": "2026-05-25T00:19:49.179030+07:00",
+      "fetched_at": "2026-05-25T07:40:03.781942+07:00",
+      "schema_version": 2,
       "ratio": {
         "pe": -9.22,
         "pb": 24.51,
@@ -7524,119 +6770,128 @@
       },
       "balance": {
         "total_assets": 49944726.0,
-        "equity": null,
+        "equity": 607861.0,
         "total_liab": 49336865.0,
         "short_debt": 200000.0,
-        "long_debt": 500000.0
+        "long_debt": 500000.0,
+        "debt_to_equity": 81.165
       },
-      "cashflow": {
-        "cf_operating": null,
-        "cf_investing": null,
-        "cf_financing": null
-      },
-      "period": "2026-Q1",
-      "finance_score": {
-        "fundamental": 4,
-        "cashflow": 0,
-        "growth": -3,
-        "total": 1,
-        "max": 38
-      }
+      "cashflow": {},
+      "period": "2026-Q1"
     },
     "VW3": {
       "symbol": "VW3",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:33.172267+07:00"
+      "fetched_at": "2026-05-25T07:36:13.808707+07:00",
+      "schema_version": 2
     },
     "VTM": {
       "symbol": "VTM",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:33.257190+07:00"
+      "fetched_at": "2026-05-25T07:36:34.427013+07:00",
+      "schema_version": 2
     },
     "VXP": {
       "symbol": "VXP",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:33.263956+07:00"
+      "fetched_at": "2026-05-25T07:36:07.388422+07:00",
+      "schema_version": 2
     },
     "VWS": {
       "symbol": "VWS",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:33.269537+07:00"
+      "fetched_at": "2026-05-25T07:36:08.360356+07:00",
+      "schema_version": 2
     },
     "VSP": {
       "symbol": "VSP",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:37.199520+07:00"
+      "fetched_at": "2026-05-25T07:36:54.754308+07:00",
+      "schema_version": 2
     },
     "VSE": {
       "symbol": "VSE",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:37.427329+07:00"
+      "fetched_at": "2026-05-25T07:37:08.122266+07:00",
+      "schema_version": 2
     },
     "VPW": {
       "symbol": "VPW",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:37.442465+07:00"
+      "fetched_at": "2026-05-25T07:37:21.742516+07:00",
+      "schema_version": 2
     },
     "VTI": {
       "symbol": "VTI",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:37.786670+07:00"
+      "fetched_at": "2026-05-25T07:36:40.881421+07:00",
+      "schema_version": 2
     },
     "VMT": {
       "symbol": "VMT",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:41.251452+07:00"
+      "fetched_at": "2026-05-25T07:38:14.121874+07:00",
+      "schema_version": 2
     },
     "VNX": {
       "symbol": "VNX",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:41.614365+07:00"
+      "fetched_at": "2026-05-25T07:37:46.444690+07:00",
+      "schema_version": 2
     },
     "VPR": {
       "symbol": "VPR",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:41.618518+07:00"
+      "fetched_at": "2026-05-25T07:37:23.905729+07:00",
+      "schema_version": 2
     },
     "VMK": {
       "symbol": "VMK",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:42.008013+07:00"
+      "fetched_at": "2026-05-25T07:38:17.283827+07:00",
+      "schema_version": 2
     },
     "VMI": {
       "symbol": "VMI",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:44.722579+07:00"
+      "fetched_at": "2026-05-25T07:38:17.641794+07:00",
+      "schema_version": 2
     },
     "VKD": {
       "symbol": "VKD",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:45.243947+07:00"
+      "fetched_at": "2026-05-25T07:38:44.744303+07:00",
+      "schema_version": 2
     },
     "VIS": {
       "symbol": "VIS",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:45.594701+07:00"
+      "fetched_at": "2026-05-25T07:38:53.412441+07:00",
+      "schema_version": 2
     },
     "VKP": {
       "symbol": "VKP",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:45.815333+07:00"
+      "fetched_at": "2026-05-25T07:38:43.948670+07:00",
+      "schema_version": 2
     },
     "VIR": {
       "symbol": "VIR",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:48.412647+07:00"
+      "fetched_at": "2026-05-25T07:38:57.706221+07:00",
+      "schema_version": 2
     },
     "VHI": {
       "symbol": "VHI",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:49.050559+07:00"
+      "fetched_at": "2026-05-25T07:39:18.139874+07:00",
+      "schema_version": 2
     },
     "VIM": {
       "symbol": "VIM",
       "non_stock": true,
-      "fetched_at": "2026-05-25T00:53:49.290938+07:00"
+      "fetched_at": "2026-05-25T07:39:01.236563+07:00",
+      "schema_version": 2
     },
     "C32": {
       "symbol": "C32",
