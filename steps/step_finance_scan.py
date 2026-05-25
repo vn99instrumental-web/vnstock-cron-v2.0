@@ -13,6 +13,17 @@ TTL strategy:
   - Earnings season (tháng 4,5,7,8,10,11,1,2): TTL = 3 ngày
   - Ngoài earnings season: TTL = 30 ngày
   - Symbol xuất hiện trong top 20 nhưng không có trong cache: fetch ngay (lazy fallback)
+
+CHANGELOG:
+  v3 (2026-05-25) — FIX BUG `finance_score` KeyError:
+    - fetch_one() giờ gọi _compute_finance_score(result) trước khi return
+      (function trước đây tồn tại nhưng không bao giờ được gọi)
+    - Counter trong run() tách try/except để không double-count
+      (cùng 1 symbol trước đây vừa fetched_ok += 1 vừa fetched_err += 1)
+    - Thêm counter fetched_non_stock riêng để tách rõ với fetched_err
+    - Log line dùng .get() defensive — lỗi format không poison counter
+    - Bump SCHEMA_VERSION 2→3 để invalidate cache v2 cũ
+    - _is_stale() check 'finance_score' tồn tại (belt-and-suspenders)
 """
 import os
 import sys
@@ -26,6 +37,8 @@ os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
 
 import json
 import logging
+import re as _re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
@@ -59,17 +72,18 @@ CACHE_FILE = "finance/cache.json"
 # Lịch sử:
 #   1 = initial
 #   2 = CF đọc từ cash_flow() thay vì balance_sheet() (2026-05-25)
-SCHEMA_VERSION = 2
+#   3 = fetch_one giờ precompute finance_score (2026-05-25) — FIX BUG
+SCHEMA_VERSION = 3
 
 # Pattern của non-stock symbols cần bỏ qua
 # ETF: E1VFVN30, FUEVFVND...  Derivatives: VN30F2401...  Index: VNINDEX, HNXINDEX
-import re as _re
 _NON_STOCK_PATTERN = _re.compile(
     r'^(VN30F|VNINDEX|HNXINDEX|HNX30|VHNDEX|E1|FUED|FUEV|SSIAM|DCDS)', _re.IGNORECASE
 )
 
 # Valid stock types từ Listing API
 _STOCK_TYPES = {"stock", "s", "equity", "STOCK", "S", "EQUITY"}
+
 
 def _is_valid_stock(symbol: str, asset_type: str | None = None) -> bool:
     """
@@ -99,6 +113,7 @@ def _is_valid_stock(symbol: str, asset_type: str | None = None) -> bool:
 
     return True
 
+
 # =====================================================
 # TTL helpers
 # =====================================================
@@ -107,14 +122,15 @@ def _current_ttl_days() -> int:
     month = now_ict().month
     return TTL_EARNINGS if month in EARNINGS_MONTHS else TTL_NORMAL
 
+
 def _is_stale(entry: dict) -> bool:
     """True nếu entry cần re-fetch. Stale khi:
     1. Không có entry hoặc không có fetched_at
-    2. Quá TTL (3 ngày earnings season / 30 ngày bình thường)
-       — non_stock: 90 ngày
-    3. Schema version cũ → code đã đổi structure → invalid
-    4. Missing critical field (cf_operating) trong entry không phải non_stock
-       → data quality issue từ schema cũ → force re-fetch
+    2. Schema version cũ → code đã đổi structure → invalid
+    3. non_stock: cache 90 ngày
+    4. Stock thực: missing finance_score → schema v2 bug → force refresh
+    5. Stock thực: có ratio nhưng thiếu cf_operating → data quality issue
+    6. Quá TTL (3 ngày earnings season / 30 ngày bình thường)
     """
     if not entry:
         return True
@@ -136,12 +152,15 @@ def _is_stale(entry: dict) -> bool:
         except Exception:
             return True
 
-    # Data quality check: nếu có ratio nhưng thiếu cf_operating
-    # → cache từ schema cũ với bug CF reading → force refresh
+    # Stock thực — check data quality
+    # v3+ phải có finance_score (belt-and-suspenders với SCHEMA_VERSION check)
+    if "finance_score" not in entry:
+        return True
+
+    # Nếu có ratio nhưng thiếu cf_operating → cache từ schema cũ với bug CF
     ratio = entry.get("ratio", {})
     cf    = entry.get("cashflow", {})
     if ratio.get("pe") is not None and cf.get("cf_operating") is None:
-        # Có data ratio = stock thực, nhưng thiếu CF = bug schema cũ
         return True
 
     # TTL check
@@ -151,6 +170,7 @@ def _is_stale(entry: dict) -> bool:
         return age_days > _current_ttl_days()
     except Exception:
         return True
+
 
 # =====================================================
 # KBS helpers — same pattern as step_all.py
@@ -203,6 +223,7 @@ def _kbs_lookup(df: pd.DataFrame, keys: list, col: str | None = None) -> float |
                 return val
     return None
 
+
 def _kbs_growth(df: pd.DataFrame, keys: list) -> float | None:
     """QoQ growth từ limit=4 data."""
     if df is None or df.empty:
@@ -215,6 +236,7 @@ def _kbs_growth(df: pd.DataFrame, keys: list) -> float | None:
     if v_latest is None or v_prev is None or v_prev == 0:
         return None
     return round((v_latest - v_prev) / abs(v_prev), 4)
+
 
 def _kbs_yoy_growth(df: pd.DataFrame, keys: list) -> float | None:
     """YoY growth: kỳ[-1] vs kỳ[-5] nếu có đủ 5 kỳ (limit=8)."""
@@ -229,20 +251,100 @@ def _kbs_yoy_growth(df: pd.DataFrame, keys: list) -> float | None:
         return None
     return round((v_latest - v_year_ago) / abs(v_year_ago), 4)
 
+
+# =====================================================
+# Precompute finance scores
+# Scoring dùng trực tiếp từ cache, không tính lại intraday
+# =====================================================
+
+def _compute_finance_score(data: dict) -> dict:
+    """
+    Tính điểm fundamental, cashflow, growth.
+    Trả về dict với breakdown + total.
+    Nhất quán với thresholds trong step_scoring.py.
+
+    Note: hàm này LUÔN trả về dict hợp lệ (không None), kể cả khi
+    data thiếu — các fields sẽ là 0. Điều này đảm bảo
+    result["finance_score"] luôn truy cập được sau khi gọi.
+    """
+    s = {}
+
+    # Fundamental (max 18đ) — nhất quán với step_scoring.py
+    r = data.get("ratio", {}) or {}
+    pe  = r.get("pe")
+    pb  = r.get("pb")
+    roe = r.get("roe")
+
+    fund = 0
+    if pe:
+        if pe < 10:    fund += 10
+        elif pe < 15:  fund += 7
+        elif pe <= 25: fund += 3
+        else:          fund -= 5
+    if pb:
+        if pb < 1:     fund += 5
+        elif pb <= 2:  fund += 3
+        elif pb <= 3:  fund += 0
+        else:          fund -= 3
+    if roe:
+        if roe > 20:   fund += 5
+        elif roe > 15: fund += 3
+        elif roe > 10: fund += 0
+        elif roe < 5:  fund -= 3
+    s["fundamental"] = max(-18, min(18, fund))
+
+    # Cash Flow (max 10đ) — nhất quán với step_scoring.py
+    c   = data.get("cashflow", {}) or {}
+    cfo = c.get("cf_operating")
+    cfq = c.get("cf_quality")
+
+    cf = 0
+    if cfo is not None:
+        cf += 5 if cfo > 0 else -10
+    if cfq is not None:
+        if cfq > 1:     cf += 5
+        elif cfq < 0.5: cf -= 5
+    s["cashflow"] = max(-10, min(10, cf))
+
+    # Growth (max 10đ) — nhóm MỚI, dùng QoQ growth
+    i      = data.get("income", {}) or {}
+    rev_g  = i.get("rev_growth_qoq")
+    np_g   = i.get("profit_growth_qoq")
+
+    growth = 0
+    if rev_g is not None:
+        if rev_g > 0.20:    growth += 5
+        elif rev_g > 0.10:  growth += 3
+        elif rev_g > 0:     growth += 1
+        elif rev_g < -0.10: growth -= 3
+        else:               growth -= 1
+    if np_g is not None:
+        if np_g > 0.20:    growth += 5
+        elif np_g > 0.10:  growth += 3
+        elif np_g > 0:     growth += 1
+        elif np_g < -0.10: growth -= 3
+        else:              growth -= 1
+    s["growth"] = max(-10, min(10, growth))
+
+    s["total"] = s["fundamental"] + s["cashflow"] + s["growth"]
+    s["max"]   = 38  # 18 + 10 + 10
+    return s
+
+
 # =====================================================
 # Fetch finance for one symbol
 # =====================================================
 
 def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
     """
-    Fetch ratio + income + balance_sheet từ KBS.
-    - 3 calls/symbol với API_CALL_DELAY throttle
-    - balance_sheet gọi đúng 1 lần (fix bug gọi 2 lần)
+    Fetch ratio + income + balance_sheet + cash_flow từ KBS.
+
+    - 4 calls/symbol với API_CALL_DELAY throttle
     - has_data check relax: chỉ cần có ratio.pe HOẶC income.revenue HOẶC ratio.roe
     - ValueError (non-stock) → skip ngay
+    - FIX v3: precompute finance_score TRƯỚC khi return
+      → step_snapshot.py và step_scoring.py đọc trực tiếp từ cache
     """
-    import time
-
     if not _is_valid_stock(symbol, asset_type):
         log.debug(f"  [{symbol}] skipped — non-stock")
         return None
@@ -399,7 +501,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         result["income"].get("revenue"),
         result["income"].get("net_profit"),
         result["balance"].get("total_assets"),
-        result["cashflow"].get("cf_operating"),  # now from cash_flow()
+        result["cashflow"].get("cf_operating"),
     ])
     if not has_data:
         log.warning(f"  [{symbol}] no finance data — marking as non-stock (warrant/special)")
@@ -411,83 +513,14 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
             "schema_version": SCHEMA_VERSION,
         }
 
+    # ── FIX v3: PRECOMPUTE finance_score TRƯỚC KHI RETURN ──
+    # Trước đây hàm này không được gọi → log line trong run() crash
+    # với KeyError 'finance_score'. _compute_finance_score luôn trả
+    # dict hợp lệ (không None), kể cả khi data thiếu — các fields = 0.
+    result["finance_score"] = _compute_finance_score(result)
+
     return result
 
-
-# =====================================================
-# Precompute finance scores
-# Scoring dùng trực tiếp từ cache, không tính lại intraday
-# =====================================================
-
-def _compute_finance_score(data: dict) -> dict:
-    """
-    Tính điểm fundamental, cashflow, growth.
-    Trả về dict với breakdown + total.
-    Nhất quán với thresholds trong step_scoring.py.
-    """
-    s = {}
-
-    # Fundamental (max 18đ) — nhất quán với step_scoring.py
-    r = data.get("ratio", {})
-    pe  = r.get("pe")
-    pb  = r.get("pb")
-    roe = r.get("roe")
-
-    fund = 0
-    if pe:
-        if pe < 10:    fund += 10
-        elif pe < 15:  fund += 7
-        elif pe <= 25: fund += 3
-        else:          fund -= 5
-    if pb:
-        if pb < 1:     fund += 5
-        elif pb <= 2:  fund += 3
-        elif pb <= 3:  fund += 0
-        else:          fund -= 3
-    if roe:
-        if roe > 20:   fund += 5
-        elif roe > 15: fund += 3
-        elif roe > 10: fund += 0
-        elif roe < 5:  fund -= 3
-    s["fundamental"] = max(-18, min(18, fund))
-
-    # Cash Flow (max 10đ) — nhất quán với step_scoring.py
-    c   = data.get("cashflow", {})
-    cfo = c.get("cf_operating")
-    cfq = c.get("cf_quality")
-
-    cf = 0
-    if cfo is not None:
-        cf += 5 if cfo > 0 else -10
-    if cfq is not None:
-        if cfq > 1:   cf += 5
-        elif cfq < 0.5: cf -= 5
-    s["cashflow"] = max(-10, min(10, cf))
-
-    # Growth (max 10đ) — nhóm MỚI, chưa có trong scoring hiện tại
-    # Sẽ được dùng khi step_scoring.py được update ở P3
-    i      = data.get("income", {})
-    rev_g  = i.get("rev_growth_qoq")
-    np_g   = i.get("profit_growth_qoq")
-
-    growth = 0
-    if rev_g is not None:
-        if rev_g > 0.20:   growth += 5
-        elif rev_g > 0.10: growth += 3
-        elif rev_g > 0:    growth += 1
-        elif rev_g < -0.10: growth -= 3
-        else:               growth -= 1
-    if np_g is not None:
-        if np_g > 0.20:    growth += 5
-        elif np_g > 0.10:  growth += 3
-        elif np_g > 0:     growth += 1
-        elif np_g < -0.10: growth -= 3
-        else:               growth -= 1
-    s["growth"] = max(-10, min(10, growth))
-
-    s["total"] = s["fundamental"] + s["cashflow"] + s["growth"]
-    s["max"]   = 38  # 18 + 10 + 10
-    return s
 
 # =====================================================
 # Load / save cache
@@ -505,14 +538,17 @@ def load_cache() -> dict:
         return data
     return {}
 
+
 def save_cache(symbols_dict: dict) -> None:
     """Lưu cache với metadata."""
     save_json(CACHE_FILE, {
-        "generated_at": now_ict().isoformat(),
-        "ttl_days"    : _current_ttl_days(),
-        "count"       : len(symbols_dict),
-        "symbols"     : symbols_dict,
+        "generated_at"  : now_ict().isoformat(),
+        "schema_version": SCHEMA_VERSION,
+        "ttl_days"      : _current_ttl_days(),
+        "count"         : len(symbols_dict),
+        "symbols"       : symbols_dict,
     })
+
 
 # =====================================================
 # Main scan logic
@@ -560,6 +596,7 @@ def get_scan_universe(industry_map: list) -> list[str]:
     log.info(f"  Skipped: {skip_ex} UPCOM, {skip_type} non-stock (warrant/ETF)")
     return symbols
 
+
 def run(extra_symbols: list[str] | None = None) -> dict:
     """
     Main entry point.
@@ -570,6 +607,7 @@ def run(extra_symbols: list[str] | None = None) -> dict:
     log.info("=== step_finance_scan: START ===")
     log.info(f"TTL mode: {'EARNINGS SEASON' if now_ict().month in EARNINGS_MONTHS else 'NORMAL'} "
              f"({_current_ttl_days()} days)")
+    log.info(f"Schema version: {SCHEMA_VERSION}")
 
     industry_map = load_json("industry_map.json") or []
     if not industry_map:
@@ -605,43 +643,66 @@ def run(extra_symbols: list[str] | None = None) -> dict:
         log.info("All symbols are fresh — nothing to fetch")
         return cache
 
-    # Concurrent fetch
-    fetched_ok  = 0
-    fetched_err = 0
+    # ── Concurrent fetch ──
+    # FIX v3: tách try/except để KHÔNG double-count cùng 1 symbol
+    # vào fetched_ok + fetched_err. Trước đây log format error
+    # khiến cùng symbol vừa được ok += 1 vừa err += 1 → counter > universe.
+    fetched_ok        = 0
+    fetched_non_stock = 0
+    fetched_err       = 0
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         future_map = {executor.submit(fetch_one, sym): sym for sym in to_fetch}
         for future in as_completed(future_map):
             sym = future_map[future]
+
+            # ── 1) Lấy result, catch lỗi từ fetch_one ──
             try:
                 result = future.result()
-                if result and result.get("non_stock"):
-                    cache[sym] = result   # cache sentinel, TTL=90d
-                    fetched_err += 1
-                    log.info(f"  ⏭️  {sym}: non-stock (warrant/special) — cached 90d")
-                elif result:
-                    cache[sym] = result
-                    fetched_ok += 1
-                    log.info(
-                        f"  ✅ {sym} "
-                        f"PE={result['ratio'].get('pe')} "
-                        f"ROE={result['ratio'].get('roe')} "
-                        f"CFO={result['cashflow'].get('cf_operating')} "
-                        f"score={result['finance_score']['total']}"
-                    )
-                else:
-                    fetched_err += 1
-                    log.warning(f"  ⚠️ {sym}: fetch error")
             except Exception as e:
                 fetched_err += 1
-                log.error(f"  ❌ {sym}: {e}")
+                log.error(f"  ❌ {sym} (fetch error): {e}")
+                continue
+
+            # ── 2) Phân loại theo result ──
+            if not result:
+                fetched_err += 1
+                log.warning(f"  ⚠️ {sym}: fetch returned None")
+                continue
+
+            if result.get("non_stock"):
+                cache[sym] = result   # cache sentinel, TTL=90d
+                fetched_non_stock += 1
+                log.info(f"  ⏭️  {sym}: non-stock (warrant/special) — cached 90d")
+                continue
+
+            # ── 3) Stock thực — save vào cache + log defensive ──
+            cache[sym] = result
+            fetched_ok += 1
+            try:
+                fs  = result.get("finance_score") or {}
+                pe  = result.get("ratio",    {}).get("pe")
+                roe = result.get("ratio",    {}).get("roe")
+                cfo = result.get("cashflow", {}).get("cf_operating")
+                log.info(
+                    f"  ✅ {sym} "
+                    f"PE={pe} ROE={roe} CFO={cfo} "
+                    f"score={fs.get('total', 'n/a')} "
+                    f"(F={fs.get('fundamental', 'n/a')} "
+                    f"CF={fs.get('cashflow', 'n/a')} "
+                    f"G={fs.get('growth', 'n/a')})"
+                )
+            except Exception as e:
+                # Defensive: lỗi log format KHÔNG poison counter
+                # (data đã được cache ở dòng trước)
+                log.warning(f"  ⚠️ {sym}: log format error (data đã cache): {e}")
 
     save_cache(cache)
 
     log.info(
-        f"Done: {fetched_ok} fetched, {fetched_err} failed, "
-        f"{len(to_skip)} from cache. "
-        f"Total: {len(cache)} symbols"
+        f"Done: {fetched_ok} ok, {fetched_non_stock} non-stock, "
+        f"{fetched_err} failed, {len(to_skip)} from cache. "
+        f"Total in cache: {len(cache)} symbols"
     )
     log.info("=== step_finance_scan: DONE ===")
     return cache
