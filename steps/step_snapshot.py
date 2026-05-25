@@ -9,6 +9,17 @@ Thay thế step_all.py. Thay đổi chính:
 4. CafeF trực tiếp cho foreign_trade (VCI luôn fail)
 5. Lưu ohlcv_5d vào deep_raw → step_order_flow reuse, không fetch lại
 6. Lazy finance fallback: nếu symbol không có trong cache → fetch ngay
+
+CHANGELOG:
+  2026-05-25 — FIX BUG FF identical across symbols (Fix #3):
+    - CafeF library bug: returns market-wide data instead of per-symbol
+      → toàn bộ 20 symbols nhận ff_net_val_5d = 379019000 (giống hệt nhau)
+    - Result: 4 FF metrics + scoring FF group → 100% NOISE, không signal
+    - Fix: thêm validate_ff_data() check identical values across rows
+      Nếu phát hiện ≥3 symbols cùng ff_net_val_5d/20d → wipe toàn bộ FF
+      fields cho 20 symbols, set ff_data_invalid=True
+    - Downstream scoring engine thấy None → bỏ qua FF group (score 0)
+      thay vì generate signal giả mạo
 """
 import os
 import sys
@@ -44,6 +55,15 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 MAX_WORKERS = 10  # concurrent symbol fetches
+
+# FF fields that get wiped together when validation detects bug.
+# Keep in sync with what get_flow() populates.
+FF_FIELDS = [
+    "ff_buy_val_5d", "ff_sell_val_5d",
+    "ff_net_val_5d", "ff_net_val_20d",
+    "ff_room",
+    "ff_trend", "ff_consistency", "ff_acceleration",
+]
 
 # =====================================================
 # RANKING — TopStock(VND)
@@ -200,23 +220,14 @@ def get_ta(symbol: str) -> dict:
 def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
     """
     Chuẩn hóa CafeF foreign_trade DataFrame.
-
-    Vấn đề thực tế:
-    - CafeF trả về toàn bộ lịch sử (23765 records), không filter theo start/end
-    - Sort DESC → tail(5) = 5 rows cũ nhất ≈ 0
-    - Column names thay đổi theo version thư viện
-
-    Fix:
-    - Lọc manual: chỉ giữ 25 ngày gần nhất
-    - Sort ASC trước tail()
-    - Normalize column names linh hoạt
+    CafeF trả về toàn bộ lịch sử (23765 records), sort DESC.
+    tail(5) của dữ liệu DESC = 5 rows cũ nhất ≈ 0.
+    Fix: filter 25 ngày gần nhất + sort ASC + normalize column names.
     """
     if df is None or df.empty:
         return None
-
-    # Sort + filter theo date
     date_col = next(
-        (c for c in df.columns if c in ("date", "time", "trading_date", "trade_date")),
+        (c for c in df.columns if c in ("date","time","trading_date","trade_date")),
         None
     )
     if date_col:
@@ -224,25 +235,20 @@ def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
         cutoff        = pd.Timestamp.now() - pd.Timedelta(days=25)
         df            = df[df[date_col] >= cutoff].sort_values(date_col, ascending=True)
 
-    # Normalize column names
-    cols      = set(df.columns)
-    rename    = {}
-    for c in ("fr_buy_value", "fr_buy_volume", "buy_value", "buy_vol",
-              "fr_buy_value_matched"):
+    cols   = set(df.columns)
+    rename = {}
+    for c in ("fr_buy_value","fr_buy_volume","buy_value","buy_vol","fr_buy_value_matched"):
         if c in cols: rename[c] = "ff_buy"; break
-    for c in ("fr_sell_value", "fr_sell_volume", "sell_value", "sell_vol",
-              "fr_sell_value_matched"):
+    for c in ("fr_sell_value","fr_sell_volume","sell_value","sell_vol","fr_sell_value_matched"):
         if c in cols: rename[c] = "ff_sell"; break
-    for c in ("fr_net_value", "fr_net_volume", "net_value", "net_vol",
-              "fr_net_value_total"):
+    for c in ("fr_net_value","fr_net_volume","net_value","net_vol","fr_net_value_total"):
         if c in cols: rename[c] = "ff_net"; break
-    for c in ("fr_current_room", "current_room", "room"):
+    for c in ("fr_current_room","current_room","room"):
         if c in cols: rename[c] = "ff_room"; break
 
     if rename:
         df = df.rename(columns=rename)
 
-    # Tính ff_net nếu chưa có
     if "ff_net" not in df.columns:
         if "ff_buy" in df.columns and "ff_sell" in df.columns:
             df["ff_net"] = (pd.to_numeric(df["ff_buy"],  errors="coerce").fillna(0)
@@ -293,7 +299,8 @@ def get_flow(symbol: str) -> dict:
             ff_5d_avg  = net.tail(5).mean()
             ff_20d_avg = net.mean()
             res["ff_acceleration"] = round(
-                float(ff_5d_avg - ff_20d_avg) / 1e9, 2)                 if ff_20d_avg != 0 else 0.0
+                float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
+                if ff_20d_avg != 0 else 0.0
 
         log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
                  f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
@@ -313,10 +320,13 @@ def get_flow(symbol: str) -> dict:
 
     if df_id is not None and not df_id.empty:
         res["insider_count"]  = len(df_id)
-        res["insider_latest"] = str(df_id["action_type"].iloc[0])                                 if "action_type" in df_id.columns else None
-        res["insider_name"]   = str(df_id["trader_name"].iloc[0])                                 if "trader_name" in df_id.columns else None
+        res["insider_latest"] = str(df_id["action_type"].iloc[0]) \
+                                if "action_type" in df_id.columns else None
+        res["insider_name"]   = str(df_id["trader_name"].iloc[0]) \
+                                if "trader_name" in df_id.columns else None
 
     return res  # ← FIX: was missing, caused None return → AttributeError
+
 
 def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     """
@@ -458,6 +468,92 @@ def build_one(symbol: str, group: str, market_open: bool,
         }
 
 # =====================================================
+# DATA QUALITY — FF identical validation gate
+# =====================================================
+
+def validate_ff_data(deep_rows: list[dict]) -> list[dict]:
+    """
+    Detect FF data corruption from CafeF (identical values across symbols).
+
+    KỊCH BẢN BUG:
+      Khi CafeF library trả về market-wide data thay vì per-symbol,
+      tất cả N symbols sẽ có CÙNG ff_net_val_5d, ff_net_val_20d... giống hệt
+      nhau (ví dụ trong log 2026-05-25: 20/20 symbols có
+      ff_net_val_5d = 379019000, ff_net_val_20d = -140995403000).
+
+    DETECTION:
+      Nếu ≥3 symbols có CÙNG MỘT giá trị ff_net_val_5d (hoặc 20d) → bug
+      (xác suất ngẫu nhiên 3 symbols cùng net value với độ chính xác sub-VND
+      là cực thấp, chỉ xảy ra khi library bug).
+
+    ACTION:
+      Set toàn bộ FF_FIELDS = None cho mọi rows.
+      Thêm marker ff_data_invalid = True (downstream có thể detect và alert).
+      → Scoring engine đọc None → skip FF group (score 0)
+        thay vì generate fake +20/-20 signal.
+
+    Return: deep_rows (modified in-place + return)
+    """
+    if not deep_rows:
+        return deep_rows
+
+    # Collect non-None values
+    nets_5d  = [r.get("ff_net_val_5d")  for r in deep_rows
+                if r.get("ff_net_val_5d")  is not None]
+    nets_20d = [r.get("ff_net_val_20d") for r in deep_rows
+                if r.get("ff_net_val_20d") is not None]
+
+    # Detection rules
+    suspicious = False
+    reason     = ""
+
+    if len(nets_5d) >= 3 and len(set(nets_5d)) == 1:
+        suspicious = True
+        reason     = (
+            f"identical ff_net_val_5d={nets_5d[0]:.0f} "
+            f"across {len(nets_5d)} symbols"
+        )
+    elif len(nets_20d) >= 3 and len(set(nets_20d)) == 1:
+        suspicious = True
+        reason     = (
+            f"identical ff_net_val_20d={nets_20d[0]:.0f} "
+            f"across {len(nets_20d)} symbols"
+        )
+
+    if not suspicious:
+        unique_5d = len(set(nets_5d))
+        log.info(
+            f"  ✅ FF data quality OK: "
+            f"{len(nets_5d)} symbols with data, "
+            f"{unique_5d} unique net_5d values"
+        )
+        return deep_rows
+
+    # ── Bug detected — wipe FF fields ──
+    log.error(f"🚨 FF DATA BUG DETECTED: {reason}")
+    log.error(
+        f"   This is the known CafeF library bug returning market-wide "
+        f"data instead of per-symbol data."
+    )
+    log.error(
+        f"   Wiping FF fields ({', '.join(FF_FIELDS)}) for all "
+        f"{len(deep_rows)} symbols to prevent fake scoring signals."
+    )
+
+    affected = 0
+    for r in deep_rows:
+        had_data = any(r.get(k) is not None for k in FF_FIELDS)
+        for k in FF_FIELDS:
+            r[k] = None
+        r["ff_data_invalid"] = True   # marker for downstream
+        if had_data:
+            affected += 1
+
+    log.error(f"   {affected}/{len(deep_rows)} symbols had FF data wiped.")
+    return deep_rows
+
+
+# =====================================================
 # MAIN
 # =====================================================
 
@@ -522,6 +618,12 @@ if __name__ == "__main__":
     for sym, grp in symbol_jobs:
         if sym in results:
             all_deep_rows.append(results[sym])
+
+    # ── FIX #3: validate FF data BEFORE export ──
+    # Phải gọi sau khi đã collect đủ rows để có đủ data points so sánh.
+    # Phải gọi TRƯỚC save_json/save_csv để output file phản ánh đúng state.
+    log.info("\n=== DATA QUALITY: FF validation ===")
+    all_deep_rows = validate_ff_data(all_deep_rows)
 
     # Export Ranking
     if all_ranking_rows:
