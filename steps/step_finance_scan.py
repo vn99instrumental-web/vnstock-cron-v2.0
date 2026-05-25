@@ -17,13 +17,15 @@ TTL strategy:
 CHANGELOG:
   v3 (2026-05-25) — FIX BUG `finance_score` KeyError:
     - fetch_one() giờ gọi _compute_finance_score(result) trước khi return
-      (function trước đây tồn tại nhưng không bao giờ được gọi)
     - Counter trong run() tách try/except để không double-count
-      (cùng 1 symbol trước đây vừa fetched_ok += 1 vừa fetched_err += 1)
-    - Thêm counter fetched_non_stock riêng để tách rõ với fetched_err
-    - Log line dùng .get() defensive — lỗi format không poison counter
-    - Bump SCHEMA_VERSION 2→3 để invalidate cache v2 cũ
-    - _is_stale() check 'finance_score' tồn tại (belt-and-suspenders)
+    - Bump SCHEMA_VERSION 2→3
+
+  v4 (2026-05-25) — FIX BUG negative PE/PB bonus:
+    - PE < 0 (thua lỗ) trước đây vẫn được "+10đ very cheap" → SAI
+      ví dụ: VPH PE=-21.79 nhận F=12, score=22 (STRONG BUY giả mạo)
+    - Fix: PE > 0 mới áp dụng thang bonus, PE < 0 → -5đ (loss penalty)
+    - Tương tự PB: PB < 0 = vốn chủ âm (technically insolvent) → -5đ
+    - Bump SCHEMA_VERSION 3→4
 """
 import os
 import sys
@@ -72,8 +74,9 @@ CACHE_FILE = "finance/cache.json"
 # Lịch sử:
 #   1 = initial
 #   2 = CF đọc từ cash_flow() thay vì balance_sheet() (2026-05-25)
-#   3 = fetch_one giờ precompute finance_score (2026-05-25) — FIX BUG
-SCHEMA_VERSION = 3
+#   3 = fetch_one precompute finance_score (2026-05-25) — FIX BUG
+#   4 = fix negative PE/PB scoring (2026-05-25) — FIX BUG
+SCHEMA_VERSION = 4
 
 # Pattern của non-stock symbols cần bỏ qua
 # ETF: E1VFVN30, FUEVFVND...  Derivatives: VN30F2401...  Index: VNINDEX, HNXINDEX
@@ -263,37 +266,55 @@ def _compute_finance_score(data: dict) -> dict:
     Trả về dict với breakdown + total.
     Nhất quán với thresholds trong step_scoring.py.
 
+    v4 FIX: PE/PB âm KHÔNG được bonus.
+      - PE < 0 = công ty thua lỗ → -5đ (KHÔNG phải +10 "very cheap")
+      - PB < 0 = vốn chủ sở hữu âm (insolvent) → -5đ
+
     Note: hàm này LUÔN trả về dict hợp lệ (không None), kể cả khi
     data thiếu — các fields sẽ là 0. Điều này đảm bảo
     result["finance_score"] luôn truy cập được sau khi gọi.
     """
     s = {}
 
-    # Fundamental (max 18đ) — nhất quán với step_scoring.py
+    # ── Fundamental (max ±18đ) — nhất quán với step_scoring.py ──
     r = data.get("ratio", {}) or {}
     pe  = r.get("pe")
     pb  = r.get("pb")
     roe = r.get("roe")
 
     fund = 0
-    if pe:
+
+    # PE: chỉ positive mới được scoring thang bonus
+    if pe is not None and pe > 0:
         if pe < 10:    fund += 10
         elif pe < 15:  fund += 7
         elif pe <= 25: fund += 3
         else:          fund -= 5
-    if pb:
+    elif pe is not None and pe < 0:
+        # PE âm = thua lỗ, KHÔNG phải "cheap"
+        fund -= 5
+    # pe == 0 hoặc None: skip (ambiguous)
+
+    # PB: chỉ positive mới scoring
+    if pb is not None and pb > 0:
         if pb < 1:     fund += 5
         elif pb <= 2:  fund += 3
         elif pb <= 3:  fund += 0
         else:          fund -= 3
-    if roe:
+    elif pb is not None and pb < 0:
+        # PB âm = vốn chủ âm (technically insolvent)
+        fund -= 5
+
+    # ROE: âm đã có penalty trong nhánh `roe < 5`, không cần phân biệt thêm
+    if roe is not None:
         if roe > 20:   fund += 5
         elif roe > 15: fund += 3
         elif roe > 10: fund += 0
         elif roe < 5:  fund -= 3
+
     s["fundamental"] = max(-18, min(18, fund))
 
-    # Cash Flow (max 10đ) — nhất quán với step_scoring.py
+    # ── Cash Flow (max ±10đ) — nhất quán với step_scoring.py ──
     c   = data.get("cashflow", {}) or {}
     cfo = c.get("cf_operating")
     cfq = c.get("cf_quality")
@@ -306,7 +327,7 @@ def _compute_finance_score(data: dict) -> dict:
         elif cfq < 0.5: cf -= 5
     s["cashflow"] = max(-10, min(10, cf))
 
-    # Growth (max 10đ) — nhóm MỚI, dùng QoQ growth
+    # ── Growth (max ±10đ) — nhóm dùng QoQ growth ──
     i      = data.get("income", {}) or {}
     rev_g  = i.get("rev_growth_qoq")
     np_g   = i.get("profit_growth_qoq")
@@ -342,8 +363,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
     - 4 calls/symbol với API_CALL_DELAY throttle
     - has_data check relax: chỉ cần có ratio.pe HOẶC income.revenue HOẶC ratio.roe
     - ValueError (non-stock) → skip ngay
-    - FIX v3: precompute finance_score TRƯỚC khi return
-      → step_snapshot.py và step_scoring.py đọc trực tiếp từ cache
+    - v3 FIX: precompute finance_score TRƯỚC khi return
     """
     if not _is_valid_stock(symbol, asset_type):
         log.debug(f"  [{symbol}] skipped — non-stock")
@@ -513,10 +533,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
             "schema_version": SCHEMA_VERSION,
         }
 
-    # ── FIX v3: PRECOMPUTE finance_score TRƯỚC KHI RETURN ──
-    # Trước đây hàm này không được gọi → log line trong run() crash
-    # với KeyError 'finance_score'. _compute_finance_score luôn trả
-    # dict hợp lệ (không None), kể cả khi data thiếu — các fields = 0.
+    # ── v3 FIX: PRECOMPUTE finance_score TRƯỚC KHI RETURN ──
     result["finance_score"] = _compute_finance_score(result)
 
     return result
@@ -644,9 +661,7 @@ def run(extra_symbols: list[str] | None = None) -> dict:
         return cache
 
     # ── Concurrent fetch ──
-    # FIX v3: tách try/except để KHÔNG double-count cùng 1 symbol
-    # vào fetched_ok + fetched_err. Trước đây log format error
-    # khiến cùng symbol vừa được ok += 1 vừa err += 1 → counter > universe.
+    # v3 FIX: tách try/except để KHÔNG double-count cùng 1 symbol
     fetched_ok        = 0
     fetched_non_stock = 0
     fetched_err       = 0
@@ -694,7 +709,6 @@ def run(extra_symbols: list[str] | None = None) -> dict:
                 )
             except Exception as e:
                 # Defensive: lỗi log format KHÔNG poison counter
-                # (data đã được cache ở dòng trước)
                 log.warning(f"  ⚠️ {sym}: log format error (data đã cache): {e}")
 
     save_cache(cache)
