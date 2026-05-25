@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-25T20:47:50.141680+07:00",
+  "generated_at": "2026-05-25T21:18:09.059301+07:00",
   "schema_version": 4,
   "ttl_days": 3,
-  "count": 188,
+  "count": 189,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -8733,6 +8733,58 @@
         "cashflow": 0,
         "growth": 10,
         "total": 23,
+        "max": 38
+      }
+    },
+    "PAN": {
+      "symbol": "PAN",
+      "fetched_at": "2026-05-25T21:17:58.881283+07:00",
+      "schema_version": 4,
+      "ratio": {
+        "pe": 8.47,
+        "pb": 0.63,
+        "roe": 3.04,
+        "roa": 3.36,
+        "eps": 3222.65,
+        "bvps": 43488.0,
+        "beta": 0.73,
+        "div_yield": 0.02,
+        "gross_margin": 20.54,
+        "net_margin": 10.42,
+        "quick_ratio": 1.23,
+        "interest_cov": 8.24,
+        "ev_ebitda": 10.17
+      },
+      "income": {
+        "revenue": 4064494453.0,
+        "gross_profit": 777834145.0,
+        "net_profit": 139991382.0,
+        "operating_profit": 310824897.0,
+        "eps": 670.0,
+        "rev_growth_qoq": -0.0134,
+        "profit_growth_qoq": 0.3002,
+        "rev_growth_yoy": -0.0134,
+        "profit_growth_yoy": 0.3002
+      },
+      "balance": {
+        "total_assets": 15707095008.0,
+        "equity": 9084319624.0,
+        "total_liab": 6622775384.0,
+        "short_debt": 3343507836.0,
+        "long_debt": 465203702.0,
+        "debt_to_equity": 0.729
+      },
+      "cashflow": {
+        "cf_operating": null,
+        "cf_investing": null,
+        "cf_financing": null
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 4,
+        "total": 16,
         "max": 38
       }
     }
