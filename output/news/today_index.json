@@ -1,11 +1,11 @@
 {
   "date": "2026-05-26",
-  "generated_at": "00:18",
+  "generated_at": "08:18",
   "by_industry": {
     "Kim loại": {
       "score": 2.0,
-      "article_count": 120,
-      "delayed_count": 8,
+      "article_count": 135,
+      "delayed_count": 10,
       "top_articles": [
         {
           "title": "Kinh tế tư nhân cần được trao cơ hội tham gia các dự án chiến lược quốc gia",
@@ -19,6 +19,18 @@
           "contribution": 1.04
         },
         {
+          "title": "Giá vàng hôm nay 26 5 Đảo chiều tăng mạnh",
+          "source": "petrotimes",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Khai khoáng"
+          ],
+          "contribution": 1.0
+        },
+        {
           "title": "Giá bạc bật tăng mạnh, vượt mốc 80 triệu đồng/kg",
           "source": "cafebiz",
           "time": "Mon, 25 May 2026",
@@ -28,26 +40,13 @@
             "Kim loại"
           ],
           "contribution": 1.0
-        },
-        {
-          "title": "TPHCM xử lý 408 điểm giữ xe không phép, phạt hơn 5 tỉ đồng",
-          "source": "nld",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Sản xuất thực phẩm",
-            "Dịch vụ tài chính"
-          ],
-          "contribution": 0.9
         }
       ]
     },
     "Dịch vụ tài chính": {
       "score": 2.02,
-      "article_count": 132,
-      "delayed_count": 13,
+      "article_count": 154,
+      "delayed_count": 14,
       "top_articles": [
         {
           "title": "Hiệu ứng Moody's và bài toán hút vốn của VIFC-HCMC: Niềm tin là điều kiện cần, t",
@@ -87,9 +86,9 @@
       ]
     },
     "Công nghệ Thông tin": {
-      "score": 2.02,
-      "article_count": 194,
-      "delayed_count": 9,
+      "score": 2.01,
+      "article_count": 220,
+      "delayed_count": 14,
       "top_articles": [
         {
           "title": "Hiệu ứng Moody's và bài toán hút vốn của VIFC-HCMC: Niềm tin là điều kiện cần, t",
@@ -130,9 +129,9 @@
       ]
     },
     "Hàng công nghiệp": {
-      "score": 1.99,
-      "article_count": 9,
-      "delayed_count": 0,
+      "score": 2.01,
+      "article_count": 11,
+      "delayed_count": 1,
       "top_articles": [
         {
           "title": "FTZ và sân bay Long Thành: Mở ra cơ hội tái cấu trúc công nghiệp Đồng Nai",
@@ -149,19 +148,6 @@
           "contribution": 0.65
         },
         {
-          "title": "Đột kích một căn nhà, công an triệt phá đường dây sản xuất sữa giả từ hóa chất, ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Hóa chất",
-            "Hàng công nghiệp",
-            "Sản xuất thực phẩm"
-          ],
-          "contribution": -0.5
-        },
-        {
           "title": "Nga cảnh báo sẽ tập kích lớn vào Kiev, hối thúc người nước ngoài rời đi",
           "source": "vnexpress",
           "time": "Mon, 25 May 2026",
@@ -173,14 +159,40 @@
             "Ô tô và phụ tùng"
           ],
           "contribution": -0.4
+        },
+        {
+          "title": "Tổng Bí thư, Chủ tịch nước: Quán triệt quan điểm quyền có nơi ở hợp pháp là quyề",
+          "source": "vietstock",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hàng công nghiệp",
+            "Bất động sản",
+            "Công nghiệp"
+          ],
+          "contribution": 0.0
         }
       ]
     },
     "Bất động sản": {
-      "score": 1.99,
-      "article_count": 27,
-      "delayed_count": 0,
+      "score": 2.0,
+      "article_count": 32,
+      "delayed_count": 1,
       "top_articles": [
+        {
+          "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+          "source": "vnexpress",
+          "time": "Tue, 26 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Bất động sản",
+            "Dịch vụ tài chính"
+          ],
+          "contribution": 0.8
+        },
         {
           "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
           "source": "cafebiz",
@@ -202,18 +214,6 @@
             "Hàng công nghiệp",
             "Bất động sản",
             "Công nghiệp"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "The Zenith Hải Phòng hút khách nhờ trải nghiệm căn hộ mẫu và chính sách bán hàng",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Bất động sản",
-            "Công nghệ Thông tin"
           ],
           "contribution": 0.0
         }
@@ -240,8 +240,8 @@
       ]
     },
     "Xây dựng và Vật liệu": {
-      "score": 2.09,
-      "article_count": 17,
+      "score": 2.07,
+      "article_count": 20,
       "delayed_count": 3,
       "top_articles": [
         {
@@ -282,8 +282,8 @@
       ]
     },
     "Du lịch và Giải trí": {
-      "score": 2.06,
-      "article_count": 16,
+      "score": 2.05,
+      "article_count": 17,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -324,10 +324,22 @@
       ]
     },
     "Khai khoáng": {
-      "score": 1.99,
-      "article_count": 65,
+      "score": 2.0,
+      "article_count": 79,
       "delayed_count": 3,
       "top_articles": [
+        {
+          "title": "Giá vàng hôm nay 26 5 Đảo chiều tăng mạnh",
+          "source": "petrotimes",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Khai khoáng"
+          ],
+          "contribution": 1.0
+        },
         {
           "title": "Tin nhanh chứng khoán ngày 25 5 VN Index tăng điểm trong phiên thanh khoản giảm ",
           "source": "petrotimes",
@@ -351,24 +363,13 @@
             "Khai khoáng"
           ],
           "contribution": 0.5
-        },
-        {
-          "title": "Ông Trump Không cần vội đạt được thỏa thuận với Iran duy trì lệnh cấm vận của Mỹ",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Khai khoáng"
-          ],
-          "contribution": 0.5
         }
       ]
     },
     "Sản xuất thực phẩm": {
       "score": 2.02,
-      "article_count": 80,
-      "delayed_count": 3,
+      "article_count": 88,
+      "delayed_count": 2,
       "top_articles": [
         {
           "title": "VASEP: Kim ngạch xuất khẩu tôm, cá tra tăng trưởng 2 chữ số trong 4 tháng đầu nă",
@@ -411,7 +412,7 @@
     },
     "Ngân hàng": {
       "score": 2.0,
-      "article_count": 40,
+      "article_count": 43,
       "delayed_count": 6,
       "top_articles": [
         {
@@ -521,53 +522,53 @@
         }
       ]
     },
-    "Hàng không & Quốc phòng": {
-      "score": 2.03,
-      "article_count": 18,
+    "Ô tô và phụ tùng": {
+      "score": 1.99,
+      "article_count": 48,
       "delayed_count": 2,
       "top_articles": [
         {
-          "title": "FTZ và sân bay Long Thành: Mở ra cơ hội tái cấu trúc công nghiệp Đồng Nai",
-          "source": "vietstock",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Hàng không & Quốc phòng",
-            "Hàng công nghiệp",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.65
-        },
-        {
-          "title": "Xem nhanh 20h ngày 25.5: Sân bay Nội Bài chạm mốc kỷ lục 71 độ C | Bí ẩn 'vòng t",
-          "source": "thanhnien",
-          "time": "Mon, 25 May 26 2",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Hàng không & Quốc phòng",
-            "Dịch vụ tài chính"
-          ],
-          "contribution": 0.45
-        },
-        {
-          "title": "Nhiệt độ bề mặt sân bay chạm mức kỷ lục 71 độ C",
-          "source": "nld",
+          "title": "Tăng trưởng xanh thúc đẩy nhu cầu điện tại Đông Nam Á",
+          "source": "petrotimes",
           "time": "Mon, 25 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Hàng không & Quốc phòng"
+            "Ô tô và phụ tùng",
+            "Công nghệ Thông tin"
           ],
-          "contribution": 0.45
+          "contribution": 1.0
+        },
+        {
+          "title": "Quay đầu ô tô ngay trên cao tốc, nam tài xế bị phạt 35 triệu đồng",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Ô tô và phụ tùng"
+          ],
+          "contribution": -0.45
+        },
+        {
+          "title": "50 cảnh sát đồng loạt kiểm tra, bắt giữ 11 Youtuber: Thu 3 ô tô, phong tỏa 8 tài",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Ô tô và phụ tùng",
+            "Ngân hàng"
+          ],
+          "contribution": -0.4
         }
       ]
     },
     "Truyền thông": {
-      "score": 2.03,
-      "article_count": 23,
+      "score": 2.02,
+      "article_count": 25,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -584,6 +585,17 @@
           "contribution": 1.5
         },
         {
+          "title": "Đội bóng Trung Quốc lập kỷ lục vô địch tại Giải bóng chuyền Cúp VTV9 - Bình Điền",
+          "source": "tuoitre",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Truyền thông"
+          ],
+          "contribution": 0.5
+        },
+        {
           "title": "Giám đốc Sở Nông nghiệp và Môi trường TP Huế bị cảnh cáo",
           "source": "vnexpress",
           "time": "Mon, 25 May 2026",
@@ -594,23 +606,12 @@
             "Truyền thông"
           ],
           "contribution": -0.5
-        },
-        {
-          "title": "Đội bóng Trung Quốc lập kỷ lục vô địch tại Giải bóng chuyền Cúp VTV9 - Bình Điền",
-          "source": "tuoitre",
-          "time": "Sat, 23 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Truyền thông"
-          ],
-          "contribution": 0.5
         }
       ]
     },
     "Bảo hiểm": {
-      "score": 2.13,
-      "article_count": 6,
+      "score": 2.11,
+      "article_count": 7,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -638,12 +639,13 @@
           "contribution": 0.45
         },
         {
-          "title": "Nông dân trồng cà phê Tây Nguyên được trả bảo hiểm vì mưa lớn",
-          "source": "tuoitre",
-          "time": "Sat, 23 May 2026",
-          "news_type": "immediate",
+          "title": "Sun Life ra mắt bảo hiểm phúc lợi hưu trí, giúp doanh nghiệp giữ chân nhân tài",
+          "source": "thanhnien",
+          "time": "Tue, 26 May 26 0",
+          "news_type": "monitoring",
           "effective_date": null,
           "industries": [
+            "Xây dựng và Vật liệu",
             "Bảo hiểm"
           ],
           "contribution": 0.0
@@ -651,8 +653,8 @@
       ]
     },
     "Hàng gia dụng": {
-      "score": 1.98,
-      "article_count": 10,
+      "score": 1.99,
+      "article_count": 11,
       "delayed_count": 1,
       "top_articles": [
         {
@@ -679,13 +681,13 @@
           "contribution": 0.0
         },
         {
-          "title": "Dân công sở và sĩ tử ‘đuối sức’ giữa mùa hè 40 độ, cách nào giữ sức khỏe?",
-          "source": "tuoitre",
-          "time": "Mon, 25 May 2026",
+          "title": "3 thói quen làm mát 'tưởng vô hại' có thể gây sốc nhiệt, đột quỵ",
+          "source": "vnexpress",
+          "time": "Tue, 26 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Sản xuất thực phẩm",
+            "Bia và đồ uống",
             "Hàng gia dụng"
           ],
           "contribution": 0.0
@@ -693,9 +695,9 @@
       ]
     },
     "Thiết bị và Dịch vụ Y tế": {
-      "score": 1.98,
-      "article_count": 18,
-      "delayed_count": 2,
+      "score": 1.99,
+      "article_count": 22,
+      "delayed_count": 3,
       "top_articles": [
         {
           "title": "Bộ Y tế hoả tốc yêu cầu các bệnh viện tăng cường phòng chống dịch Ebola",
@@ -733,180 +735,9 @@
         }
       ]
     },
-    "Ô tô và phụ tùng": {
-      "score": 1.99,
-      "article_count": 45,
-      "delayed_count": 2,
-      "top_articles": [
-        {
-          "title": "Tăng trưởng xanh thúc đẩy nhu cầu điện tại Đông Nam Á",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Ô tô và phụ tùng",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 1.0
-        },
-        {
-          "title": "Quay đầu ô tô ngay trên cao tốc, nam tài xế bị phạt 35 triệu đồng",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Ô tô và phụ tùng"
-          ],
-          "contribution": -0.45
-        },
-        {
-          "title": "Nga cảnh báo sẽ tập kích lớn vào Kiev, hối thúc người nước ngoài rời đi",
-          "source": "vnexpress",
-          "time": "Mon, 25 May 2026",
-          "news_type": "monitoring",
-          "effective_date": null,
-          "industries": [
-            "Hàng không & Quốc phòng",
-            "Hàng công nghiệp",
-            "Ô tô và phụ tùng"
-          ],
-          "contribution": -0.4
-        }
-      ]
-    },
-    "Dịch vụ Tiêu dùng": {
-      "score": 2.0,
-      "article_count": 5,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Giấc mơ đưa 1 triệu người lên Sao Hỏa của Elon Musk được nuôi bằng 11 tỷ USD từ ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Dịch vụ Tiêu dùng"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Chính phủ đặt mục tiêu ít nhất 30% người trưởng thành có tiền gửi tiết kiệm tại ",
-          "source": "nld",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Ngân hàng",
-            "Dịch vụ Tiêu dùng"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "SeABank ra mắt 3 tính năng mới dành cho Khách hàng Ưu tiên trên SeAMobile",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Ngân hàng",
-            "Dịch vụ Tiêu dùng"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Hóa chất": {
-      "score": 1.96,
-      "article_count": 10,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Đột kích một căn nhà, công an triệt phá đường dây sản xuất sữa giả từ hóa chất, ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Hóa chất",
-            "Hàng công nghiệp",
-            "Sản xuất thực phẩm"
-          ],
-          "contribution": -0.5
-        },
-        {
-          "title": "California hy vọng tránh được vụ nổ bồn hóa chất",
-          "source": "thanhnien",
-          "time": "Mon, 25 May 26 2",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Hóa chất"
-          ],
-          "contribution": -0.45
-        },
-        {
-          "title": "Quận Cam loại trừ nguy cơ bồn hóa chất phát nổ",
-          "source": "vnexpress",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Hóa chất"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Công nghiệp nặng": {
-      "score": 2.0,
-      "article_count": 3,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Người Trung Quốc cổ đại từng tạo ra “robot” từ 2.200 năm trước? Sự thật gây sửng",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Công nghiệp nặng"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "ĐH Bách khoa Hà Nội có Giám đốc mới 51 tuổi",
-          "source": "nld",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Công nghiệp nặng"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "PVCFC chung tay kiến tạo không gian xanh lan tỏa giá trị bền vững",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Xây dựng và Vật liệu",
-            "Công nghiệp nặng",
-            "Sản xuất thực phẩm"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
     "Hàng cá nhân": {
       "score": 2.0,
-      "article_count": 5,
+      "article_count": 6,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -921,9 +752,9 @@
           "contribution": 0.0
         },
         {
-          "title": "Khoe dáng thon nhờ chiếc váy xòe quen thuộc",
+          "title": "Nhan sắc của Jun Vũ ở tuổi 31",
           "source": "thanhnien",
-          "time": "Mon, 25 May 26 2",
+          "time": "Tue, 26 May 26 0",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
@@ -944,104 +775,95 @@
         }
       ]
     },
-    "Điện tử & Thiết bị điện": {
-      "score": 1.97,
-      "article_count": 6,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Công an cảnh báo tới tất cả những ai hay săn sale trên các sàn thương mại điện t",
-          "source": "cafebiz",
-          "time": "Sun, 24 May 2026",
-          "news_type": "monitoring",
-          "effective_date": null,
-          "industries": [
-            "Điện tử & Thiết bị điện",
-            "Bán lẻ",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": -0.4
-        },
-        {
-          "title": "Mới thông xe, cao tốc Biên Hòa - Vũng Tàu lại bị mất trộm thiết bị",
-          "source": "tuoitre",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Điện tử & Thiết bị điện",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Hai đường dây bán hàng giả qua mạng thu lợi hàng tỷ đồng",
-          "source": "vnexpress",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Điện tử & Thiết bị điện",
-            "Sản xuất thực phẩm",
-            "Bán lẻ",
-            "Dịch vụ tài chính",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Bán lẻ": {
-      "score": 1.98,
-      "article_count": 7,
+    "Hàng không & Quốc phòng": {
+      "score": 2.02,
+      "article_count": 20,
       "delayed_count": 2,
       "top_articles": [
         {
-          "title": "Công an cảnh báo tới tất cả những ai hay săn sale trên các sàn thương mại điện t",
-          "source": "cafebiz",
-          "time": "Sun, 24 May 2026",
-          "news_type": "monitoring",
-          "effective_date": null,
-          "industries": [
-            "Điện tử & Thiết bị điện",
-            "Bán lẻ",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": -0.4
-        },
-        {
-          "title": "Bộ Công Thương làm việc với Shopee, TikTok Shop về chính sách tăng phí từ tháng ",
+          "title": "FTZ và sân bay Long Thành: Mở ra cơ hội tái cấu trúc công nghiệp Đồng Nai",
           "source": "vietstock",
-          "time": "Fri, 22 May 2026",
-          "news_type": "delayed",
-          "effective_date": "2026-05-01",
-          "industries": [
-            "Bán lẻ"
-          ],
-          "contribution": 0.13
-        },
-        {
-          "title": "Hai đường dây bán hàng giả qua mạng thu lợi hàng tỷ đồng",
-          "source": "vnexpress",
-          "time": "Mon, 25 May 2026",
+          "time": "Sun, 24 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
             "Kim loại",
-            "Điện tử & Thiết bị điện",
-            "Sản xuất thực phẩm",
-            "Bán lẻ",
-            "Dịch vụ tài chính",
+            "Hàng không & Quốc phòng",
+            "Hàng công nghiệp",
             "Công nghệ Thông tin"
           ],
-          "contribution": 0.0
+          "contribution": 0.65
+        },
+        {
+          "title": "Nhiệt độ bề mặt sân bay chạm mức kỷ lục 71 độ C",
+          "source": "nld",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hàng không & Quốc phòng"
+          ],
+          "contribution": 0.45
+        },
+        {
+          "title": "Xem nhanh 20h ngày 25.5: Sân bay Nội Bài chạm mốc kỷ lục 71 độ C | Bí ẩn 'vòng t",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 2",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hàng không & Quốc phòng",
+            "Dịch vụ tài chính"
+          ],
+          "contribution": 0.45
+        }
+      ]
+    },
+    "Nước & Khí đốt": {
+      "score": 2.03,
+      "article_count": 4,
+      "delayed_count": 1,
+      "top_articles": [
+        {
+          "title": "VIDEO PV GAS bứt phá tăng trưởng tăng tốc chuyển dịch năng lượng xanh",
+          "source": "petrotimes",
+          "time": "Fri, 22 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Nước & Khí đốt"
+          ],
+          "contribution": 1.5
+        },
+        {
+          "title": "Nga phát hiện thủy lôi của NATO gắn vào tàu cập cảng Nga",
+          "source": "tuoitre",
+          "time": "Mon, 25 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Nước & Khí đốt"
+          ],
+          "contribution": -0.4
+        },
+        {
+          "title": "PV GAS và chiến lược vừa hợp tác vừa cạnh tranh để giữ vững vị trí số 1 ngành kh",
+          "source": "petrotimes",
+          "time": "Mon, 25 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Nước & Khí đốt",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": -0.4
         }
       ]
     },
     "Bia và đồ uống": {
       "score": 2.09,
-      "article_count": 12,
+      "article_count": 13,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -1081,166 +903,9 @@
         }
       ]
     },
-    "Lâm nghiệp và Giấy": {
-      "score": 1.96,
-      "article_count": 5,
-      "delayed_count": 1,
-      "top_articles": [
-        {
-          "title": "Cắt giảm hồ sơ giấy",
-          "source": "thanhnien",
-          "time": "Mon, 25 May 26 0",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Lâm nghiệp và Giấy"
-          ],
-          "contribution": -0.45
-        },
-        {
-          "title": "Con tàu gỗ cổ phát lộ ở biển Hội An hiện ra sao?",
-          "source": "dantri",
-          "time": "Mon, 25 May 2026",
-          "news_type": "delayed",
-          "effective_date": null,
-          "industries": [
-            "Lâm nghiệp và Giấy",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Người phụ nữ mất 400 triệu đồng khi góp vốn mua bán gỗ ở nước ngoài",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Lâm nghiệp và Giấy",
-            "Kim loại"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Năng lượng thay thế": {
-      "score": 2.0,
-      "article_count": 2,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Báo in ngày 26-5: Tính toán \"né\" giờ cao điểm sử dụng điện",
-          "source": "nld",
-          "time": "Tue, 26 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Năng lượng thay thế"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Việt Nam Solar phân phối chính thức tấm pin mặt trời Panasonic trên cả nước",
-          "source": "thanhnien",
-          "time": "Mon, 25 May 26 1",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Năng lượng thay thế"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Nước & Khí đốt": {
-      "score": 2.11,
-      "article_count": 4,
-      "delayed_count": 1,
-      "top_articles": [
-        {
-          "title": "VIDEO PV GAS bứt phá tăng trưởng tăng tốc chuyển dịch năng lượng xanh",
-          "source": "petrotimes",
-          "time": "Fri, 22 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Nước & Khí đốt"
-          ],
-          "contribution": 1.5
-        },
-        {
-          "title": "PV GAS và chiến lược vừa hợp tác vừa cạnh tranh để giữ vững vị trí số 1 ngành kh",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "delayed",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Nước & Khí đốt",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": -0.4
-        },
-        {
-          "title": "Kho dự trữ khí đốt của châu Âu không thể trụ vững thêm 3 tháng",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "monitoring",
-          "effective_date": null,
-          "industries": [
-            "Vận tải",
-            "Nước & Khí đốt"
-          ],
-          "contribution": -0.4
-        }
-      ]
-    },
-    "Sản xuất Dầu khí": {
-      "score": 1.97,
-      "article_count": 12,
-      "delayed_count": 1,
-      "top_articles": [
-        {
-          "title": "Tin nhanh chứng khoán ngày 25 5 VN Index tăng điểm trong phiên thanh khoản giảm ",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "delayed",
-          "effective_date": null,
-          "industries": [
-            "Sản xuất Dầu khí",
-            "Khai khoáng",
-            "Dịch vụ tài chính"
-          ],
-          "contribution": -0.8
-        },
-        {
-          "title": "Infographic Những con số về dầu khí đáng chú ý trong tuần 18 5 24 5",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Sản xuất Dầu khí"
-          ],
-          "contribution": -0.5
-        },
-        {
-          "title": "VIDEO Bứt phá bằng công nghệ Petrovietnam định vị lại vai trò trên bản đồ năng l",
-          "source": "petrotimes",
-          "time": "Sat, 23 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Sản xuất Dầu khí",
-            "Công nghệ Thông tin"
-          ],
-          "contribution": 0.5
-        }
-      ]
-    },
     "Dược phẩm": {
-      "score": 1.94,
-      "article_count": 9,
+      "score": 1.95,
+      "article_count": 10,
       "delayed_count": 0,
       "top_articles": [
         {
@@ -1276,6 +941,378 @@
             "Dược phẩm"
           ],
           "contribution": -0.4
+        }
+      ]
+    },
+    "Lâm nghiệp và Giấy": {
+      "score": 1.97,
+      "article_count": 6,
+      "delayed_count": 1,
+      "top_articles": [
+        {
+          "title": "Cắt giảm hồ sơ giấy",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 0",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Lâm nghiệp và Giấy"
+          ],
+          "contribution": -0.45
+        },
+        {
+          "title": "Con tàu gỗ cổ phát lộ ở biển Hội An hiện ra sao?",
+          "source": "dantri",
+          "time": "Mon, 25 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Lâm nghiệp và Giấy",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Người cứu thương sách cũ ở TP.HCM: ‘Cái nghiệp còn đeo là còn làm’",
+          "source": "thanhnien",
+          "time": "Tue, 26 May 26 0",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Lâm nghiệp và Giấy",
+            "Khai khoáng",
+            "Sản xuất thực phẩm",
+            "Dịch vụ tài chính"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Sản xuất Dầu khí": {
+      "score": 1.99,
+      "article_count": 13,
+      "delayed_count": 1,
+      "top_articles": [
+        {
+          "title": "Tin nhanh chứng khoán ngày 25 5 VN Index tăng điểm trong phiên thanh khoản giảm ",
+          "source": "petrotimes",
+          "time": "Mon, 25 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất Dầu khí",
+            "Khai khoáng",
+            "Dịch vụ tài chính"
+          ],
+          "contribution": -0.8
+        },
+        {
+          "title": "VIDEO Bứt phá bằng công nghệ Petrovietnam định vị lại vai trò trên bản đồ năng l",
+          "source": "petrotimes",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất Dầu khí",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.5
+        },
+        {
+          "title": "VIDEO Phú Mỹ cùng nông dân Lào tăng năng suất mía bằng giải pháp canh tác bền vữ",
+          "source": "petrotimes",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất Dầu khí",
+            "Hóa chất",
+            "Kim loại",
+            "Hàng công nghiệp",
+            "Tư vấn & Hỗ trợ Kinh doanh"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Hóa chất": {
+      "score": 1.98,
+      "article_count": 11,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "California hy vọng tránh được vụ nổ bồn hóa chất",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 2",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hóa chất"
+          ],
+          "contribution": -0.45
+        },
+        {
+          "title": "VIDEO Phú Mỹ cùng nông dân Lào tăng năng suất mía bằng giải pháp canh tác bền vữ",
+          "source": "petrotimes",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất Dầu khí",
+            "Hóa chất",
+            "Kim loại",
+            "Hàng công nghiệp",
+            "Tư vấn & Hỗ trợ Kinh doanh"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Loại phân bón đặc biệt của cây cà phê",
+          "source": "znews",
+          "time": "Fri, 22 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Hóa chất"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Tư vấn & Hỗ trợ Kinh doanh": {
+      "score": 2.0,
+      "article_count": 3,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "VIDEO Phú Mỹ cùng nông dân Lào tăng năng suất mía bằng giải pháp canh tác bền vữ",
+          "source": "petrotimes",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất Dầu khí",
+            "Hóa chất",
+            "Kim loại",
+            "Hàng công nghiệp",
+            "Tư vấn & Hỗ trợ Kinh doanh"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Hơn 3.000 người dân đổ về Dinh Độc Lập để được tư vấn sức khỏe miễn phí",
+          "source": "thanhnien",
+          "time": "Sun, 24 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Tư vấn & Hỗ trợ Kinh doanh"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Phó thủ tướng thường trực Phạm Gia Túc chủ trì phiên họp của Hội đồng Tư vấn đặc",
+          "source": "tuoitre",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Tư vấn & Hỗ trợ Kinh doanh"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Hàng Tiêu dùng": {
+      "score": 2.0,
+      "article_count": 2,
+      "delayed_count": 2,
+      "top_articles": [
+        {
+          "title": "Giải mã quy chuẩn chất lượng xăng E10 khi đưa ra thị trường",
+          "source": "petrotimes",
+          "time": "Tue, 26 May 2026",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin",
+            "Hàng Tiêu dùng"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Dưỡng sức mua, phải bắt đầu từ bảo vệ nhà sản xuất",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 0",
+          "news_type": "delayed",
+          "effective_date": null,
+          "industries": [
+            "Bán lẻ",
+            "Hàng Tiêu dùng"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Công nghiệp nặng": {
+      "score": 2.0,
+      "article_count": 2,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "PVCFC chung tay kiến tạo không gian xanh lan tỏa giá trị bền vững",
+          "source": "petrotimes",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Xây dựng và Vật liệu",
+            "Công nghiệp nặng",
+            "Sản xuất thực phẩm"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "ĐH Bách khoa Hà Nội có Giám đốc mới 51 tuổi",
+          "source": "nld",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghiệp nặng"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Dịch vụ Tiêu dùng": {
+      "score": 2.0,
+      "article_count": 5,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "SeABank ra mắt 3 tính năng mới dành cho Khách hàng Ưu tiên trên SeAMobile",
+          "source": "petrotimes",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng",
+            "Dịch vụ Tiêu dùng"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Thổi hồn vào dịch vụ lưu trú",
+          "source": "nld",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Dịch vụ Tiêu dùng"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Giấc mơ đưa 1 triệu người lên Sao Hỏa của Elon Musk được nuôi bằng 11 tỷ USD từ ",
+          "source": "cafebiz",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Dịch vụ Tiêu dùng"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Bán lẻ": {
+      "score": 1.98,
+      "article_count": 7,
+      "delayed_count": 2,
+      "top_articles": [
+        {
+          "title": "Công an cảnh báo tới tất cả những ai hay săn sale trên các sàn thương mại điện t",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Điện tử & Thiết bị điện",
+            "Bán lẻ",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": -0.4
+        },
+        {
+          "title": "Bộ Công Thương làm việc với Shopee, TikTok Shop về chính sách tăng phí từ tháng ",
+          "source": "vietstock",
+          "time": "Fri, 22 May 2026",
+          "news_type": "delayed",
+          "effective_date": "2026-05-01",
+          "industries": [
+            "Bán lẻ"
+          ],
+          "contribution": 0.13
+        },
+        {
+          "title": "Đi siêu thị muốn tiết kiệm thì nhớ 3 mốc này: Ngày 5, ngày 20 hàng tháng và sau ",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Bán lẻ"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "Điện tử & Thiết bị điện": {
+      "score": 1.97,
+      "article_count": 6,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Công an cảnh báo tới tất cả những ai hay săn sale trên các sàn thương mại điện t",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Điện tử & Thiết bị điện",
+            "Bán lẻ",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": -0.4
+        },
+        {
+          "title": "Hai đối tượng lừa bán thuốc lá điện tử qua mạng, chiếm đoạt gần 3 tỷ đồng",
+          "source": "dantri",
+          "time": "Wed, 20 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Điện tử & Thiết bị điện",
+            "Thuốc lá",
+            "Dược phẩm",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Hà Nội thu phí điện tử không dừng tại toàn bộ bãi đỗ xe từ 1/7",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Điện tử & Thiết bị điện"
+          ],
+          "contribution": 0.0
         }
       ]
     },
@@ -1325,55 +1362,6 @@
         }
       ]
     },
-    "Tư vấn & Hỗ trợ Kinh doanh": {
-      "score": 2.0,
-      "article_count": 2,
-      "delayed_count": 0,
-      "top_articles": [
-        {
-          "title": "Hơn 3.000 người dân đổ về Dinh Độc Lập để được tư vấn sức khỏe miễn phí",
-          "source": "thanhnien",
-          "time": "Sun, 24 May 26 1",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Tư vấn & Hỗ trợ Kinh doanh"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Phó thủ tướng thường trực Phạm Gia Túc chủ trì phiên họp của Hội đồng Tư vấn đặc",
-          "source": "tuoitre",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Kim loại",
-            "Tư vấn & Hỗ trợ Kinh doanh"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "Hàng Tiêu dùng": {
-      "score": 2.0,
-      "article_count": 1,
-      "delayed_count": 1,
-      "top_articles": [
-        {
-          "title": "Dưỡng sức mua, phải bắt đầu từ bảo vệ nhà sản xuất",
-          "source": "thanhnien",
-          "time": "Mon, 25 May 26 0",
-          "news_type": "delayed",
-          "effective_date": null,
-          "industries": [
-            "Bán lẻ",
-            "Hàng Tiêu dùng"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
     "Viễn thông": {
       "score": 2.0,
       "article_count": 1,
@@ -1391,25 +1379,41 @@
           "contribution": 0.0
         }
       ]
+    },
+    "Năng lượng thay thế": {
+      "score": 2.0,
+      "article_count": 2,
+      "delayed_count": 0,
+      "top_articles": [
+        {
+          "title": "Việt Nam Solar phân phối chính thức tấm pin mặt trời Panasonic trên cả nước",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 1",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Năng lượng thay thế"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Báo in ngày 26-5: Tính toán \"né\" giờ cao điểm sử dụng điện",
+          "source": "nld",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Năng lượng thay thế"
+          ],
+          "contribution": 0.0
+        }
+      ]
     }
   },
   "macro": {
-    "score": 0.88,
+    "score": 0.89,
     "article_count": 20,
     "top_articles": [
-      {
-        "title": "Đột kích một căn nhà, công an triệt phá đường dây sản xuất sữa giả từ hóa chất, ",
-        "source": "cafebiz",
-        "time": "Mon, 25 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Hóa chất",
-          "Hàng công nghiệp",
-          "Sản xuất thực phẩm"
-        ],
-        "contribution": -1.0
-      },
       {
         "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
         "source": "dantri",
@@ -1420,13 +1424,24 @@
           "Ngân hàng"
         ],
         "contribution": -1.0
+      },
+      {
+        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
+        "source": "vnexpress",
+        "time": "Sat, 23 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Công nghệ Thông tin"
+        ],
+        "contribution": -1.0
       }
     ]
   },
   "symbol_mentions": {
     "HCM": {
       "score": 2.03,
-      "article_count": 74,
+      "article_count": 80,
       "top_articles": [
         {
           "title": "TP HCM trước bước ngoặt lớn nhất từ sau Đổi mới",
@@ -1454,8 +1469,8 @@
       ]
     },
     "HAI": {
-      "score": 2.06,
-      "article_count": 21,
+      "score": 2.05,
+      "article_count": 25,
       "top_articles": [
         {
           "title": "Năng lượng - Động lực chiến lược cho khát vọng tăng trưởng hai con số của Việt N",
@@ -1482,38 +1497,34 @@
       ]
     },
     "THU": {
-      "score": 1.98,
-      "article_count": 33,
+      "score": 1.97,
+      "article_count": 36,
       "top_articles": [
         {
-          "title": "Đột kích một căn nhà, công an triệt phá đường dây sản xuất sữa giả từ hóa chất, ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
+          "title": "CSGT TP.HCM tịch thu hàng loạt xe ba gác, quyết liệt xử lý 'không ngoại lệ'",
+          "source": "thanhnien",
+          "time": "Tue, 26 May 26 0",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Hóa chất",
-            "Hàng công nghiệp",
-            "Sản xuất thực phẩm"
+            "Dịch vụ tài chính"
           ],
-          "contribution": -0.75
+          "contribution": -0.675
         },
         {
-          "title": "Hà Nội muốn tăng tiền bồi thường khi thu hồi đất dự án",
-          "source": "dantri",
-          "time": "Wed, 20 May 2026",
+          "title": "Giá cà phê hôm nay 26-5: Brazil thu hoạch trễ giúp giữ giá cà phê",
+          "source": "nld",
+          "time": "Tue, 26 May 2026",
           "news_type": "immediate",
           "effective_date": null,
-          "industries": [
-            "Bảo hiểm"
-          ],
-          "contribution": 0.675
+          "industries": [],
+          "contribution": -0.675
         }
       ]
     },
     "TIN": {
       "score": 2.01,
-      "article_count": 43,
+      "article_count": 45,
       "top_articles": [
         {
           "title": "Hiệu ứng Moody's và bài toán hút vốn của VIFC-HCMC: Niềm tin là điều kiện cần, t",
@@ -1542,6 +1553,34 @@
         }
       ]
     },
+    "TOP": {
+      "score": 2.0,
+      "article_count": 6,
+      "top_articles": [
+        {
+          "title": "Việt Nam vào TOP 10 quốc gia sản xuất thép lớn nhất thế giới",
+          "source": "vietstock",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Lần đầu tiên Việt Nam lọt Top 10 cường quốc sản xuất thép lớn nhất thế giới, tỷ ",
+          "source": "cafebiz",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
     "TRA": {
       "score": 1.97,
       "article_count": 14,
@@ -1559,23 +1598,107 @@
           "contribution": 2.925
         },
         {
-          "title": "TPHCM lập 30 đoàn kiểm tra an toàn thực phẩm, phát hiện 5/310 cơ sở vi phạm",
+          "title": "Ngân hàng Nhà nước yêu cầu kiểm tra các ngân hàng tăng lãi suất trái chỉ đạo",
+          "source": "cafebiz",
+          "time": "Sat, 23 May 2026",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng"
+          ],
+          "contribution": 0.6
+        }
+      ]
+    },
+    "PET": {
+      "score": 2.0,
+      "article_count": 2,
+      "top_articles": [
+        {
+          "title": "Dấu ấn của The Pet Viet Nam tại Pet Fair 2026: Khi sản phẩm nội địa lên ngôi",
+          "source": "cafebiz",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "The Pet Vietnam khẳng định vị thế thương hiệu nội địa tại Pet Fair 2026",
+          "source": "thanhnien",
+          "time": "Tue, 26 May 26 0",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "REE": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "VinFast, Novaland, REE… đồng loạt thay Chủ tịch, chuyện gì đang xảy ra?",
+          "source": "cafebiz",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Ô tô và phụ tùng",
+            "Bất động sản"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "USD": {
+      "score": 1.98,
+      "article_count": 19,
+      "top_articles": [
+        {
+          "title": "OpenAI chi tới 236.000 USD/năm để “giảm ma sát” quanh các trung tâm dữ liệu AI: ",
           "source": "cafebiz",
           "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": -0.75
+        },
+        {
+          "title": "AI viết lại luật chơi M&A: Thương vụ 420 tỷ USD gây chấn động toàn cầu, ngành cô",
+          "source": "cafebiz",
+          "time": "Tue, 26 May 2026",
           "news_type": "delayed",
           "effective_date": null,
           "industries": [
-            "Sản xuất thực phẩm",
-            "Dịch vụ tài chính"
+            "Hàng công nghiệp",
+            "Công nghệ Thông tin"
           ],
-          "contribution": -0.6
+          "contribution": 0.0
         }
       ]
     },
     "THI": {
       "score": 2.01,
-      "article_count": 46,
+      "article_count": 48,
       "top_articles": [
+        {
+          "title": "Điểm trung bình thi đánh giá tư duy ĐH Bách khoa Hà Nội giảm",
+          "source": "vnexpress",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": -0.75
+        },
         {
           "title": "Còn hơn 2 tuần thi tốt nghiệp THPT, TP.HCM yêu cầu trường làm gì để hỗ trợ học s",
           "source": "tuoitre",
@@ -1587,17 +1710,6 @@
             "Dịch vụ tài chính"
           ],
           "contribution": 0.75
-        },
-        {
-          "title": "Báo in ngày 25-5: Kỳ thi tốt nghiệp THPT sẽ xử lý nghiêm việc gian lận",
-          "source": "nld",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Bia và đồ uống"
-          ],
-          "contribution": 0.675
         }
       ]
     },
@@ -1618,37 +1730,9 @@
         }
       ]
     },
-    "USD": {
-      "score": 1.98,
-      "article_count": 17,
-      "top_articles": [
-        {
-          "title": "OpenAI chi tới 236.000 USD/năm để “giảm ma sát” quanh các trung tâm dữ liệu AI: ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Công nghệ Thông tin"
-          ],
-          "contribution": -0.75
-        },
-        {
-          "title": "Giấc mơ đưa 1 triệu người lên Sao Hỏa của Elon Musk được nuôi bằng 11 tỷ USD từ ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Dịch vụ Tiêu dùng"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
     "NHA": {
-      "score": 2.01,
-      "article_count": 10,
+      "score": 2.0,
+      "article_count": 12,
       "top_articles": [
         {
           "title": "Hàng nghìn người biểu tình ở Tây Ban Nha phản đối giá nhà tăng cao",
@@ -1670,32 +1754,32 @@
         }
       ]
     },
-    "HAN": {
+    "DAT": {
       "score": 2.0,
       "article_count": 1,
       "top_articles": [
         {
-          "title": "Lý do vàng không bị han gỉ",
+          "title": "'Nếu chỉ cạnh tranh bằng giá, Dat Bike không tồn tại đến nay'",
           "source": "vnexpress",
           "time": "Tue, 26 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Kim loại",
-            "Khai khoáng"
+            "Ô tô và phụ tùng",
+            "Công nghệ Thông tin"
           ],
           "contribution": 0.0
         }
       ]
     },
-    "TAN": {
+    "TTC": {
       "score": 2.0,
       "article_count": 1,
       "top_articles": [
         {
-          "title": "Mưa lớn giờ tan tầm, giao thông qua vòng xoay Điện Biên Phủ chiều nay thế nào?",
-          "source": "thanhnien",
-          "time": "Mon, 25 May 26 2",
+          "title": "Chuỗi trải nghiệm giữa thiên nhiên tại TTC World - Thung lũng Tình yêu",
+          "source": "vnexpress",
+          "time": "Tue, 26 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
@@ -1705,20 +1789,75 @@
         }
       ]
     },
-    "PRO": {
-      "score": 2.27,
-      "article_count": 1,
+    "ACB": {
+      "score": 2.0,
+      "article_count": 2,
       "top_articles": [
         {
-          "title": "Cận cảnh Xiaomi 17T và 17T Pro tại Việt Nam",
+          "title": "ACB cùng Vụ Thanh toán NHNN, Bộ Công an, NAPAS tăng cường bảo mật cho khách hàng",
           "source": "thanhnien",
-          "time": "Mon, 25 May 26 2",
+          "time": "Tue, 26 May 26 0",
+          "news_type": "monitoring",
+          "effective_date": null,
+          "industries": [
+            "Khai khoáng",
+            "Ngân hàng",
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.0
+        },
+        {
+          "title": "Lãi suất ngân hàng ACB tháng 5/2026: Kỳ hạn nào đang có mức cao nhất?",
+          "source": "cafebiz",
+          "time": "Sun, 24 May 2026",
           "news_type": "immediate",
           "effective_date": null,
           "industries": [
-            "Công nghệ Thông tin"
+            "Ngân hàng"
           ],
-          "contribution": 0.675
+          "contribution": 0.0
+        }
+      ]
+    },
+    "HOT": {
+      "score": 2.0,
+      "article_count": 3,
+      "top_articles": [
+        {
+          "title": "MIT Uni. dành hơn 2.500 suất học bổng và các ngành học 'hot' cho 2k8",
+          "source": "thanhnien",
+          "time": "Tue, 26 May 26 0",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
+        },
+        {
+          "title": "Không phải Phú Quốc hay Đà Nẵng, đây mới là thiên đường du lịch Việt Nam hot hè ",
+          "source": "cafebiz",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất thực phẩm",
+            "Du lịch và Giải trí"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "UNI": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "MIT Uni. dành hơn 2.500 suất học bổng và các ngành học 'hot' cho 2k8",
+          "source": "thanhnien",
+          "time": "Tue, 26 May 26 0",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [],
+          "contribution": 0.0
         }
       ]
     },
@@ -1795,24 +1934,6 @@
             "Công nghệ Thông tin"
           ],
           "contribution": -0.6
-        }
-      ]
-    },
-    "BID": {
-      "score": 2.0,
-      "article_count": 1,
-      "top_articles": [
-        {
-          "title": "Invitation to Bid",
-          "source": "petrotimes",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Sản xuất Dầu khí",
-            "Ngân hàng"
-          ],
-          "contribution": 0.0
         }
       ]
     },
@@ -1971,47 +2092,6 @@
         }
       ]
     },
-    "TOP": {
-      "score": 2.0,
-      "article_count": 3,
-      "top_articles": [
-        {
-          "title": "Top nhạc sĩ người Mỹ vĩ đại nhất còn sống của New York Times: Sáng ta",
-          "source": "tuoitre",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [],
-          "contribution": 0.0
-        },
-        {
-          "title": "Hoàng Hên ghi bàn và kiến tạo giúp Hà Nội FC trở lại Top 3 V-League",
-          "source": "nld",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [],
-          "contribution": 0.0
-        }
-      ]
-    },
-    "ACB": {
-      "score": 2.0,
-      "article_count": 1,
-      "top_articles": [
-        {
-          "title": "Lãi suất ngân hàng ACB tháng 5/2026: Kỳ hạn nào đang có mức cao nhất?",
-          "source": "cafebiz",
-          "time": "Sun, 24 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Ngân hàng"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
     "SON": {
       "score": 2.0,
       "article_count": 2,
@@ -2135,7 +2215,7 @@
         }
       ]
     },
-    "TV1": {
+    "TV2": {
       "score": 2.0,
       "article_count": 1,
       "top_articles": [
@@ -2150,7 +2230,7 @@
         }
       ]
     },
-    "TV2": {
+    "TV1": {
       "score": 2.0,
       "article_count": 1,
       "top_articles": [
@@ -2213,35 +2293,6 @@
         }
       ]
     },
-    "HOT": {
-      "score": 2.0,
-      "article_count": 2,
-      "top_articles": [
-        {
-          "title": "Không phải Phú Quốc hay Đà Nẵng, đây mới là thiên đường du lịch Việt Nam hot hè ",
-          "source": "cafebiz",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Sản xuất thực phẩm",
-            "Du lịch và Giải trí"
-          ],
-          "contribution": 0.0
-        },
-        {
-          "title": "Loạt trường THCS “hot” ở TP HCM xét học bạ, thành tích vào lớp 6",
-          "source": "nld",
-          "time": "Mon, 25 May 2026",
-          "news_type": "immediate",
-          "effective_date": null,
-          "industries": [
-            "Dịch vụ tài chính"
-          ],
-          "contribution": 0.0
-        }
-      ]
-    },
     "OIL": {
       "score": 2.0,
       "article_count": 1,
@@ -2275,6 +2326,23 @@
         }
       ]
     },
+    "BID": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Invitation to Bid",
+          "source": "petrotimes",
+          "time": "Mon, 25 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Ngân hàng"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
     "LAW": {
       "score": 2.0,
       "article_count": 1,
@@ -2287,6 +2355,58 @@
           "effective_date": null,
           "industries": [],
           "contribution": 0.0
+        }
+      ]
+    },
+    "HAN": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Lý do vàng không bị han gỉ",
+          "source": "vnexpress",
+          "time": "Tue, 26 May 2026",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Kim loại",
+            "Khai khoáng"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "TAN": {
+      "score": 2.0,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Mưa lớn giờ tan tầm, giao thông qua vòng xoay Điện Biên Phủ chiều nay thế nào?",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 2",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Sản xuất thực phẩm"
+          ],
+          "contribution": 0.0
+        }
+      ]
+    },
+    "PRO": {
+      "score": 2.27,
+      "article_count": 1,
+      "top_articles": [
+        {
+          "title": "Cận cảnh Xiaomi 17T và 17T Pro tại Việt Nam",
+          "source": "thanhnien",
+          "time": "Mon, 25 May 26 2",
+          "news_type": "immediate",
+          "effective_date": null,
+          "industries": [
+            "Công nghệ Thông tin"
+          ],
+          "contribution": 0.675
         }
       ]
     }
