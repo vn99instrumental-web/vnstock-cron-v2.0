@@ -2,12 +2,15 @@ name: VNStock Intraday
 
 on:
   schedule:
-    - cron: '25 1 * * 1-5'   # 08:25 ICT
+    # Vietnam market hours: 09:00-15:00 ICT (UTC+7)
+    # Hourly runs at minute :25 from 08:25 to 14:25 ICT
+    - cron: '25 1 * * 1-5'   # 08:25 ICT (= 1:25 UTC)
     - cron: '25 2 * * 1-5'   # 09:25 ICT
     - cron: '25 3 * * 1-5'   # 10:25 ICT
     - cron: '25 4 * * 1-5'   # 11:25 ICT
     - cron: '25 5 * * 1-5'   # 12:25 ICT
     - cron: '25 6 * * 1-5'   # 13:25 ICT
+    - cron: '25 7 * * 1-5'   # 14:25 ICT  ← BUG #12 FIX: added (was missing)
   workflow_dispatch:
 
 jobs:
@@ -33,6 +36,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      # ──────────────────────────────────────────────────────────────────
+      # CACHE STRATEGY — Layer 2 of "latest vnstock":
+      # Weekly cache key → invalidates auto every week.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: |
+          echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+
       - name: Restore vnstock cache
         id: cache-venv
         uses: actions/cache@v4
@@ -40,7 +52,9 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
 
       - name: Fallback install nếu cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
@@ -68,6 +82,23 @@ jobs:
         run: |
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
+
+      # ──────────────────────────────────────────────────────────────────
+      # UPGRADE STEP — Layer 1: always upgrade on every run.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Ensure latest vnstock packages
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          echo "=== Before upgrade ==="
+          pip list 2>&1 | grep -iE "vnstock" || true
+          echo ""
+          echo "=== Upgrading vnstock packages ==="
+          pip install --upgrade --upgrade-strategy eager \
+            vnstock vnstock_data vnstock_news vnstock_ta 2>&1 | tail -30 || \
+            echo "⚠️ Upgrade failed (continuing with cached versions)"
+          echo ""
+          echo "=== After upgrade ==="
+          pip list 2>&1 | grep -iE "vnstock" || true
 
       - name: Step Snapshot — Ranking + Deep (concurrent)
         env:
