@@ -1,33 +1,22 @@
 """
 step_news_daily.py — Daily news crawl + index builder
 =======================================================
-Thay đổi từ bản cũ:
-  - Fix symbol_mentions: dùng re.search với \b word boundary
-    thay vì simple `if sym in text` → 0 matches trước đây
-  - Output paths: news/today_index.json, news/history.json, news/raw.json
-  - Backward-compat alias: news_today_index.json, news_history.json, news_raw.json
-
 CHANGELOG:
-  2026-05-25 — FIX BUG "No RSS URLs configured" (3 sites missing):
-    Vấn đề: baodautu/tienphong/nhandan log warning "No RSS URLs configured"
-    mỗi lần chạy daily. Theo docs vnstock_news v2.2.0 (April 2026),
-    cả 3 sites này ĐỀU có sẵn config — vấn đề là runner có thể đang dùng
-    version cũ chưa update.
+  2026-05-25 — Multi-layer RSS fallback (Layer 1 unified + Layer 2 manual)
+    Fix "No RSS URLs configured" cho baodautu/tienphong/nhandan
 
-    Multi-layer fix:
-    Layer 1: Switch get_articles_from_feed() → get_articles() unified crawler
-      → Built-in RSS + Sitemap fallback (theo doc v2.2.0+)
-    Layer 2: Manual RSS via RSS class với hardcoded URLs cho 3 sites
-      → Cover case version cũ chưa có RSS config
-    Layer 3: Log vnstock_news version để debug compatibility
+  2026-05-26 — FIX BUG Macro false positive:
+    Article "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI..." được tag
+    là macro với negative bias -1.0 cho TOÀN BỘ 20 symbols.
 
-  Manual RSS URLs đã verify:
-    - baodautu:  https://baodautu.vn/rss/tin-moi-nhat.rss
-                 (confirmed từ docs vnstocks.com)
-    - tienphong: https://tienphong.vn/rss/kinh-te-3.rss
-                 https://tienphong.vn/rss/tai-chinh-chung-khoan-105.rss
-                 (confirmed từ https://tienphong.vn/rss.html)
-    - nhandan:   chưa confirm endpoint → để Layer 1 unified handle
+    Root cause:
+      _score_macro accept ANY industry là "finance context".
+      Article AI/giáo dục tag "Công nghệ Thông tin" → has_fin_context=True
+      → keyword "suy thoái" (-2 bias) được apply dù không phải macro tài chính.
+
+    Fix:
+      Định nghĩa MACRO_CONTEXT_INDUSTRIES — chỉ industries thực sự liên quan
+      macro/finance mới qualify. CNTT, Du lịch, Truyền thông... KHÔNG counts.
 """
 import os
 import re
@@ -78,10 +67,6 @@ FINANCE_SITES = [
 LIMIT_PER_FEED = 30
 HISTORY_DAYS   = 30
 
-# ─── Manual RSS fallback URLs (Layer 2) ──────────────────────────────────────
-# Khi vnstock_news Crawler fail cho 1 site, thử dùng RSS class với URL hardcoded.
-# Chỉ dùng cho 3 sites báo "No RSS URLs configured" trong log.
-# Verified URLs từ official RSS pages.
 _RSS_FALLBACK_URLS = {
     "baodautu": [
         "https://baodautu.vn/rss/tin-moi-nhat.rss",
@@ -91,7 +76,30 @@ _RSS_FALLBACK_URLS = {
         "https://tienphong.vn/rss/tai-chinh-chung-khoan-105.rss",
         "https://tienphong.vn/rss/doanh-nghiep-22.rss",
     ],
-    # nhandan: chưa confirm — để Layer 1 unified xử lý
+}
+
+# ─── Macro context filter (Bug #9 fix) ───────────────────────────────────────
+# Industries thực sự liên quan đến macro tài chính.
+# Article phải tag ÍT NHẤT 1 trong các industries này → mới qualify
+# để keyword macro tiêu cực (như "suy thoái", "khủng hoảng") được apply.
+#
+# Lý do tách riêng: tránh false positive như article về "suy thoái trí tuệ"
+# (AI/giáo dục) bị tag macro chỉ vì matched industry "Công nghệ Thông tin".
+#
+# Bao gồm: tài chính, BĐS, vĩ mô-sensitive sectors.
+# KHÔNG bao gồm: CNTT, Du lịch, Truyền thông, Hàng tiêu dùng thường, ...
+MACRO_CONTEXT_INDUSTRIES: set[str] = {
+    "Ngân hàng",
+    "Bảo hiểm",
+    "Dịch vụ tài chính",
+    "Bất động sản",
+    "Sản xuất Dầu khí",
+    "Sản xuất & Phân phối Điện",
+    "Kim loại",
+    "Xây dựng và Vật liệu",
+    "Hóa chất",
+    "Nguyên vật liệu",
+    "Công nghiệp",
 }
 
 
@@ -113,7 +121,6 @@ def _parse_time(raw) -> datetime | None:
             continue
     return None
 
-# ─── Classify news type ───────────────────────────────────────────────────────
 
 def _classify_news_type(text: str) -> str:
     t = text.lower()
@@ -123,7 +130,6 @@ def _classify_news_type(text: str) -> str:
         return "monitoring"
     return "immediate"
 
-# ─── Extract effective date ───────────────────────────────────────────────────
 
 def _extract_effective_date(text: str) -> str | None:
     now  = now_ict()
@@ -165,7 +171,6 @@ def _extract_effective_date(text: str) -> str | None:
             continue
     return None
 
-# ─── Impact decay ─────────────────────────────────────────────────────────────
 
 def _impact_decay(article: dict, now: datetime) -> float:
     news_type      = article.get("news_type", "immediate")
@@ -219,7 +224,6 @@ def _impact_decay(article: dict, now: datetime) -> float:
     if age_hours < 24: return 0.40
     return 0.20
 
-# ─── Sentiment ────────────────────────────────────────────────────────────────
 
 POSITIVE_WORDS = [
     "tăng", "tích cực", "khởi sắc", "hưởng lợi", "cơ hội",
@@ -234,21 +238,34 @@ NEGATIVE_WORDS = [
     "lo ngại", "bất ổn", "suy giảm", "vỡ nợ",
 ]
 
+
 def _score_sentiment(text: str) -> float:
     t   = text.lower()
     pos = sum(1 for w in POSITIVE_WORDS if w in t)
     neg = sum(1 for w in NEGATIVE_WORDS if w in t)
     return float(pos - neg)
 
+
 def _score_macro(text: str, industries: list | None = None) -> float:
     """
-    Score macro sentiment. Chỉ áp dụng negative bias từ rủi ro chung
-    nếu bài viết thuộc ngành tài chính/kinh tế (để tránh false positive).
-    Positive macro signals không cần filter.
+    Score macro sentiment.
+
+    v2 (2026-05-26 — Bug #9 fix):
+      Negative bias keywords (như "suy thoái", "khủng hoảng") chỉ apply nếu
+      article có ÍT NHẤT 1 industry thuộc MACRO_CONTEXT_INDUSTRIES
+      (finance/macro-sensitive sectors).
+
+      Trước đây: ANY industry counts → article về "suy thoái trí tuệ"
+      (AI/giáo dục) bị tag macro tiêu cực vì matched "Công nghệ Thông tin".
+
+      Positive bias keywords (như "GDP tăng", "Fed cắt giảm") luôn apply
+      (positive macro signals trong bài AI cũng không gây hại, chỉ là noise nhẹ).
     """
     t = text.lower()
     total = 0.0
-    has_fin_context = bool(industries)
+    # v2 FIX: chỉ industries genuine finance/macro mới qualify
+    industries_set = set(industries or [])
+    has_fin_context = bool(industries_set & MACRO_CONTEXT_INDUSTRIES)
 
     for kw, bias in MACRO_KEYWORDS.items():
         if kw.lower() in t:
@@ -258,6 +275,7 @@ def _score_macro(text: str, industries: list | None = None) -> float:
                 total += bias
     return float(total)
 
+
 def _tag_industries(text: str) -> list[str]:
     t = text.lower()
     return [
@@ -265,11 +283,9 @@ def _tag_industries(text: str) -> list[str]:
         if any(kw.lower() in t for kw in keywords)
     ]
 
-# ─── Article normalization helpers ────────────────────────────────────────────
 
 def _enrich_article(art: dict, site_name: str, source_weight: float,
                     now: datetime) -> dict:
-    """Enrich raw article dict với sentiment, decay, industry tags."""
     title = art.get("title") or ""
     desc  = art.get("short_description") or art.get("description") or \
             art.get("summary") or ""
@@ -289,7 +305,6 @@ def _enrich_article(art: dict, site_name: str, source_weight: float,
     }
     decay = _impact_decay(art_meta, now)
 
-    # URL có thể ở 'url' (Crawler output) hoặc 'link' (RSS class output)
     url = art.get("url") or art.get("link") or ""
 
     return {
@@ -314,22 +329,10 @@ def _enrich_article(art: dict, site_name: str, source_weight: float,
 
 
 def _try_unified_crawler(site_name: str) -> list | None:
-    """
-    Layer 1: vnstock_news Crawler.get_articles() — built-in RSS+Sitemap fallback.
-
-    Theo docs v2.2.0+: get_articles() unified crawler tự động:
-      - Try RSS trước
-      - Fallback sang Sitemap nếu RSS fail
-      - Return List[Dict] với keys: url, title, short_description, ...
-    """
     try:
         from vnstock_news import Crawler
         crawler = Crawler(site_name=site_name)
-        # IMPORTANT: get_articles() != get_articles_from_feed()
-        # get_articles_from_feed() = RSS only (old behavior)
-        # get_articles() = unified RSS + Sitemap fallback (v2.2.0+)
         raw = crawler.get_articles(limit=LIMIT_PER_FEED)
-
         if not isinstance(raw, list):
             try:
                 raw = raw.to_dict("records")
@@ -342,10 +345,6 @@ def _try_unified_crawler(site_name: str) -> list | None:
 
 
 def _try_manual_rss(site_name: str) -> list | None:
-    """
-    Layer 2: Manual RSS với hardcoded URLs.
-    Chỉ áp dụng cho sites trong _RSS_FALLBACK_URLS.
-    """
     if site_name not in _RSS_FALLBACK_URLS:
         return None
 
@@ -371,32 +370,23 @@ def _try_manual_rss(site_name: str) -> list | None:
 
 
 def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
-    """
-    Multi-layer crawl với fallback strategy:
-      Layer 1: Crawler.get_articles() unified (RSS + sitemap fallback)
-      Layer 2: Manual RSS với hardcoded URLs (cho 3 sites broken)
-    """
     raw_articles = None
     layer_used   = None
 
-    # Layer 1
     raw_articles = _try_unified_crawler(site_name)
     if raw_articles:
         layer_used = "L1 unified"
 
-    # Layer 2 (only if Layer 1 failed AND site has fallback URL)
     if not raw_articles:
         raw_articles = _try_manual_rss(site_name)
         if raw_articles:
             layer_used = "L2 manual RSS"
 
-    # All layers exhausted
     if not raw_articles:
         log.warning(f"  ⚠️ {site_name} failed: all layers exhausted "
                     f"(check RSS config or update vnstock_news)")
         return []
 
-    # Enrich articles
     enriched = []
     now      = now_ict()
     for art in raw_articles[:LIMIT_PER_FEED]:
@@ -414,8 +404,6 @@ def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
              f"{tagged} tagged, {delayed} delayed")
     return enriched
 
-
-# ─── History ──────────────────────────────────────────────────────────────────
 
 def _update_history(new_articles: list) -> list:
     history = load_json("news/history.json") or \
@@ -450,21 +438,26 @@ def _update_history(new_articles: list) -> list:
     log.info(f"  History: +{added} new, -{pruned} pruned, {len(history)} total")
 
     save_json("news/history.json",    history)
-    save_json("news_history.json",    history)   # backward-compat
+    save_json("news_history.json",    history)
     return history
 
-# ─── Today index ──────────────────────────────────────────────────────────────
 
 def _build_today_index(all_articles: list) -> dict:
     """
     Pre-compute scores by industry, symbol, macro.
-
-    FIX: symbol_mentions dùng \b word boundary regex
-         thay vì simple string contains → trước đây 0 match
+    v2 (2026-05-26 — Bug #9 fix):
+      Recompute macro_score with tighter industry filter — ensures
+      false-positive articles được loại bỏ trước khi vào macro_tuples.
     """
     now = now_ict()
 
+    # Recompute macro_score với filter mới (cho cả articles cũ từ history)
+    # — quan trọng vì history có thể chứa articles được tag bằng filter cũ
     for art in all_articles:
+        art["macro_score"] = _score_macro(
+            f"{art.get('title','')} {art.get('short_description','')}",
+            art.get("matched_industries", [])
+        )
         art["time_decay"] = _impact_decay(art, now)
         art["weighted_sentiment"] = round(
             art.get("raw_sentiment", 0)
@@ -518,7 +511,7 @@ def _build_today_index(all_articles: list) -> dict:
             "top_articles"  : _top_articles(tuples, n=3),
         }
 
-    # Macro
+    # Macro — chỉ articles có macro_score != 0 (đã filter ở _score_macro)
     macro_tuples = [
         (art.get("macro_score", 0) * art.get("time_decay", 0.5), art)
         for art in all_articles
@@ -526,7 +519,10 @@ def _build_today_index(all_articles: list) -> dict:
     ]
     macro_vals = [v for v, _ in macro_tuples]
 
-    # Symbol mentions — FIX: word boundary regex
+    log.info(f"  Macro: {len(macro_tuples)} articles tagged "
+             f"(after MACRO_CONTEXT filter)")
+
+    # Symbol mentions
     industry_map = load_json("market/industry_map.json") or \
                    load_json("industry_map.json") or []
     all_symbols = list({
@@ -536,7 +532,6 @@ def _build_today_index(all_articles: list) -> dict:
     })
     log.info(f"  Symbol universe for mention matching: {len(all_symbols)} symbols")
 
-    # Pre-compile regex patterns for performance
     sym_patterns = {
         sym: re.compile(r'\b' + re.escape(sym) + r'\b')
         for sym in all_symbols
@@ -575,14 +570,8 @@ def _build_today_index(all_articles: list) -> dict:
         "symbol_mentions" : symbol_mentions,
     }
 
-# ─── Entry point ──────────────────────────────────────────────────────────────
 
 def _log_vnstock_news_version():
-    """
-    Layer 3: Log vnstock_news version để debug RSS issues.
-    v2.2.0+ (April 2026) fix RSS cho baodautu/tienphong/nhandan/...
-    Nếu version cũ hơn → user nên upgrade.
-    """
     try:
         import vnstock_news
         version = getattr(vnstock_news, "__version__", None) or \
@@ -590,7 +579,6 @@ def _log_vnstock_news_version():
                   "unknown"
         log.info(f"  vnstock_news version: {version}")
         if version != "unknown" and isinstance(version, str):
-            # Cảnh báo nếu version cũ
             try:
                 major, minor = map(int, version.split(".")[:2])
                 if (major, minor) < (2, 2):
@@ -630,14 +618,11 @@ def run():
              f"{delayed_count} delayed, "
              f"{macro_count} macro-tagged)")
 
-    # Save raw
     save_json("news/raw.json",   deduped)
-    save_json("news_raw.json",   deduped)  # backward-compat
+    save_json("news_raw.json",   deduped)
 
-    # Merge into history
     history = _update_history(deduped)
 
-    # Merge today + history
     seen   = set()
     merged = []
     for art in deduped + history:
@@ -646,12 +631,11 @@ def run():
             seen.add(url)
             merged.append(art)
 
-    # Build today index
     log.info("  Building today index...")
     today_index = _build_today_index(merged)
 
     save_json("news/today_index.json", today_index)
-    save_json("news_today_index.json", today_index)  # backward-compat
+    save_json("news_today_index.json", today_index)
 
     n_ind = len(today_index["by_industry"])
     n_sym = len(today_index["symbol_mentions"])
