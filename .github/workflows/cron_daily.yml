@@ -79,31 +79,34 @@ jobs:
 
       # ──────────────────────────────────────────────────────────────────
       # UPGRADE STEP — Layer 1 of "latest vnstock" guarantee:
-      # CHÚ Ý: vnstock_data, vnstock_news, vnstock_ta là SPONSOR packages,
-      # KHÔNG nằm trên public PyPI — phải cài qua installer.run (sponsor token).
-      # Chỉ `vnstock` (public) có thể upgrade qua pip.
-      # Sponsor packages → rely on weekly cache invalidation + installer fresh.
+      # IMPORTANT: Use venv's pip DIRECTLY (not relying on `source activate`
+      # which doesn't always survive shell context in GitHub Actions).
+      # Sponsor packages refresh via weekly cache invalidation only.
       # ──────────────────────────────────────────────────────────────────
       - name: Ensure latest vnstock packages
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          echo "=== Current versions ==="
-          pip list 2>&1 | grep -iE "vnstock" || echo "(no vnstock packages found)"
+          # Use venv's pip directly to avoid shell context issues
+          VENV_PIP="/opt/vnstock/.venv/bin/pip"
+
+          if [ ! -x "$VENV_PIP" ]; then
+            echo "⚠️ Venv pip not found at $VENV_PIP — skipping upgrade"
+            exit 0
+          fi
+
+          echo "=== Current versions (venv: /opt/vnstock/.venv) ==="
+          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
           echo ""
 
           echo "=== Upgrading public 'vnstock' package only ==="
-          # Only `vnstock` is on public PyPI; others are sponsor-only.
-          pip install --upgrade vnstock 2>&1 | tail -10 || \
-            echo "⚠️ vnstock upgrade failed (continuing with cached version)"
+          $VENV_PIP install --upgrade vnstock 2>&1 | tail -5 || \
+            echo "⚠️ vnstock upgrade failed (continuing)"
           echo ""
 
-          echo "=== Sponsor packages (not on PyPI — version logged only) ==="
-          # vnstock_data, vnstock_news, vnstock_ta: rely on weekly cache
-          # invalidation + installer.run for refresh.
+          echo "=== Sponsor packages (refresh on weekly cache miss) ==="
           for pkg in vnstock_data vnstock_news vnstock_ta; do
-            version=$(pip show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
+            version=$($VENV_PIP show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
             if [ -n "$version" ]; then
-              echo "  $pkg: $version (sponsor — refreshes on weekly cache miss)"
+              echo "  $pkg: $version"
             else
               echo "  $pkg: NOT INSTALLED ⚠️"
             fi
@@ -111,7 +114,7 @@ jobs:
           echo ""
 
           echo "=== Final versions ==="
-          pip list 2>&1 | grep -iE "vnstock" || true
+          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || true
 
       - name: Step Context — Market PE/PB + Industry Map
         env:
