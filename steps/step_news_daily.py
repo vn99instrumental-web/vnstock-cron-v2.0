@@ -3,24 +3,24 @@ step_news_daily.py — Daily news crawl + index builder
 =======================================================
 CHANGELOG:
   2026-05-25 — Multi-layer RSS fallback (Layer 1 unified + Layer 2 manual)
-    Fix "No RSS URLs configured" cho baodautu/tienphong/nhandan
+  2026-05-26 — FIX BUG Macro false positive (MACRO_CONTEXT_INDUSTRIES filter)
+  2026-05-26 — FIX BUG #11 Symbol mention matching:
+    Báo chí VN dùng "Hòa Phát" thay vì "HPG" → trước đây chỉ 40/3338 = 1.2% match.
 
-  2026-05-26 — FIX BUG Macro false positive:
-    Article "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI..." được tag
-    là macro với negative bias -1.0 cho TOÀN BỘ 20 symbols.
+    Fix: thêm matching theo organ_name + organ_short_name (từ industry_map.json):
+      - Ticker matching (như cũ): "HPG" → HPG
+      - Short name matching: "Hòa Phát" → HPG
+      - Full name matching: "Tập đoàn Hòa Phát" → HPG (sau khi strip prefix)
 
-    Root cause:
-      _score_macro accept ANY industry là "finance context".
-      Article AI/giáo dục tag "Công nghệ Thông tin" → has_fin_context=True
-      → keyword "suy thoái" (-2 bias) được apply dù không phải macro tài chính.
-
-    Fix:
-      Định nghĩa MACRO_CONTEXT_INDUSTRIES — chỉ industries thực sự liên quan
-      macro/finance mới qualify. CNTT, Du lịch, Truyền thông... KHÔNG counts.
+    Stop-list để tránh false positives:
+      - Names quá ngắn (<4 chars)
+      - Names trùng với common Vietnamese words
+      - Generic words: "tập đoàn", "công ty"
 """
 import os
 import re
 import sys
+import unicodedata
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 os.environ["VNSTOCK_INTERACTIVE"] = "0"
@@ -78,29 +78,113 @@ _RSS_FALLBACK_URLS = {
     ],
 }
 
-# ─── Macro context filter (Bug #9 fix) ───────────────────────────────────────
-# Industries thực sự liên quan đến macro tài chính.
-# Article phải tag ÍT NHẤT 1 trong các industries này → mới qualify
-# để keyword macro tiêu cực (như "suy thoái", "khủng hoảng") được apply.
-#
-# Lý do tách riêng: tránh false positive như article về "suy thoái trí tuệ"
-# (AI/giáo dục) bị tag macro chỉ vì matched industry "Công nghệ Thông tin".
-#
-# Bao gồm: tài chính, BĐS, vĩ mô-sensitive sectors.
-# KHÔNG bao gồm: CNTT, Du lịch, Truyền thông, Hàng tiêu dùng thường, ...
 MACRO_CONTEXT_INDUSTRIES: set[str] = {
-    "Ngân hàng",
-    "Bảo hiểm",
-    "Dịch vụ tài chính",
-    "Bất động sản",
-    "Sản xuất Dầu khí",
-    "Sản xuất & Phân phối Điện",
-    "Kim loại",
-    "Xây dựng và Vật liệu",
-    "Hóa chất",
-    "Nguyên vật liệu",
-    "Công nghiệp",
+    "Ngân hàng", "Bảo hiểm", "Dịch vụ tài chính", "Bất động sản",
+    "Sản xuất Dầu khí", "Sản xuất & Phân phối Điện",
+    "Kim loại", "Xây dựng và Vật liệu", "Hóa chất",
+    "Nguyên vật liệu", "Công nghiệp",
 }
+
+# ─── Symbol matching config (Bug #11 fix) ────────────────────────────────────
+# Min length cho company name match — quá ngắn dễ false positive
+_MIN_NAME_LEN = 4
+
+# Prefixes thường gặp trong organ_name cần strip để được short form
+# Order quan trọng: longest prefix first
+_COMPANY_PREFIXES = [
+    "tổng công ty cổ phần",
+    "tổng công ty",
+    "công ty cổ phần",
+    "công ty tnhh",
+    "công ty cp",
+    "công ty",
+    "tập đoàn",
+    "ngân hàng tmcp",
+    "ngân hàng cổ phần",
+    "ngân hàng",
+    "tcty",
+    "tct",
+    "ctcp",
+]
+
+# Stop-list: names trùng với common Vietnamese words / sites
+# (sẽ skip nếu sau strip prefix mà thành 1 trong các từ này)
+_STOPLIST = {
+    "VIỆT NAM", "DỊCH VỤ", "ĐẦU TƯ", "PHÁT TRIỂN", "THƯƠNG MẠI",
+    "SẢN XUẤT", "XÂY DỰNG", "KINH DOANH", "VẬN TẢI", "ĐIỆN LỰC",
+    "NƯỚC GIẢI KHÁT", "QUẢN LÝ", "TÀI CHÍNH",
+}
+
+
+def _normalize(s: str) -> str:
+    """Normalize unicode (NFC) + uppercase + collapse whitespace."""
+    if not s:
+        return ""
+    s = unicodedata.normalize("NFC", str(s))
+    s = re.sub(r"\s+", " ", s.strip()).upper()
+    return s
+
+
+def _strip_company_prefix(name: str) -> str:
+    """Strip common Vietnamese company prefixes. Returns stripped name."""
+    if not name:
+        return ""
+    norm = name.strip()
+    norm_lower = norm.lower()
+    for prefix in _COMPANY_PREFIXES:
+        if norm_lower.startswith(prefix + " "):
+            return norm[len(prefix) + 1:].strip()
+        if norm_lower == prefix:
+            return ""
+    return norm
+
+
+def _build_company_name_map(industry_map: list) -> dict[str, str]:
+    """
+    Build name (normalized, uppercase) → symbol mapping.
+
+    Sources:
+      1. organ_short_name (nếu có và len ≥ MIN_NAME_LEN)
+      2. organ_name strip prefix (nếu có và len ≥ MIN_NAME_LEN)
+      3. Skip nếu trong _STOPLIST
+
+    Conflicts: nếu 2 symbols cùng name → ưu tiên 1 cái đầu (deterministic).
+    """
+    name_to_sym: dict[str, str] = {}
+    n_short = n_full = n_skip = 0
+
+    for entry in industry_map:
+        sym = entry.get("symbol") or entry.get("ticker") or entry.get("code")
+        if not sym:
+            continue
+
+        # Try organ_short_name first
+        short = (entry.get("organ_short_name") or "").strip()
+        if short and len(short) >= _MIN_NAME_LEN:
+            short_norm = _normalize(short)
+            if short_norm not in _STOPLIST and short_norm not in name_to_sym:
+                name_to_sym[short_norm] = sym
+                n_short += 1
+
+        # Then organ_name (strip prefix)
+        full = (entry.get("organ_name") or "").strip()
+        if full:
+            stripped = _strip_company_prefix(full)
+            if stripped and len(stripped) >= _MIN_NAME_LEN:
+                full_norm = _normalize(stripped)
+                if (full_norm not in _STOPLIST
+                    and full_norm not in name_to_sym
+                    and full_norm != _normalize(short)):
+                    name_to_sym[full_norm] = sym
+                    n_full += 1
+                elif full_norm in _STOPLIST:
+                    n_skip += 1
+
+    log.info(
+        f"  Company name map: {len(name_to_sym)} names "
+        f"({n_short} short, {n_full} full prefix-stripped, {n_skip} stoplist-skip)"
+    )
+    return name_to_sym
 
 
 # ─── Time helpers ─────────────────────────────────────────────────────────────
@@ -247,23 +331,8 @@ def _score_sentiment(text: str) -> float:
 
 
 def _score_macro(text: str, industries: list | None = None) -> float:
-    """
-    Score macro sentiment.
-
-    v2 (2026-05-26 — Bug #9 fix):
-      Negative bias keywords (như "suy thoái", "khủng hoảng") chỉ apply nếu
-      article có ÍT NHẤT 1 industry thuộc MACRO_CONTEXT_INDUSTRIES
-      (finance/macro-sensitive sectors).
-
-      Trước đây: ANY industry counts → article về "suy thoái trí tuệ"
-      (AI/giáo dục) bị tag macro tiêu cực vì matched "Công nghệ Thông tin".
-
-      Positive bias keywords (như "GDP tăng", "Fed cắt giảm") luôn apply
-      (positive macro signals trong bài AI cũng không gây hại, chỉ là noise nhẹ).
-    """
     t = text.lower()
     total = 0.0
-    # v2 FIX: chỉ industries genuine finance/macro mới qualify
     industries_set = set(industries or [])
     has_fin_context = bool(industries_set & MACRO_CONTEXT_INDUSTRIES)
 
@@ -445,14 +514,13 @@ def _update_history(new_articles: list) -> list:
 def _build_today_index(all_articles: list) -> dict:
     """
     Pre-compute scores by industry, symbol, macro.
-    v2 (2026-05-26 — Bug #9 fix):
-      Recompute macro_score with tighter industry filter — ensures
-      false-positive articles được loại bỏ trước khi vào macro_tuples.
+
+    v2 (Bug #9 fix): Recompute macro_score with tighter industry filter
+    v3 (Bug #11 fix): Match symbol_mentions by ticker + organ_name + organ_short_name
     """
     now = now_ict()
 
     # Recompute macro_score với filter mới (cho cả articles cũ từ history)
-    # — quan trọng vì history có thể chứa articles được tag bằng filter cũ
     for art in all_articles:
         art["macro_score"] = _score_macro(
             f"{art.get('title','')} {art.get('short_description','')}",
@@ -511,7 +579,7 @@ def _build_today_index(all_articles: list) -> dict:
             "top_articles"  : _top_articles(tuples, n=3),
         }
 
-    # Macro — chỉ articles có macro_score != 0 (đã filter ở _score_macro)
+    # Macro
     macro_tuples = [
         (art.get("macro_score", 0) * art.get("time_decay", 0.5), art)
         for art in all_articles
@@ -522,30 +590,61 @@ def _build_today_index(all_articles: list) -> dict:
     log.info(f"  Macro: {len(macro_tuples)} articles tagged "
              f"(after MACRO_CONTEXT filter)")
 
-    # Symbol mentions
+    # ── Symbol mentions (v3 Bug #11: ticker + company name matching) ──
     industry_map = load_json("market/industry_map.json") or \
                    load_json("industry_map.json") or []
+
+    # Universe of all tickers
     all_symbols = list({
         r.get("symbol") or r.get("ticker") or r.get("code")
         for r in industry_map
         if r.get("symbol") or r.get("ticker") or r.get("code")
     })
-    log.info(f"  Symbol universe for mention matching: {len(all_symbols)} symbols")
+    log.info(f"  Symbol universe: {len(all_symbols)} tickers")
 
-    sym_patterns = {
-        sym: re.compile(r'\b' + re.escape(sym) + r'\b')
+    # Ticker patterns (word boundary)
+    ticker_patterns = {
+        sym: re.compile(r'\b' + re.escape(sym) + r'\b', re.UNICODE)
         for sym in all_symbols
     }
 
+    # v3: Build company name → symbol map
+    name_to_sym = _build_company_name_map(industry_map)
+
     symbol_tuples: dict[str, list[tuple]] = {}
+    n_via_ticker = 0
+    n_via_name   = 0
+
     for art in all_articles:
-        title = (art.get("title") or "").upper()
-        tags  = str(art.get("tags") or "").upper()
-        text  = f"{title} {tags}"
-        ws    = art.get("weighted_sentiment", 0.0)
-        for sym, pattern in sym_patterns.items():
-            if pattern.search(text):
-                symbol_tuples.setdefault(sym, []).append((ws * 1.5, art))
+        # Match against title + tags + short_description
+        title = (art.get("title") or "")
+        desc  = (art.get("short_description") or "")
+        tags  = str(art.get("tags") or "")
+        text_normalized = _normalize(f"{title} {desc} {tags}")
+        ws = art.get("weighted_sentiment", 0.0)
+
+        # Match symbols hit per article (avoid double-count)
+        matched_syms = set()
+
+        # 1. Ticker matching
+        # Use original text (not normalized) for ticker — case-sensitive in regex
+        text_for_ticker = f"{title.upper()} {tags.upper()} {desc.upper()}"
+        for sym, pattern in ticker_patterns.items():
+            if pattern.search(text_for_ticker):
+                if sym not in matched_syms:
+                    matched_syms.add(sym)
+                    symbol_tuples.setdefault(sym, []).append((ws * 1.5, art))
+                    n_via_ticker += 1
+
+        # 2. Company name matching (substring with unicode normalization)
+        for name, sym in name_to_sym.items():
+            if sym in matched_syms:
+                continue  # Already matched via ticker
+            if name in text_normalized:
+                matched_syms.add(sym)
+                # Lower confidence weight (1.2x) cho name match vs ticker (1.5x)
+                symbol_tuples.setdefault(sym, []).append((ws * 1.2, art))
+                n_via_name += 1
 
     symbol_mentions: dict[str, dict] = {}
     for sym, tuples in symbol_tuples.items():
@@ -556,7 +655,10 @@ def _build_today_index(all_articles: list) -> dict:
             "top_articles"  : _top_articles(tuples, n=2),
         }
 
-    log.info(f"  symbol_mentions: {len(symbol_mentions)} symbols matched")
+    log.info(
+        f"  symbol_mentions: {len(symbol_mentions)} symbols matched "
+        f"({n_via_ticker} hits via ticker, {n_via_name} hits via company name)"
+    )
 
     return {
         "date"            : now.strftime("%Y-%m-%d"),
