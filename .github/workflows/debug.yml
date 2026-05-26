@@ -29,6 +29,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: |
+          echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+
       - name: Restore vnstock cache
         id: cache-venv
         uses: actions/cache@v4
@@ -36,7 +41,9 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
 
       - name: Fallback install nếu cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
@@ -56,6 +63,20 @@ jobs:
             -O generate_user_info.min.py
           source /opt/vnstock/.venv/bin/activate
           python3 generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
+
+      - name: Ensure latest vnstock packages
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          echo "=== Before upgrade ==="
+          pip list 2>&1 | grep -iE "vnstock" || true
+          echo ""
+          echo "=== Upgrading vnstock packages ==="
+          pip install --upgrade --upgrade-strategy eager \
+            vnstock vnstock_data vnstock_news vnstock_ta 2>&1 | tail -30 || \
+            echo "⚠️ Upgrade failed (continuing)"
+          echo ""
+          echo "=== After upgrade ==="
+          pip list 2>&1 | grep -iE "vnstock" || true
 
       - name: Run single script
         if: ${{ github.event.inputs.script != '' }}
