@@ -84,21 +84,30 @@ jobs:
           pip install -q gspread google-auth
 
       # ──────────────────────────────────────────────────────────────────
-      # UPGRADE STEP — Layer 1: always upgrade on every run.
+      # UPGRADE STEP — Layer 1: only `vnstock` (public PyPI).
+      # Sponsor packages (vnstock_data/news/ta) refresh via weekly cache miss.
       # ──────────────────────────────────────────────────────────────────
       - name: Ensure latest vnstock packages
         run: |
           source /opt/vnstock/.venv/bin/activate
-          echo "=== Before upgrade ==="
-          pip list 2>&1 | grep -iE "vnstock" || true
+          echo "=== Current versions ==="
+          pip list 2>&1 | grep -iE "vnstock" || echo "(no vnstock packages found)"
           echo ""
-          echo "=== Upgrading vnstock packages ==="
-          pip install --upgrade --upgrade-strategy eager \
-            vnstock vnstock_data vnstock_news vnstock_ta 2>&1 | tail -30 || \
-            echo "⚠️ Upgrade failed (continuing with cached versions)"
+
+          echo "=== Upgrading public 'vnstock' package only ==="
+          pip install --upgrade vnstock 2>&1 | tail -10 || \
+            echo "⚠️ vnstock upgrade failed (continuing)"
           echo ""
-          echo "=== After upgrade ==="
-          pip list 2>&1 | grep -iE "vnstock" || true
+
+          echo "=== Sponsor packages (refresh on weekly cache miss) ==="
+          for pkg in vnstock_data vnstock_news vnstock_ta; do
+            version=$(pip show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
+            if [ -n "$version" ]; then
+              echo "  $pkg: $version"
+            else
+              echo "  $pkg: NOT INSTALLED ⚠️"
+            fi
+          done
 
       - name: Step Snapshot — Ranking + Deep (concurrent)
         env:
