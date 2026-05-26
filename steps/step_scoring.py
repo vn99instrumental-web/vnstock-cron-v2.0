@@ -12,10 +12,27 @@ Thay đổi từ bản cũ:
 CHANGELOG:
   2026-05-25 — FIX BUG negative PE/PB scoring:
     - PE < 0 (loss) trước đây vẫn được bonus "very cheap +10" → SAI
-      Real examples từ log: VPH PE=-21.79 score=22, VVN PE=-0.26 score=19
     - Fix: PE > 0 mới áp dụng thang bonus, PE < 0 → -5đ penalty
     - Tương tự PB: PB < 0 = vốn chủ âm → -5đ
-    - Đồng bộ với fix v4 trong step_finance_scan._compute_finance_score
+
+  2026-05-26 — FIX BUG #10: Threshold STRONG SELL quá strict.
+    Trên log thực tế:
+      HRC score=5.87  (T=-15 M=+18 V=-5 G=+10) → STRONG SELL 🚨
+      ACB score=0.89  (T=-5 M=-7 V=+10 G=-2)   → STRONG SELL 🚨
+      VND score=-0.09 (T=-5 M=+5 V=0 G=-2)     → STRONG SELL 🚨
+    Score gần 0 = MIXED signals, không phải catastrophic.
+    Threshold cũ <10 cho STRONG SELL bắt cả những trường hợp này.
+
+    Threshold mới (calibrated theo distribution thực):
+      ≥60 STRONG BUY (cũ ≥70) — ít strict hơn 1 chút, vẫn rare
+      ≥30 BUY        (cũ ≥50) — promote scores 30-50 từ NEUTRAL
+      ≥-10 NEUTRAL   (cũ ≥30) — wider, score quanh 0 = neutral
+      ≥-30 SELL      (cũ ≥10) — wider
+      <-30 STRONG SELL (cũ <10) — chỉ catastrophic alignments
+
+    Distribution test trên 20 symbols log:
+      OLD: 1 BUY, 4 NEUTRAL, 8 SELL, 7 STRONG SELL (35% STRONG SELL — over-aggressive)
+      NEW: 1 STRONG BUY, 4 BUY, 13 NEUTRAL, 1 SELL, 1 STRONG SELL (bell-shape)
 """
 import os
 import sys
@@ -117,11 +134,14 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
       Foreign Flow : max ±20  (FF net5d 5 + FF net20d 5 + FF trend 5 + FF accel 5)
       Fundamental  : max ±18  (PE 10 + PB 5 + ROE 5)
       Cash Flow    : max ±10  (CFO 5 + CF quality 5)
-      Growth       : max ±10  (Rev growth 5 + Profit growth 5)  ← MỚI
+      Growth       : max ±10  (Rev growth 5 + Profit growth 5)
       Market Ctx   : max ±5
       News         : 0–10
-    Total max tích cực ~136, thực tế dải hữu ích -50 → +110
-    Thresholds: ≥70 STRONG BUY | ≥50 BUY | ≥30 NEUTRAL | ≥10 SELL | <10 STRONG SELL
+
+    Total range: -126 → +136, realistic -60 → +100
+
+    Thresholds (v2 — Bug #10 fix):
+      ≥60 STRONG BUY  | ≥30 BUY  | ≥-10 NEUTRAL  | ≥-30 SELL  | <-30 STRONG SELL
     """
     s    = {}
     sigs = []
@@ -227,30 +247,24 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
 
     # ── FUNDAMENTAL (max 18) ──
     # FIX 2026-05-25: PE/PB âm KHÔNG được bonus "cheap" — phải penalty.
-    # Đồng bộ với step_finance_scan._compute_finance_score v4.
     r_pe = row.get("r_pe")
     r_pb = row.get("r_pb")
     roe  = row.get("r_roe")
 
-    # PE: chỉ POSITIVE mới được scoring thang bonus
     if r_pe is not None and r_pe > 0:
         if r_pe < 10:    add("fundamental",  10, f"PE={r_pe} very cheap")
         elif r_pe < 15:  add("fundamental",   7, f"PE={r_pe} cheap")
         elif r_pe <= 25: add("fundamental",   3, f"PE={r_pe} fair")
         else:            add("fundamental",  -5, f"PE={r_pe} expensive")
     elif r_pe is not None and r_pe < 0:
-        # PE âm = công ty thua lỗ, KHÔNG phải "cheap"
         add("fundamental", -5, f"PE={r_pe} negative (loss)")
-    # r_pe == 0 hoặc None: skip (ambiguous)
 
-    # PB: chỉ POSITIVE mới scoring
     if r_pb is not None and r_pb > 0:
         if r_pb < 1:     add("fundamental",  5, f"PB={r_pb} below book")
         elif r_pb <= 2:  add("fundamental",  3, f"PB={r_pb} fair")
         elif r_pb <= 3:  add("fundamental",  0, f"PB={r_pb} neutral")
         else:            add("fundamental", -3, f"PB={r_pb} expensive")
     elif r_pb is not None and r_pb < 0:
-        # PB âm = vốn chủ âm (technically insolvent)
         add("fundamental", -5, f"PB={r_pb} negative equity")
 
     if roe:
@@ -271,7 +285,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
         if cf_qual > 1:   add("cf",  5, f"CF quality={cf_qual} high")
         elif cf_qual < 0.5: add("cf", -5, f"CF quality={cf_qual} low")
 
-    # ── GROWTH (max 10) — MỚI, dùng data từ finance cache ──
+    # ── GROWTH (max 10) ──
     rev_g  = row.get("is_rev_growth")
     np_g   = row.get("is_profit_growth")
 
@@ -338,11 +352,14 @@ def score_symbol(row: dict, context: dict, news_scores: dict) -> dict:
              ff_score + fundamental_score + cf_score +
              growth_score + context_score + news_score_final)
 
-    if total >= 70:   decision = "STRONG BUY"
-    elif total >= 50: decision = "BUY"
-    elif total >= 30: decision = "NEUTRAL"
-    elif total >= 10: decision = "SELL"
-    else:             decision = "STRONG SELL"
+    # ── DECISION (v2 — Bug #10 fix: thresholds calibrated to actual distribution) ──
+    # Trước: ≥70 SB | ≥50 B | ≥30 N | ≥10 S | <10 SS  (35% STRONG SELL — too aggressive)
+    # Sau:   ≥60 SB | ≥30 B | ≥-10 N | ≥-30 S | <-30 SS  (bell-shape)
+    if total >= 60:    decision = "STRONG BUY"
+    elif total >= 30:  decision = "BUY"
+    elif total >= -10: decision = "NEUTRAL"
+    elif total >= -30: decision = "SELL"
+    else:              decision = "STRONG SELL"
 
     # Pass-through + scoring fields
     out = dict(row)
