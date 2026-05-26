@@ -48,6 +48,20 @@ CHANGELOG:
         (Silver limit 300/min, không vấn đề)
 
     Bump SCHEMA_VERSION 4→5
+
+  v6 (2026-05-26) — FIX BUG #8 Securities brokers CF schema:
+    Diagnostic confirm 5/5 securities brokers (VND, VIX, VFS, SSI, HCM)
+    dùng schema khác — operating CF nằm ở key
+    `net_cash_flows_from_securities_trading_activities` thay vì
+    `operating_cash_flow`.
+
+    Fix: thêm key này vào _CFO_KEYS list. _kbs_lookup sẽ thử lần lượt
+    các keys, fallback tự nhiên (industrial dùng operating_cash_flow,
+    securities dùng key mới).
+
+    Recover thêm ~11% CF coverage (16/143 symbols miss → 0 missed).
+
+    Bump SCHEMA_VERSION 5→6
 """
 import os
 import sys
@@ -98,7 +112,8 @@ CACHE_FILE = "finance/cache.json"
 #   3 = fetch_one precompute finance_score
 #   4 = fix negative PE/PB scoring
 #   5 = CF year + IS year for cf_quality (KBS quarter broken)
-SCHEMA_VERSION = 5
+#   6 = securities brokers CF key added (Bug #8)
+SCHEMA_VERSION = 6
 
 _NON_STOCK_PATTERN = _re.compile(
     r'^(VN30F|VNINDEX|HNXINDEX|HNX30|VHNDEX|E1|FUED|FUEV|SSIAM|DCDS)', _re.IGNORECASE
@@ -254,6 +269,10 @@ _CFO_KEYS = [
     "operating_cash_flow",
     "net_cash_flows_from_operating_activities",
     "i_cash_flows_from_operating_activities",
+    # Securities brokers (VND/VIX/VFS/SSI/HCM/...): KBS dùng schema khác
+    # Operating CF nằm ở key này thay vì "operating_cash_flow".
+    # Diagnostic confirmed 5/5 brokers có row 72 với key này.
+    "net_cash_flows_from_securities_trading_activities",
 ]
 _CFI_KEYS = [
     "investing_cash_flow",
