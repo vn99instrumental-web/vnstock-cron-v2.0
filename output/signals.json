@@ -141,10 +141,10 @@
     "cf_score": 0,
     "growth_score": 0,
     "context_score": 0,
-    "news_score": 4.99,
-    "news_industry": 2.13,
+    "news_score": 4.96,
+    "news_industry": 2.07,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "VASEP: Kim ngạch xuất khẩu tôm, cá tra tăng trưởng 2 chữ số trong 4 tháng đầu nă",
@@ -156,37 +156,38 @@
           "Xây dựng và Vật liệu",
           "Sản xuất thực phẩm"
         ],
-        "contribution": 1.3,
+        "contribution": 1.95,
         "type": "industry"
       },
       {
-        "title": "Chủ tịch VCCI: Các hiệp hội doanh nghiệp cần tăng liên kết, đóng góp xây dựng ch",
-        "source": "vietstock",
+        "title": "Bộ Chính trị ban hành Nghị quyết về xây dựng và phát triển TPHCM trong kỷ nguyên",
+        "source": "nld",
         "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Xây dựng và Vật liệu"
+          "Xây dựng và Vật liệu",
+          "Dịch vụ tài chính"
         ],
-        "contribution": 0.65,
+        "contribution": 0.9,
         "type": "industry"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 15.99,
+    "total_score": 15.96,
     "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=41.76 strong +5 | ST=2.91 bearish -5 | RSI=27.69 oversold +15 | MACD hist=-0.31<0 -10 | Stoch K=7.41 oversold +5 | Stoch K>2.47 cross up +3 | MFI=36.22 neutral 0 | OBV confirms trend +5 | BB pos=0.84 near upper -5 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.12% excellent +5 | RevGrowth=15.6% good +3 | ProfitGrowth=-197.0% declining -3 | Market FAIR 0 | News NEUTRAL +4.99 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=41.76 strong +5 | ST=2.91 bearish -5 | RSI=27.69 oversold +15 | MACD hist=-0.31<0 -10 | Stoch K=7.41 oversold +5 | Stoch K>2.47 cross up +3 | MFI=36.22 neutral 0 | OBV confirms trend +5 | BB pos=0.84 near upper -5 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.12% excellent +5 | RevGrowth=15.6% good +3 | ProfitGrowth=-197.0% declining -3 | Market FAIR 0 | News NEUTRAL +4.96 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
   },
   {
     "symbol": "TNI",
@@ -330,27 +331,27 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 67.86,
+    "total_score": 67.89,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=15.36 sideways 0 | ST=5.37 bearish -5 | RSI=51.88 neutral +5 | MACD hist=0.01>0 +10 | Stoch K>19.69 cross up +3 | MFI=1.79 oversold +10 | OBV divergence -5 | PE=5.24 very cheap +10 | PB=0.44 below book +5 | RevGrowth=54.1% strong +5 | ProfitGrowth=192.6% strong +5 | Market FAIR 0 | News NEUTRAL +4.86 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=15.36 sideways 0 | ST=5.37 bearish -5 | RSI=51.88 neutral +5 | MACD hist=0.01>0 +10 | Stoch K>19.69 cross up +3 | MFI=1.79 oversold +10 | OBV divergence -5 | PE=5.24 very cheap +10 | PB=0.44 below book +5 | RevGrowth=54.1% strong +5 | ProfitGrowth=192.6% strong +5 | Market FAIR 0 | News NEUTRAL +4.89 [Một ngân hàng bất ngờ tăng 0,6% lãi suất... · dantri ·  2026]"
   },
   {
     "symbol": "GEX",
@@ -494,27 +495,27 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 61.86,
+    "total_score": 61.89,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=33.43 strong +5 | ST=31.22 bullish +5 | MACD hist=2.11>0 +10 | Stoch K<74.04 cross down -3 | CMF=0.13 inflow +10 | MFI=64.17 neutral 0 | OBV confirms trend +5 | PE=25.08 expensive -5 | PB=1.31 fair +3 | ROE=0.06% weak -3 | RevGrowth=28.0% strong +5 | ProfitGrowth=184.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.86 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=33.43 strong +5 | ST=31.22 bullish +5 | MACD hist=2.11>0 +10 | Stoch K<74.04 cross down -3 | CMF=0.13 inflow +10 | MFI=64.17 neutral 0 | OBV confirms trend +5 | PE=25.08 expensive -5 | PB=1.31 fair +3 | ROE=0.06% weak -3 | RevGrowth=28.0% strong +5 | ProfitGrowth=184.7% strong +5 | Market FAIR 0 | News NEUTRAL +4.89 [Một ngân hàng bất ngờ tăng 0,6% lãi suất... · dantri ·  2026]"
   },
   {
     "symbol": "VRE",
@@ -658,11 +659,25 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.85,
-    "news_industry": 1.99,
+    "news_score": 4.89,
+    "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
+      {
+        "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+        "source": "vnexpress",
+        "time": "Tue, 26 May 2026",
+        "news_type": "delayed",
+        "effective_date": null,
+        "industries": [
+          "Kim loại",
+          "Bất động sản",
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.8,
+        "type": "industry"
+      },
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
         "source": "cafebiz",
@@ -676,33 +691,21 @@
         "type": "industry"
       },
       {
-        "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
         "source": "dantri",
-        "time": "Wed, 20 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Bất động sản"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
-      },
-      {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 81.85,
+    "total_score": 81.89,
     "decision": "STRONG BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=26.37 strong +5 | ST=31.26 bullish +5 | RSI=52.81 neutral +5 | MACD hist=1.33>0 +10 | Stoch K=14.34 oversold +5 | CMF=0.14 inflow +10 | MFI=30.21 neutral 0 | OBV confirms trend +5 | PE=11.86 cheap +7 | PB=1.58 fair +3 | RevGrowth=0.5% positive +1 | ProfitGrowth=4.7% positive +1 | Market FAIR 0 | News NEUTRAL +4.85 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=26.37 strong +5 | ST=31.26 bullish +5 | RSI=52.81 neutral +5 | MACD hist=1.33>0 +10 | Stoch K=14.34 oversold +5 | CMF=0.14 inflow +10 | MFI=30.21 neutral 0 | OBV confirms trend +5 | PE=11.86 cheap +7 | PB=1.58 fair +3 | RevGrowth=0.5% positive +1 | ProfitGrowth=4.7% positive +1 | Market FAIR 0 | News NEUTRAL +4.89 ['Hạ tầng bứt tốc giúp tái cấu trúc đô th... · vnexpress ·  2026]"
   },
   {
     "symbol": "VHM",
@@ -846,11 +849,25 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.85,
-    "news_industry": 1.99,
+    "news_score": 4.89,
+    "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
+      {
+        "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+        "source": "vnexpress",
+        "time": "Tue, 26 May 2026",
+        "news_type": "delayed",
+        "effective_date": null,
+        "industries": [
+          "Kim loại",
+          "Bất động sản",
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.8,
+        "type": "industry"
+      },
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
         "source": "cafebiz",
@@ -864,33 +881,21 @@
         "type": "industry"
       },
       {
-        "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
         "source": "dantri",
-        "time": "Wed, 20 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Bất động sản"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
-      },
-      {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 68.85,
+    "total_score": 68.89,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=30.06 strong +5 | ST=140.54 bullish +5 | RSI=59.43 neutral +5 | MACD hist=8.62>0 +10 | Stoch K<50.93 cross down -3 | MFI=60.84 neutral 0 | OBV confirms trend +5 | PE=12.38 cheap +7 | PB=2.05 neutral 0 | ROE=11.07% neutral 0 | RevGrowth=21.2% strong +5 | ProfitGrowth=180.9% strong +5 | Market FAIR 0 | News NEUTRAL +4.85 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=30.06 strong +5 | ST=140.54 bullish +5 | RSI=59.43 neutral +5 | MACD hist=8.62>0 +10 | Stoch K<50.93 cross down -3 | MFI=60.84 neutral 0 | OBV confirms trend +5 | PE=12.38 cheap +7 | PB=2.05 neutral 0 | ROE=11.07% neutral 0 | RevGrowth=21.2% strong +5 | ProfitGrowth=180.9% strong +5 | Market FAIR 0 | News NEUTRAL +4.89 ['Hạ tầng bứt tốc giúp tái cấu trúc đô th... · vnexpress ·  2026]"
   },
   {
     "symbol": "KDH",
@@ -1034,11 +1039,25 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.85,
-    "news_industry": 1.99,
+    "news_score": 4.89,
+    "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
+      {
+        "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+        "source": "vnexpress",
+        "time": "Tue, 26 May 2026",
+        "news_type": "delayed",
+        "effective_date": null,
+        "industries": [
+          "Kim loại",
+          "Bất động sản",
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.8,
+        "type": "industry"
+      },
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
         "source": "cafebiz",
@@ -1052,33 +1071,21 @@
         "type": "industry"
       },
       {
-        "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
         "source": "dantri",
-        "time": "Wed, 20 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Bất động sản"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
-      },
-      {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": -22.15,
+    "total_score": -22.11,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=30.97 strong +5 | ST=24.18 bearish -5 | MACD hist=-0.72<0 -10 | Stoch K>18.96 cross up +3 | CMF=-0.32 outflow -10 | MFI=29.47 neutral 0 | OBV confirms trend +5 | PE=31.63 expensive -5 | PB=1.67 fair +3 | ROE=2.39% weak -3 | RevGrowth=47.5% strong +5 | ProfitGrowth=63.0% strong +5 | Market FAIR 0 | News NEUTRAL +4.85 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=30.97 strong +5 | ST=24.18 bearish -5 | MACD hist=-0.72<0 -10 | Stoch K>18.96 cross up +3 | CMF=-0.32 outflow -10 | MFI=29.47 neutral 0 | OBV confirms trend +5 | PE=31.63 expensive -5 | PB=1.67 fair +3 | ROE=2.39% weak -3 | RevGrowth=47.5% strong +5 | ProfitGrowth=63.0% strong +5 | Market FAIR 0 | News NEUTRAL +4.89 ['Hạ tầng bứt tốc giúp tái cấu trúc đô th... · vnexpress ·  2026]"
   },
   {
     "symbol": "ACB",
@@ -1222,11 +1229,25 @@
     "cf_score": 0,
     "growth_score": -2,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
+      {
+        "title": "ACB cùng Vụ Thanh toán NHNN, Bộ Công an, NAPAS tăng cường bảo mật cho khách hàng",
+        "source": "thanhnien",
+        "time": "Tue, 26 May 26 0",
+        "news_type": "monitoring",
+        "effective_date": null,
+        "industries": [
+          "Khai khoáng",
+          "Ngân hàng",
+          "Công nghệ Thông tin"
+        ],
+        "contribution": 0.0,
+        "type": "mention"
+      },
       {
         "title": "Lãi suất ngân hàng ACB tháng 5/2026: Kỳ hạn nào đang có mức cao nhất?",
         "source": "cafebiz",
@@ -1238,18 +1259,6 @@
         ],
         "contribution": 0.0,
         "type": "mention"
-      },
-      {
-        "title": "Thẻ tín dụng giảm dần đều ở Trung Quốc",
-        "source": "tuoitre",
-        "time": "Mon, 25 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Ngân hàng"
-        ],
-        "contribution": -0.5,
-        "type": "industry"
       },
       {
         "title": "Chiêm Hồng Thái lỡ cơ hội vô địch World Cup carom 3 băng",
@@ -1264,9 +1273,9 @@
         "type": "industry"
       }
     ],
-    "total_score": -4.14,
+    "total_score": -4.11,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=18.49 sideways 0 | ST=23.63 bearish -5 | RSI=56.45 neutral +5 | MACD hist=-0.18<0 -10 | Stoch K>41.46 cross up +3 | CMF=-0.15 outflow -10 | MFI=46.46 neutral 0 | OBV confirms trend +5 | BB pos=0.09 near lower +5 | PE=7.43 very cheap +10 | PB=1.3 fair +3 | ROE=3.0% weak -3 | RevGrowth=nan% slight decline -1 | ProfitGrowth=nan% slight decline -1 | Market FAIR 0 | News NEUTRAL +4.86 [Lãi suất ngân hàng ACB tháng 5/2026: Kỳ ... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=18.49 sideways 0 | ST=23.63 bearish -5 | RSI=56.45 neutral +5 | MACD hist=-0.18<0 -10 | Stoch K>41.46 cross up +3 | CMF=-0.15 outflow -10 | MFI=46.46 neutral 0 | OBV confirms trend +5 | BB pos=0.09 near lower +5 | PE=7.43 very cheap +10 | PB=1.3 fair +3 | ROE=3.0% weak -3 | RevGrowth=nan% slight decline -1 | ProfitGrowth=nan% slight decline -1 | Market FAIR 0 | News NEUTRAL +4.89 [ACB cùng Vụ Thanh toán NHNN, Bộ Công an,... · thanhnien ·  26 0]"
   },
   {
     "symbol": "VPI",
@@ -1410,10 +1419,10 @@
     "cf_score": 0,
     "growth_score": -6,
     "context_score": 0,
-    "news_score": 4.85,
-    "news_industry": 1.99,
+    "news_score": 4.89,
+    "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "VPI trước yêu cầu mới về phát triển khoa học công nghệ đổi mới sáng tạo và chuyể",
@@ -1428,6 +1437,20 @@
         "type": "mention"
       },
       {
+        "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+        "source": "vnexpress",
+        "time": "Tue, 26 May 2026",
+        "news_type": "delayed",
+        "effective_date": null,
+        "industries": [
+          "Kim loại",
+          "Bất động sản",
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.8,
+        "type": "industry"
+      },
+      {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
         "source": "cafebiz",
         "time": "Sun, 24 May 2026",
@@ -1438,23 +1461,11 @@
         ],
         "contribution": -0.5,
         "type": "industry"
-      },
-      {
-        "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
-        "source": "dantri",
-        "time": "Wed, 20 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Bất động sản"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
       }
     ],
-    "total_score": 39.85,
+    "total_score": 39.89,
     "decision": "NEUTRAL",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=13.99 sideways 0 | ST=57.67 bullish +5 | RSI=51.83 neutral +5 | MACD hist=0.71>0 +10 | Stoch K<36.2 cross down -3 | CMF=0.23 inflow +10 | MFI=57.71 neutral 0 | OBV confirms trend +5 | PE=46.85 expensive -5 | PB=3.38 expensive -3 | ROE=2.4% weak -3 | RevGrowth=-27.5% declining -3 | ProfitGrowth=-95.2% declining -3 | Market FAIR 0 | News NEUTRAL +4.85 [VPI trước yêu cầu mới về phát triển khoa... · petrotimes ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=13.99 sideways 0 | ST=57.67 bullish +5 | RSI=51.83 neutral +5 | MACD hist=0.71>0 +10 | Stoch K<36.2 cross down -3 | CMF=0.23 inflow +10 | MFI=57.71 neutral 0 | OBV confirms trend +5 | PE=46.85 expensive -5 | PB=3.38 expensive -3 | ROE=2.4% weak -3 | RevGrowth=-27.5% declining -3 | ProfitGrowth=-95.2% declining -3 | Market FAIR 0 | News NEUTRAL +4.89 [VPI trước yêu cầu mới về phát triển khoa... · petrotimes ·  2026]"
   },
   {
     "symbol": "SSB",
@@ -1598,23 +1609,11 @@
     "cf_score": 0,
     "growth_score": -2,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
-      {
-        "title": "Thẻ tín dụng giảm dần đều ở Trung Quốc",
-        "source": "tuoitre",
-        "time": "Mon, 25 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Ngân hàng"
-        ],
-        "contribution": -0.5,
-        "type": "industry"
-      },
       {
         "title": "Chiêm Hồng Thái lỡ cơ hội vô địch World Cup carom 3 băng",
         "source": "vnexpress",
@@ -1628,21 +1627,33 @@
         "type": "industry"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Thẻ tín dụng giảm dần đều ở Trung Quốc",
+        "source": "tuoitre",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
+        ],
+        "contribution": -0.5,
+        "type": "industry"
+      },
+      {
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 20.86,
+    "total_score": 20.89,
     "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=19.6 sideways 0 | ST=16.29 bullish +5 | MACD hist=-0.06<0 -10 | Stoch K>44.44 cross up +3 | CMF=0.47 inflow +10 | MFI=49.8 neutral 0 | OBV confirms trend +5 | BB pos=-0.32 near lower +5 | PE=8.89 very cheap +10 | PB=1.23 fair +3 | ROE=0.26% weak -3 | RevGrowth=nan% slight decline -1 | ProfitGrowth=nan% slight decline -1 | Market FAIR 0 | News NEUTRAL +4.86 [Thẻ tín dụng giảm dần đều ở Trung Quốc... · tuoitre ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=19.6 sideways 0 | ST=16.29 bullish +5 | MACD hist=-0.06<0 -10 | Stoch K>44.44 cross up +3 | CMF=0.47 inflow +10 | MFI=49.8 neutral 0 | OBV confirms trend +5 | BB pos=-0.32 near lower +5 | PE=8.89 very cheap +10 | PB=1.23 fair +3 | ROE=0.26% weak -3 | RevGrowth=nan% slight decline -1 | ProfitGrowth=nan% slight decline -1 | Market FAIR 0 | News NEUTRAL +4.89 [Chiêm Hồng Thái lỡ cơ hội vô địch World ... · vnexpress ·  2026]"
   },
   {
     "symbol": "PAN",
@@ -1786,27 +1797,27 @@
     "cf_score": 0,
     "growth_score": 4,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 68.86,
+    "total_score": 68.89,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=17.12 sideways 0 | ST=30.55 bullish +5 | MACD hist=0.25>0 +10 | Stoch K>51.95 cross up +3 | MFI=76.67 neutral 0 | OBV confirms trend +5 | BB pos=-0.04 near lower +5 | PE=8.47 very cheap +10 | PB=0.63 below book +5 | ROE=3.04% weak -3 | RevGrowth=-1.3% slight decline -1 | ProfitGrowth=30.0% strong +5 | Market FAIR 0 | News NEUTRAL +4.86 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=17.12 sideways 0 | ST=30.55 bullish +5 | MACD hist=0.25>0 +10 | Stoch K>51.95 cross up +3 | MFI=76.67 neutral 0 | OBV confirms trend +5 | BB pos=-0.04 near lower +5 | PE=8.47 very cheap +10 | PB=0.63 below book +5 | ROE=3.04% weak -3 | RevGrowth=-1.3% slight decline -1 | ProfitGrowth=30.0% strong +5 | Market FAIR 0 | News NEUTRAL +4.89 [Một ngân hàng bất ngờ tăng 0,6% lãi suất... · dantri ·  2026]"
   },
   {
     "symbol": "FDC",
@@ -1950,11 +1961,25 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.85,
-    "news_industry": 1.99,
+    "news_score": 4.89,
+    "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
+      {
+        "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+        "source": "vnexpress",
+        "time": "Tue, 26 May 2026",
+        "news_type": "delayed",
+        "effective_date": null,
+        "industries": [
+          "Kim loại",
+          "Bất động sản",
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.8,
+        "type": "industry"
+      },
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
         "source": "cafebiz",
@@ -1968,33 +1993,21 @@
         "type": "industry"
       },
       {
-        "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
         "source": "dantri",
-        "time": "Wed, 20 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Bất động sản"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
-      },
-      {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 31.85,
+    "total_score": 31.89,
     "decision": "NEUTRAL",
-    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=35.62 strong +5 | ST=20.12 bullish +5 | RSI=53.77 neutral +5 | MACD hist=1.17>0 +10 | Stoch K=83.56 overbought -5 | Stoch K<90.3 cross down -3 | CMF=0.12 inflow +10 | MFI=90.01 overbought -5 | OBV divergence -5 | PE=2.94 very cheap +10 | PB=0.95 below book +5 | ROE=31.82% excellent +5 | RevGrowth=1.6% positive +1 | ProfitGrowth=2.8% positive +1 | Market FAIR 0 | News NEUTRAL +4.85 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price>EMA20 +5 | ADX=35.62 strong +5 | ST=20.12 bullish +5 | RSI=53.77 neutral +5 | MACD hist=1.17>0 +10 | Stoch K=83.56 overbought -5 | Stoch K<90.3 cross down -3 | CMF=0.12 inflow +10 | MFI=90.01 overbought -5 | OBV divergence -5 | PE=2.94 very cheap +10 | PB=0.95 below book +5 | ROE=31.82% excellent +5 | RevGrowth=1.6% positive +1 | ProfitGrowth=2.8% positive +1 | Market FAIR 0 | News NEUTRAL +4.89 ['Hạ tầng bứt tốc giúp tái cấu trúc đô th... · vnexpress ·  2026]"
   },
   {
     "symbol": "TPC",
@@ -2092,53 +2105,55 @@
     "cf_score": 0,
     "growth_score": -2,
     "context_score": 0,
-    "news_score": 4.86,
-    "news_industry": 2.0,
+    "news_score": 4.87,
+    "news_industry": 1.98,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
-        "title": "Đột kích một căn nhà, công an triệt phá đường dây sản xuất sữa giả từ hóa chất, ",
-        "source": "cafebiz",
-        "time": "Mon, 25 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Hóa chất",
-          "Hàng công nghiệp",
-          "Sản xuất thực phẩm"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
-      },
-      {
-        "title": "Loại phân bón đặc biệt của cây cà phê",
-        "source": "znews",
-        "time": "Fri, 22 May 2026",
+        "title": "California hy vọng tránh được vụ nổ bồn hóa chất",
+        "source": "thanhnien",
+        "time": "Mon, 25 May 26 2",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
           "Hóa chất"
         ],
+        "contribution": -0.45,
+        "type": "industry"
+      },
+      {
+        "title": "VIDEO Phú Mỹ cùng nông dân Lào tăng năng suất mía bằng giải pháp canh tác bền vữ",
+        "source": "petrotimes",
+        "time": "Tue, 26 May 2026",
+        "news_type": "immediate",
+        "effective_date": null,
+        "industries": [
+          "Sản xuất Dầu khí",
+          "Hóa chất",
+          "Kim loại",
+          "Hàng công nghiệp",
+          "Tư vấn & Hỗ trợ Kinh doanh"
+        ],
         "contribution": 0.0,
         "type": "industry"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": -30.14,
+    "total_score": -30.13,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50(flat×0.5) -8 | Price<EMA20 -5 | ST=nan bearish -5 | MACD hist=nan<0(flat×0.5) -5 | MFI=nan neutral 0 | OBV divergence -5 | PE=25.11 expensive -5 | PB=1.04 fair +3 | ROE=0.22% weak -3 | RevGrowth=9.5% positive +1 | ProfitGrowth=-48.8% declining -3 | Market FAIR 0 | News NEUTRAL +4.86 [Đột kích một căn nhà, công an triệt phá ... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50(flat×0.5) -8 | Price<EMA20 -5 | ST=nan bearish -5 | MACD hist=nan<0(flat×0.5) -5 | MFI=nan neutral 0 | OBV divergence -5 | PE=25.11 expensive -5 | PB=1.04 fair +3 | ROE=0.22% weak -3 | RevGrowth=9.5% positive +1 | ProfitGrowth=-48.8% declining -3 | Market FAIR 0 | News NEUTRAL +4.87 [California hy vọng tránh được vụ nổ bồn ... · thanhnien ·  26 2]"
   },
   {
     "symbol": "NHT",
@@ -2282,27 +2297,27 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 53.86,
+    "total_score": 53.89,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=34.12 strong +5 | ST=14.28 bearish -5 | RSI=47.61 neutral +5 | MACD hist=0.67>0 +10 | Stoch K<49.49 cross down -3 | CMF=0.45 inflow +10 | MFI=53.94 neutral 0 | OBV confirms trend +5 | BB pos=0.88 near upper -5 | PE=5.67 very cheap +10 | PB=0.66 below book +5 | RevGrowth=43.7% strong +5 | ProfitGrowth=-119.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.86 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ADX=34.12 strong +5 | ST=14.28 bearish -5 | RSI=47.61 neutral +5 | MACD hist=0.67>0 +10 | Stoch K<49.49 cross down -3 | CMF=0.45 inflow +10 | MFI=53.94 neutral 0 | OBV confirms trend +5 | BB pos=0.88 near upper -5 | PE=5.67 very cheap +10 | PB=0.66 below book +5 | RevGrowth=43.7% strong +5 | ProfitGrowth=-119.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.89 [Một ngân hàng bất ngờ tăng 0,6% lãi suất... · dantri ·  2026]"
   },
   {
     "symbol": "TNT",
@@ -2446,10 +2461,10 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.99,
-    "news_industry": 2.13,
+    "news_score": 4.96,
+    "news_industry": 2.07,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "VASEP: Kim ngạch xuất khẩu tôm, cá tra tăng trưởng 2 chữ số trong 4 tháng đầu nă",
@@ -2461,37 +2476,38 @@
           "Xây dựng và Vật liệu",
           "Sản xuất thực phẩm"
         ],
-        "contribution": 1.3,
+        "contribution": 1.95,
         "type": "industry"
       },
       {
-        "title": "Chủ tịch VCCI: Các hiệp hội doanh nghiệp cần tăng liên kết, đóng góp xây dựng ch",
-        "source": "vietstock",
+        "title": "Bộ Chính trị ban hành Nghị quyết về xây dựng và phát triển TPHCM trong kỷ nguyên",
+        "source": "nld",
         "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Xây dựng và Vật liệu"
+          "Xây dựng và Vật liệu",
+          "Dịch vụ tài chính"
         ],
-        "contribution": 0.65,
+        "contribution": 0.9,
         "type": "industry"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 53.99,
+    "total_score": 53.96,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ST=9.97 bullish +5 | MACD hist=0.34>0 +10 | Stoch K=82.55 overbought -5 | CMF=0.3 inflow +10 | MFI=64.53 neutral 0 | OBV confirms trend +5 | BB pos=0.13 near lower +5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | RevGrowth=28.8% strong +5 | ProfitGrowth=-88.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.99 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ST=9.97 bullish +5 | MACD hist=0.34>0 +10 | Stoch K=82.55 overbought -5 | CMF=0.3 inflow +10 | MFI=64.53 neutral 0 | OBV confirms trend +5 | BB pos=0.13 near lower +5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | RevGrowth=28.8% strong +5 | ProfitGrowth=-88.9% declining -3 | Market FAIR 0 | News NEUTRAL +4.96 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
   },
   {
     "symbol": "PLX",
@@ -2635,27 +2651,27 @@
     "cf_score": 0,
     "growth_score": 8,
     "context_score": 0,
-    "news_score": 4.86,
+    "news_score": 4.89,
     "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": -2.1399999999999997,
+    "total_score": -2.1100000000000003,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=19.22 sideways 0 | ST=38.06 bullish +5 | RSI=46.98 neutral +5 | MACD hist=-0.22<0 -10 | Stoch K<56.75 cross down -3 | MFI=49.53 neutral 0 | OBV confirms trend +5 | PE=17.16 fair +3 | PB=1.52 fair +3 | ROE=2.01% weak -3 | RevGrowth=13.6% good +3 | ProfitGrowth=862.2% strong +5 | Market FAIR 0 | News NEUTRAL +4.86 [Lo 'suy thoái trí tuệ' khi học sinh lạm ... · vnexpress ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=19.22 sideways 0 | ST=38.06 bullish +5 | RSI=46.98 neutral +5 | MACD hist=-0.22<0 -10 | Stoch K<56.75 cross down -3 | MFI=49.53 neutral 0 | OBV confirms trend +5 | PE=17.16 fair +3 | PB=1.52 fair +3 | ROE=2.01% weak -3 | RevGrowth=13.6% good +3 | ProfitGrowth=862.2% strong +5 | Market FAIR 0 | News NEUTRAL +4.89 [Một ngân hàng bất ngờ tăng 0,6% lãi suất... · dantri ·  2026]"
   },
   {
     "symbol": "TN1",
@@ -2799,11 +2815,25 @@
     "cf_score": 0,
     "growth_score": 0,
     "context_score": 0,
-    "news_score": 4.85,
-    "news_industry": 1.99,
+    "news_score": 4.89,
+    "news_industry": 2.0,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
+      {
+        "title": "'Hạ tầng bứt tốc giúp tái cấu trúc đô thị theo hướng bền vững'",
+        "source": "vnexpress",
+        "time": "Tue, 26 May 2026",
+        "news_type": "delayed",
+        "effective_date": null,
+        "industries": [
+          "Kim loại",
+          "Bất động sản",
+          "Dịch vụ tài chính"
+        ],
+        "contribution": 0.8,
+        "type": "industry"
+      },
       {
         "title": "Đất nền Hà Nội tại nhiều 'điểm nóng' giảm giá, cơn sóng đầu cơ hạ nhiệt",
         "source": "cafebiz",
@@ -2817,33 +2847,21 @@
         "type": "industry"
       },
       {
-        "title": "Tập đoàn Đất Xanh tái cấu trúc thành BLUEMARQ GROUP với mô hình 4 trụ cột",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
         "source": "dantri",
-        "time": "Wed, 20 May 2026",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Bất động sản"
-        ],
-        "contribution": 0.0,
-        "type": "industry"
-      },
-      {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
-        "news_type": "immediate",
-        "effective_date": null,
-        "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 2.8499999999999996,
+    "total_score": 2.8899999999999997,
     "decision": "STRONG SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=31.33 strong +5 | ST=13.23 bullish +5 | RSI=40.61 neutral +5 | MACD hist=-0.44<0 -10 | Stoch K>60.45 cross up +3 | CMF=-0.13 outflow -10 | MFI=28.96 neutral 0 | OBV confirms trend +5 | PE=2.93 very cheap +10 | PB=0.72 below book +5 | ROE=11.59% neutral 0 | RevGrowth=18.6% good +3 | ProfitGrowth=-78.6% declining -3 | Market FAIR 0 | News NEUTRAL +4.85 [Đất nền Hà Nội tại nhiều 'điểm nóng' giả... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=31.33 strong +5 | ST=13.23 bullish +5 | RSI=40.61 neutral +5 | MACD hist=-0.44<0 -10 | Stoch K>60.45 cross up +3 | CMF=-0.13 outflow -10 | MFI=28.96 neutral 0 | OBV confirms trend +5 | PE=2.93 very cheap +10 | PB=0.72 below book +5 | ROE=11.59% neutral 0 | RevGrowth=18.6% good +3 | ProfitGrowth=-78.6% declining -3 | Market FAIR 0 | News NEUTRAL +4.89 ['Hạ tầng bứt tốc giúp tái cấu trúc đô th... · vnexpress ·  2026]"
   },
   {
     "symbol": "PC1",
@@ -2987,10 +3005,10 @@
     "cf_score": 0,
     "growth_score": 10,
     "context_score": 0,
-    "news_score": 4.99,
-    "news_industry": 2.13,
+    "news_score": 4.96,
+    "news_industry": 2.07,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "Nối gót Chủ tịch PC1, TV2, đến lượt Chủ tịch TV1 bị khởi tố: Bão gió từ công ty ",
@@ -3012,25 +3030,26 @@
           "Xây dựng và Vật liệu",
           "Sản xuất thực phẩm"
         ],
-        "contribution": 1.3,
+        "contribution": 1.95,
         "type": "industry"
       },
       {
-        "title": "Chủ tịch VCCI: Các hiệp hội doanh nghiệp cần tăng liên kết, đóng góp xây dựng ch",
-        "source": "vietstock",
+        "title": "Bộ Chính trị ban hành Nghị quyết về xây dựng và phát triển TPHCM trong kỷ nguyên",
+        "source": "nld",
         "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Xây dựng và Vật liệu"
+          "Xây dựng và Vật liệu",
+          "Dịch vụ tài chính"
         ],
-        "contribution": 0.65,
+        "contribution": 0.9,
         "type": "industry"
       }
     ],
-    "total_score": 10.99,
+    "total_score": 10.96,
     "decision": "SELL",
-    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=35.65 strong +5 | ST=17.0 bullish +5 | RSI=41.46 neutral +5 | MACD hist=-1.77<0 -10 | Stoch K>73.04 cross up +3 | MFI=54.04 neutral 0 | OBV divergence -5 | PE=7.79 very cheap +10 | PB=1.04 fair +3 | RevGrowth=57.8% strong +5 | ProfitGrowth=150.2% strong +5 | Market FAIR 0 | News NEUTRAL +4.99 [Nối gót Chủ tịch PC1, TV2, đến lượt Chủ ... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price<EMA20 -5 | ADX=35.65 strong +5 | ST=17.0 bullish +5 | RSI=41.46 neutral +5 | MACD hist=-1.77<0 -10 | Stoch K>73.04 cross up +3 | MFI=54.04 neutral 0 | OBV divergence -5 | PE=7.79 very cheap +10 | PB=1.04 fair +3 | RevGrowth=57.8% strong +5 | ProfitGrowth=150.2% strong +5 | Market FAIR 0 | News NEUTRAL +4.96 [Nối gót Chủ tịch PC1, TV2, đến lượt Chủ ... · cafebiz ·  2026]"
   },
   {
     "symbol": "BSR",
@@ -3174,10 +3193,10 @@
     "cf_score": 0,
     "growth_score": 8,
     "context_score": 0,
-    "news_score": 4.94,
+    "news_score": 4.97,
     "news_industry": 2.0,
     "news_mention": 2.08,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "Đảng bộ BSR phát huy vai trò hạt nhân chính trị tích cực triển khai các nghị quy",
@@ -3202,21 +3221,21 @@
         "type": "mention"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 54.94,
+    "total_score": 54.97,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ST=28.04 bullish +5 | RSI=48.85 neutral +5 | MACD hist=0.93>0 +10 | Stoch K<62.29 cross down -3 | MFI=60.1 neutral 0 | OBV confirms trend +5 | PE=10.46 cheap +7 | PB=1.33 fair +3 | RevGrowth=15.3% good +3 | ProfitGrowth=112.1% strong +5 | Market FAIR 0 | News NEUTRAL +4.94 [Đảng bộ BSR phát huy vai trò hạt nhân ch... · petrotimes ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price<EMA20 -5 | ST=28.04 bullish +5 | RSI=48.85 neutral +5 | MACD hist=0.93>0 +10 | Stoch K<62.29 cross down -3 | MFI=60.1 neutral 0 | OBV confirms trend +5 | PE=10.46 cheap +7 | PB=1.33 fair +3 | RevGrowth=15.3% good +3 | ProfitGrowth=112.1% strong +5 | Market FAIR 0 | News NEUTRAL +4.97 [Đảng bộ BSR phát huy vai trò hạt nhân ch... · petrotimes ·  2026]"
   },
   {
     "symbol": "C32",
@@ -3360,10 +3379,10 @@
     "cf_score": 0,
     "growth_score": 2,
     "context_score": 0,
-    "news_score": 4.99,
-    "news_industry": 2.13,
+    "news_score": 4.96,
+    "news_industry": 2.07,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "VASEP: Kim ngạch xuất khẩu tôm, cá tra tăng trưởng 2 chữ số trong 4 tháng đầu nă",
@@ -3375,37 +3394,38 @@
           "Xây dựng và Vật liệu",
           "Sản xuất thực phẩm"
         ],
-        "contribution": 1.3,
+        "contribution": 1.95,
         "type": "industry"
       },
       {
-        "title": "Chủ tịch VCCI: Các hiệp hội doanh nghiệp cần tăng liên kết, đóng góp xây dựng ch",
-        "source": "vietstock",
+        "title": "Bộ Chính trị ban hành Nghị quyết về xây dựng và phát triển TPHCM trong kỷ nguyên",
+        "source": "nld",
         "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Xây dựng và Vật liệu"
+          "Xây dựng và Vật liệu",
+          "Dịch vụ tài chính"
         ],
-        "contribution": 0.65,
+        "contribution": 0.9,
         "type": "industry"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 68.99,
+    "total_score": 68.96,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=30.09 strong +5 | ST=15.11 bearish -5 | RSI=53.79 neutral +5 | MACD hist=0.6>0 +10 | Stoch K<35.23 cross down -3 | CMF=0.36 inflow +10 | MFI=56.91 neutral 0 | OBV confirms trend +5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | RevGrowth=71.8% strong +5 | ProfitGrowth=-518.7% declining -3 | Market FAIR 0 | News NEUTRAL +4.99 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=30.09 strong +5 | ST=15.11 bearish -5 | RSI=53.79 neutral +5 | MACD hist=0.6>0 +10 | Stoch K<35.23 cross down -3 | CMF=0.36 inflow +10 | MFI=56.91 neutral 0 | OBV confirms trend +5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | RevGrowth=71.8% strong +5 | ProfitGrowth=-518.7% declining -3 | Market FAIR 0 | News NEUTRAL +4.96 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
   },
   {
     "symbol": "CDC",
@@ -3549,10 +3569,10 @@
     "cf_score": 0,
     "growth_score": 0,
     "context_score": 0,
-    "news_score": 4.99,
-    "news_industry": 2.13,
+    "news_score": 4.96,
+    "news_industry": 2.07,
     "news_mention": 2.0,
-    "news_macro": 0.86,
+    "news_macro": 0.89,
     "news_evidence": [
       {
         "title": "VASEP: Kim ngạch xuất khẩu tôm, cá tra tăng trưởng 2 chữ số trong 4 tháng đầu nă",
@@ -3564,36 +3584,37 @@
           "Xây dựng và Vật liệu",
           "Sản xuất thực phẩm"
         ],
-        "contribution": 1.3,
+        "contribution": 1.95,
         "type": "industry"
       },
       {
-        "title": "Chủ tịch VCCI: Các hiệp hội doanh nghiệp cần tăng liên kết, đóng góp xây dựng ch",
-        "source": "vietstock",
+        "title": "Bộ Chính trị ban hành Nghị quyết về xây dựng và phát triển TPHCM trong kỷ nguyên",
+        "source": "nld",
         "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Xây dựng và Vật liệu"
+          "Xây dựng và Vật liệu",
+          "Dịch vụ tài chính"
         ],
-        "contribution": 0.65,
+        "contribution": 0.9,
         "type": "industry"
       },
       {
-        "title": "Lo 'suy thoái trí tuệ' khi học sinh lạm dụng AI giải toán",
-        "source": "vnexpress",
-        "time": "Sat, 23 May 2026",
+        "title": "Một ngân hàng bất ngờ tăng 0,6% lãi suất kỳ hạn dài",
+        "source": "dantri",
+        "time": "Mon, 25 May 2026",
         "news_type": "immediate",
         "effective_date": null,
         "industries": [
-          "Công nghệ Thông tin"
+          "Ngân hàng"
         ],
         "contribution": -1.0,
         "type": "macro"
       }
     ],
-    "total_score": 51.99,
+    "total_score": 51.96,
     "decision": "BUY",
-    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=51.69 strong +5 | ST=19.27 bullish +5 | MACD hist=1.18>0 +10 | Stoch K<78.61 cross down -3 | CMF=0.54 inflow +10 | MFI=47.77 neutral 0 | OBV confirms trend +5 | PE=41.68 expensive -5 | PB=1.51 fair +3 | ROE=1.28% weak -3 | RevGrowth=-10.7% declining -3 | ProfitGrowth=12.8% good +3 | Market FAIR 0 | News NEUTRAL +4.99 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price>EMA20 +5 | ADX=51.69 strong +5 | ST=19.27 bullish +5 | MACD hist=1.18>0 +10 | Stoch K<78.61 cross down -3 | CMF=0.54 inflow +10 | MFI=47.77 neutral 0 | OBV confirms trend +5 | PE=41.68 expensive -5 | PB=1.51 fair +3 | ROE=1.28% weak -3 | RevGrowth=-10.7% declining -3 | ProfitGrowth=12.8% good +3 | Market FAIR 0 | News NEUTRAL +4.96 [VASEP: Kim ngạch xuất khẩu tôm, cá tra t... · vietstock ·  2026]"
   }
 ]
