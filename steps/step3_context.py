@@ -1,10 +1,16 @@
 """
 step3_context.py — Daily market context + industry map
 ========================================================
-Thay đổi từ bản cũ:
-  - Output paths: market/context.json, market/industry_map.json
-  - Giữ backward-compat alias: context.json, industry_map.json cũng được ghi
-    (intraday steps dùng flat path cho đến khi tất cả migrate xong)
+Output paths: market/context.json, market/industry_map.json
+Backward-compat alias: context.json, industry_map.json cũng được ghi
+
+CHANGELOG:
+  2026-05-26 — Preserve organ_name + organ_short_name (Bug #11 prep):
+    Trước đây industry_map.json chỉ giữ 5 cols: symbol, exchange, type, icb_code, icb_name.
+    News step không thể match "Hòa Phát" → HPG vì thiếu company name.
+
+    Fix: thêm organ_name + organ_short_name vào industry_map nếu API có trả.
+    Cả 2 fields tùy chọn — nếu Listing API không trả thì save empty.
 """
 import os
 import sys
@@ -35,13 +41,15 @@ log = logging.getLogger(__name__)
 
 def get_industry_map() -> pd.DataFrame:
     """
-    Build symbol → {icb_code, icb_name, exchange} mapping.
+    Build symbol → {icb_code, icb_name, exchange, organ_name, organ_short_name}.
 
     VCI Reference.industry.list() chỉ trả về ICB hierarchy
     (icb_code, icb_name, icb_level) — KHÔNG có symbol.
 
     Fix: dùng Listing.symbols_by_exchange() để lấy symbol → icb_code,
     sau đó join với industry.list() để lấy icb_name.
+
+    v2 (2026-05-26): preserve organ_name + organ_short_name nếu có.
     """
     from vnstock_data import Listing
 
@@ -55,10 +63,8 @@ def get_industry_map() -> pd.DataFrame:
 
     log.info(f"  industry_list cols: {list(df_ind.columns) if not df_ind.empty else '[]'}")
 
-    # Build icb_code → icb_name lookup
     icb_name_map: dict = {}
     if not df_ind.empty and "icb_code" in df_ind.columns and "icb_name" in df_ind.columns:
-        # Lấy icb_level=3 (subsector) ưu tiên, fallback level cao hơn
         for _, row in df_ind.iterrows():
             code = row.get("icb_code")
             name = row.get("icb_name")
@@ -74,7 +80,6 @@ def get_industry_map() -> pd.DataFrame:
             df_ex["exchange"] = exchange
             all_frames.append(df_ex)
 
-    # Fallback: gọi không tham số
     if not all_frames:
         df_all_ex = safe_run("symbols_all",
                     lambda: Listing(source="VCI").symbols_by_exchange())
@@ -90,7 +95,6 @@ def get_industry_map() -> pd.DataFrame:
     log.info(f"  {len(df_sym)} symbols total")
 
     # Step 3: Join icb_name vào df_sym
-    # Detect icb_code column (may be named differently)
     icb_col = next(
         (c for c in df_sym.columns
          if c.lower() in ("icb_code", "icb_code2", "industry_code", "sector_code")),
@@ -109,12 +113,10 @@ def get_industry_map() -> pd.DataFrame:
         df_sym["icb_code"] = df_sym[icb_col].astype(str)
         df_sym["icb_name"] = df_sym["icb_code"].map(icb_name_map).fillna("")
     else:
-        # API không trả về icb_code — log để debug
         log.warning(f"  No icb_code column found in {list(df_sym.columns)}")
         df_sym["icb_code"] = ""
         df_sym["icb_name"] = ""
 
-    # Save 'type' column (stock/cw/etf) — used by step_finance_scan to filter
     type_col = next(
         (c for c in df_sym.columns if c.lower() in ("type", "asset_type")),
         None
@@ -122,18 +124,51 @@ def get_industry_map() -> pd.DataFrame:
     if type_col and type_col != "type":
         df_sym = df_sym.rename(columns={type_col: "type"})
 
-    keep_cols = [c for c in ["symbol", "exchange", "type", "icb_code", "icb_name"]
-                 if c in df_sym.columns]
+    # v2: Detect & preserve organ_name + organ_short_name
+    organ_name_col = next(
+        (c for c in df_sym.columns
+         if c.lower() in ("organ_name", "company_name", "name")),
+        None
+    )
+    organ_short_col = next(
+        (c for c in df_sym.columns
+         if c.lower() in ("organ_short_name", "short_name", "name_short")),
+        None
+    )
+
+    if organ_name_col and organ_name_col != "organ_name":
+        df_sym = df_sym.rename(columns={organ_name_col: "organ_name"})
+    if organ_short_col and organ_short_col != "organ_short_name":
+        df_sym = df_sym.rename(columns={organ_short_col: "organ_short_name"})
+
+    # Log presence of name fields for debugging
+    has_organ_name = "organ_name" in df_sym.columns
+    has_short_name = "organ_short_name" in df_sym.columns
+    log.info(f"  organ_name available: {has_organ_name}, "
+             f"organ_short_name available: {has_short_name}")
+
+    # Build keep_cols dynamically
+    base_cols = ["symbol", "exchange", "type", "icb_code", "icb_name"]
+    optional_cols = ["organ_name", "organ_short_name"]
+    keep_cols = [c for c in (base_cols + optional_cols) if c in df_sym.columns]
+
     df_out = df_sym[keep_cols].drop_duplicates("symbol")
 
-    # Debug icb_code2 vs icb_code matching
+    # Fill nan in name fields with empty string for consistent JSON
+    for c in ("organ_name", "organ_short_name"):
+        if c in df_out.columns:
+            df_out[c] = df_out[c].fillna("").astype(str)
+
+    # Debug
     if icb_col and not df_out.empty and "icb_name" in df_out.columns:
         filled = (df_out["icb_name"] != "").sum()
         sample = df_out[df_out["icb_name"] == ""].head(3)[["symbol", "icb_code"]].to_dict("records")
         log.info(f"  Final map: {len(df_out)} symbols, icb_name filled: {filled}")
+        if has_organ_name:
+            name_filled = (df_out["organ_name"] != "").sum()
+            log.info(f"  organ_name filled: {name_filled}/{len(df_out)}")
         if sample:
             log.info(f"  Sample unfilled icb_codes: {sample}")
-            # Also log sample of icb_name_map keys for comparison
             sample_keys = list(icb_name_map.keys())[:5]
             log.info(f"  Sample icb_name_map keys: {sample_keys}")
     else:
@@ -188,10 +223,8 @@ if __name__ == "__main__":
 
     ctx = get_market_context()
     if ctx:
-        # Primary path
         save_json("market/context.json", ctx)
         save_csv("market/context.csv", pd.DataFrame(ctx))
-        # Backward-compat alias
         save_json("context.json", ctx)
         save_csv("context.csv",   pd.DataFrame(ctx))
 
