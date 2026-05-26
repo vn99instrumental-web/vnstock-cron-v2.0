@@ -79,22 +79,38 @@ jobs:
 
       # ──────────────────────────────────────────────────────────────────
       # UPGRADE STEP — Layer 1 of "latest vnstock" guarantee:
-      # Always upgrades vnstock packages on every run (~30s if needs upgrade,
-      # fast no-op if already latest). Combined with weekly cache key above,
-      # this ensures latest version đảm bảo every run.
+      # CHÚ Ý: vnstock_data, vnstock_news, vnstock_ta là SPONSOR packages,
+      # KHÔNG nằm trên public PyPI — phải cài qua installer.run (sponsor token).
+      # Chỉ `vnstock` (public) có thể upgrade qua pip.
+      # Sponsor packages → rely on weekly cache invalidation + installer fresh.
       # ──────────────────────────────────────────────────────────────────
       - name: Ensure latest vnstock packages
         run: |
           source /opt/vnstock/.venv/bin/activate
-          echo "=== Before upgrade ==="
-          pip list 2>&1 | grep -iE "vnstock|^Package" || true
+          echo "=== Current versions ==="
+          pip list 2>&1 | grep -iE "vnstock" || echo "(no vnstock packages found)"
           echo ""
-          echo "=== Upgrading vnstock packages ==="
-          pip install --upgrade --upgrade-strategy eager \
-            vnstock vnstock_data vnstock_news vnstock_ta 2>&1 | tail -30 || \
-            echo "⚠️ Upgrade failed (may need network/auth — continuing with cached versions)"
+
+          echo "=== Upgrading public 'vnstock' package only ==="
+          # Only `vnstock` is on public PyPI; others are sponsor-only.
+          pip install --upgrade vnstock 2>&1 | tail -10 || \
+            echo "⚠️ vnstock upgrade failed (continuing with cached version)"
           echo ""
-          echo "=== After upgrade ==="
+
+          echo "=== Sponsor packages (not on PyPI — version logged only) ==="
+          # vnstock_data, vnstock_news, vnstock_ta: rely on weekly cache
+          # invalidation + installer.run for refresh.
+          for pkg in vnstock_data vnstock_news vnstock_ta; do
+            version=$(pip show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
+            if [ -n "$version" ]; then
+              echo "  $pkg: $version (sponsor — refreshes on weekly cache miss)"
+            else
+              echo "  $pkg: NOT INSTALLED ⚠️"
+            fi
+          done
+          echo ""
+
+          echo "=== Final versions ==="
           pip list 2>&1 | grep -iE "vnstock" || true
 
       - name: Step Context — Market PE/PB + Industry Map
