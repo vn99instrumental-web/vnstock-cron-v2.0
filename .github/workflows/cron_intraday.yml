@@ -84,24 +84,30 @@ jobs:
           pip install -q gspread google-auth
 
       # ──────────────────────────────────────────────────────────────────
-      # UPGRADE STEP — Layer 1: only `vnstock` (public PyPI).
-      # Sponsor packages (vnstock_data/news/ta) refresh via weekly cache miss.
+      # UPGRADE STEP — use venv pip directly (avoid shell context issues).
+      # Sponsor packages refresh via weekly cache miss only.
       # ──────────────────────────────────────────────────────────────────
       - name: Ensure latest vnstock packages
         run: |
-          source /opt/vnstock/.venv/bin/activate
+          VENV_PIP="/opt/vnstock/.venv/bin/pip"
+
+          if [ ! -x "$VENV_PIP" ]; then
+            echo "⚠️ Venv pip not found at $VENV_PIP — skipping upgrade"
+            exit 0
+          fi
+
           echo "=== Current versions ==="
-          pip list 2>&1 | grep -iE "vnstock" || echo "(no vnstock packages found)"
+          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
           echo ""
 
           echo "=== Upgrading public 'vnstock' package only ==="
-          pip install --upgrade vnstock 2>&1 | tail -10 || \
+          $VENV_PIP install --upgrade vnstock 2>&1 | tail -5 || \
             echo "⚠️ vnstock upgrade failed (continuing)"
           echo ""
 
-          echo "=== Sponsor packages (refresh on weekly cache miss) ==="
+          echo "=== Sponsor packages ==="
           for pkg in vnstock_data vnstock_news vnstock_ta; do
-            version=$(pip show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
+            version=$($VENV_PIP show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
             if [ -n "$version" ]; then
               echo "  $pkg: $version"
             else
