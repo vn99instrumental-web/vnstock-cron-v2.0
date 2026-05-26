@@ -2,7 +2,7 @@ name: VNStock Daily
 
 on:
   schedule:
-    - cron: '0 1 * * 1-5'    # 8h00 ICT
+    - cron: '0 1 * * 1-5'    # 8h00 ICT (= 1:00 UTC)
   workflow_dispatch:
 
 jobs:
@@ -28,6 +28,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      # ──────────────────────────────────────────────────────────────────
+      # CACHE STRATEGY — Layer 2 of "latest vnstock" guarantee:
+      # Cache key includes ISO week number → cache invalidates weekly.
+      # Restore-keys fallback uses any older v4 cache for warm-start.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: |
+          echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+          echo "Cache suffix: $(date -u +%Y-W%V)"
+
       - name: Restore vnstock cache
         id: cache-venv
         uses: actions/cache@v4
@@ -35,7 +46,9 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
 
       - name: Fallback install nếu cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
@@ -63,6 +76,26 @@ jobs:
         run: |
           source /opt/vnstock/.venv/bin/activate
           pip install -q gspread google-auth
+
+      # ──────────────────────────────────────────────────────────────────
+      # UPGRADE STEP — Layer 1 of "latest vnstock" guarantee:
+      # Always upgrades vnstock packages on every run (~30s if needs upgrade,
+      # fast no-op if already latest). Combined with weekly cache key above,
+      # this ensures latest version đảm bảo every run.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Ensure latest vnstock packages
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          echo "=== Before upgrade ==="
+          pip list 2>&1 | grep -iE "vnstock|^Package" || true
+          echo ""
+          echo "=== Upgrading vnstock packages ==="
+          pip install --upgrade --upgrade-strategy eager \
+            vnstock vnstock_data vnstock_news vnstock_ta 2>&1 | tail -30 || \
+            echo "⚠️ Upgrade failed (may need network/auth — continuing with cached versions)"
+          echo ""
+          echo "=== After upgrade ==="
+          pip list 2>&1 | grep -iE "vnstock" || true
 
       - name: Step Context — Market PE/PB + Industry Map
         env:
