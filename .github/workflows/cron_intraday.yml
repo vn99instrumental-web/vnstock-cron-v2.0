@@ -124,14 +124,8 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step_snapshot.py
 
-      - name: Step Scoring
-        env:
-          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
-          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
-        run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_scoring.py
-
+      # Phase 1.3: Order Flow MUST run BEFORE Scoring
+      # because step_scoring.py now reads order_flow.json
       - name: Step Order Flow (concurrent)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
@@ -139,6 +133,14 @@ jobs:
         run: |
           source /opt/vnstock/.venv/bin/activate
           python steps/step_order_flow.py
+
+      - name: Step Scoring
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_scoring.py
 
       - name: Commit output
         run: |
