@@ -1,25 +1,12 @@
 """
 step_snapshot.py — Intraday snapshot (replaces step_all.py)
 ============================================================
-Thay thế step_all.py. Thay đổi chính:
-
-1. Finance từ cache (0 API calls) thay vì 4 KBS calls/symbol
-2. Concurrent per-symbol: ThreadPoolExecutor(10) → ~10-15s vs 220s sequential
-3. Bỏ get_foreign_flow_for_symbols (duplicate + VCI bug)
-4. CafeF trực tiếp cho foreign_trade (VCI luôn fail)
-5. Lưu ohlcv_5d vào deep_raw → step_order_flow reuse, không fetch lại
-6. Lazy finance fallback: nếu symbol không có trong cache → fetch ngay
-
 CHANGELOG:
-  2026-05-25 — FIX BUG FF identical across symbols (Fix #3):
-    - CafeF library bug: returns market-wide data instead of per-symbol
-      → toàn bộ 20 symbols nhận ff_net_val_5d = 379019000 (giống hệt nhau)
-    - Result: 4 FF metrics + scoring FF group → 100% NOISE, không signal
-    - Fix: thêm validate_ff_data() check identical values across rows
-      Nếu phát hiện ≥3 symbols cùng ff_net_val_5d/20d → wipe toàn bộ FF
-      fields cho 20 symbols, set ff_data_invalid=True
-    - Downstream scoring engine thấy None → bỏ qua FF group (score 0)
-      thay vì generate signal giả mạo
+  2026-05-25 — FF identical validation gate (Bug #3)
+  2026-05-27 — Phase 1+2 indicator additions:
+    - History fetch length 4M → 12M (cần ≥200 ngày cho EMA200)
+    - get_ta(): add ema200, vol_ma_ratio (today/avg20d)
+    - enrich_finance(): expose debt_to_equity field
 """
 import os
 import sys
@@ -54,10 +41,12 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-MAX_WORKERS = 10  # concurrent symbol fetches
+MAX_WORKERS = 10
 
-# FF fields that get wiped together when validation detects bug.
-# Keep in sync with what get_flow() populates.
+# History length: need ≥200 days for EMA200 — was "4M" (~80d), now "12M" (~250d)
+HISTORY_LENGTH = "12M"
+
+# FF fields wiped together when validation detects bug
 FF_FIELDS = [
     "ff_buy_val_5d", "ff_sell_val_5d",
     "ff_net_val_5d", "ff_net_val_20d",
@@ -66,7 +55,7 @@ FF_FIELDS = [
 ]
 
 # =====================================================
-# RANKING — TopStock(VND)
+# RANKING
 # =====================================================
 
 def get_ranking() -> dict:
@@ -81,7 +70,6 @@ def get_ranking() -> dict:
 
 # =====================================================
 # SNAPSHOT — Quote(VCI)
-# price + intraday buy/sell + depth
 # =====================================================
 
 def get_snapshot(symbol: str, market_open: bool) -> dict:
@@ -132,13 +120,14 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
     return row
 
 # =====================================================
-# TA INDICATORS + OHLCV — vnstock_ta
-# Lưu ohlcv_5d để step_order_flow reuse (không fetch lại)
+# TA INDICATORS + OHLCV
 # =====================================================
 
 def get_ta(symbol: str) -> dict:
+    # Phase 2: 12M history để có ≥200 ngày cho EMA200
     df = safe_run(f"ohlcv {symbol}",
-         lambda: Quote(source="VCI", symbol=symbol).history(length="4M", interval="1D"))
+         lambda: Quote(source="VCI", symbol=symbol).history(
+             length=HISTORY_LENGTH, interval="1D"))
 
     if df is None or df.empty or len(df) < 20:
         return {"symbol": symbol, "ta_error": "Không đủ data"}
@@ -155,12 +144,22 @@ def get_ta(symbol: str) -> dict:
     res["adx"]        = safe_val(ta.trend.adx(length=14))
     res["supertrend"] = safe_val(ta.trend.supertrend(length=10, multiplier=3.0))
 
+    # Phase 2 NEW: EMA200 (major long-term support/resistance level)
+    if len(df) >= 200:
+        ema200 = ta.trend.ema(length=200)
+        res["ema200"] = safe_val(ema200)
+    else:
+        res["ema200"] = None
+
     if res["ema20"] and res["ema50"] and res["ema50"] != 0:
         res["ema_cross_pct"] = round(
             (res["ema20"] - res["ema50"]) / res["ema50"] * 100, 2)
     if res.get("ema20") and res["ema20"] != 0:
         res["price_vs_ema20_pct"] = round(
             (last_close - res["ema20"]) / res["ema20"] * 100, 2)
+    if res.get("ema200") and res["ema200"] != 0:
+        res["price_vs_ema200_pct"] = round(
+            (last_close - res["ema200"]) / res["ema200"] * 100, 2)
 
     # Momentum
     res["rsi"]       = safe_val(ta.momentum.rsi(length=14))
@@ -192,11 +191,20 @@ def get_ta(symbol: str) -> dict:
     res["cmf"] = safe_val(ta.volume.cmf(length=20))
     res["mfi"] = safe_val(ta.volume.mfi(length=14))
 
-    # Store last 5D OHLCV for step_order_flow reuse (no extra API call needed)
+    # Phase 2 NEW: Volume MA ratio (today vs 20-day avg)
     df["volume"] = pd.to_numeric(df["volume"], errors="coerce")
+    if len(df) >= 21:
+        vol_today  = float(df["volume"].iloc[-1])
+        vol_avg_20 = float(df["volume"].iloc[-21:-1].mean())
+        if vol_avg_20 > 0:
+            res["vol_ma_ratio"] = round(vol_today / vol_avg_20, 2)
+            res["vol_today"]    = vol_today
+            res["vol_avg_20d"]  = round(vol_avg_20, 0)
+
+    # Store last 5D OHLCV for step_order_flow reuse
     df_5d = df.tail(5)
     ohlcv_5d = []
-    avg_vol = float(df_5d["volume"].mean()) if not df_5d.empty else 0
+    avg_vol_5d = float(df_5d["volume"].mean()) if not df_5d.empty else 0
     for _, row in df_5d.iterrows():
         vol = float(row["volume"]) if pd.notna(row["volume"]) else 0
         ohlcv_5d.append({
@@ -206,24 +214,18 @@ def get_ta(symbol: str) -> dict:
             "low"   : round(float(row["low"]),   2),
             "close" : round(float(row["close"]), 2),
             "volume": int(vol),
-            "vs_avg5d_pct": round(vol / avg_vol * 100 - 100, 1)
-                            if avg_vol > 0 else None,
+            "vs_avg5d_pct": round(vol / avg_vol_5d * 100 - 100, 1)
+                            if avg_vol_5d > 0 else None,
         })
-    res["_ohlcv_5d"] = ohlcv_5d  # private field, used by step_order_flow
+    res["_ohlcv_5d"] = ohlcv_5d
 
     return res
 
 # =====================================================
-# FLOW — Trading (CafeF direct for foreign_trade)
+# FLOW
 # =====================================================
 
 def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
-    """
-    Chuẩn hóa CafeF foreign_trade DataFrame.
-    CafeF trả về toàn bộ lịch sử (23765 records), sort DESC.
-    tail(5) của dữ liệu DESC = 5 rows cũ nhất ≈ 0.
-    Fix: filter 25 ngày gần nhất + sort ASC + normalize column names.
-    """
     if df is None or df.empty:
         return None
     date_col = next(
@@ -253,9 +255,6 @@ def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
         if "ff_buy" in df.columns and "ff_sell" in df.columns:
             df["ff_net"] = (pd.to_numeric(df["ff_buy"],  errors="coerce").fillna(0)
                           - pd.to_numeric(df["ff_sell"], errors="coerce").fillna(0))
-
-    # Log columns for debugging (removed after confirmed working)
-    log.debug(f"  CafeF FF cols after rename: {list(df.columns)[:10]}")
 
     if "ff_net" not in df.columns:
         log.warning(f"  CafeF FF: unknown cols {list(df.columns)[:8]}")
@@ -325,18 +324,15 @@ def get_flow(symbol: str) -> dict:
         res["insider_name"]   = str(df_id["trader_name"].iloc[0]) \
                                 if "trader_name" in df_id.columns else None
 
-    return res  # ← FIX: was missing, caused None return → AttributeError
+    return res
 
 
 def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     """
-    Lấy finance data từ cache và flatten vào deep_raw format.
-    Backward-compatible: dùng cùng field names như step_all.py cũ
-    (r_pe, r_pb, r_roe, is_revenue, cf_operating, bs_total_assets...).
+    Phase 1.5: expose debt_to_equity for scoring.
     """
     entry = fin_cache.get(symbol)
 
-    # Lazy fallback nếu không có trong cache
     if not entry:
         log.info(f"  Finance cache miss: {symbol} — lazy fetch")
         try:
@@ -344,7 +340,6 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
             entry = fetch_one(symbol)
             if entry:
                 fin_cache[symbol] = entry
-                # Persist lazy fetch vào cache file
                 try:
                     from steps.step_finance_scan import load_cache, save_cache
                     cache = load_cache()
@@ -364,7 +359,6 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     c = entry.get("cashflow", {})
 
     result = {
-        # Ratio
         "r_period"    : entry.get("period", ""),
         "r_pe"        : r.get("pe"),
         "r_pb"        : r.get("pb"),
@@ -379,7 +373,6 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
         "r_quick_ratio": r.get("quick_ratio"),
         "r_interest_cov": r.get("interest_cov"),
         "r_ev_ebitda" : r.get("ev_ebitda"),
-        # Income
         "is_revenue"          : i.get("revenue"),
         "is_gross_profit"     : i.get("gross_profit"),
         "is_net_profit"       : i.get("net_profit"),
@@ -389,19 +382,17 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
         "is_profit_growth"    : i.get("profit_growth_qoq"),
         "is_rev_growth_yoy"   : i.get("rev_growth_yoy"),
         "is_profit_growth_yoy": i.get("profit_growth_yoy"),
-        # Balance
         "bs_total_assets": b.get("total_assets"),
         "bs_equity"      : b.get("equity"),
         "bs_total_liab"  : b.get("total_liab"),
         "bs_short_debt"  : b.get("short_debt"),
         "bs_long_debt"   : b.get("long_debt"),
-        # Cash Flow
+        "bs_debt_to_equity": b.get("debt_to_equity"),   # ← Phase 1.5 NEW
         "cf_operating"    : c.get("cf_operating"),
         "cf_investing"    : c.get("cf_investing"),
         "cf_financing"    : c.get("cf_financing"),
         "cf_free"         : c.get("cf_free"),
         "cf_quality_ratio": c.get("cf_quality"),
-        # Precomputed finance score
         "finance_score"       : entry.get("finance_score", {}).get("total"),
         "finance_score_fund"  : entry.get("finance_score", {}).get("fundamental"),
         "finance_score_cf"    : entry.get("finance_score", {}).get("cashflow"),
@@ -410,7 +401,7 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     return result
 
 # =====================================================
-# BUILD ONE SYMBOL — runs concurrently
+# BUILD ONE SYMBOL
 # =====================================================
 
 def build_one(symbol: str, group: str, market_open: bool,
@@ -421,7 +412,6 @@ def build_one(symbol: str, group: str, market_open: bool,
         flow    = get_flow(symbol)
         finance = enrich_finance(symbol, fin_cache)
 
-        # Industry — robust lookup (column may be 'symbol' or 'ticker')
         ind_row  = next(
             (r for r in industry_map
              if r.get("symbol") == symbol or r.get("ticker") == symbol),
@@ -450,8 +440,8 @@ def build_one(symbol: str, group: str, market_open: bool,
             f"PE={row.get('r_pe')} "
             f"FF5d={fmt_money_bil(row.get('ff_net_val_5d'))}tỷ "
             f"CFO={fmt_money_bil(row.get('cf_operating'))}tỷ "
-            f"RevG={row.get('is_rev_growth')} "
-            f"ATR%={row.get('atr_pct')}"
+            f"VolRatio={row.get('vol_ma_ratio')} "
+            f"D/E={row.get('bs_debt_to_equity')}"
         )
         return row
 
@@ -468,42 +458,18 @@ def build_one(symbol: str, group: str, market_open: bool,
         }
 
 # =====================================================
-# DATA QUALITY — FF identical validation gate
+# FF identical validation gate
 # =====================================================
 
 def validate_ff_data(deep_rows: list[dict]) -> list[dict]:
-    """
-    Detect FF data corruption from CafeF (identical values across symbols).
-
-    KỊCH BẢN BUG:
-      Khi CafeF library trả về market-wide data thay vì per-symbol,
-      tất cả N symbols sẽ có CÙNG ff_net_val_5d, ff_net_val_20d... giống hệt
-      nhau (ví dụ trong log 2026-05-25: 20/20 symbols có
-      ff_net_val_5d = 379019000, ff_net_val_20d = -140995403000).
-
-    DETECTION:
-      Nếu ≥3 symbols có CÙNG MỘT giá trị ff_net_val_5d (hoặc 20d) → bug
-      (xác suất ngẫu nhiên 3 symbols cùng net value với độ chính xác sub-VND
-      là cực thấp, chỉ xảy ra khi library bug).
-
-    ACTION:
-      Set toàn bộ FF_FIELDS = None cho mọi rows.
-      Thêm marker ff_data_invalid = True (downstream có thể detect và alert).
-      → Scoring engine đọc None → skip FF group (score 0)
-        thay vì generate fake +20/-20 signal.
-
-    Return: deep_rows (modified in-place + return)
-    """
     if not deep_rows:
         return deep_rows
 
-    # Collect non-None values
     nets_5d  = [r.get("ff_net_val_5d")  for r in deep_rows
                 if r.get("ff_net_val_5d")  is not None]
     nets_20d = [r.get("ff_net_val_20d") for r in deep_rows
                 if r.get("ff_net_val_20d") is not None]
 
-    # Detection rules
     suspicious = False
     reason     = ""
 
@@ -529,23 +495,15 @@ def validate_ff_data(deep_rows: list[dict]) -> list[dict]:
         )
         return deep_rows
 
-    # ── Bug detected — wipe FF fields ──
     log.error(f"🚨 FF DATA BUG DETECTED: {reason}")
-    log.error(
-        f"   This is the known CafeF library bug returning market-wide "
-        f"data instead of per-symbol data."
-    )
-    log.error(
-        f"   Wiping FF fields ({', '.join(FF_FIELDS)}) for all "
-        f"{len(deep_rows)} symbols to prevent fake scoring signals."
-    )
+    log.error(f"   Wiping FF fields for all {len(deep_rows)} symbols.")
 
     affected = 0
     for r in deep_rows:
         had_data = any(r.get(k) is not None for k in FF_FIELDS)
         for k in FF_FIELDS:
             r[k] = None
-        r["ff_data_invalid"] = True   # marker for downstream
+        r["ff_data_invalid"] = True
         if had_data:
             affected += 1
 
@@ -561,13 +519,12 @@ if __name__ == "__main__":
     trading = is_market_open()
     log.info(f"Time       : {now_ict():%Y-%m-%d %H:%M:%S} ICT")
     log.info(f"Market open: {trading}")
+    log.info(f"History    : {HISTORY_LENGTH} (for EMA200)")
 
     load_exchange_map()
 
-    # Pre-load daily caches (0 API calls)
     industry_map = load_json("industry_map.json") or []
     fin_cache_raw = load_json("finance/cache.json") or {}
-    # Unwrap nếu có "symbols" key
     fin_cache = fin_cache_raw.get("symbols", fin_cache_raw) \
                 if isinstance(fin_cache_raw, dict) else {}
     log.info(f"Finance cache: {len(fin_cache)} symbols loaded")
@@ -577,7 +534,6 @@ if __name__ == "__main__":
     all_ranking_rows = []
     all_deep_rows    = []
 
-    # Collect all (symbol, group) pairs
     symbol_jobs: list[tuple[str, str]] = []
     for group, df_rank in [
         ("GAINER", ranking["gainers"]),
@@ -597,7 +553,6 @@ if __name__ == "__main__":
     log.info(f"\nFetching {len(symbol_jobs)} symbols concurrently "
              f"(workers={MAX_WORKERS})...")
 
-    # Concurrent fetch — results come back out-of-order, sort after
     results: dict[str, dict] = {}
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         future_map = {
@@ -614,39 +569,28 @@ if __name__ == "__main__":
             except Exception as e:
                 log.error(f"Future error {sym}: {e}")
 
-    # Restore original order (gainers first, then losers, in ranking order)
     for sym, grp in symbol_jobs:
         if sym in results:
             all_deep_rows.append(results[sym])
 
-    # ── FIX #3: validate FF data BEFORE export ──
-    # Phải gọi sau khi đã collect đủ rows để có đủ data points so sánh.
-    # Phải gọi TRƯỚC save_json/save_csv để output file phản ánh đúng state.
     log.info("\n=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
 
-    # Export Ranking
     if all_ranking_rows:
         df_rank_all = pd.concat(all_ranking_rows, ignore_index=True)
         save_json("ranking.json", df_rank_all.to_dict(orient="records"))
         save_csv("ranking.csv", clean_for_export(df_rank_all))
 
-    # Export Deep
     if all_deep_rows:
         df_deep = pd.DataFrame(all_deep_rows)
-
-        # deep_raw.json — raw numbers, includes _ohlcv_5d for order_flow
         save_json("deep_raw.json", df_deep.to_dict(orient="records"))
-
-        # deep.json / deep.csv — formatted, strip internal fields
         df_export = df_deep.drop(columns=["_ohlcv_5d"], errors="ignore")
         df_clean  = clean_for_export(df_export)
         save_json("deep.json", df_clean.to_dict(orient="records"))
         save_csv("deep.csv",   df_clean)
 
         log.info(
-            f"Deep: {len(df_deep)} rows, {len(df_deep.columns)} cols "
-            f"(+_ohlcv_5d for order_flow)"
+            f"Deep: {len(df_deep)} rows, {len(df_deep.columns)} cols"
         )
 
     log.info("=== SNAPSHOT DONE ===")
