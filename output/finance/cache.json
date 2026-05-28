@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-28T19:57:09.974859+07:00",
+  "generated_at": "2026-05-28T21:51:31.663917+07:00",
   "schema_version": 6,
   "ttl_days": 3,
-  "count": 213,
+  "count": 216,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -10643,6 +10643,43 @@
         "cashflow": 5,
         "growth": 10,
         "total": 30,
+        "max": 38
+      }
+    },
+    "ICT": {
+      "symbol": "ICT",
+      "non_stock": true,
+      "fetched_at": "2026-05-28T21:51:31.087344+07:00",
+      "schema_version": 6
+    },
+    "DXS": {
+      "symbol": "DXS",
+      "non_stock": true,
+      "fetched_at": "2026-05-28T21:51:31.374649+07:00",
+      "schema_version": 6
+    },
+    "NT2": {
+      "symbol": "NT2",
+      "fetched_at": "2026-05-28T21:51:24.704799+07:00",
+      "schema_version": 6,
+      "ratio": {},
+      "income": {
+        "net_profit_year": 1130284803.0
+      },
+      "balance": {
+        "total_assets": 9124016409.0,
+        "equity": 4728797299.0,
+        "total_liab": 4395219110.0,
+        "short_debt": 1762306137.0,
+        "long_debt": null,
+        "debt_to_equity": 0.929
+      },
+      "cashflow": {},
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 0,
         "max": 38
       }
     }
