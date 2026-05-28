@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-28T21:51:31.663917+07:00",
+  "generated_at": "2026-05-29T00:10:13.665387+07:00",
   "schema_version": 6,
   "ttl_days": 3,
-  "count": 216,
+  "count": 217,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -10680,6 +10680,32 @@
         "cashflow": 0,
         "growth": 0,
         "total": 0,
+        "max": 38
+      }
+    },
+    "PHC": {
+      "symbol": "PHC",
+      "fetched_at": "2026-05-29T00:10:07.082610+07:00",
+      "schema_version": 6,
+      "ratio": {},
+      "income": {
+        "revenue": 327158658.0,
+        "gross_profit": 30367839.0,
+        "net_profit": 1709563.0,
+        "operating_profit": 3177152.0,
+        "eps": 34.0,
+        "rev_growth_qoq": 0.4645,
+        "profit_growth_qoq": 0.0085,
+        "rev_growth_yoy": 0.4645,
+        "profit_growth_yoy": 0.0085
+      },
+      "balance": {},
+      "cashflow": {},
+      "finance_score": {
+        "fundamental": 0,
+        "cashflow": 0,
+        "growth": 6,
+        "total": 6,
         "max": 38
       }
     }
