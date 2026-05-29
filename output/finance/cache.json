@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T00:10:13.665387+07:00",
+  "generated_at": "2026-05-29T08:51:11.081821+07:00",
   "schema_version": 6,
   "ttl_days": 3,
   "count": 217,
@@ -2301,7 +2301,7 @@
     },
     "VTE": {
       "symbol": "VTE",
-      "fetched_at": "2026-05-28T19:57:00.260982+07:00",
+      "fetched_at": "2026-05-29T08:51:01.370246+07:00",
       "schema_version": 6,
       "ratio": {
         "pe": 54.72,
@@ -2318,15 +2318,33 @@
         "interest_cov": 2.74,
         "ev_ebitda": 0.0
       },
-      "income": {},
-      "balance": {},
+      "income": {
+        "revenue": 158955499.0,
+        "gross_profit": 6675286.0,
+        "net_profit": 150739.0,
+        "operating_profit": 146209.0,
+        "eps": 10.0,
+        "rev_growth_qoq": 0.4391,
+        "profit_growth_qoq": -0.7148,
+        "rev_growth_yoy": 0.4391,
+        "profit_growth_yoy": -0.7148,
+        "net_profit_year": 2305723.0
+      },
+      "balance": {
+        "total_assets": 326317235.0,
+        "equity": 171328829.0,
+        "total_liab": 154988406.0,
+        "short_debt": 42441277.0,
+        "long_debt": null,
+        "debt_to_equity": 0.905
+      },
       "cashflow": {},
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
         "cashflow": 0,
-        "growth": 0,
-        "total": -3,
+        "growth": 2,
+        "total": -1,
         "max": 38
       }
     },
