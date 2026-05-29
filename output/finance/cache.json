@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-29T08:51:11.081821+07:00",
-  "schema_version": 6,
+  "generated_at": "2026-05-29T09:07:20.887873+07:00",
+  "schema_version": 7,
   "ttl_days": 3,
   "count": 217,
   "symbols": {
@@ -56,8 +56,8 @@
     },
     "VND": {
       "symbol": "VND",
-      "fetched_at": "2026-05-26T14:26:43.599567+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:29.092822+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 14.64,
         "pb": 1.42,
@@ -98,6 +98,12 @@
         "cf_financing": 5113117030.0,
         "cf_period": "annual",
         "cf_free": -4372165243.0
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
       },
       "period": "2026-Q1",
       "finance_score": {
@@ -160,8 +166,8 @@
     },
     "VNE": {
       "symbol": "VNE",
-      "fetched_at": "2026-05-26T14:26:41.542778+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:27.123450+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.88,
         "pb": 0.55,
@@ -205,6 +211,12 @@
         "cf_free": 123334748.0,
         "cf_quality": 1.59,
         "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
       },
       "period": "2026-Q1",
       "finance_score": {
@@ -467,8 +479,8 @@
     },
     "VHM": {
       "symbol": "VHM",
-      "fetched_at": "2026-05-26T14:28:00.365745+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:55.215773+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 12.38,
         "pb": 2.05,
@@ -512,6 +524,12 @@
         "cf_free": -36898837000.0,
         "cf_quality": 0.98,
         "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
       },
       "period": "2026-Q1",
       "finance_score": {
@@ -624,8 +642,8 @@
     },
     "YBC": {
       "symbol": "YBC",
-      "fetched_at": "2026-05-26T14:23:58.354872+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:31.193234+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -1.17,
         "pb": 0.0,
@@ -670,6 +688,12 @@
         "cf_quality": 0.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2013-Q4",
       "finance_score": {
         "fundamental": -8,
@@ -681,8 +705,8 @@
     },
     "YBM": {
       "symbol": "YBM",
-      "fetched_at": "2026-05-26T14:23:58.354452+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:31.192658+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 5.47,
         "pb": 0.85,
@@ -727,6 +751,12 @@
         "cf_quality": 1.26,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -738,8 +768,8 @@
     },
     "YEG": {
       "symbol": "YEG",
-      "fetched_at": "2026-05-26T14:23:58.353930+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:31.192125+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 27.16,
         "pb": 1.1,
@@ -784,6 +814,12 @@
         "cf_quality": 0.1,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -795,8 +831,8 @@
     },
     "YTC": {
       "symbol": "YTC",
-      "fetched_at": "2026-05-26T14:23:58.353106+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:31.191559+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -840,6 +876,12 @@
         "cf_free": -121881937.0,
         "cf_quality": -2.58,
         "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
       },
       "period": "2012-Q3",
       "finance_score": {
@@ -1152,8 +1194,8 @@
     },
     "WTC": {
       "symbol": "WTC",
-      "fetched_at": "2026-05-26T14:24:09.785651+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:42.104248+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 167.61,
         "pb": 0.56,
@@ -1198,6 +1240,12 @@
         "cf_quality": 3.97,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -1209,8 +1257,8 @@
     },
     "WSB": {
       "symbol": "WSB",
-      "fetched_at": "2026-05-26T14:24:09.796268+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:43.874054+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 8.31,
         "pb": 1.04,
@@ -1255,6 +1303,12 @@
         "cf_quality": 1.08,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -1266,14 +1320,62 @@
     },
     "WSS": {
       "symbol": "WSS",
-      "non_stock": true,
-      "fetched_at": "2026-05-28T14:00:36.915278+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:01:42.263728+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 7.44,
+        "pb": 0.64,
+        "roe": 1.21,
+        "roa": 8.75,
+        "eps": 900.36,
+        "bvps": 10512.77,
+        "beta": 1.09,
+        "div_yield": 0.0,
+        "gross_margin": 28.65,
+        "net_margin": 22.79,
+        "quick_ratio": null,
+        "interest_cov": null,
+        "ev_ebitda": 0.0
+      },
+      "income": {
+        "revenue": null,
+        "gross_profit": 26839907.0,
+        "net_profit": null,
+        "operating_profit": null,
+        "eps": null,
+        "rev_growth_qoq": null,
+        "profit_growth_qoq": null,
+        "rev_growth_yoy": null,
+        "profit_growth_yoy": null,
+        "net_profit_year": null
+      },
+      "balance": {
+        "total_assets": 534969810.0,
+        "equity": null,
+        "total_liab": 6032283.0,
+        "short_debt": null,
+        "long_debt": null
+      },
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 12,
+        "max": 38
+      }
     },
     "WCS": {
       "symbol": "WCS",
-      "fetched_at": "2026-05-26T14:24:10.778041+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:43.881686+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 8.8,
         "pb": 2.93,
@@ -1318,6 +1420,12 @@
         "cf_quality": 0.67,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -1329,8 +1437,8 @@
     },
     "VXT": {
       "symbol": "VXT",
-      "fetched_at": "2026-05-26T14:24:19.311194+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:53.128446+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 45.43,
         "pb": 1.79,
@@ -1375,6 +1483,12 @@
         "cf_quality": 3.79,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2022-Q3",
       "finance_score": {
         "fundamental": -2,
@@ -1386,8 +1500,8 @@
     },
     "VXB": {
       "symbol": "VXB",
-      "fetched_at": "2026-05-26T14:24:20.466297+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:01:54.123132+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 89.44,
         "pb": 4.95,
@@ -1432,6 +1546,12 @@
         "cf_quality": 0.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2022-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -1443,8 +1563,8 @@
     },
     "VVS": {
       "symbol": "VVS",
-      "fetched_at": "2026-05-26T14:24:28.442636+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:03.937255+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 4.32,
         "pb": 2.14,
@@ -1489,6 +1609,12 @@
         "cf_quality": 6.64,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 15,
@@ -1500,8 +1626,8 @@
     },
     "VVN": {
       "symbol": "VVN",
-      "fetched_at": "2026-05-26T14:24:29.330033+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:04.255137+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.26,
         "pb": -0.06,
@@ -1546,6 +1672,12 @@
         "cf_quality": 0.27,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -10,
@@ -1557,8 +1689,8 @@
     },
     "VUA": {
       "symbol": "VUA",
-      "fetched_at": "2026-05-26T14:24:29.834611+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:05.213651+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 174.34,
         "pb": 2.13,
@@ -1600,6 +1732,12 @@
         "cf_period": "annual",
         "cf_free": -94415664.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -1611,8 +1749,8 @@
     },
     "VTZ": {
       "symbol": "VTZ",
-      "fetched_at": "2026-05-26T14:24:37.346736+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:12.009374+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 24.6,
         "pb": 1.71,
@@ -1657,6 +1795,12 @@
         "cf_quality": -6.12,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -1668,8 +1812,8 @@
     },
     "VTX": {
       "symbol": "VTX",
-      "fetched_at": "2026-05-26T14:24:37.443267+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:12.971789+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -4.39,
         "pb": 3.13,
@@ -1714,6 +1858,12 @@
         "cf_quality": 0.13,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -1725,8 +1875,8 @@
     },
     "VTV": {
       "symbol": "VTV",
-      "fetched_at": "2026-05-26T14:24:37.548412+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:13.301042+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 722.88,
         "pb": 1.16,
@@ -1771,6 +1921,12 @@
         "cf_quality": 516.65,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -1782,8 +1938,8 @@
     },
     "VTS": {
       "symbol": "VTS",
-      "fetched_at": "2026-05-26T14:24:39.551791+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:14.672108+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -1.03,
         "pb": 1.7,
@@ -1828,6 +1984,12 @@
         "cf_quality": 4.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -1839,14 +2001,63 @@
     },
     "VTR": {
       "symbol": "VTR",
-      "non_stock": true,
-      "fetched_at": "2026-05-28T14:00:37.604364+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:02:21.020594+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 324.62,
+        "pb": 1.08,
+        "roe": -1.34,
+        "roa": 0.05,
+        "eps": 40.05,
+        "bvps": 12016.0,
+        "beta": 0.45,
+        "div_yield": 0.08,
+        "gross_margin": 6.19,
+        "net_margin": -0.59,
+        "quick_ratio": 1.17,
+        "interest_cov": 0.47,
+        "ev_ebitda": 122.91
+      },
+      "income": {
+        "revenue": 2025040505.0,
+        "gross_profit": 103930015.0,
+        "net_profit": 1336666.0,
+        "operating_profit": -4583029.0,
+        "eps": null,
+        "rev_growth_qoq": 0.5645,
+        "profit_growth_qoq": -0.8041,
+        "rev_growth_yoy": 0.5645,
+        "profit_growth_yoy": -0.8041,
+        "net_profit_year": 2539126.0
+      },
+      "balance": {
+        "total_assets": 2947071563.0,
+        "equity": 791987114.0,
+        "total_liab": 2155084448.0,
+        "short_debt": 744537261.0,
+        "long_debt": 95362355.0,
+        "debt_to_equity": 2.721
+      },
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 2,
+        "total": -3,
+        "max": 38
+      }
     },
     "VTQ": {
       "symbol": "VTQ",
-      "fetched_at": "2026-05-26T14:24:45.629261+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:21.476306+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 22.7,
         "pb": 1.29,
@@ -1891,6 +2102,12 @@
         "cf_quality": 2.43,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -1902,8 +2119,8 @@
     },
     "VTP": {
       "symbol": "VTP",
-      "fetched_at": "2026-05-26T14:24:46.128714+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:21.773317+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 29.51,
         "pb": 6.8,
@@ -1948,6 +2165,12 @@
         "cf_quality": 1.88,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -1959,8 +2182,8 @@
     },
     "VTO": {
       "symbol": "VTO",
-      "fetched_at": "2026-05-26T14:24:47.904024+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:23.608240+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 8.13,
         "pb": 0.77,
@@ -2005,6 +2228,12 @@
         "cf_quality": 1.8,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -2016,8 +2245,8 @@
     },
     "VTL": {
       "symbol": "VTL",
-      "fetched_at": "2026-05-26T14:24:54.221885+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:30.875505+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -5.12,
         "pb": -4.29,
@@ -2062,6 +2291,12 @@
         "cf_quality": 0.02,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2023-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -2073,8 +2308,8 @@
     },
     "VTJ": {
       "symbol": "VTJ",
-      "fetched_at": "2026-05-26T14:24:56.027772+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:32.660417+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 260.31,
         "pb": 0.43,
@@ -2119,6 +2354,12 @@
         "cf_quality": 3.74,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -2130,8 +2371,8 @@
     },
     "VTK": {
       "symbol": "VTK",
-      "fetched_at": "2026-05-26T14:24:54.529422+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:30.890317+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -2176,6 +2417,12 @@
         "cf_quality": -0.96,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2018-Q3",
       "finance_score": {
         "fundamental": 0,
@@ -2187,8 +2434,8 @@
     },
     "VTH": {
       "symbol": "VTH",
-      "fetched_at": "2026-05-26T14:25:02.382285+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:39.708782+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.06,
         "pb": 0.61,
@@ -2233,6 +2480,12 @@
         "cf_quality": 2.04,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -2244,8 +2497,8 @@
     },
     "VTG": {
       "symbol": "VTG",
-      "fetched_at": "2026-05-26T14:25:03.850339+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:40.485565+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -14.34,
         "pb": 0.82,
@@ -2290,6 +2543,12 @@
         "cf_quality": 1.27,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -2301,8 +2560,8 @@
     },
     "VTE": {
       "symbol": "VTE",
-      "fetched_at": "2026-05-29T08:51:01.370246+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:41.227699+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 54.72,
         "pb": 0.73,
@@ -2339,6 +2598,12 @@
         "debt_to_equity": 0.905
       },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -2350,8 +2615,8 @@
     },
     "VTD": {
       "symbol": "VTD",
-      "fetched_at": "2026-05-26T14:25:10.405195+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:48.980381+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -177.11,
         "pb": 0.58,
@@ -2396,6 +2661,12 @@
         "cf_quality": -19.29,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -2407,8 +2678,8 @@
     },
     "VTC": {
       "symbol": "VTC",
-      "fetched_at": "2026-05-26T14:25:10.608278+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:49.146802+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 19.85,
         "pb": 0.72,
@@ -2453,6 +2724,12 @@
         "cf_quality": -35.33,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 13,
@@ -2464,8 +2741,8 @@
     },
     "VTA": {
       "symbol": "VTA",
-      "fetched_at": "2026-05-26T14:25:12.410667+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:50.582897+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.86,
         "pb": 4.5,
@@ -2510,6 +2787,12 @@
         "cf_quality": -0.58,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2024-Q4",
       "finance_score": {
         "fundamental": -11,
@@ -2521,8 +2804,8 @@
     },
     "VTB": {
       "symbol": "VTB",
-      "fetched_at": "2026-05-26T14:25:11.955568+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:49.820787+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 13.89,
         "pb": 1.22,
@@ -2567,6 +2850,12 @@
         "cf_quality": 1.13,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 7,
@@ -2578,8 +2867,8 @@
     },
     "VST": {
       "symbol": "VST",
-      "fetched_at": "2026-05-26T14:25:18.670663+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:57.575953+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 0.84,
         "pb": -0.49,
@@ -2624,6 +2913,12 @@
         "cf_quality": 0.59,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 5,
@@ -2635,8 +2930,8 @@
     },
     "VSM": {
       "symbol": "VSM",
-      "fetched_at": "2026-05-26T14:25:20.610934+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:02:59.226289+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 5.05,
         "pb": 0.76,
@@ -2681,6 +2976,12 @@
         "cf_quality": 0.48,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -2692,9 +2993,23 @@
     },
     "VSN": {
       "symbol": "VSN",
-      "fetched_at": "2026-05-28T14:00:28.365985+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:02:58.338370+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 15.17,
+        "pb": 0.98,
+        "roe": 2.24,
+        "roa": 4.24,
+        "eps": 1014.95,
+        "bvps": 15783.0,
+        "beta": 0.94,
+        "div_yield": 0.03,
+        "gross_margin": 24.44,
+        "net_margin": 3.66,
+        "quick_ratio": 1.77,
+        "interest_cov": 18.88,
+        "ev_ebitda": 0.0
+      },
       "income": {
         "revenue": 660188149.0,
         "gross_profit": 132930807.0,
@@ -2716,19 +3031,40 @@
         "debt_to_equity": 0.448
       },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 5,
         "cashflow": 0,
         "growth": -6,
-        "total": -6,
+        "total": -1,
         "max": 38
       }
     },
     "VSI": {
       "symbol": "VSI",
-      "fetched_at": "2026-05-28T14:00:36.896174+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:03:06.765569+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 8.86,
+        "pb": 1.55,
+        "roe": 6.67,
+        "roa": 6.96,
+        "eps": 2707.44,
+        "bvps": 15526.0,
+        "beta": 0.3,
+        "div_yield": 0.07,
+        "gross_margin": 15.12,
+        "net_margin": 6.96,
+        "quick_ratio": 1.07,
+        "interest_cov": 9.1,
+        "ev_ebitda": 8.12
+      },
       "income": {
         "revenue": 158254069.0,
         "gross_profit": 17347158.0,
@@ -2738,7 +3074,8 @@
         "rev_growth_qoq": 0.7947,
         "profit_growth_qoq": 0.1045,
         "rev_growth_yoy": 0.7947,
-        "profit_growth_yoy": 0.1045
+        "profit_growth_yoy": 0.1045,
+        "net_profit_year": 36618635.0
       },
       "balance": {
         "total_assets": 547145040.0,
@@ -2749,18 +3086,25 @@
         "debt_to_equity": 1.67
       },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 13,
         "cashflow": 0,
         "growth": 8,
-        "total": 8,
+        "total": 21,
         "max": 38
       }
     },
     "VSH": {
       "symbol": "VSH",
-      "fetched_at": "2026-05-26T14:25:26.882728+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:07.227272+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 12.19,
         "pb": 2.12,
@@ -2805,6 +3149,12 @@
         "cf_quality": 1.67,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 4,
@@ -2816,8 +3166,8 @@
     },
     "VSF": {
       "symbol": "VSF",
-      "fetched_at": "2026-05-26T14:25:29.749396+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:07.930402+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 433.17,
         "pb": 5.04,
@@ -2862,6 +3212,12 @@
         "cf_quality": 17.31,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -2873,8 +3229,8 @@
     },
     "VSG": {
       "symbol": "VSG",
-      "fetched_at": "2026-05-26T14:25:28.278410+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:07.245383+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.3,
         "pb": 0.0,
@@ -2919,6 +3275,12 @@
         "cf_quality": -0.28,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2015-Q3",
       "finance_score": {
         "fundamental": -5,
@@ -2930,8 +3292,8 @@
     },
     "VSC": {
       "symbol": "VSC",
-      "fetched_at": "2026-05-26T14:25:35.055173+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:15.790173+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 19.7,
         "pb": 1.17,
@@ -2976,6 +3338,12 @@
         "cf_quality": 1.84,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -2987,8 +3355,8 @@
     },
     "VSA": {
       "symbol": "VSA",
-      "fetched_at": "2026-05-26T14:25:36.371820+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:15.905110+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 12.31,
         "pb": 0.84,
@@ -3033,6 +3401,12 @@
         "cf_quality": 2.64,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 9,
@@ -3044,9 +3418,23 @@
     },
     "VRG": {
       "symbol": "VRG",
-      "fetched_at": "2026-05-28T19:57:00.261991+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:03:16.542245+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 12.92,
+        "pb": 1.33,
+        "roe": 12.53,
+        "roa": 3.79,
+        "eps": 1392.82,
+        "bvps": 13521.0,
+        "beta": 1.23,
+        "div_yield": 0.19,
+        "gross_margin": 70.03,
+        "net_margin": 43.61,
+        "quick_ratio": 5.33,
+        "interest_cov": 0.0,
+        "ev_ebitda": 0.0
+      },
       "income": {
         "revenue": 9468375.0,
         "gross_profit": 959611.0,
@@ -3059,20 +3447,34 @@
         "profit_growth_yoy": -3.5614,
         "net_profit_year": 35994770.0
       },
-      "balance": {},
+      "balance": {
+        "total_assets": 941788046.0,
+        "equity": 350130230.0,
+        "total_liab": 591657816.0,
+        "short_debt": null,
+        "long_debt": null,
+        "debt_to_equity": 1.69
+      },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 10,
         "cashflow": 0,
         "growth": -2,
-        "total": -2,
+        "total": 8,
         "max": 38
       }
     },
     "VRE": {
       "symbol": "VRE",
-      "fetched_at": "2026-05-26T14:25:41.261864+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:24.227099+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 11.86,
         "pb": 1.58,
@@ -3117,6 +3519,12 @@
         "cf_quality": -0.51,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -3128,8 +3536,8 @@
     },
     "VRC": {
       "symbol": "VRC",
-      "fetched_at": "2026-05-26T14:25:42.910616+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:24.825271+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 68.47,
         "pb": 0.59,
@@ -3174,6 +3582,12 @@
         "cf_quality": -8.71,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -3185,8 +3599,8 @@
     },
     "VQC": {
       "symbol": "VQC",
-      "fetched_at": "2026-05-26T14:25:44.553685+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:25.264840+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 15.32,
         "pb": 0.49,
@@ -3231,6 +3645,12 @@
         "cf_quality": 2.2,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2019-Q2",
       "finance_score": {
         "fundamental": 8,
@@ -3242,8 +3662,8 @@
     },
     "VPX": {
       "symbol": "VPX",
-      "fetched_at": "2026-05-26T14:25:46.286363+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:25.529919+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 15.66,
         "pb": 1.65,
@@ -3285,6 +3705,12 @@
         "cf_period": "annual",
         "cf_free": -35057491973.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -3296,8 +3722,8 @@
     },
     "VPS": {
       "symbol": "VPS",
-      "fetched_at": "2026-05-26T14:25:50.991165+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:33.668898+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 10.11,
         "pb": 0.66,
@@ -3342,6 +3768,12 @@
         "cf_quality": 0.66,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 9,
@@ -3353,8 +3785,8 @@
     },
     "VPL": {
       "symbol": "VPL",
-      "fetched_at": "2026-05-26T14:25:55.229982+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:35.353871+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 149.63,
         "pb": 4.61,
@@ -3399,6 +3831,12 @@
         "cf_quality": -1.27,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -3410,8 +3848,8 @@
     },
     "VPI": {
       "symbol": "VPI",
-      "fetched_at": "2026-05-26T14:25:56.849909+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:42.248219+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 46.85,
         "pb": 3.38,
@@ -3456,6 +3894,12 @@
         "cf_quality": 0.4,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -3467,8 +3911,8 @@
     },
     "VPH": {
       "symbol": "VPH",
-      "fetched_at": "2026-05-26T14:25:58.898584+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:42.873076+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -21.79,
         "pb": 0.42,
@@ -3513,6 +3957,12 @@
         "cf_quality": 20.92,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -3524,8 +3974,8 @@
     },
     "VPG": {
       "symbol": "VPG",
-      "fetched_at": "2026-05-26T14:26:00.546517+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:43.453944+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.73,
         "pb": 0.44,
@@ -3570,6 +4020,12 @@
         "cf_quality": -1.25,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -3581,14 +4037,63 @@
     },
     "VPD": {
       "symbol": "VPD",
-      "non_stock": true,
-      "fetched_at": "2026-05-28T14:00:43.588086+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:03:43.971896+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 10.25,
+        "pb": 1.68,
+        "roe": 3.27,
+        "roa": 16.0,
+        "eps": 2513.05,
+        "bvps": 15292.0,
+        "beta": 0.09,
+        "div_yield": 0.01,
+        "gross_margin": 47.8,
+        "net_margin": 27.91,
+        "quick_ratio": 3.1,
+        "interest_cov": 131.97,
+        "ev_ebitda": 0.0
+      },
+      "income": {
+        "revenue": 173191009.0,
+        "gross_profit": 100390276.0,
+        "net_profit": 69484516.0,
+        "operating_profit": 87284143.0,
+        "eps": 652.0,
+        "rev_growth_qoq": 1.0443,
+        "profit_growth_qoq": 5.5112,
+        "rev_growth_yoy": 1.0443,
+        "profit_growth_yoy": 5.5112,
+        "net_profit_year": 262381151.0
+      },
+      "balance": {
+        "total_assets": 1793494132.0,
+        "equity": 1629940131.0,
+        "total_liab": 163554001.0,
+        "short_debt": 20000000.0,
+        "long_debt": null,
+        "debt_to_equity": 0.1
+      },
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 10,
+        "total": 17,
+        "max": 38
+      }
     },
     "VPC": {
       "symbol": "VPC",
-      "fetched_at": "2026-05-26T14:26:05.039023+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:50.902442+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -1.04,
         "pb": 0.0,
@@ -3633,6 +4138,12 @@
         "cf_quality": 2.3,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2015-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -3644,8 +4155,8 @@
     },
     "VPB": {
       "symbol": "VPB",
-      "fetched_at": "2026-05-26T14:26:07.083318+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:51.571957+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 9.48,
         "pb": 1.26,
@@ -3687,6 +4198,12 @@
         "cf_period": "annual",
         "cf_free": 44443835000.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -3698,8 +4215,8 @@
     },
     "VPA": {
       "symbol": "VPA",
-      "fetched_at": "2026-05-26T14:26:08.665311+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:52.014776+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.96,
         "pb": -0.34,
@@ -3744,6 +4261,12 @@
         "cf_quality": -0.47,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -10,
@@ -3755,8 +4278,8 @@
     },
     "VOS": {
       "symbol": "VOS",
-      "fetched_at": "2026-05-26T14:26:11.951068+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:52.971827+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 5.67,
         "pb": 0.82,
@@ -3801,6 +4324,12 @@
         "cf_quality": -0.43,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 15,
@@ -3812,8 +4341,8 @@
     },
     "VOC": {
       "symbol": "VOC",
-      "fetched_at": "2026-05-26T14:26:12.979297+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:59.490818+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 20.98,
         "pb": 0.71,
@@ -3858,6 +4387,12 @@
         "cf_quality": 0.77,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2025-Q3",
       "finance_score": {
         "fundamental": 5,
@@ -3869,8 +4404,8 @@
     },
     "VNZ": {
       "symbol": "VNZ",
-      "fetched_at": "2026-05-26T14:26:15.711973+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:03:59.896280+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -62.9,
         "pb": 10.97,
@@ -3915,6 +4450,12 @@
         "cf_quality": -6.97,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -3926,8 +4467,8 @@
     },
     "VNY": {
       "symbol": "VNY",
-      "fetched_at": "2026-05-26T14:26:16.839470+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:00.574702+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 10.76,
         "pb": 0.83,
@@ -3972,6 +4513,12 @@
         "cf_quality": 1.34,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 9,
@@ -3983,8 +4530,8 @@
     },
     "VNT": {
       "symbol": "VNT",
-      "fetched_at": "2026-05-26T14:26:21.099543+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:07.826031+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 25.45,
         "pb": 1.92,
@@ -4029,6 +4576,12 @@
         "cf_quality": -0.37,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -4040,8 +4593,8 @@
     },
     "VNS": {
       "symbol": "VNS",
-      "fetched_at": "2026-05-26T14:26:23.627201+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:08.514811+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 16.14,
         "pb": 0.55,
@@ -4086,6 +4639,12 @@
         "cf_quality": 6.13,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 5,
@@ -4097,8 +4656,8 @@
     },
     "VNR": {
       "symbol": "VNR",
-      "fetched_at": "2026-05-26T14:26:24.982380+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:09.133168+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 8.65,
         "pb": 2.03,
@@ -4140,6 +4699,12 @@
         "cf_period": "annual",
         "cf_free": 94422587.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -4151,8 +4716,8 @@
     },
     "VNP": {
       "symbol": "VNP",
-      "fetched_at": "2026-05-26T14:26:27.899045+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:11.892874+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 22.2,
         "pb": 1.5,
@@ -4197,6 +4762,12 @@
         "cf_quality": 0.29,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -4208,8 +4779,8 @@
     },
     "VNM": {
       "symbol": "VNM",
-      "fetched_at": "2026-05-26T14:26:29.007022+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:16.708273+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 13.59,
         "pb": 3.71,
@@ -4254,6 +4825,12 @@
         "cf_quality": 0.92,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 4,
@@ -4265,8 +4842,8 @@
     },
     "VNL": {
       "symbol": "VNL",
-      "fetched_at": "2026-05-26T14:26:31.553029+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:17.532002+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 5.13,
         "pb": 0.89,
@@ -4311,6 +4888,12 @@
         "cf_quality": 0.56,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -4322,8 +4905,8 @@
     },
     "VNI": {
       "symbol": "VNI",
-      "fetched_at": "2026-05-26T14:26:33.302942+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:18.105177+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -3.44,
         "pb": 0.0,
@@ -4368,6 +4951,12 @@
         "cf_quality": -8.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2014-Q4",
       "finance_score": {
         "fundamental": -8,
@@ -4379,8 +4968,8 @@
     },
     "VNH": {
       "symbol": "VNH",
-      "fetched_at": "2026-05-26T14:26:35.576878+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:20.461101+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 0.66,
         "pb": 1.02,
@@ -4424,6 +5013,12 @@
         "cf_quality": 0.72,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2018-Q1",
       "finance_score": {
         "fundamental": 18,
@@ -4435,8 +5030,8 @@
     },
     "VNG": {
       "symbol": "VNG",
-      "fetched_at": "2026-05-26T14:26:37.428398+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:26.172088+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 81.2,
         "pb": 0.69,
@@ -4481,6 +5076,12 @@
         "cf_quality": -10.7,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -4492,8 +5093,8 @@
     },
     "VNF": {
       "symbol": "VNF",
-      "fetched_at": "2026-05-26T14:26:39.516548+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:26.385186+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 8.31,
         "pb": 0.78,
@@ -4538,6 +5139,12 @@
         "cf_quality": 0.34,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -4549,8 +5156,8 @@
     },
     "VNC": {
       "symbol": "VNC",
-      "fetched_at": "2026-05-26T14:26:45.393272+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:34.724229+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.23,
         "pb": 2.25,
@@ -4595,6 +5202,12 @@
         "cf_quality": 1.98,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -4606,8 +5219,8 @@
     },
     "VNB": {
       "symbol": "VNB",
-      "fetched_at": "2026-05-26T14:26:47.494277+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:35.116944+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 14.17,
         "pb": 0.99,
@@ -4652,6 +5265,12 @@
         "cf_quality": -0.47,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 9,
@@ -4663,8 +5282,8 @@
     },
     "VNA": {
       "symbol": "VNA",
-      "fetched_at": "2026-05-26T14:26:49.601184+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:35.790113+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 13.75,
         "pb": 1.01,
@@ -4709,6 +5328,12 @@
         "cf_quality": 0.54,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -4720,8 +5345,8 @@
     },
     "VMS": {
       "symbol": "VMS",
-      "fetched_at": "2026-05-26T14:26:53.540197+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:42.826644+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 16.68,
         "pb": 1.47,
@@ -4766,6 +5391,12 @@
         "cf_quality": 0.83,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -4777,8 +5408,8 @@
     },
     "VMG": {
       "symbol": "VMG",
-      "fetched_at": "2026-05-26T14:26:59.948022+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:47.838211+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -7.55,
         "pb": 0.58,
@@ -4823,6 +5454,12 @@
         "cf_quality": -0.09,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2019-Q2",
       "finance_score": {
         "fundamental": -3,
@@ -4834,8 +5471,8 @@
     },
     "VMA": {
       "symbol": "VMA",
-      "fetched_at": "2026-05-26T14:27:04.072742+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:53.941009+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -4871,6 +5508,12 @@
         "cf_quality": 0.43,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2015-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -4882,8 +5525,8 @@
     },
     "VMD": {
       "symbol": "VMD",
-      "fetched_at": "2026-05-26T14:27:01.751998+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:51.510472+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 9.78,
         "pb": 0.62,
@@ -4928,6 +5571,12 @@
         "cf_quality": 0.25,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2025-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -4939,8 +5588,8 @@
     },
     "VMC": {
       "symbol": "VMC",
-      "fetched_at": "2026-05-26T14:27:03.267452+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:52.620080+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 62.26,
         "pb": 0.42,
@@ -4985,6 +5634,12 @@
         "cf_quality": -3.54,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -4996,8 +5651,8 @@
     },
     "VLW": {
       "symbol": "VLW",
-      "fetched_at": "2026-05-26T14:27:08.042340+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:04:56.669747+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 13.02,
         "pb": 1.81,
@@ -5042,6 +5697,12 @@
         "cf_quality": 0.87,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -5053,8 +5714,8 @@
     },
     "VLP": {
       "symbol": "VLP",
-      "fetched_at": "2026-05-26T14:27:11.442899+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:02.416820+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 0.0,
         "pb": 0.0,
@@ -5099,6 +5760,12 @@
         "cf_quality": -4.99,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2017-Q2",
       "finance_score": {
         "fundamental": 0,
@@ -5110,8 +5777,8 @@
     },
     "VLG": {
       "symbol": "VLG",
-      "fetched_at": "2026-05-26T14:27:11.976494+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:02.426057+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 18.8,
         "pb": 0.73,
@@ -5156,6 +5823,12 @@
         "cf_quality": -0.47,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 5,
@@ -5167,8 +5840,8 @@
     },
     "VLS": {
       "symbol": "VLS",
-      "fetched_at": "2026-05-26T14:27:09.451814+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:00.073648+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 24.39,
         "pb": 1.53,
@@ -5213,6 +5886,12 @@
         "cf_quality": -9.28,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -5224,8 +5903,8 @@
     },
     "VLF": {
       "symbol": "VLF",
-      "fetched_at": "2026-05-26T14:27:15.748321+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:05.092516+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -23.97,
         "pb": -0.42,
@@ -5270,6 +5949,12 @@
         "cf_quality": 1.17,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2021-Q4",
       "finance_score": {
         "fundamental": -13,
@@ -5281,8 +5966,8 @@
     },
     "VLC": {
       "symbol": "VLC",
-      "fetched_at": "2026-05-26T14:27:18.536063+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:09.451298+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6083.14,
         "pb": 0.49,
@@ -5327,6 +6012,12 @@
         "cf_quality": -480.96,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -5338,8 +6029,8 @@
     },
     "VLB": {
       "symbol": "VLB",
-      "fetched_at": "2026-05-26T14:27:19.517952+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:10.952198+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 7.46,
         "pb": 3.19,
@@ -5384,6 +6075,12 @@
         "cf_quality": 0.84,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 7,
@@ -5395,8 +6092,8 @@
     },
     "VLA": {
       "symbol": "VLA",
-      "fetched_at": "2026-05-26T14:27:19.912620+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:11.323562+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 38.84,
         "pb": 0.76,
@@ -5441,6 +6138,12 @@
         "cf_quality": -10.46,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -5452,8 +6155,8 @@
     },
     "VKC": {
       "symbol": "VKC",
-      "fetched_at": "2026-05-26T14:27:27.417579+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:19.538866+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.36,
         "pb": -0.06,
@@ -5498,6 +6201,12 @@
         "cf_quality": -0.03,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -13,
@@ -5509,8 +6218,8 @@
     },
     "VJC": {
       "symbol": "VJC",
-      "fetched_at": "2026-05-26T14:27:28.069750+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:19.901030+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 54.93,
         "pb": 4.98,
@@ -5555,6 +6264,12 @@
         "cf_quality": 0.71,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -5566,8 +6281,8 @@
     },
     "VIX": {
       "symbol": "VIX",
-      "fetched_at": "2026-05-26T14:27:32.030976+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:24.428648+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.22,
         "pb": 1.61,
@@ -5609,6 +6324,12 @@
         "cf_period": "annual",
         "cf_free": -7131435629.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 13,
@@ -5620,8 +6341,8 @@
     },
     "VIW": {
       "symbol": "VIW",
-      "fetched_at": "2026-05-26T14:27:32.875758+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:25.805357+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 42.21,
         "pb": 1.13,
@@ -5666,6 +6387,12 @@
         "cf_quality": 10.43,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -5677,8 +6404,8 @@
     },
     "VIT": {
       "symbol": "VIT",
-      "fetched_at": "2026-05-26T14:27:35.897326+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:28.302560+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 16.33,
         "pb": 1.84,
@@ -5723,6 +6450,12 @@
         "cf_quality": 2.86,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -5734,8 +6467,8 @@
     },
     "VIP": {
       "symbol": "VIP",
-      "fetched_at": "2026-05-26T14:27:40.965184+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:34.494497+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 9.73,
         "pb": 0.65,
@@ -5780,6 +6513,12 @@
         "cf_quality": 1.57,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -5791,8 +6530,8 @@
     },
     "VIN": {
       "symbol": "VIN",
-      "fetched_at": "2026-05-26T14:27:42.899080+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:36.251223+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 38.87,
         "pb": 0.8,
@@ -5837,6 +6576,12 @@
         "cf_quality": -0.17,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -5848,8 +6593,8 @@
     },
     "VIH": {
       "symbol": "VIH",
-      "fetched_at": "2026-05-26T14:27:48.728651+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:43.024677+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 526.14,
         "pb": 2.44,
@@ -5894,6 +6639,12 @@
         "cf_quality": 3.31,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2018-Q2",
       "finance_score": {
         "fundamental": -8,
@@ -5905,8 +6656,8 @@
     },
     "VIG": {
       "symbol": "VIG",
-      "fetched_at": "2026-05-26T14:27:49.145710+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:43.039259+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -117.52,
         "pb": 0.72,
@@ -5948,6 +6699,12 @@
         "cf_period": "annual",
         "cf_free": -49949291.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -5959,8 +6716,8 @@
     },
     "VIF": {
       "symbol": "VIF",
-      "fetched_at": "2026-05-26T14:27:50.881543+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:44.549948+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 17.46,
         "pb": 1.1,
@@ -6005,6 +6762,12 @@
         "cf_quality": 0.21,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 3,
@@ -6016,10 +6779,33 @@
     },
     "VIE": {
       "symbol": "VIE",
-      "fetched_at": "2026-05-28T14:00:38.257372+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:05:46.337655+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -26.2,
+        "pb": 1.27,
+        "roe": -1.47,
+        "roa": 9.32,
+        "eps": -347.35,
+        "bvps": 7184.0,
+        "beta": 0.06,
+        "div_yield": 0.0,
+        "gross_margin": 23.54,
+        "net_margin": -7.02,
+        "quick_ratio": 1.94,
+        "interest_cov": 0.0,
+        "ev_ebitda": 0.0
+      },
       "income": {
+        "revenue": 6304751.0,
+        "gross_profit": 1329052.0,
+        "net_profit": 545734.0,
+        "operating_profit": 545734.0,
+        "eps": null,
+        "rev_growth_qoq": -0.1739,
+        "profit_growth_qoq": -0.7482,
+        "rev_growth_yoy": null,
+        "profit_growth_yoy": null,
         "net_profit_year": 354014.0
       },
       "balance": {
@@ -6031,18 +6817,25 @@
         "debt_to_equity": 0.417
       },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2022-Q2",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -5,
         "cashflow": 0,
-        "growth": 0,
-        "total": 0,
+        "growth": -6,
+        "total": -11,
         "max": 38
       }
     },
     "VID": {
       "symbol": "VID",
-      "fetched_at": "2026-05-26T14:27:57.864920+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:52.386179+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 31.68,
         "pb": 0.32,
@@ -6087,6 +6880,12 @@
         "cf_quality": -143.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -3,
@@ -6098,8 +6897,8 @@
     },
     "VIC": {
       "symbol": "VIC",
-      "fetched_at": "2026-05-26T14:27:57.879167+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:52.475775+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 49.13,
         "pb": 8.66,
@@ -6144,6 +6943,12 @@
         "cf_quality": 6.1,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -6155,8 +6960,8 @@
     },
     "VIB": {
       "symbol": "VIB",
-      "fetched_at": "2026-05-26T14:27:59.039735+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:05:53.329307+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 7.65,
         "pb": 1.29,
@@ -6198,6 +7003,12 @@
         "cf_period": "annual",
         "cf_free": 12709406000.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -6209,8 +7020,8 @@
     },
     "VHL": {
       "symbol": "VHL",
-      "fetched_at": "2026-05-26T14:28:05.794277+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:00.901991+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 8.94,
         "pb": 0.53,
@@ -6255,6 +7066,12 @@
         "cf_quality": 2.33,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -6266,8 +7083,8 @@
     },
     "VHH": {
       "symbol": "VHH",
-      "fetched_at": "2026-05-26T14:28:07.300871+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:01.644591+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -6.79,
         "pb": 0.0,
@@ -6312,6 +7129,12 @@
         "cf_quality": 2.71,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2014-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -6323,8 +7146,8 @@
     },
     "VHG": {
       "symbol": "VHG",
-      "fetched_at": "2026-05-26T14:28:10.722195+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:03.909581+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 149.1,
         "pb": 2.16,
@@ -6369,6 +7192,12 @@
         "cf_quality": 0.0,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -6380,8 +7209,8 @@
     },
     "VHF": {
       "symbol": "VHF",
-      "fetched_at": "2026-05-26T14:28:12.326036+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:09.474601+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 65.23,
         "pb": 1.8,
@@ -6426,6 +7255,12 @@
         "cf_quality": -7.9,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -6437,8 +7272,8 @@
     },
     "VHE": {
       "symbol": "VHE",
-      "fetched_at": "2026-05-26T14:28:13.714651+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:10.400061+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 7.18,
         "pb": 0.33,
@@ -6483,6 +7318,12 @@
         "cf_quality": -6.23,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -6494,8 +7335,8 @@
     },
     "VHD": {
       "symbol": "VHD",
-      "fetched_at": "2026-05-26T14:28:15.397538+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:11.485018+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -1.43,
         "pb": -7.5,
@@ -6540,6 +7381,12 @@
         "cf_quality": -0.15,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -5,
@@ -6551,8 +7398,8 @@
     },
     "VHC": {
       "symbol": "VHC",
-      "fetched_at": "2026-05-26T14:28:18.579906+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:12.494452+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 9.35,
         "pb": 1.26,
@@ -6597,6 +7444,12 @@
         "cf_quality": 1.7,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 10,
@@ -6608,8 +7461,8 @@
     },
     "VGV": {
       "symbol": "VGV",
-      "fetched_at": "2026-05-26T14:28:20.282033+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:18.106471+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 39.89,
         "pb": 3.49,
@@ -6654,6 +7507,12 @@
         "cf_quality": 3.39,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -6665,8 +7524,8 @@
     },
     "VGT": {
       "symbol": "VGT",
-      "fetched_at": "2026-05-26T14:28:21.887646+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:18.940955+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 7.19,
         "pb": 0.6,
@@ -6711,6 +7570,12 @@
         "cf_quality": 1.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -6722,8 +7587,8 @@
     },
     "VGS": {
       "symbol": "VGS",
-      "fetched_at": "2026-05-26T14:28:23.528850+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:20.349864+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.85,
         "pb": 1.23,
@@ -6768,6 +7633,12 @@
         "cf_quality": 2.03,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 13,
@@ -6779,8 +7650,8 @@
     },
     "VGR": {
       "symbol": "VGR",
-      "fetched_at": "2026-05-26T14:28:26.280378+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:21.171159+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 12.08,
         "pb": 6.06,
@@ -6825,6 +7696,12 @@
         "cf_quality": 1.08,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 4,
@@ -6836,8 +7713,8 @@
     },
     "VGP": {
       "symbol": "VGP",
-      "fetched_at": "2026-05-26T14:28:29.156166+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:26.743522+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 12.48,
         "pb": 0.87,
@@ -6882,6 +7759,12 @@
         "cf_quality": 34.72,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 9,
@@ -6893,8 +7776,8 @@
     },
     "VGL": {
       "symbol": "VGL",
-      "fetched_at": "2026-05-26T14:28:29.848156+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:27.636884+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.92,
         "pb": 0.45,
@@ -6939,6 +7822,12 @@
         "cf_quality": 0.73,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2018-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -6950,8 +7839,8 @@
     },
     "VGI": {
       "symbol": "VGI",
-      "fetched_at": "2026-05-26T14:28:31.734933+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:30.843890+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 23.05,
         "pb": 5.03,
@@ -6996,6 +7885,12 @@
         "cf_quality": 1.82,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 0,
@@ -7007,8 +7902,8 @@
     },
     "VGG": {
       "symbol": "VGG",
-      "fetched_at": "2026-05-26T14:28:34.474957+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:32.058397+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 4.52,
         "pb": 0.78,
@@ -7053,6 +7948,12 @@
         "cf_quality": 0.57,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -7064,8 +7965,8 @@
     },
     "VGC": {
       "symbol": "VGC",
-      "fetched_at": "2026-05-26T14:28:37.339446+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:36.996125+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 13.37,
         "pb": 1.63,
@@ -7110,6 +8011,12 @@
         "cf_quality": 2.38,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 7,
@@ -7121,8 +8028,8 @@
     },
     "VFS": {
       "symbol": "VFS",
-      "fetched_at": "2026-05-26T14:28:38.972308+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:39.313742+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 13.25,
         "pb": 1.24,
@@ -7164,6 +8071,12 @@
         "cf_period": "annual",
         "cf_free": -812008386.0
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 7,
@@ -7175,8 +8088,8 @@
     },
     "VFR": {
       "symbol": "VFR",
-      "fetched_at": "2026-05-26T14:28:39.876608+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:39.639988+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.65,
         "pb": 0.47,
@@ -7221,6 +8134,12 @@
         "cf_quality": -1.03,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 12,
@@ -7232,8 +8151,8 @@
     },
     "VFG": {
       "symbol": "VFG",
-      "fetched_at": "2026-05-26T14:28:42.452804+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:40.945695+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.51,
         "pb": 1.28,
@@ -7277,6 +8196,12 @@
         "cf_free": 147493467.0,
         "cf_quality": 0.38,
         "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
       },
       "period": "2026-Q1",
       "finance_score": {
@@ -7539,8 +8464,8 @@
     },
     "VFC": {
       "symbol": "VFC",
-      "fetched_at": "2026-05-26T14:28:45.487353+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:45.943857+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 236.69,
         "pb": 4.66,
@@ -7585,6 +8510,12 @@
         "cf_quality": 1.78,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -11,
@@ -7596,8 +8527,8 @@
     },
     "VET": {
       "symbol": "VET",
-      "fetched_at": "2026-05-26T14:28:47.667353+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:48.875060+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 15.14,
         "pb": 0.89,
@@ -7642,6 +8573,12 @@
         "cf_quality": -0.95,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 5,
@@ -7653,8 +8590,8 @@
     },
     "VES": {
       "symbol": "VES",
-      "fetched_at": "2026-05-26T14:28:48.089178+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:49.396022+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.55,
         "pb": 0.0,
@@ -7699,6 +8636,12 @@
         "cf_quality": -2.16,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2013-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -7710,8 +8653,8 @@
     },
     "VEF": {
       "symbol": "VEF",
-      "fetched_at": "2026-05-26T14:28:50.635162+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:49.999041+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 1.42,
         "pb": 3.27,
@@ -7756,6 +8699,12 @@
         "cf_quality": 0.46,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 4,
@@ -7767,8 +8716,8 @@
     },
     "VEC": {
       "symbol": "VEC",
-      "fetched_at": "2026-05-26T14:28:53.438741+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:55.463613+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 33.77,
         "pb": 3.8,
@@ -7813,6 +8762,12 @@
         "cf_quality": 0.0,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": -8,
@@ -7824,8 +8779,8 @@
     },
     "VEA": {
       "symbol": "VEA",
-      "fetched_at": "2026-05-26T14:28:58.213151+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:06:59.263896+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 6.2,
         "pb": 1.67,
@@ -7870,6 +8825,12 @@
         "cf_quality": -0.01,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 13,
@@ -7881,8 +8842,8 @@
     },
     "VE8": {
       "symbol": "VE8",
-      "fetched_at": "2026-05-26T14:29:00.945184+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:07:01.066750+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": -0.47,
         "pb": -0.37,
@@ -7927,6 +8888,12 @@
         "cf_quality": -0.23,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2025-Q1",
       "finance_score": {
         "fundamental": -10,
@@ -7938,9 +8905,23 @@
     },
     "VE4": {
       "symbol": "VE4",
-      "fetched_at": "2026-05-28T14:00:43.416300+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:07:05.477283+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 3730.03,
+        "pb": 26.77,
+        "roe": 10.22,
+        "roa": 0.12,
+        "eps": 69.7,
+        "bvps": 9712.0,
+        "beta": -0.01,
+        "div_yield": 0.0,
+        "gross_margin": 10.35,
+        "net_margin": 6.94,
+        "quick_ratio": 0.94,
+        "interest_cov": 3.61,
+        "ev_ebitda": 0.0
+      },
       "income": {
         "revenue": 14209218.0,
         "gross_profit": 906523.0,
@@ -7953,20 +8934,34 @@
         "profit_growth_yoy": 0.0626,
         "net_profit_year": 105614.0
       },
-      "balance": {},
+      "balance": {
+        "total_assets": 60654475.0,
+        "equity": 9983876.0,
+        "total_liab": 50670598.0,
+        "short_debt": 26234663.0,
+        "long_debt": 2400000.0,
+        "debt_to_equity": 5.075
+      },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -8,
         "cashflow": 0,
         "growth": 6,
-        "total": 6,
+        "total": -2,
         "max": 38
       }
     },
     "VE9": {
       "symbol": "VE9",
-      "fetched_at": "2026-05-26T14:28:58.219598+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:07:00.506132+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 16.81,
         "pb": 3.88,
@@ -8011,6 +9006,12 @@
         "cf_quality": 2.49,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 0,
@@ -8022,8 +9023,8 @@
     },
     "VE3": {
       "symbol": "VE3",
-      "fetched_at": "2026-05-26T14:29:06.160130+07:00",
-      "schema_version": 6,
+      "fetched_at": "2026-05-29T09:07:09.231145+07:00",
+      "schema_version": 7,
       "ratio": {
         "pe": 4.5,
         "pb": 0.28,
@@ -8068,6 +9069,12 @@
         "cf_quality": -229.67,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
       "period": "2026-Q1",
       "finance_score": {
         "fundamental": 18,
@@ -8079,9 +9086,23 @@
     },
     "VE2": {
       "symbol": "VE2",
-      "fetched_at": "2026-05-28T19:57:00.262453+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:07:10.803791+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -9.22,
+        "pb": 24.51,
+        "roe": -48.32,
+        "roa": -3.09,
+        "eps": -769.99,
+        "bvps": 290.0,
+        "beta": -0.26,
+        "div_yield": 0.0,
+        "gross_margin": 85.63,
+        "net_margin": -266.16,
+        "quick_ratio": 0.44,
+        "interest_cov": 0.0,
+        "ev_ebitda": 0.0
+      },
       "income": {
         "revenue": 282600.0,
         "gross_profit": 238324.0,
@@ -8091,23 +9112,52 @@
         "rev_growth_qoq": null,
         "profit_growth_qoq": -0.8681,
         "rev_growth_yoy": null,
-        "profit_growth_yoy": -0.8681
+        "profit_growth_yoy": -0.8681,
+        "net_profit_year": -1615504.0
       },
-      "balance": {},
+      "balance": {
+        "total_assets": 49944726.0,
+        "equity": 607861.0,
+        "total_liab": 49336865.0,
+        "short_debt": 200000.0,
+        "long_debt": 500000.0,
+        "debt_to_equity": 81.165
+      },
       "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -11,
         "cashflow": 0,
         "growth": -3,
-        "total": -3,
+        "total": -14,
         "max": 38
       }
     },
     "VW3": {
       "symbol": "VW3",
-      "fetched_at": "2026-05-26T14:24:28.357287+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:02:02.526649+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -3.2259394166,
+        "pb": 0.5110429949,
+        "roe": -14.30218687,
+        "roa": -5.3616395,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": -0.80686322,
+        "net_margin": -16.369040130000002,
+        "quick_ratio": 1.1399124313,
+        "interest_cov": null,
+        "ev_ebitda": -0.9200387
+      },
       "income": {
         "net_profit_year": -5836439.0
       },
@@ -8121,19 +9171,40 @@
         "cf_quality": -2.76,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -3,
         "cashflow": 0,
         "growth": 0,
-        "total": 0,
+        "total": -3,
         "max": 38
       }
     },
     "VTM": {
       "symbol": "VTM",
-      "fetched_at": "2026-05-26T14:24:53.981481+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:02:29.884654+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -207.3691583387,
+        "pb": 1.9743285212,
+        "roe": -0.8968878,
+        "roa": -0.12377912,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 16.064534469999998,
+        "net_margin": -0.10402464,
+        "quick_ratio": 0.4893312508,
+        "interest_cov": null,
+        "ev_ebitda": 5.8164880751
+      },
       "income": {
         "net_profit_year": -344794.0
       },
@@ -8147,19 +9218,40 @@
         "cf_quality": -65.32,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -5,
         "cashflow": 0,
         "growth": 0,
-        "total": 0,
+        "total": -5,
         "max": 38
       }
     },
     "VXP": {
       "symbol": "VXP",
-      "fetched_at": "2026-05-26T14:24:20.462044+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:01:53.878752+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 281.0915199615,
+        "pb": 4.5016632243,
+        "roe": 1.61442121,
+        "roa": 0.40138426000000005,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 28.2352261,
+        "net_margin": 0.45291131999999995,
+        "quick_ratio": 0.3881211081,
+        "interest_cov": null,
+        "ev_ebitda": 12.4817013442
+      },
       "income": {
         "net_profit_year": 390921.0
       },
@@ -8173,19 +9265,40 @@
         "cf_quality": -11.34,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -11,
         "cashflow": -10,
         "growth": 0,
-        "total": -10,
+        "total": -21,
         "max": 38
       }
     },
     "VWS": {
       "symbol": "VWS",
-      "fetched_at": "2026-05-26T14:24:20.707966+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:01:54.343660+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 35.7248902139,
+        "pb": 1.6506340683,
+        "roe": 4.49929506,
+        "roa": 1.84167166,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 3.46320346,
+        "gross_margin": 12.527023170000001,
+        "net_margin": 2.1545710199999997,
+        "quick_ratio": 1.0501300857,
+        "interest_cov": null,
+        "ev_ebitda": 17.6912459578
+      },
       "income": {
         "net_profit_year": 2327789.0
       },
@@ -8199,25 +9312,77 @@
         "cf_quality": 4.66,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -5,
         "cashflow": 10,
         "growth": 0,
-        "total": 10,
+        "total": 5,
         "max": 38
       }
     },
     "VSP": {
       "symbol": "VSP",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:25:25.115077+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:02:57.779578+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -0.0177768692,
+        "pb": 0.0,
+        "roe": 0.0,
+        "roa": -1.0615233546,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": -84.4729035,
+        "net_margin": -9.0882809003,
+        "quick_ratio": 0.4342225088,
+        "interest_cov": null,
+        "ev_ebitda": -5.0233539135
+      },
+      "income": {},
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2022-Q3",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -8,
+        "max": 38
+      }
     },
     "VSE": {
       "symbol": "VSE",
-      "fetched_at": "2026-05-26T14:25:33.329498+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:03:15.416473+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 25.2417997474,
+        "pb": 0.7623100711,
+        "roe": 3.06633267,
+        "roa": 2.21030501,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 13.028650840000001,
+        "net_margin": 3.07075603,
+        "quick_ratio": 2.5406016037,
+        "interest_cov": null,
+        "ev_ebitda": 20.582795709
+      },
       "income": {
         "net_profit_year": 2790036.0
       },
@@ -8231,19 +9396,40 @@
         "cf_quality": 1.45,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -3,
         "cashflow": 10,
         "growth": 0,
-        "total": 10,
+        "total": 7,
         "max": 38
       }
     },
     "VPW": {
       "symbol": "VPW",
-      "fetched_at": "2026-05-26T14:25:49.156570+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:03:33.407302+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 14.1041999435,
+        "pb": 0.7023998797,
+        "roe": 5.02888219,
+        "roa": 2.35975089,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 19.86166372,
+        "net_margin": 2.89433883,
+        "quick_ratio": 1.348784663,
+        "interest_cov": null,
+        "ev_ebitda": 3.0521884596
+      },
       "income": {
         "net_profit_year": 7522754.0
       },
@@ -8257,25 +9443,79 @@
         "cf_quality": 9.15,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 12,
         "cashflow": 10,
         "growth": 0,
-        "total": 10,
+        "total": 22,
         "max": 38
       }
     },
     "VTI": {
       "symbol": "VTI",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:25:10.405114+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:02:39.173832+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 3.2449707797,
+        "pb": 0.0,
+        "roe": 0.0,
+        "roa": 2.4373827211,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 80.1497752,
+        "net_margin": 1.3133274312,
+        "quick_ratio": 0.0031337126,
+        "interest_cov": null,
+        "ev_ebitda": 25.8641563717
+      },
+      "income": {
+        "net_profit_year": 6330677.0
+      },
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 7,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 7,
+        "max": 38
+      }
     },
     "VMT": {
       "symbol": "VMT",
-      "fetched_at": "2026-05-26T14:26:52.348563+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:04:38.367083+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 158.8109278618,
+        "pb": 1.151766217,
+        "roe": 0.77355434,
+        "roa": 0.37443237,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 18.33378004,
+        "net_margin": 1.27378102,
+        "quick_ratio": 0.7459649989,
+        "interest_cov": null,
+        "ev_ebitda": 11.8356835518
+      },
       "income": {
         "net_profit_year": 568356.0
       },
@@ -8289,19 +9529,40 @@
         "cf_quality": 3.32,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -5,
         "cashflow": 10,
         "growth": 0,
-        "total": 10,
+        "total": 5,
         "max": 38
       }
     },
     "VNX": {
       "symbol": "VNX",
-      "fetched_at": "2026-05-26T14:26:20.065578+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:04:01.899367+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 0.0165091869,
+        "pb": 0.0079089478,
+        "roe": 54.481750559999995,
+        "roa": 32.89155428,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 43.3333333333,
+        "gross_margin": 34.268900009999996,
+        "net_margin": 19.33354157,
+        "quick_ratio": 2.2375366542,
+        "interest_cov": null,
+        "ev_ebitda": -1.8107097368
+      },
       "income": {
         "net_profit_year": 56806998.0
       },
@@ -8315,19 +9576,40 @@
         "cf_quality": 1.07,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 18,
         "cashflow": 10,
         "growth": 0,
-        "total": 10,
+        "total": 28,
         "max": 38
       }
     },
     "VPR": {
       "symbol": "VPR",
-      "fetched_at": "2026-05-26T14:25:52.709932+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:03:34.105428+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 8.060447788,
+        "pb": 0.6011262967,
+        "roe": 7.668852569999999,
+        "roa": 6.960806880000001,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 41.846748760000004,
+        "net_margin": 21.56500954,
+        "quick_ratio": 1.695851074,
+        "interest_cov": null,
+        "ev_ebitda": 3.8346380838
+      },
       "income": {
         "net_profit_year": 9616898.0
       },
@@ -8341,19 +9623,40 @@
         "cf_quality": 1.46,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 15,
         "cashflow": 10,
         "growth": 0,
-        "total": 10,
+        "total": 25,
         "max": 38
       }
     },
     "VMK": {
       "symbol": "VMK",
-      "fetched_at": "2026-05-26T14:26:55.395296+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:04:43.489521+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 46.8676505964,
+        "pb": 2.7301613155,
+        "roe": 6.810846789999999,
+        "roa": 4.17608836,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 13.27403486,
+        "net_margin": 8.23483807,
+        "quick_ratio": 1.1522626788,
+        "interest_cov": null,
+        "ev_ebitda": 28.6610932694
+      },
       "income": {
         "net_profit_year": 4519463.0
       },
@@ -8367,43 +9670,190 @@
         "cf_quality": -1.02,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -5,
         "cashflow": -10,
         "growth": 0,
-        "total": -10,
+        "total": -15,
         "max": 38
       }
     },
     "VMI": {
       "symbol": "VMI",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:27:04.072663+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:04:45.973257+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 8.4085123635,
+        "pb": 0.1007696451,
+        "roe": 1.1659729,
+        "roa": 0.5944922,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 11.20522838,
+        "net_margin": 1.03274192,
+        "quick_ratio": 1.1917522978,
+        "interest_cov": null,
+        "ev_ebitda": 5.0518308853
+      },
+      "income": {},
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2022-Q2",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 0,
+        "growth": 0,
+        "total": 12,
+        "max": 38
+      }
     },
     "VKD": {
       "symbol": "VKD",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:27:32.875678+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:05:18.112772+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 87.0440564577,
+        "pb": 6.2178436733,
+        "roe": 7.299537859999999,
+        "roa": 4.58534301,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 39.97651492,
+        "net_margin": 5.3940207099999995,
+        "quick_ratio": 1.701622037,
+        "interest_cov": null,
+        "ev_ebitda": 47.9667377611
+      },
+      "income": {},
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2022-Q2",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -8,
+        "max": 38
+      }
     },
     "VIS": {
       "symbol": "VIS",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:27:42.898983+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:05:28.350798+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -5.7161552535,
+        "pb": 1.9101528655,
+        "roe": -28.632686670000002,
+        "roa": -4.50861689,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": -0.58673739,
+        "net_margin": -2.27419811,
+        "quick_ratio": 0.5462925785,
+        "interest_cov": null,
+        "ev_ebitda": -52.1325806577
+      },
+      "income": {},
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2022-Q1",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -5,
+        "max": 38
+      }
     },
     "VKP": {
       "symbol": "VKP",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:27:32.030896+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:05:14.095585+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -0.0835582378,
+        "pb": 0.0,
+        "roe": 0.0,
+        "roa": -34.55014023,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": -31.59045791,
+        "net_margin": -1.3439996995,
+        "quick_ratio": 0.0449855683,
+        "interest_cov": null,
+        "ev_ebitda": -15.3811515232
+      },
+      "income": {
+        "net_profit_year": -47870804.0
+      },
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -8,
+        "max": 38
+      }
     },
     "VIR": {
       "symbol": "VIR",
-      "fetched_at": "2026-05-26T14:27:40.813251+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:05:33.663089+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -11.2775440083,
+        "pb": 0.6613278913,
+        "roe": -5.69707136,
+        "roa": -2.15683612,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 38.36111291,
+        "net_margin": -39.6087240359,
+        "quick_ratio": 1.5664446124,
+        "interest_cov": null,
+        "ev_ebitda": -6.4279706252
+      },
       "income": {
         "net_profit_year": -2265032.0
       },
@@ -8417,25 +9867,77 @@
         "cf_quality": 1.79,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": -3,
         "cashflow": -5,
         "growth": 0,
-        "total": -5,
+        "total": -8,
         "max": 38
       }
     },
     "VHI": {
       "symbol": "VHI",
-      "non_stock": true,
-      "fetched_at": "2026-05-26T14:28:12.325927+07:00",
-      "schema_version": 6
+      "fetched_at": "2026-05-29T09:06:01.075959+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 676.1012642814,
+        "pb": 1.5603268714,
+        "roe": 0.20547837,
+        "roa": 0.14902896999999998,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.94557823,
+        "gross_margin": 13.19618369,
+        "net_margin": 0.7061765,
+        "quick_ratio": 2.047518461,
+        "interest_cov": null,
+        "ev_ebitda": 1382.623663009
+      },
+      "income": {},
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2021-Q4",
+      "finance_score": {
+        "fundamental": -5,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -5,
+        "max": 38
+      }
     },
     "VIM": {
       "symbol": "VIM",
-      "fetched_at": "2026-05-26T14:27:44.063075+07:00",
-      "schema_version": 6,
-      "ratio": {},
+      "fetched_at": "2026-05-29T09:05:36.922040+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 9.8247133191,
+        "pb": 0.5403433392,
+        "roe": 5.535273119999999,
+        "roa": 2.66118006,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 9.81643271,
+        "gross_margin": 14.23225605,
+        "net_margin": 1.8837145100000001,
+        "quick_ratio": 0.8622050491,
+        "interest_cov": null,
+        "ev_ebitda": 13.0912714437
+      },
       "income": {
         "net_profit_year": 1296094.0
       },
@@ -8449,11 +9951,18 @@
         "cf_quality": -5.64,
         "cf_quality_period": "annual"
       },
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": true,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 15,
         "cashflow": -10,
         "growth": 0,
-        "total": -10,
+        "total": 5,
         "max": 38
       }
     },
