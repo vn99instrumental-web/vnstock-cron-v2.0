@@ -15,53 +15,34 @@ TTL strategy:
   - Symbol xuất hiện trong top 20 nhưng không có trong cache: fetch ngay (lazy fallback)
 
 CHANGELOG:
-  v3 (2026-05-25) — FIX BUG `finance_score` KeyError:
-    - fetch_one() giờ gọi _compute_finance_score(result) trước khi return
-    - Counter trong run() tách try/except để không double-count
-    - Bump SCHEMA_VERSION 2→3
+  v3 (2026-05-25) — FIX BUG `finance_score` KeyError.
+  v4 (2026-05-25) — FIX BUG negative PE/PB bonus.
+  v5 (2026-05-26) — FIX BUG Cash Flow 100% None (KBS quarter limit=1 broken).
+  v6 (2026-05-26) — FIX BUG #8 Securities brokers CF schema.
 
-  v4 (2026-05-25) — FIX BUG negative PE/PB bonus:
-    - PE < 0 (thua lỗ) trước đây vẫn được "+10đ very cheap" → SAI
-    - Fix: PE > 0 mới áp dụng thang bonus, PE < 0 → -5đ (loss penalty)
-    - Tương tự PB: PB < 0 = vốn chủ âm → -5đ
-    - Bump SCHEMA_VERSION 3→4
+  v7 (2026-05-29) — VCI ratio_summary fallback + better empty logging:
+    Diagnostic (debug_vci_full.py) confirmed:
+      - VCI Finance.* ALL empty universally (even HPG/VCB)
+      - Company(VCI).ratio_summary() WORK với mọi mã đã test:
+        KDC (40r×61c), CCC (8r×61c), KBS-empty symbols đều có data
+      - Cover ~75% ratio fields: pe, pb, roe, roa, dividend_yield,
+        gross_margin, after_tax_profit_margin → net_margin,
+        quick_ratio, ev_to_ebitda
+      - Thiếu: eps, beta, interest_coverage (acceptable)
 
-  v5 (2026-05-26) — FIX BUG Cash Flow 100% None (KBS quarter limit=1 broken):
-    Root cause confirmed qua diagnostic:
-      KBS cash_flow(period="quarter", limit=1) trả DataFrame
-      chỉ 2 cols ['item', 'item_id'] — THIẾU period column → no data values.
+    Changes:
+      1. Sau CALL 1 (KBS ratio) nếu EMPTY → call Company(VCI).ratio_summary
+         làm fallback. Track via result["data_status"]["ratio_source"].
+      2. KBS empty calls log "⚠️ EMPTY" thay vì "✅" — phân biệt rõ
+         "call thành công" vs "có data thật".
+      3. Thêm result["data_status"] = {ratio_source, cf_available,
+         growth_available, incomplete} — minh bạch data gap.
+      4. _is_stale không re-fetch endlessly khi cf_available=False
+         (chấp nhận data gap, không spin loop).
+      5. VCI ratio_summary trả decimal (0.1274) còn KBS trả percentage
+         (12.74) → _vci_pct() normalize cho roe/roa/margins/yield.
 
-    Fix Option E:
-      1. Đổi CF call: period="quarter" → period="year", limit=1
-         (year format work bình thường: 50r × 3c với period col '2025')
-      2. Thêm 1 KBS call: income_statement(period="year", limit=1)
-         → lấy net_profit_year để compute cf_quality đúng period
-         (tránh false +5 do mismatch annual_CFO/quarterly_NP ≈ 4x)
-      3. Giữ nguyên quarter IS calls cho rev_growth_qoq, profit_growth_qoq
-         (Growth group vẫn dùng QoQ như cũ)
-
-    Trade-off:
-      - CF data giờ là annual 2025 thay vì Q1 2026
-        → Direction (cfo>0 hay <0) vẫn meaningful, thực ra ổn định hơn quarter
-        → cf_quality đúng vì NP cũng dùng annual (cùng period)
-      - +1 KBS call/symbol = +150 calls/daily run
-        (Silver limit 300/min, không vấn đề)
-
-    Bump SCHEMA_VERSION 4→5
-
-  v6 (2026-05-26) — FIX BUG #8 Securities brokers CF schema:
-    Diagnostic confirm 5/5 securities brokers (VND, VIX, VFS, SSI, HCM)
-    dùng schema khác — operating CF nằm ở key
-    `net_cash_flows_from_securities_trading_activities` thay vì
-    `operating_cash_flow`.
-
-    Fix: thêm key này vào _CFO_KEYS list. _kbs_lookup sẽ thử lần lượt
-    các keys, fallback tự nhiên (industrial dùng operating_cash_flow,
-    securities dùng key mới).
-
-    Recover thêm ~11% CF coverage (16/143 symbols miss → 0 missed).
-
-    Bump SCHEMA_VERSION 5→6
+    Bump SCHEMA_VERSION 6→7
 """
 import os
 import sys
@@ -81,7 +62,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
 import pandas as pd
-from vnstock_data import Finance
+from vnstock_data import Finance, Company   # v7: +Company for VCI fallback
 
 from utils.helpers import now_ict, safe_run, to_float
 from utils.cache import load_json, save_json
@@ -108,12 +89,13 @@ CACHE_FILE = "finance/cache.json"
 # Schema version — bump khi đổi structure/fields trong cache entry
 # Lịch sử:
 #   1 = initial
-#   2 = CF đọc từ cash_flow() thay vì balance_sheet()
-#   3 = fetch_one precompute finance_score
+#   2 = CF từ cash_flow() thay vì balance_sheet()
+#   3 = precompute finance_score
 #   4 = fix negative PE/PB scoring
-#   5 = CF year + IS year for cf_quality (KBS quarter broken)
-#   6 = securities brokers CF key added (Bug #8)
-SCHEMA_VERSION = 6
+#   5 = CF year + IS year for cf_quality
+#   6 = securities brokers CF key added
+#   7 = VCI ratio_summary fallback + data_status flag
+SCHEMA_VERSION = 7
 
 _NON_STOCK_PATTERN = _re.compile(
     r'^(VN30F|VNINDEX|HNXINDEX|HNX30|VHNDEX|E1|FUED|FUEV|SSIAM|DCDS)', _re.IGNORECASE
@@ -168,9 +150,15 @@ def _is_stale(entry: dict) -> bool:
     if "finance_score" not in entry:
         return True
 
-    ratio = entry.get("ratio", {})
-    cf    = entry.get("cashflow", {})
-    if ratio.get("pe") is not None and cf.get("cf_operating") is None:
+    # v7 CHANGE: chỉ re-fetch khi MIGHT có CF (cf_available chưa được
+    # đánh dấu False bởi run trước). Tránh spin loop với mã KBS không có CF.
+    ratio  = entry.get("ratio", {})
+    cf     = entry.get("cashflow", {})
+    status = entry.get("data_status", {})
+    cf_was_available = status.get("cf_available", True)  # default True for back-compat
+    if (ratio.get("pe") is not None
+            and cf.get("cf_operating") is None
+            and cf_was_available):
         return True
 
     try:
@@ -245,7 +233,7 @@ def _kbs_yoy_growth(df: pd.DataFrame, keys: list) -> float | None:
     period_cols = [c for c in df.columns if c not in ["item", "item_id"]]
     if len(period_cols) < 5:
         return None
-    v_latest  = _kbs_lookup(df, keys, period_cols[-1])
+    v_latest   = _kbs_lookup(df, keys, period_cols[-1])
     v_year_ago = _kbs_lookup(df, keys, period_cols[-5])
     if v_latest is None or v_year_ago is None or v_year_ago == 0:
         return None
@@ -269,9 +257,7 @@ _CFO_KEYS = [
     "operating_cash_flow",
     "net_cash_flows_from_operating_activities",
     "i_cash_flows_from_operating_activities",
-    # Securities brokers (VND/VIX/VFS/SSI/HCM/...): KBS dùng schema khác
-    # Operating CF nằm ở key này thay vì "operating_cash_flow".
-    # Diagnostic confirmed 5/5 brokers có row 72 với key này.
+    # Securities brokers schema (v6)
     "net_cash_flows_from_securities_trading_activities",
 ]
 _CFI_KEYS = [
@@ -284,6 +270,100 @@ _CFF_KEYS = [
     "net_cash_flows_from_financing_activities",
     "iii_cash_flows_from_financing_activities",
 ]
+
+
+# =====================================================
+# v7 NEW — VCI ratio_summary fallback helpers
+# =====================================================
+
+def _vci_pct(v) -> float | None:
+    """
+    VCI ratio_summary trả ratios dạng decimal (e.g. roe=0.1274).
+    KBS trả dạng percentage (e.g. roe=12.74).
+    Scoring thresholds (PE/PB không đổi, nhưng roe>10/15/20) expect KBS scale.
+
+    Normalize: nếu |v| < 1 (chắc chắn decimal) → ×100. Còn lại giữ nguyên.
+    Edge case: ROE thật < 1% sẽ bị nhầm thành 100×; chấp nhận vì hiếm.
+    """
+    if v is None:
+        return None
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return None
+    if pd.isna(v):
+        return None
+    if v == 0:
+        return 0.0
+    return v * 100 if abs(v) < 1 else v
+
+
+def _fetch_vci_ratio_fallback(symbol: str) -> dict | None:
+    """
+    Fallback khi KBS ratio empty. Dùng Company(VCI).ratio_summary().
+    Trả về dict cùng schema với KBS ratio output, hoặc None nếu fail.
+
+    Filter RATIO_TTM (trailing 12 months), lấy period mới nhất.
+    """
+    try:
+        df = Company(source="VCI", symbol=symbol).ratio_summary()
+    except Exception as e:
+        log.warning(f"  ⚠️ VCI ratio_summary {symbol}: {e}")
+        return None
+
+    if df is None or df.empty:
+        return None
+
+    # Filter RATIO_TTM nếu có cột ratio_type
+    if "ratio_type" in df.columns:
+        df_ttm = df[df["ratio_type"] == "RATIO_TTM"]
+        if not df_ttm.empty:
+            df = df_ttm
+
+    # Sort latest period (year, quarter) descending
+    sort_cols = [c for c in ("year", "quarter") if c in df.columns]
+    if sort_cols:
+        df = df.sort_values(sort_cols, ascending=False)
+
+    row = df.iloc[0]
+
+    def _get(col):
+        if col not in df.columns:
+            return None
+        v = row[col]
+        if pd.isna(v):
+            return None
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    out = {
+        "pe"          : _get("pe"),
+        "pb"          : _get("pb"),
+        "roe"         : _vci_pct(_get("roe")),
+        "roa"         : _vci_pct(_get("roa")),
+        "eps"         : None,                                # VCI không có
+        "bvps"        : None,                                # VCI không có
+        "beta"        : None,                                # VCI không có
+        "div_yield"   : _vci_pct(_get("dividend_yield")),
+        "gross_margin": _vci_pct(_get("gross_margin")),
+        "net_margin"  : _vci_pct(_get("after_tax_profit_margin")),
+        "quick_ratio" : _get("quick_ratio"),
+        "interest_cov": None,                                # VCI không có
+        "ev_ebitda"   : _get("ev_to_ebitda"),
+    }
+
+    # Có ít nhất 1 field non-null
+    if any(v is not None for v in out.values()):
+        # Period tag để debug
+        period_str = ""
+        if "year" in df.columns:
+            year = row.get("year", "")
+            qtr  = row.get("quarter", "")
+            period_str = f"{int(year)}-Q{int(qtr)}" if qtr else str(year)
+        return {"ratio": out, "period": period_str}
+    return None
 
 
 # =====================================================
@@ -366,14 +446,22 @@ def _compute_finance_score(data: dict) -> dict:
 # Fetch finance for one symbol
 # =====================================================
 
+def _log_df(symbol: str, name: str, df) -> str:
+    """v7 helper — log success/empty consistently. Return status string."""
+    if df is None:
+        log.warning(f"  ⚠️ {name} {symbol}: None")
+        return "none"
+    if df.empty:
+        log.warning(f"  ⚠️ {name} {symbol}: EMPTY")
+        return "empty"
+    log.info(f"  ✅ {name} {symbol}")
+    return "ok"
+
+
 def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
     """
-    Fetch ratio + income(quarter) + balance_sheet + cash_flow(year) + income(year)
-
-    v5 changes:
-      - CF: period="year" (KBS quarter broken)
-      - +1 call: income_statement(period="year") để compute cf_quality
-        đúng period
+    Fetch KBS ratio + income(q) + balance_sheet + cash_flow(y) + income(y).
+    v7: VCI ratio_summary fallback nếu KBS ratio empty.
     """
     if not _is_valid_stock(symbol, asset_type):
         return None
@@ -386,21 +474,29 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         "income"        : {},
         "balance"       : {},
         "cashflow"      : {},
+        # v7: data_status tracks what was actually obtained vs missing
+        "data_status"   : {
+            "ratio_source"    : None,    # "kbs" | "vci_fallback" | None
+            "cf_available"    : False,
+            "growth_available": False,
+            "incomplete"      : True,    # finalized at the end
+        },
     }
 
-    # ── CALL 1: RATIO (quarter) ──
+    # ── CALL 1: RATIO (quarter) — KBS ──
     df_ratio = None
     try:
         df_ratio = Finance(source="KBS", symbol=symbol).ratio(period="quarter", limit=1)
-        log.info(f"  ✅ ratio {symbol}")
+        _log_df(symbol, "ratio_kbs", df_ratio)
     except ValueError as e:
         log.warning(f"  [{symbol}] invalid: {e}")
         return None
     except Exception as e:
-        log.warning(f"  ⚠️ ratio {symbol}: {e}")
+        log.warning(f"  ⚠️ ratio_kbs {symbol}: {e}")
     time.sleep(API_CALL_DELAY)
 
     if df_ratio is not None and not df_ratio.empty:
+        # Path A: KBS ratio has data
         period_cols      = [c for c in df_ratio.columns if c not in ("item", "item_id")]
         result["period"] = period_cols[-1] if period_cols else ""
         r = result["ratio"]
@@ -417,13 +513,29 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         r["quick_ratio"]  = _kbs_lookup(df_ratio, ["quick_ratio"])
         r["interest_cov"] = _kbs_lookup(df_ratio, ["interest_coverage"])
         r["ev_ebitda"]    = _kbs_lookup(df_ratio, ["ev_ebitda"])
+        result["data_status"]["ratio_source"] = "kbs"
+    else:
+        # Path B: KBS empty → VCI fallback (v7)
+        log.info(f"  ↪︎ KBS ratio empty for {symbol} — trying VCI ratio_summary fallback")
+        fallback = _fetch_vci_ratio_fallback(symbol)
+        time.sleep(API_CALL_DELAY)
+        if fallback:
+            result["ratio"]  = fallback["ratio"]
+            result["period"] = fallback.get("period", "")
+            result["data_status"]["ratio_source"] = "vci_fallback"
+            log.info(
+                f"  ✅ ratio_vci {symbol}: PE={result['ratio'].get('pe')} "
+                f"PB={result['ratio'].get('pb')} ROE={result['ratio'].get('roe')}"
+            )
+        else:
+            log.warning(f"  ⚠️ ratio fallback {symbol}: VCI also empty")
 
     # ── CALL 2: INCOME STATEMENT QUARTER (for growth QoQ) ──
     df_is = None
     try:
         df_is = Finance(source="KBS", symbol=symbol).income_statement(
             period="quarter", limit=4)
-        log.info(f"  ✅ income_q {symbol}")
+        _log_df(symbol, "income_q", df_is)
     except ValueError:
         return None
     except Exception as e:
@@ -441,12 +553,14 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         i["profit_growth_qoq"] = _kbs_growth(df_is, _NET_PROFIT_KEYS)
         i["rev_growth_yoy"]    = _kbs_yoy_growth(df_is, _REVENUE_KEYS)
         i["profit_growth_yoy"] = _kbs_yoy_growth(df_is, _NET_PROFIT_KEYS)
+        if i.get("rev_growth_qoq") is not None or i.get("profit_growth_qoq") is not None:
+            result["data_status"]["growth_available"] = True
 
     # ── CALL 3: BALANCE SHEET (quarter) ──
     df_bs = None
     try:
         df_bs = Finance(source="KBS", symbol=symbol).balance_sheet(period="quarter", limit=1)
-        log.info(f"  ✅ balance_sheet {symbol}")
+        _log_df(symbol, "balance_sheet", df_bs)
     except ValueError:
         return None
     except Exception as e:
@@ -473,14 +587,10 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
             b["debt_to_equity"] = round((b["total_assets"] - b["equity"]) / b["equity"], 3)
 
     # ── CALL 4: CASH FLOW YEAR ──
-    # v5 FIX: period="year" thay vì "quarter"
-    # Lý do: KBS cash_flow(period="quarter", limit=1) trả về DataFrame
-    # CHỈ 2 cols [item, item_id] — thiếu period column → no data values.
-    # Year format work bình thường: 50r × 3c với period col '2025'.
     df_cf = None
     try:
         df_cf = Finance(source="KBS", symbol=symbol).cash_flow(period="year", limit=1)
-        log.info(f"  ✅ cash_flow_y {symbol}")
+        _log_df(symbol, "cash_flow_y", df_cf)
     except ValueError:
         return None
     except Exception as e:
@@ -492,9 +602,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         c["cf_operating"] = _kbs_lookup(df_cf, _CFO_KEYS)
         c["cf_investing"] = _kbs_lookup(df_cf, _CFI_KEYS)
         c["cf_financing"] = _kbs_lookup(df_cf, _CFF_KEYS)
-
-        # Mark this is annual CF, not quarterly
-        c["cf_period"] = "annual"
+        c["cf_period"]    = "annual"
 
         if c.get("cf_operating") and c.get("cf_investing"):
             c["cf_free"] = round(c["cf_operating"] + c["cf_investing"], 2)
@@ -502,16 +610,16 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         log.info(f"  CF {symbol}: op={c.get('cf_operating')} "
                  f"inv={c.get('cf_investing')} fin={c.get('cf_financing')}")
 
+        if c.get("cf_operating") is not None:
+            result["data_status"]["cf_available"] = True
+
     # ── CALL 5: INCOME STATEMENT YEAR (cho cf_quality đúng period) ──
-    # v5 NEW: fetch annual net_profit để compute cf_quality = cfo_y / np_y
-    # Trước đây dùng net_profit quarter → ratio sai khoảng 4x (false positives).
     df_is_y = None
     try:
         df_is_y = Finance(source="KBS", symbol=symbol).income_statement(
             period="year", limit=1)
-        log.info(f"  ✅ income_y {symbol}")
+        _log_df(symbol, "income_y", df_is_y)
     except ValueError:
-        # IS year fail không kill cả symbol — chỉ skip cf_quality
         pass
     except Exception as e:
         log.warning(f"  ⚠️ income_y {symbol}: {e}")
@@ -520,10 +628,8 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
     net_profit_year = None
     if df_is_y is not None and not df_is_y.empty:
         net_profit_year = _kbs_lookup(df_is_y, _NET_PROFIT_KEYS)
-        # Store annual NP for transparency / debugging
         result["income"]["net_profit_year"] = net_profit_year
 
-    # Compute cf_quality with SAME period (annual / annual)
     cfo = result["cashflow"].get("cf_operating")
     if cfo and net_profit_year and net_profit_year != 0:
         result["cashflow"]["cf_quality"] = round(cfo / net_profit_year, 2)
@@ -531,8 +637,6 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         log.info(f"  CF quality {symbol}: cfo_y/np_y "
                  f"= {cfo:,.0f}/{net_profit_year:,.0f} "
                  f"= {result['cashflow']['cf_quality']}")
-    elif cfo and not net_profit_year:
-        log.debug(f"  {symbol}: cf_quality skipped (no annual NP)")
 
     # ── has_data check ──
     has_data = any([
@@ -551,6 +655,14 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
             "fetched_at"    : now_ict().isoformat(),
             "schema_version": SCHEMA_VERSION,
         }
+
+    # v7: finalize incomplete flag
+    status = result["data_status"]
+    status["incomplete"] = (
+        status["ratio_source"] is None
+        or not status["cf_available"]
+        or not status["growth_available"]
+    )
 
     # Precompute finance_score
     result["finance_score"] = _compute_finance_score(result)
@@ -590,9 +702,9 @@ _VALID_EXCHANGES = {"HSX", "HOSE", "HNX", "HSX (HOSE)"}
 
 
 def get_scan_universe(industry_map: list) -> list[str]:
-    seen     = set()
-    symbols  = []
-    skip_ex  = 0
+    seen      = set()
+    symbols   = []
+    skip_ex   = 0
     skip_type = 0
 
     for row in industry_map:
@@ -658,9 +770,11 @@ def run(extra_symbols: list[str] | None = None) -> dict:
     fetched_ok        = 0
     fetched_non_stock = 0
     fetched_err       = 0
+    fetched_vci_fb    = 0  # v7: count VCI fallback usage
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         future_map = {executor.submit(fetch_one, sym): sym for sym in to_fetch}
+
         for future in as_completed(future_map):
             sym = future_map[future]
 
@@ -684,19 +798,23 @@ def run(extra_symbols: list[str] | None = None) -> dict:
 
             cache[sym] = result
             fetched_ok += 1
+            if (result.get("data_status") or {}).get("ratio_source") == "vci_fallback":
+                fetched_vci_fb += 1
             try:
-                fs  = result.get("finance_score") or {}
-                pe  = result.get("ratio",    {}).get("pe")
-                roe = result.get("ratio",    {}).get("roe")
-                cfo = result.get("cashflow", {}).get("cf_operating")
-                cfq = result.get("cashflow", {}).get("cf_quality")
+                fs     = result.get("finance_score") or {}
+                pe     = result.get("ratio",    {}).get("pe")
+                roe    = result.get("ratio",    {}).get("roe")
+                cfo    = result.get("cashflow", {}).get("cf_operating")
+                cfq    = result.get("cashflow", {}).get("cf_quality")
+                rsrc   = (result.get("data_status") or {}).get("ratio_source", "?")
                 log.info(
                     f"  ✅ {sym} "
                     f"PE={pe} ROE={roe} CFO={cfo} CFq={cfq} "
                     f"score={fs.get('total', 'n/a')} "
                     f"(F={fs.get('fundamental', 'n/a')} "
                     f"CF={fs.get('cashflow', 'n/a')} "
-                    f"G={fs.get('growth', 'n/a')})"
+                    f"G={fs.get('growth', 'n/a')}) "
+                    f"src={rsrc}"
                 )
             except Exception as e:
                 log.warning(f"  ⚠️ {sym}: log format error (data đã cache): {e}")
@@ -704,7 +822,8 @@ def run(extra_symbols: list[str] | None = None) -> dict:
     save_cache(cache)
 
     log.info(
-        f"Done: {fetched_ok} ok, {fetched_non_stock} non-stock, "
+        f"Done: {fetched_ok} ok ({fetched_vci_fb} via VCI fallback), "
+        f"{fetched_non_stock} non-stock, "
         f"{fetched_err} failed, {len(to_skip)} from cache. "
         f"Total in cache: {len(cache)} symbols"
     )
