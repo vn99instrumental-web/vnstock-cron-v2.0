@@ -1,0 +1,217 @@
+name: Backtest Calibration
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: |
+          Chế độ chạy:
+            full      = build data (fetch VCI) + evaluate + grid search (~20 phút)
+            eval-only = chỉ evaluate/grid search, dùng dataset đã cache (~2 phút)
+            quick     = test nhanh 10 symbols (~3 phút)
+        required: true
+        default: 'quick'
+        type: choice
+        options:
+          - quick
+          - full
+          - eval-only
+      horizon:
+        description: 'Forward return horizon (ngày): 1, 3, hoặc 5'
+        required: false
+        default: '5'
+        type: choice
+        options:
+          - '1'
+          - '3'
+          - '5'
+          - 'all'
+      threshold:
+        description: '|score| threshold để tính hit rate (mặc định: 20)'
+        required: false
+        default: '20'
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45   # đủ cho full run 150 symbols
+
+    env:
+      VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:   ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # ── Restore vnstock packages (dùng chung cache với production) ──
+      - name: Compute cache key
+        id: cache-suffix
+        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+
+      - name: Restore vnstock cache
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
+
+      - name: Fallback install nếu cache miss
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          pip install requests
+          mkdir -p /home/runner/.vnstock /home/runner/.config/matplotlib
+          wget -q https://vnstocks.com/files/vnstock-cli-installer.run -O installer.run
+          chmod +x installer.run
+          ./installer.run -- --non-interactive \
+            --api-key "$VNSTOCK_API_KEY" \
+            --venv-path "$VNSTOCK_VENV_PATH" \
+            --language en
+          wget -q https://vnstocks.com/files/generate_user_info.min.py \
+            -O generate_user_info.min.py
+          source /opt/vnstock/.venv/bin/activate
+          python3 generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
+
+      # ── Restore dataset cache (cho eval-only và quick mode) ─────────
+      - name: Restore dataset cache
+        id: dataset-cache
+        uses: actions/cache@v4
+        with:
+          path: backtest_output/dataset.parquet
+          key: backtest-dataset-v1-${{ hashFiles('backtest/bt_config.py') }}
+          restore-keys: |
+            backtest-dataset-v1-
+
+      # ── Install thêm pandas/pyarrow nếu chưa có ────────────────────
+      - name: Install backtest dependencies
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          pip install pandas pyarrow --quiet
+
+      # ── Run backtest ─────────────────────────────────────────────────
+      - name: Run — quick (10 symbols)
+        if: ${{ github.event.inputs.mode == 'quick' }}
+        run: |
+          mkdir -p backtest_output/reports
+          source /opt/vnstock/.venv/bin/activate
+          python backtest/bt_run.py \
+            --max 10 \
+            --horizon ${{ github.event.inputs.horizon == 'all' && '5' || github.event.inputs.horizon }} \
+            --threshold ${{ github.event.inputs.threshold }}
+
+      - name: Run — full (tất cả symbols, fetch VCI)
+        if: ${{ github.event.inputs.mode == 'full' }}
+        run: |
+          mkdir -p backtest_output/reports
+          source /opt/vnstock/.venv/bin/activate
+          if [ "${{ github.event.inputs.horizon }}" = "all" ]; then
+            python backtest/bt_run.py \
+              --threshold ${{ github.event.inputs.threshold }} \
+              --all-horizons
+          else
+            python backtest/bt_run.py \
+              --horizon ${{ github.event.inputs.horizon }} \
+              --threshold ${{ github.event.inputs.threshold }}
+          fi
+
+      - name: Run — eval-only (dùng dataset cache)
+        if: ${{ github.event.inputs.mode == 'eval-only' }}
+        run: |
+          mkdir -p backtest_output/reports
+          source /opt/vnstock/.venv/bin/activate
+          if [ -f backtest_output/dataset.parquet ]; then
+            echo "Dataset cache found — skip build"
+            if [ "${{ github.event.inputs.horizon }}" = "all" ]; then
+              python backtest/bt_run.py \
+                --skip-build \
+                --threshold ${{ github.event.inputs.threshold }} \
+                --all-horizons
+            else
+              python backtest/bt_run.py \
+                --skip-build \
+                --horizon ${{ github.event.inputs.horizon }} \
+                --threshold ${{ github.event.inputs.threshold }}
+            fi
+          else
+            echo "⚠️ Dataset cache không có — fallback sang quick mode (10 symbols)"
+            python backtest/bt_run.py \
+              --max 10 \
+              --horizon ${{ github.event.inputs.horizon == 'all' && '5' || github.event.inputs.horizon }} \
+              --threshold ${{ github.event.inputs.threshold }}
+          fi
+
+      # ── In kết quả vào log (đọc ngay trên GitHub Actions UI) ────────
+      - name: Print summary reports
+        if: always()
+        run: |
+          echo ""
+          echo "╔══════════════════════════════════════════════════════╗"
+          echo "║              BACKTEST RESULTS SUMMARY                ║"
+          echo "╚══════════════════════════════════════════════════════╝"
+
+          for f in backtest_output/reports/summary_h*.txt; do
+            if [ -f "$f" ]; then
+              echo ""
+              echo "────────────────────────────────────────"
+              echo "  $f"
+              echo "────────────────────────────────────────"
+              cat "$f"
+            fi
+          done
+
+          echo ""
+          echo "────────────────────────────────────────"
+          echo "  Grid search top 5 (hit_avg sorted)"
+          echo "────────────────────────────────────────"
+          for f in backtest_output/reports/grid_caps_h*.csv; do
+            if [ -f "$f" ]; then
+              echo ""
+              echo "  $f:"
+              # In 6 dòng đầu (header + top 5)
+              head -6 "$f"
+            fi
+          done
+
+          echo ""
+          echo "────────────────────────────────────────"
+          echo "  Walk-forward validation"
+          echo "────────────────────────────────────────"
+          for f in backtest_output/reports/walk_forward_h*.csv; do
+            if [ -f "$f" ]; then
+              echo ""
+              echo "  $f:"
+              cat "$f"
+            fi
+          done
+
+      # ── Cache dataset để eval-only lần sau nhanh hơn ────────────────
+      - name: Save dataset cache
+        if: ${{ github.event.inputs.mode != 'eval-only' && success() }}
+        uses: actions/cache/save@v4
+        with:
+          path: backtest_output/dataset.parquet
+          key: backtest-dataset-v1-${{ hashFiles('backtest/bt_config.py') }}
+
+      # ── Upload artifacts (tải về nếu muốn phân tích thêm) ───────────
+      - name: Upload reports as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest-reports-${{ github.run_id }}
+          path: backtest_output/reports/
+          retention-days: 30
+          if-no-files-found: warn
