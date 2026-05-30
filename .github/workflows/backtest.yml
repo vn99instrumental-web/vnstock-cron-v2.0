@@ -69,46 +69,37 @@ jobs:
           restore-keys: |
             vnstock-stable-v4-
 
-      # ── Venv guard: install nếu cache miss HOẶC venv không ở đúng path ─
-      # Copy y chang pattern production (cron_daily.yml):
-      #   cache hit không đảm bảo venv ở /opt/ — tar có thể extract sai path.
-      #   Dùng VENV_PIP guard để detect và fallback install khi cần.
-      - name: Ensure venv exists (install nếu cần)
+      # ── Verify venv + dependencies ──────────────────────────────────
+      # Diagnostic xác nhận: venv ở /opt/vnstock/.venv ĐÚNG sau cache restore.
+      # Venv KHÔNG có pip executable (chỉ có python) → dùng `python -m pip`.
+      # pandas + pyarrow ĐÃ CÓ SẴN trong venv → không cần install gì.
+      - name: Verify venv + dependencies
         run: |
-          VENV_PIP="/opt/vnstock/.venv/bin/pip"
-          mkdir -p /home/runner/.vnstock /home/runner/.config/matplotlib
+          VENV_PY="/opt/vnstock/.venv/bin/python"
 
-          if [ ! -x "$VENV_PIP" ]; then
-            echo "⚠️ Venv không tìm thấy tại $VENV_PIP — chạy installer..."
-            pip install requests
-            wget -q https://vnstocks.com/files/vnstock-cli-installer.run -O installer.run
-            chmod +x installer.run
-            ./installer.run -- --non-interactive \
-              --api-key "$VNSTOCK_API_KEY" \
-              --venv-path "$VNSTOCK_VENV_PATH" \
-              --language en
-            wget -q https://vnstocks.com/files/generate_user_info.min.py \
-              -O generate_user_info.min.py
-            source /opt/vnstock/.venv/bin/activate
-            python3 generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
-          else
-            echo "✓ Venv tìm thấy: $VENV_PIP"
+          if [ ! -x "$VENV_PY" ]; then
+            echo "❌ Venv python không tìm thấy tại $VENV_PY"
+            echo "   Cache restore có thể fail — kiểm tra step Restore vnstock cache"
+            exit 1
           fi
 
-          echo "=== Verify packages ==="
-          $VENV_PIP list 2>&1 | grep -iE "vnstock|pandas|pyarrow" || echo "(none)"
-
-      # ── Install pandas/pyarrow vào venv (idempotent) ────────────────
-      - name: Install backtest dependencies
-        run: |
-          /opt/vnstock/.venv/bin/pip install pandas pyarrow --quiet
-          echo "=== Verify ==="
-          /opt/vnstock/.venv/bin/python -c "
-          import vnstock_ta, pandas, pyarrow
-          print(f'vnstock_ta: OK')
-          print(f'pandas: {pandas.__version__}')
-          print(f'pyarrow: {pyarrow.__version__}')
+          echo "✓ Venv python: $VENV_PY"
+          echo "=== Verify imports ==="
+          $VENV_PY -c "
+          import sys
+          print(f'Python: {sys.version.split()[0]}')
+          import vnstock_ta;  print('vnstock_ta: OK')
+          import vnstock_data; print('vnstock_data: OK')
+          import pandas;      print(f'pandas: {pandas.__version__}')
+          import pyarrow;     print(f'pyarrow: {pyarrow.__version__}')
+          import numpy;       print(f'numpy: {numpy.__version__}')
           "
+
+          # Fallback: cài pandas/pyarrow qua python -m pip nếu thiếu
+          $VENV_PY -c "import pandas, pyarrow" 2>/dev/null || {
+            echo "⚠️ pandas/pyarrow thiếu — cài qua python -m pip"
+            $VENV_PY -m pip install pandas pyarrow --quiet
+          }
 
       # ── Restore dataset cache (cho eval-only và quick mode) ─────────
       - name: Restore dataset cache
