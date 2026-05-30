@@ -43,6 +43,28 @@ CHANGELOG:
          (12.74) → _vci_pct() normalize cho roe/roa/margins/yield.
 
     Bump SCHEMA_VERSION 6→7
+
+  v8 (2026-05-30) — Curated universe selection (VN100 + HNX30).
+    Diagnostic (debug_index_groups.py) confirmed via Listing.symbols_by_group:
+      - "VN100" → 100 HSX large/mid-cap (returns pandas Series)
+      - "HNX30" → 30 top HNX
+      - "VN30"  → subset of VN100 (không cần thêm)
+      - Tên khác (VN-100, VNX100, HNX-30...) → RetryError
+
+    Vấn đề cũ: get_scan_universe lấy 150 mã ĐẦU TIÊN industry_map (Z→A order)
+    → toàn penny V→Y, bỏ hết blue-chip A→U (VNM/VCB/VIC/HPG/FPT...).
+
+    Fix (chiến lược B — superset của A):
+      Priority order, dedupe, cap MAX_SYMBOLS:
+        1. VN100  (100) — curated large/mid HSX
+        2. HNX30  (30)  — curated top HNX        → core 130 (= "A", luôn có đủ)
+        3. VNSML  fill  — small-cap index (curated) cho ~20 slot còn lại
+        4. industry_map — last-resort fill nếu index API fail
+        5. industry_map first-150 — ultimate fallback nếu MỌI index empty
+      → B ⊇ A: core VN100+HNX30 luôn được add TRƯỚC nên không bao giờ mất.
+      → Mọi bước bọc try/except: daily scan không bao giờ chết nếu API đổi.
+
+    Không bump SCHEMA_VERSION (entry schema không đổi, chỉ đổi mã nào được scan).
 """
 import os
 import sys
@@ -62,7 +84,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
 import pandas as pd
-from vnstock_data import Finance, Company   # v7: +Company for VCI fallback
+from vnstock_data import Finance, Company, Listing   # v7: +Company  v8: +Listing
 
 from utils.helpers import now_ict, safe_run, to_float
 from utils.cache import load_json, save_json
@@ -700,33 +722,108 @@ def save_cache(symbols_dict: dict) -> None:
 
 _VALID_EXCHANGES = {"HSX", "HOSE", "HNX", "HSX (HOSE)"}
 
+# v8: Curated index groups (confirmed working via Listing.symbols_by_group)
+#   Core = VN100 + HNX30 (130 mã) — luôn add trước → universe ⊇ core
+#   Fill = VNSML (small-cap index) cho slot còn lại tới MAX_SYMBOLS
+_CORE_INDEX_GROUPS = ["VN100", "HNX30"]
+_FILL_INDEX_GROUP  = "VNSML"
 
-def get_scan_universe(industry_map: list) -> list[str]:
-    seen      = set()
-    symbols   = []
-    skip_ex   = 0
-    skip_type = 0
 
+def _fetch_index_members(group: str) -> list[str]:
+    """
+    Lấy danh sách thành viên 1 index qua Listing.symbols_by_group.
+    Trả [] nếu fail (RetryError/empty) — caller tự fallback.
+    symbols_by_group trả pandas Series (không phải DataFrame).
+    """
+    try:
+        res = Listing(source="VCI").symbols_by_group(group=group)
+    except Exception as e:
+        log.warning(f"  ⚠️ symbols_by_group({group}) failed: {type(e).__name__}")
+        return []
+
+    if res is None:
+        return []
+    try:
+        if isinstance(res, pd.Series):
+            syms = res.dropna().astype(str).tolist()
+        elif isinstance(res, pd.DataFrame):
+            if res.empty:
+                return []
+            col = "symbol" if "symbol" in res.columns else res.columns[0]
+            syms = res[col].dropna().astype(str).tolist()
+        elif isinstance(res, (list, tuple)):
+            syms = [str(s) for s in res]
+        else:
+            return []
+    except Exception as e:
+        log.warning(f"  ⚠️ parse {group} members: {e}")
+        return []
+
+    return [s.strip().upper() for s in syms if s and s.strip()]
+
+
+def _industry_map_symbols(industry_map: list) -> list[str]:
+    """Mã hợp lệ từ industry_map (HSX/HNX, stock only) — dùng cho fill/fallback."""
+    out = []
     for row in industry_map:
         sym = row.get("symbol") or row.get("ticker") or row.get("code")
         if not sym:
             continue
         exchange = (row.get("exchange") or "").upper().strip()
         if exchange and exchange not in _VALID_EXCHANGES:
-            skip_ex += 1
             continue
         asset_type = row.get("type") or row.get("asset_type")
         if not _is_valid_stock(sym, asset_type):
-            skip_type += 1
             continue
-        if sym not in seen:
-            seen.add(sym)
-            symbols.append(sym)
-        if len(symbols) >= MAX_SYMBOLS:
-            break
+        out.append(str(sym).strip().upper())
+    return out
 
-    log.info(f"  Skipped: {skip_ex} UPCOM, {skip_type} non-stock (warrant/ETF)")
-    return symbols
+
+def get_scan_universe(industry_map: list) -> list[str]:
+    """
+    v8 — Chiến lược B (superset của core):
+      1. VN100 + HNX30 (core 130, curated) — add TRƯỚC, luôn đủ
+      2. VNSML fill cho ~20 slot còn lại (curated small-cap)
+      3. industry_map fill nếu index fill thiếu
+      4. industry_map first-N nếu MỌI index empty (ultimate fallback)
+    """
+    seen: set = set()
+    universe: list[str] = []
+
+    def _add(syms: list[str], label: str):
+        added = 0
+        for s in syms:
+            if len(universe) >= MAX_SYMBOLS:
+                break
+            if _is_valid_stock(s) and s not in seen:
+                seen.add(s)
+                universe.append(s)
+                added += 1
+        log.info(f"  + {label}: +{added} (total {len(universe)})")
+
+    # 1) Core curated: VN100 + HNX30
+    for grp in _CORE_INDEX_GROUPS:
+        if len(universe) >= MAX_SYMBOLS:
+            break
+        _add(_fetch_index_members(grp), grp)
+    core_count = len(universe)
+
+    # 2) Fill: VNSML small-cap (curated)
+    if len(universe) < MAX_SYMBOLS:
+        _add(_fetch_index_members(_FILL_INDEX_GROUP), _FILL_INDEX_GROUP)
+
+    # 3) Fill: industry_map (nếu vẫn thiếu)
+    if len(universe) < MAX_SYMBOLS:
+        _add(_industry_map_symbols(industry_map), "industry_map")
+
+    # 4) Ultimate fallback: index API hỏng hoàn toàn
+    if not universe:
+        log.warning("  ⚠️ ALL index sources empty — fallback industry_map first-N")
+        _add(_industry_map_symbols(industry_map), "industry_map(fallback)")
+
+    log.info(f"  Universe: {len(universe)} symbols "
+             f"(core VN100+HNX30={core_count}, fill={len(universe)-core_count})")
+    return universe
 
 
 def run(extra_symbols: list[str] | None = None) -> dict:
