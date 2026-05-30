@@ -96,11 +96,15 @@ jobs:
             backtest-dataset-v1-
 
       # ── Install thêm pandas/pyarrow nếu chưa có ────────────────────
+      # Dùng venv pip trực tiếp — cùng pattern với cron_daily.yml
+      # KHÔNG dùng `source activate && pip` vì shell context không stick
       - name: Install backtest dependencies
         run: |
           mkdir -p /home/runner/.config/matplotlib
-          source /opt/vnstock/.venv/bin/activate
-          pip install pandas pyarrow --quiet
+          /opt/vnstock/.venv/bin/pip install pandas pyarrow --quiet
+          echo "=== Verify vnstock_ta trong venv ==="
+          /opt/vnstock/.venv/bin/python -c "import vnstock_ta; print('vnstock_ta OK')" \
+            || echo "⚠️ vnstock_ta không available trong venv"
 
       # ── Run backtest ─────────────────────────────────────────────────
       - name: Run — quick (10 symbols)
