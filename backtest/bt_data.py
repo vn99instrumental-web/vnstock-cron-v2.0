@@ -149,7 +149,15 @@ def compute_ta(df: pd.DataFrame, symbol: str = "") -> pd.DataFrame:
     Mỗi ngày chỉ thấy data ≤ ngày đó (rolling window, không look-ahead).
     """
     try:
-        from vnstock_ta import Indicators
+        from vnstock_ta import Indicators  # noqa: F401 — verify import trước
+    except ImportError as e:
+        raise ImportError(
+            f"vnstock_ta không available trong Python environment hiện tại.\n"
+            f"Trên GitHub Actions: dùng 'source /opt/vnstock/.venv/bin/activate' trước.\n"
+            f"Chi tiết: {e}"
+        )
+
+    try:
         ind = Indicators(df)
 
         df = df.copy()
@@ -219,10 +227,8 @@ def compute_ta(df: pd.DataFrame, symbol: str = "") -> pd.DataFrame:
         df["vol_ma20"] = df["volume"].rolling(20).mean()
         df["vol_ratio"] = df["volume"] / df["vol_ma20"].replace(0, np.nan)
 
-    except ImportError:
-        log.error("vnstock_ta không available — TA columns sẽ null")
     except Exception as e:
-        log.warning(f"  {symbol}: TA error — {e}")
+        log.warning(f"  {symbol}: TA computation error — {e}")
 
     return df
 
@@ -460,6 +466,25 @@ def build_dataset(max_symbols: int | None = None) -> pd.DataFrame:
     """
     BT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output_path = BT_OUTPUT_DIR / "dataset.parquet"
+
+    # ── Verify dependencies trước khi fetch bất cứ thứ gì ─────────────
+    try:
+        import vnstock_ta  # noqa: F401
+        log.info("vnstock_ta: OK")
+    except ImportError:
+        log.error(
+            "vnstock_ta không available!\n"
+            "Đảm bảo chạy trong venv: source /opt/vnstock/.venv/bin/activate"
+        )
+        return pd.DataFrame()
+
+    try:
+        import pandas as pd  # noqa: F401
+        import pyarrow  # noqa: F401
+        log.info("pandas + pyarrow: OK")
+    except ImportError as e:
+        log.error(f"Missing dependency: {e}")
+        return pd.DataFrame()
 
     symbols = load_universe()
     if max_symbols:
