@@ -19,6 +19,18 @@ CHANGELOG:
       10. Bull-trap detection (confidence field + pattern flag)
       11. PE — kept as-is (KBS pe_ratio is typically TTM)
 
+  2026-06-01 — Phase 2.11 SIGN CALIBRATION (backtest 281 symbols, 15 months):
+    Backtest xác nhận thị trường VN mean-reverting ở khung 1-5 ngày.
+    V2 sửa dấu đạt hit_avg 0.550 (vs 0.480), ổn định 13/15 tháng.
+    Ba thay đổi có bằng chứng vững nhất:
+      A. Price vs EMA200 → ĐẢO thành mean-reversion (spearman -0.055)
+         Dùng % distance: xa trên → trừ, xa dưới → cộng
+      B. CMF → ĐẢO (spearman -0.043): inflow mạnh → overbought → trừ
+      C. MFI → ĐỔI sang trend-following (threshold edge +0.58%):
+         >60 bullish, <40 bearish (KHÔNG còn mean-rev <20/>80)
+    GIỮ NGUYÊN: RSI, BB (đã đúng mean-rev), EMA cross, Supertrend, ADX,
+                MACD, Stoch, và tất cả group khác. Caps không đổi.
+
   New thresholds: ≥80 SB | ≥40 BUY | ≥-15 NEUTRAL | ≥-40 SELL | <-40 SS
 
   New output fields:
@@ -292,18 +304,20 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
         if not volatility_ok: label += "(flat×0.5)"
         add("trend", pts, label)
 
-    # Price vs EMA200 — major long-term level (Phase 2.7 NEW)
+    # Price vs EMA200 — MEAN-REVERSION (Phase 2.11 calibrated: spearman -0.055)
+    # Backtest: giá xa TRÊN EMA200 → dễ điều chỉnh giảm; xa DƯỚI → dễ bật lên.
+    # Dùng % distance để bắt mức độ overextension thay vì chỉ trên/dưới.
     if price and ema200:
-        if price > ema200:
-            add("trend",  5, f"Price>EMA200 (LT bullish)")
-        else:
-            add("trend", -5, f"Price<EMA200 (LT bearish)")
+        dist_pct = (price - ema200) / ema200 * 100
+        if dist_pct > 15:    add("trend", -8, f"Price {dist_pct:.0f}%>EMA200 (overextended)")
+        elif dist_pct > 5:   add("trend", -5, f"Price {dist_pct:.0f}%>EMA200 (extended)")
+        elif dist_pct < -15: add("trend",  8, f"Price {dist_pct:.0f}%<EMA200 (oversold)")
+        elif dist_pct < -5:  add("trend",  5, f"Price {dist_pct:.0f}%<EMA200 (below)")
     elif price and ema20:
-        # Fallback if no EMA200 (history < 200 days)
-        if price > ema20:
-            add("trend",  3, "Price>EMA20 (no EMA200)")
-        else:
-            add("trend", -3, "Price<EMA20 (no EMA200)")
+        # Fallback nếu chưa đủ 200 ngày (history < 200) — cũng mean-rev
+        dist20 = (price - ema20) / ema20 * 100
+        if dist20 > 5:    add("trend", -3, "Price>EMA20 extended (no EMA200)")
+        elif dist20 < -5: add("trend",  3, "Price<EMA20 (no EMA200)")
 
     # ADX trend strength
     if adx:
@@ -354,14 +368,19 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     # ═════════════════════════════════════════════
     cmf = row.get("cmf")
     if cmf is not None:
-        if cmf > 0.1:    add("volume",  8, f"CMF={cmf} inflow")
-        elif cmf < -0.1: add("volume", -8, f"CMF={cmf} outflow")
+        # MEAN-REVERSION (Phase 2.11 calibrated: spearman -0.043)
+        # Inflow mạnh (CMF cao) → đã mua nhiều → dễ điều chỉnh giảm.
+        # Outflow mạnh (CMF thấp) → bán quá đà → dễ bật lên.
+        if cmf > 0.1:    add("volume", -8, f"CMF={cmf} inflow (overbought)")
+        elif cmf < -0.1: add("volume",  8, f"CMF={cmf} outflow (oversold)")
 
     mfi = row.get("mfi")
     if mfi is not None:
-        if mfi < 20:   add("volume",  8, f"MFI={mfi} oversold")
-        elif mfi > 80: add("volume", -5, f"MFI={mfi} overbought")
-        else:          add("volume",   0, f"MFI={mfi} neutral")
+        # TREND-FOLLOWING (Phase 2.11 calibrated: threshold edge +0.58%)
+        # Backtest: MFI cao = momentum dòng tiền vào → bullish (KHÔNG mean-rev).
+        # Quan hệ phi tuyến — chỉ vùng 40-80 mới predictive theo hướng trend.
+        if mfi > 60:   add("volume",  6, f"MFI={mfi} strong inflow")
+        elif mfi < 40: add("volume", -6, f"MFI={mfi} weak")
 
     obv       = row.get("obv")
     ema_cross = row.get("ema_cross_pct")
@@ -759,7 +778,8 @@ if __name__ == "__main__":
     # signals.csv
     news_evidence_col = df_signals["news_evidence"].apply(
         lambda evs: " | ".join(
-            f"{e.get('type','?')}·{e.get('source','?')}·"
+            f"{e.get('type','?')}·"
+            f"{e.get('source','?')}·"
             f"{e.get('title','')[:40]}·"
             f"{str(e.get('time',''))[5:16]}·"
             f"{e.get('contribution', 0):+.2f}"
