@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-01T13:23:00.963599+07:00",
+  "generated_at": "2026-06-01T13:48:29.612418+07:00",
   "schema_version": 7,
   "ttl_days": 30,
-  "count": 325,
+  "count": 327,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -19035,6 +19035,98 @@
         "cashflow": 0,
         "growth": 2,
         "total": -1,
+        "max": 38
+      }
+    },
+    "TTF": {
+      "symbol": "TTF",
+      "fetched_at": "2026-06-01T13:48:19.030372+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 35.47,
+        "pb": 3.24,
+        "roe": 5.62,
+        "roa": 1.24,
+        "eps": 86.12,
+        "bvps": 957.0,
+        "beta": 0.66,
+        "div_yield": 0.0,
+        "gross_margin": 20.75,
+        "net_margin": 4.56,
+        "quick_ratio": 1.13,
+        "interest_cov": 1.5,
+        "ev_ebitda": 22.64
+      },
+      "income": {},
+      "balance": {},
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": false,
+        "growth_available": false,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -8,
+        "cashflow": 0,
+        "growth": 0,
+        "total": -8,
+        "max": 38
+      }
+    },
+    "FIT": {
+      "symbol": "FIT",
+      "fetched_at": "2026-06-01T13:48:19.011398+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 67.506070518,
+        "pb": 0.3383467637,
+        "roe": 0.50092298,
+        "roa": 0.23099399999999998,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 16.3756843,
+        "net_margin": 0.70427224,
+        "quick_ratio": 2.0083598458,
+        "interest_cov": null,
+        "ev_ebitda": 36.8926075604
+      },
+      "income": {
+        "revenue": 538777789.0,
+        "gross_profit": 99339788.0,
+        "net_profit": 12969253.0,
+        "operating_profit": 35386902.0,
+        "eps": 38.0,
+        "rev_growth_qoq": 0.0455,
+        "profit_growth_qoq": -0.199,
+        "rev_growth_yoy": 0.0455,
+        "profit_growth_yoy": -0.199,
+        "net_profit_year": 39983791.0
+      },
+      "balance": {
+        "total_assets": 8020555078.0,
+        "equity": 6037829509.0,
+        "total_liab": 1982725568.0,
+        "short_debt": 1148694393.0,
+        "long_debt": 516512103.0,
+        "debt_to_equity": 0.328
+      },
+      "cashflow": {},
+      "data_status": {
+        "ratio_source": "vci_fallback",
+        "cf_available": false,
+        "growth_available": true,
+        "incomplete": true
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": -2,
+        "total": -5,
         "max": 38
       }
     }
