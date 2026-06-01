@@ -107,7 +107,7 @@ def evaluate_baseline(df: pd.DataFrame, horizon: int = 5) -> dict:
     for dec in ["STRONG BUY", "BUY", "SELL", "STRONG SELL"]:
         sub = df_nf[df_nf["decision"] == dec]
         if len(sub) < MIN_SIGNALS:
-            log.info(f"  {dec:12s}: n={len(sub)} — terlalu sedikit (min {MIN_SIGNALS})")
+            log.info(f"  {dec:12s}: n={len(sub)} — quá ít (min {MIN_SIGNALS})")
             continue
         expected  = 1 if "BUY" in dec else -1
         hit_rate  = (sub[label_col] == expected).mean()
@@ -335,11 +335,12 @@ def walk_forward_validate(
     best_caps: dict,
     horizon: int   = 5,
     threshold: int = 20,
-    train_months: int = 6,
-    test_months:  int = 2,
+    train_months: int = 3,
+    test_months:  int = 1,
 ) -> pd.DataFrame:
     """
-    Walk-forward: train trên 6 tháng, test 2 tháng tiếp.
+    Walk-forward: train trên 3 tháng, test 1 tháng tiếp.
+    Với 12M data → ~9 periods, đủ để đánh giá độ ổn định.
     Xác nhận best_caps không overfit trên in-sample.
     """
     label_col = f"label_{horizon}d"
@@ -366,16 +367,40 @@ def walk_forward_validate(
         if test_end > max_date:
             break
 
-        train_df = df[(df["time"] >= start) & (df["time"] < train_end)]
-        test_df  = df[(df["time"] >= train_end) & (df["time"] < test_end)]
+        train_df = df[(df["time"] >= start) & (df["time"] < train_end)].copy()
+        test_df  = df[(df["time"] >= train_end) & (df["time"] < test_end)].copy()
 
         if len(train_df) < 100 or len(test_df) < 20:
             start += pd.DateOffset(months=test_months)
             continue
 
-        # Score với best_caps
-        test_df = test_df.copy()
-        test_df["score"] = replay_with_caps(test_df, best_caps)
+        # ── Grid search trên TRAIN window → tìm caps tốt nhất in-sample ──
+        keys        = list(CAP_SEARCH_SPACE.keys())
+        combos      = list(product(*[CAP_SEARCH_SPACE[k] for k in keys]))
+        train_best  = None
+        train_best_hit = -1
+
+        for combo in combos:
+            caps = dict(zip(keys, combo))
+            train_df["score"] = replay_with_caps(train_df, caps)
+            bm = train_df["score"] >= threshold
+            sm = train_df["score"] <= -threshold
+            nb, ns = bm.sum(), sm.sum()
+            if nb < MIN_SIGNALS or ns < MIN_SIGNALS:
+                continue
+            hb = (train_df.loc[bm, label_col] ==  1).mean()
+            hs = (train_df.loc[sm, label_col] == -1).mean()
+            ha = (hb * nb + hs * ns) / (nb + ns)
+            if ha > train_best_hit:
+                train_best_hit = ha
+                train_best     = caps
+
+        if train_best is None:
+            start += pd.DateOffset(months=test_months)
+            continue
+
+        # ── Test caps tốt nhất (từ train) trên TEST window (out-of-sample) ──
+        test_df["score"] = replay_with_caps(test_df, train_best)
 
         buy_mask  = test_df["score"] >= threshold
         sell_mask = test_df["score"] <= -threshold
@@ -389,34 +414,38 @@ def walk_forward_validate(
         hit_sell = (test_df.loc[sell_mask, label_col] == -1).mean() if n_sell else np.nan
         n_both   = n_buy + n_sell
         hit_avg  = (
-            (hit_buy * n_buy + hit_sell * n_sell) / n_both
-            if not np.isnan(hit_buy) and not np.isnan(hit_sell) else np.nan
+            (np.nan_to_num(hit_buy) * n_buy + np.nan_to_num(hit_sell) * n_sell) / n_both
         )
 
         wf_rows.append({
-            "period":     f"{train_end.strftime('%Y-%m')} → {test_end.strftime('%Y-%m')}",
-            "test_start": train_end.strftime("%Y-%m-%d"),
-            "test_end":   test_end.strftime("%Y-%m-%d"),
-            "n_signals":  int(n_both),
-            "hit_buy":    round(hit_buy,  3) if not np.isnan(hit_buy)  else None,
-            "hit_sell":   round(hit_sell, 3) if not np.isnan(hit_sell) else None,
-            "hit_avg":    round(hit_avg,  3) if not np.isnan(hit_avg)  else None,
+            "period":        f"{train_end.strftime('%Y-%m')} → {test_end.strftime('%Y-%m')}",
+            "test_start":    train_end.strftime("%Y-%m-%d"),
+            "test_end":      test_end.strftime("%Y-%m-%d"),
+            "train_best_caps": str(train_best),
+            "train_hit":     round(train_best_hit, 3),
+            "n_signals":     int(n_both),
+            "test_hit_avg":  round(hit_avg, 3),
         })
 
         log.info(
             f"  {wf_rows[-1]['period']}: "
-            f"n={n_both:3d}  "
-            f"hit_avg={hit_avg:.3f}"
+            f"train_hit={train_best_hit:.3f} → test_hit={hit_avg:.3f}  "
+            f"(n={n_both}, caps={train_best})"
         )
 
         start += pd.DateOffset(months=test_months)
 
     df_wf = pd.DataFrame(wf_rows)
     if len(df_wf) > 0:
-        avg_hit = df_wf["hit_avg"].mean()
-        std_hit = df_wf["hit_avg"].std()
-        log.info(f"\n  WF avg hit_avg : {avg_hit:.3f} ± {std_hit:.3f}")
-        log.info(f"  (stable nếu std < 0.05)")
+        avg_test = df_wf["test_hit_avg"].mean()
+        std_test = df_wf["test_hit_avg"].std()
+        avg_train = df_wf["train_hit"].mean()
+        overfit_gap = avg_train - avg_test
+        log.info(f"\n  WF test hit_avg : {avg_test:.3f} ± {std_test:.3f}")
+        log.info(f"  WF train hit_avg: {avg_train:.3f}")
+        log.info(f"  Overfit gap     : {overfit_gap:+.3f}  (train - test)")
+        log.info(f"  → gap < 0.05: tốt | 0.05-0.10: chấp nhận được | >0.10: overfit nặng")
+        log.info(f"  → test std < 0.08: caps ổn định qua thời gian")
     return df_wf
 
 
