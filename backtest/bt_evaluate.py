@@ -518,6 +518,52 @@ def save_reports(
 # MAIN
 # ══════════════════════════════════════════════════════════════════════
 
+def compare_v1_v2(df: pd.DataFrame, horizon: int = 5, threshold: int = 20) -> None:
+    """
+    So sánh trực tiếp bản hiện tại (tech_score_current) vs v2 sửa dấu (tech_score_v2).
+    Chỉ chạy nếu dataset có cột tech_score_v2.
+    """
+    if "tech_score_v2" not in df.columns:
+        log.info("\n(Dataset chưa có tech_score_v2 — rebuild full để so sánh v1/v2)")
+        return
+
+    label_col = f"label_{horizon}d"
+    df = df.dropna(subset=[label_col]).copy()
+    df = df[df[label_col] != 0]
+
+    log.info(f"\n{'═'*64}")
+    log.info(f"SO SÁNH V1 (hiện tại) vs V2 (sửa dấu) — horizon={horizon}d")
+    log.info(f"{'═'*64}")
+
+    for ver, col in [("V1 hiện tại", "tech_score_current"),
+                     ("V2 sửa dấu",  "tech_score_v2")]:
+        if col not in df.columns:
+            continue
+        # Correlation score vs label
+        corr = df[col].corr(df[label_col])
+
+        # Hit rate ở threshold
+        buy  = df[col] >= threshold
+        sell = df[col] <= -threshold
+        nb, ns = buy.sum(), sell.sum()
+        if nb >= MIN_SIGNALS and ns >= MIN_SIGNALS:
+            hb = (df.loc[buy,  label_col] ==  1).mean()
+            hs = (df.loc[sell, label_col] == -1).mean()
+            ha = (hb * nb + hs * ns) / (nb + ns)
+            cov = (nb + ns) / len(df)
+            log.info(
+                f"  {ver:14s}: corr={corr:+.4f}  "
+                f"hit_buy={hb:.3f} hit_sell={hs:.3f} "
+                f"hit_avg={ha:.3f} coverage={cov:.1%} "
+                f"(n_buy={nb}, n_sell={ns})"
+            )
+        else:
+            log.info(f"  {ver:14s}: corr={corr:+.4f}  (không đủ signals ở threshold {threshold})")
+
+    log.info(f"\n  → V2 tốt hơn nếu hit_avg > 0.50 VÀ corr dương rõ rệt")
+    log.info(f"  → Nếu cả 2 vẫn ~0.50: technical không tạo alpha, cần hướng khác")
+
+
 def main(horizon: int = 5, threshold: int = 20, eval_only: bool = False):
     import sys
     sys.path.insert(0, str(REPO_ROOT))
@@ -526,6 +572,9 @@ def main(horizon: int = 5, threshold: int = 20, eval_only: bool = False):
 
     # 1. Baseline
     baseline = evaluate_baseline(df, horizon=horizon)
+
+    # 1b. So sánh v1 vs v2 (sửa dấu)
+    compare_v1_v2(df, horizon=horizon, threshold=threshold)
 
     if eval_only:
         log.info("--eval-only: bỏ qua grid search")
