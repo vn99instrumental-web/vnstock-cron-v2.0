@@ -563,6 +563,36 @@ def compare_v1_v2(df: pd.DataFrame, horizon: int = 5, threshold: int = 20) -> No
     log.info(f"\n  → V2 tốt hơn nếu hit_avg > 0.50 VÀ corr dương rõ rệt")
     log.info(f"  → Nếu cả 2 vẫn ~0.50: technical không tạo alpha, cần hướng khác")
 
+    # ── Walk-forward theo tháng cho V2 (kiểm ổn định out-of-sample) ────
+    # V2 dùng dấu cố định (không có caps để tune) → chỉ đo hit_avg mỗi tháng.
+    if "tech_score_v2" in df.columns and "time" in df.columns:
+        log.info(f"\n── V2 hit_avg theo tháng (out-of-sample stability) ──")
+        dfm = df.copy()
+        dfm["time"]  = pd.to_datetime(dfm["time"])
+        dfm["month"] = dfm["time"].dt.to_period("M").astype(str)
+
+        monthly = []
+        for month, grp in dfm.groupby("month"):
+            buy  = grp["tech_score_v2"] >= threshold
+            sell = grp["tech_score_v2"] <= -threshold
+            nb, ns = buy.sum(), sell.sum()
+            if nb + ns < MIN_SIGNALS:
+                continue
+            hb = (grp.loc[buy,  label_col] ==  1).mean() if nb else np.nan
+            hs = (grp.loc[sell, label_col] == -1).mean() if ns else np.nan
+            ha = (np.nan_to_num(hb) * nb + np.nan_to_num(hs) * ns) / (nb + ns)
+            monthly.append({"month": month, "n": int(nb + ns), "hit_avg": round(ha, 3)})
+            log.info(f"  {month}: n={nb+ns:4d}  hit_avg={ha:.3f}")
+
+        if monthly:
+            hits = [m["hit_avg"] for m in monthly]
+            avg  = np.mean(hits)
+            std  = np.std(hits)
+            n_above = sum(1 for h in hits if h > 0.50)
+            log.info(f"\n  V2 monthly: {avg:.3f} ± {std:.3f} "
+                     f"({n_above}/{len(hits)} tháng > 0.50)")
+            log.info(f"  → ổn định nếu std < 0.06 và đa số tháng > 0.50")
+
 
 def main(horizon: int = 5, threshold: int = 20, eval_only: bool = False):
     import sys
