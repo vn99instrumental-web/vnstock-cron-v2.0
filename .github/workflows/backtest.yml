@@ -101,15 +101,15 @@ jobs:
             $VENV_PY -m pip install pandas pyarrow --quiet
           }
 
-      # ── Restore dataset cache (cho eval-only và quick mode) ─────────
+      # ── Restore dataset cache ───────────────────────────────────────
+      # Key tách theo mode: quick (10 sym) và full (150 sym) KHÁC dataset.
+      # Bỏ restore-keys fallback để tránh dùng nhầm cache cũ khác config.
       - name: Restore dataset cache
         id: dataset-cache
         uses: actions/cache@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v1-${{ hashFiles('backtest/bt_config.py') }}
-          restore-keys: |
-            backtest-dataset-v1-
+          key: backtest-dataset-v2-${{ github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py') }}
 
       # ── Run backtest ─────────────────────────────────────────────────
       - name: Run — quick (10 symbols)
@@ -213,7 +213,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v1-${{ hashFiles('backtest/bt_config.py') }}
+          key: backtest-dataset-v2-${{ github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py') }}
 
       # ── Upload artifacts (tải về nếu muốn phân tích thêm) ───────────
       - name: Upload reports as artifact
