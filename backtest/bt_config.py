@@ -94,8 +94,8 @@ WEIGHT_SEARCH_SPACE = {
 # ── Evaluation ─────────────────────────────────────────────────────────
 MIN_SIGNALS     = 20    # số tối thiểu để tính metric
 SCORE_THRESHOLD = 20    # |score| >= threshold mới tính là "có chiều"
-API_DELAY       = 0.3   # giây giữa các API calls (rate limit)
-MAX_WORKERS     = 5     # concurrent symbol fetches
+API_DELAY       = 0.6   # giây giữa các API calls — Silver tier 300 req/phút
+MAX_WORKERS     = 2     # 2 workers / 0.6s ≈ 200 req/phút (đệm an toàn dưới 300)
 
 # ── Thresholds hiện tại (production) ───────────────────────────────────
 CURRENT_THRESHOLDS = {
