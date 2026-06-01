@@ -16,6 +16,7 @@ on:
           - quick
           - full
           - eval-only
+          - audit
       horizon:
         description: 'Forward return horizon (ngày): 1, 3, hoặc 5'
         required: false
@@ -102,14 +103,16 @@ jobs:
           }
 
       # ── Restore dataset cache ───────────────────────────────────────
-      # Key tách theo mode: quick (10 sym) và full (150 sym) KHÁC dataset.
-      # Bỏ restore-keys fallback để tránh dùng nhầm cache cũ khác config.
+      # audit dùng CHUNG dataset với full (cùng 150 symbols, cùng TA).
+      # quick riêng (10 sym). eval-only lấy theo mode đã chạy trước đó.
       - name: Restore dataset cache
         id: dataset-cache
         uses: actions/cache@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v2-${{ github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py') }}
+          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py') }}
+          restore-keys: |
+            backtest-dataset-v2-full-
 
       # ── Run backtest ─────────────────────────────────────────────────
       - name: Run — quick (10 symbols)
@@ -163,6 +166,26 @@ jobs:
               --threshold ${{ github.event.inputs.threshold }}
           fi
 
+      - name: Run — audit (per-indicator predictiveness)
+        if: ${{ github.event.inputs.mode == 'audit' }}
+        run: |
+          mkdir -p backtest_output/reports
+          source /opt/vnstock/.venv/bin/activate
+          if [ ! -f backtest_output/dataset.parquet ]; then
+            echo "Dataset full chưa có — build trước (fetch VCI ~3 phút)..."
+            python backtest/bt_run.py --eval-only --horizon 5 || true
+          fi
+          if [ ! -f backtest_output/dataset.parquet ]; then
+            echo "Vẫn chưa có dataset — build full..."
+            python backtest/bt_data.py
+          fi
+          echo "=== Chạy indicator audit ==="
+          if [ "${{ github.event.inputs.horizon }}" = "all" ]; then
+            python backtest/bt_audit.py --all-horizons
+          else
+            python backtest/bt_audit.py --horizon ${{ github.event.inputs.horizon }}
+          fi
+
       # ── In kết quả vào log (đọc ngay trên GitHub Actions UI) ────────
       - name: Print summary reports
         if: always()
@@ -207,9 +230,21 @@ jobs:
             fi
           done
 
-      # ── Cache dataset để eval-only lần sau nhanh hơn ────────────────
+          echo ""
+          echo "────────────────────────────────────────"
+          echo "  Indicator audit (nếu mode=audit)"
+          echo "────────────────────────────────────────"
+          for f in backtest_output/reports/audit_*.csv; do
+            if [ -f "$f" ]; then
+              echo ""
+              echo "  $f:"
+              cat "$f"
+            fi
+          done
+
+      # ── Cache dataset (chỉ quick/full build mới — không ghi đè khi audit/eval) ─
       - name: Save dataset cache
-        if: ${{ github.event.inputs.mode != 'eval-only' && success() }}
+        if: ${{ (github.event.inputs.mode == 'quick' || github.event.inputs.mode == 'full') && success() }}
         uses: actions/cache/save@v4
         with:
           path: backtest_output/dataset.parquet
