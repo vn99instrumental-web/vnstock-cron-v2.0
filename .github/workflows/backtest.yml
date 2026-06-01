@@ -17,6 +17,7 @@ on:
           - full
           - eval-only
           - audit
+          - drift
       horizon:
         description: 'Forward return horizon (ngày): 1, 3, hoặc 5'
         required: false
@@ -103,16 +104,26 @@ jobs:
           }
 
       # ── Restore dataset cache ───────────────────────────────────────
-      # audit dùng CHUNG dataset với full (cùng 150 symbols, cùng TA).
-      # quick riêng (10 sym). eval-only lấy theo mode đã chạy trước đó.
+      # audit/eval-only/drift dùng CHUNG dataset với full (150 symbols).
+      # quick riêng (10 sym).
       - name: Restore dataset cache
         id: dataset-cache
         uses: actions/cache@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
+          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only' || github.event.inputs.mode == 'drift') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
           restore-keys: |
             backtest-dataset-v2-full-
+
+      # ── Restore drift history (tích lũy qua các lần chạy) ───────────
+      - name: Restore drift history
+        if: ${{ github.event.inputs.mode == 'drift' }}
+        uses: actions/cache@v4
+        with:
+          path: backtest_output/drift_history.json
+          key: backtest-drift-history-${{ github.run_id }}
+          restore-keys: |
+            backtest-drift-history-
 
       # ── Run backtest ─────────────────────────────────────────────────
       - name: Run — quick (10 symbols)
@@ -186,6 +197,24 @@ jobs:
             python backtest/bt_audit.py --horizon ${{ github.event.inputs.horizon }}
           fi
 
+      - name: Run — drift (theo dõi edge theo thời gian)
+        if: ${{ github.event.inputs.mode == 'drift' }}
+        run: |
+          mkdir -p backtest_output/reports
+          source /opt/vnstock/.venv/bin/activate
+          if [ ! -f backtest_output/dataset.parquet ]; then
+            echo "Dataset full chưa có — build (fetch VCI ~3 phút)..."
+            python backtest/bt_data.py
+          fi
+          echo "=== Chạy drift detection ==="
+          if [ "${{ github.event.inputs.horizon }}" = "all" ]; then
+            for h in 1 3 5; do
+              python backtest/bt_drift.py --horizon $h
+            done
+          else
+            python backtest/bt_drift.py --horizon ${{ github.event.inputs.horizon }}
+          fi
+
       # ── In kết quả vào log (đọc ngay trên GitHub Actions UI) ────────
       - name: Print summary reports
         if: always()
@@ -242,7 +271,19 @@ jobs:
             fi
           done
 
-      # ── Cache dataset (chỉ quick/full build mới — không ghi đè khi audit/eval) ─
+          echo ""
+          echo "────────────────────────────────────────"
+          echo "  Drift detection (nếu mode=drift)"
+          echo "────────────────────────────────────────"
+          for f in backtest_output/reports/drift_*.csv; do
+            if [ -f "$f" ]; then
+              echo ""
+              echo "  $f:"
+              cat "$f"
+            fi
+          done
+
+      # ── Cache dataset (chỉ quick/full build mới — không ghi đè khi audit/eval/drift) ─
       - name: Save dataset cache
         if: ${{ (github.event.inputs.mode == 'quick' || github.event.inputs.mode == 'full') && success() }}
         uses: actions/cache/save@v4
@@ -250,12 +291,22 @@ jobs:
           path: backtest_output/dataset.parquet
           key: backtest-dataset-v2-${{ github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
 
+      # ── Save drift history (tích lũy — key theo run_id để luôn lưu bản mới) ─
+      - name: Save drift history
+        if: ${{ github.event.inputs.mode == 'drift' && success() }}
+        uses: actions/cache/save@v4
+        with:
+          path: backtest_output/drift_history.json
+          key: backtest-drift-history-${{ github.run_id }}
+
       # ── Upload artifacts (tải về nếu muốn phân tích thêm) ───────────
       - name: Upload reports as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: backtest-reports-${{ github.run_id }}
-          path: backtest_output/reports/
+          path: |
+            backtest_output/reports/
+            backtest_output/drift_history.json
           retention-days: 30
           if-no-files-found: warn
