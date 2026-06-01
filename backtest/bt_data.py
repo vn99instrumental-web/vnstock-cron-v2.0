@@ -149,7 +149,7 @@ def compute_ta(df: pd.DataFrame, symbol: str = "") -> pd.DataFrame:
     Mỗi ngày chỉ thấy data ≤ ngày đó (rolling window, không look-ahead).
     """
     try:
-        from vnstock_ta import Indicators  # noqa: F401 — verify import trước
+        from vnstock_ta import Indicator  # noqa: F401 — verify import trước
     except ImportError as e:
         raise ImportError(
             f"vnstock_ta không available trong Python environment hiện tại.\n"
@@ -158,77 +158,67 @@ def compute_ta(df: pd.DataFrame, symbol: str = "") -> pd.DataFrame:
         )
 
     try:
-        ind = Indicators(df)
-
         df = df.copy()
-        df["ema20"]    = ind.ema(20)
-        df["ema50"]    = ind.ema(50)
-        df["ema200"]   = ind.ema(200)
-        df["adx"]      = ind.adx(14)
+        ta = Indicator(data=df)
 
-        # Supertrend: trả dict/DataFrame tùy version
-        try:
-            st_result    = ind.supertrend(period=10, multiplier=3.0)
-            if isinstance(st_result, pd.DataFrame):
-                # Lấy cột trend: 1 = bullish (price > ST line), -1 = bearish
-                st_col = [c for c in st_result.columns if "trend" in c.lower()]
-                df["supertrend_val"] = st_result[st_col[0]] if st_col else None
-            elif isinstance(st_result, dict):
-                df["supertrend_val"] = st_result.get("trend")
-            else:
-                df["supertrend_val"] = st_result
-        except Exception:
-            df["supertrend_val"] = None
+        # ── Trend ──────────────────────────────────────────────────────
+        # ema() trả Series full length
+        df["ema20"]  = ta.trend.ema(length=20)
+        df["ema50"]  = ta.trend.ema(length=50)
+        df["ema200"] = ta.trend.ema(length=200)
 
-        df["rsi"]      = ind.rsi(14)
+        # adx() trả DataFrame: ADX_14, ADXR_14_2, DMP_14, DMN_14
+        adx_df = ta.trend.adx(length=14)
+        df["adx"] = adx_df["ADX_14"] if "ADX_14" in adx_df.columns else np.nan
 
-        macd_result    = ind.macd(12, 26, 9)
-        if isinstance(macd_result, pd.DataFrame):
-            hist_col   = [c for c in macd_result.columns if "hist" in c.lower()]
-            df["macd_hist"] = macd_result[hist_col[0]] if hist_col else None
-        elif isinstance(macd_result, dict):
-            df["macd_hist"] = macd_result.get("histogram")
-        else:
-            df["macd_hist"] = None
+        # supertrend() trả DataFrame: SUPERT_10_3.0 (line), SUPERTd_10_3.0 (direction)
+        # SUPERTd = +1 (bullish) / -1 (bearish) → dùng trực tiếp
+        st_df = ta.trend.supertrend(length=10, multiplier=3.0)
+        st_dir_col = [c for c in st_df.columns if c.startswith("SUPERTd")]
+        df["supertrend_dir"] = st_df[st_dir_col[0]] if st_dir_col else np.nan
 
-        stoch_result   = ind.stoch(14, 3, 3)
-        if isinstance(stoch_result, pd.DataFrame):
-            k_col = [c for c in stoch_result.columns if c.lower().endswith("k")]
-            d_col = [c for c in stoch_result.columns if c.lower().endswith("d")]
-            df["stoch_k"] = stoch_result[k_col[0]] if k_col else None
-            df["stoch_d"] = stoch_result[d_col[0]] if d_col else None
-        elif isinstance(stoch_result, dict):
-            df["stoch_k"] = stoch_result.get("k")
-            df["stoch_d"] = stoch_result.get("d")
+        # ── Momentum ───────────────────────────────────────────────────
+        df["rsi"] = ta.momentum.rsi(length=14)
 
-        # BB position (0 = lower band, 1 = upper band)
-        try:
-            bb_result  = ind.bbands(20, 2)
-            if isinstance(bb_result, pd.DataFrame):
-                upper_col  = [c for c in bb_result.columns if "upper" in c.lower()]
-                lower_col  = [c for c in bb_result.columns if "lower" in c.lower()]
-                if upper_col and lower_col:
-                    upper  = bb_result[upper_col[0]]
-                    lower  = bb_result[lower_col[0]]
-                    rng    = (upper - lower).replace(0, np.nan)
-                    df["bb_pos"] = (df["close"] - lower) / rng
-            else:
-                df["bb_pos"] = None
-        except Exception:
-            df["bb_pos"] = None
+        # macd() trả DataFrame: MACD_12_26_9, MACDh_12_26_9 (hist), MACDs_12_26_9
+        macd_df = ta.momentum.macd(fast=12, slow=26, signal=9)
+        hist_col = [c for c in macd_df.columns if c.startswith("MACDh")]
+        df["macd_hist"] = macd_df[hist_col[0]] if hist_col else np.nan
 
-        df["atr"]      = ind.atr(14)
-        df["atr_pct"]  = df["atr"] / df["close"] * 100
+        # stoch() trả DataFrame: STOCHk_14_3_3, STOCHd_14_3_3, STOCHh_14_3_3
+        stoch_df = ta.momentum.stoch(k=14, d=3, smooth_k=3)
+        k_col = [c for c in stoch_df.columns if c.startswith("STOCHk")]
+        d_col = [c for c in stoch_df.columns if c.startswith("STOCHd")]
+        df["stoch_k"] = stoch_df[k_col[0]] if k_col else np.nan
+        df["stoch_d"] = stoch_df[d_col[0]] if d_col else np.nan
 
-        df["obv"]      = ind.obv()
-        df["cmf"]      = ind.cmf(20)
-        df["mfi"]      = ind.mfi(14)
+        # ── Volatility ─────────────────────────────────────────────────
+        # bbands() trả DataFrame: BBL/BBM/BBU/BBB/BBP. BBP = position (0-1) sẵn!
+        bb_df = ta.volatility.bbands(length=20, std=2.0)
+        bbp_col = [c for c in bb_df.columns if c.startswith("BBP")]
+        df["bb_pos"] = bb_df[bbp_col[0]] if bbp_col else np.nan
 
-        df["vol_ma20"] = df["volume"].rolling(20).mean()
+        # atr() trả Series
+        df["atr"]     = ta.volatility.atr(length=14)
+        df["atr_pct"] = df["atr"] / df["close"] * 100
+
+        # ── Volume ─────────────────────────────────────────────────────
+        # obv/cmf/mfi trả Series
+        df["obv"] = ta.volume.obv()
+        df["cmf"] = ta.volume.cmf(length=20)
+        df["mfi"] = ta.volume.mfi(length=14)
+
+        # OBV trend: so với EMA của chính OBV (production logic: OBV vs direction)
+        df["obv_ema"]   = df["obv"].ewm(span=20, adjust=False).mean()
+        df["obv_trend"] = (df["obv"] > df["obv_ema"]).astype(int) * 2 - 1  # +1/-1
+
+        df["vol_ma20"]  = df["volume"].rolling(20).mean()
         df["vol_ratio"] = df["volume"] / df["vol_ma20"].replace(0, np.nan)
 
     except Exception as e:
         log.warning(f"  {symbol}: TA computation error — {e}")
+        import traceback
+        log.debug(traceback.format_exc())
 
     return df
 
@@ -290,14 +280,14 @@ def score_technical_raw(row: pd.Series) -> dict:
     ema50     = row.get("ema50")
     ema200    = row.get("ema200")
     adx       = row.get("adx")
-    st_val    = row.get("supertrend_val")
+    st_dir    = row.get("supertrend_dir")   # +1 bullish / -1 bearish (SUPERTd)
     rsi       = row.get("rsi")
     macd_hist = row.get("macd_hist")
     stoch_k   = row.get("stoch_k")
     stoch_d   = row.get("stoch_d")
     cmf       = row.get("cmf")
     mfi       = row.get("mfi")
-    obv       = row.get("obv")
+    obv_trend = row.get("obv_trend")         # +1 / -1 (OBV vs EMA20 của OBV)
     vol_ratio = row.get("vol_ratio")
     bb_pos    = row.get("bb_pos")
 
@@ -319,16 +309,10 @@ def score_technical_raw(row: pd.Series) -> dict:
             s["trend"] += W["trend"]["adx_strong"]
         # adx < 20 → +0 (sideways, không penalize)
 
-    if st_val is not None and price:
-        # Supertrend: val > 0 hoặc price > supertrend line
-        # Production: price > supertrend → bullish
+    if st_dir is not None and not pd.isna(st_dir):
+        # SUPERTd_10_3.0: +1 = uptrend (bullish), -1 = downtrend (bearish)
         try:
-            st_num = float(st_val)
-            if st_num > 0:     # trend direction flag (+1/-1) hoặc price level
-                s["trend"] += W["trend"]["supertrend"]
-            elif st_num < 0:
-                s["trend"] -= W["trend"]["supertrend"]
-            elif price > st_num:  # là price level
+            if float(st_dir) > 0:
                 s["trend"] += W["trend"]["supertrend"]
             else:
                 s["trend"] -= W["trend"]["supertrend"]
@@ -375,11 +359,10 @@ def score_technical_raw(row: pd.Series) -> dict:
         if m > 60:   s["volume"] += W["volume"]["mfi_high"]
         elif m < 40: s["volume"] += W["volume"]["mfi_low"]   # negative
 
-    if obv is not None:
-        # Production: OBV vs EMA trend — simplified: sign of OBV change
-        # Ta chỉ có OBV absolute, dùng sign của OBV vs rolling mean
+    if obv_trend is not None and not pd.isna(obv_trend):
+        # obv_trend = +1 (OBV > EMA20 của OBV) / -1 — tính sẵn trong compute_ta
         try:
-            s["volume"] += W["volume"]["obv_trend"] if float(obv) > 0 else -W["volume"]["obv_trend"]
+            s["volume"] += W["volume"]["obv_trend"] if float(obv_trend) > 0 else -W["volume"]["obv_trend"]
         except (TypeError, ValueError):
             pass
 
@@ -442,9 +425,9 @@ def process_symbol(symbol: str) -> pd.DataFrame | None:
         *[f"ret_{h}d" for h in HORIZONS],
         *[f"label_{h}d" for h in HORIZONS],
         # TA raw (để debug)
-        "ema20", "ema50", "ema200", "adx", "rsi",
+        "ema20", "ema50", "ema200", "adx", "supertrend_dir", "rsi",
         "macd_hist", "stoch_k", "stoch_d",
-        "cmf", "mfi", "obv", "bb_pos",
+        "cmf", "mfi", "obv", "obv_trend", "bb_pos",
     ]
     keep_cols = [c for c in keep_cols if c in df.columns]
     df_out    = pd.concat([df[keep_cols], df_scores], axis=1)
@@ -469,11 +452,11 @@ def build_dataset(max_symbols: int | None = None) -> pd.DataFrame:
 
     # ── Verify dependencies trước khi fetch bất cứ thứ gì ─────────────
     try:
-        import vnstock_ta  # noqa: F401
-        log.info("vnstock_ta: OK")
+        from vnstock_ta import Indicator  # noqa: F401
+        log.info("vnstock_ta.Indicator: OK")
     except ImportError:
         log.error(
-            "vnstock_ta không available!\n"
+            "vnstock_ta.Indicator không available!\n"
             "Đảm bảo chạy trong venv: source /opt/vnstock/.venv/bin/activate"
         )
         return pd.DataFrame()
