@@ -50,13 +50,12 @@ CURRENT_WEIGHTS = {
     },
     "volume": {
         "cmf_strong":     8,   # |cmf| > 0.1
-        "cmf_weak":       3,   # 0 < |cmf| ≤ 0.1
-        "mfi_high":       6,   # mfi > 60
-        "mfi_low":       -6,   # mfi < 40
-        "obv_trend":      3,   # obv vs ema direction
-        "vol_ratio_2x":   5,   # vol_ratio > 2.0
-        "vol_ratio_1_5x": 3,   # vol_ratio > 1.5
-        "vol_ratio_low":  -3,  # vol_ratio < 0.5
+        "mfi_oversold":   8,   # mfi < 20 → +8 (oversold = bullish)
+        "mfi_overbought": -5,  # mfi > 80 → -5 (overbought = bearish)
+        "obv_confirm":    4,   # OBV cùng chiều ema_cross → +4, divergence → -4
+        "vol_ratio_2x":   5,   # vol_ma_ratio > 2.0 breakout
+        "vol_ratio_1_5x": 3,   # vol_ma_ratio > 1.5 elevated
+        "vol_ratio_low":  -3,  # vol_ma_ratio < 0.5 weak
     },
     "volatility": {
         "bb_upper":      -5,   # bb_pos > 0.8 (overbought)
