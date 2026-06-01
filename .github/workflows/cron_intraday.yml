@@ -2,15 +2,13 @@ name: VNStock Intraday
 
 on:
   schedule:
-    # Vietnam market hours: 09:00-15:00 ICT (UTC+7)
-    # Hourly runs at minute :25 from 08:25 to 14:25 ICT
-    - cron: '25 1 * * 1-5'   # 08:25 ICT (= 1:25 UTC)
-    - cron: '25 2 * * 1-5'   # 09:25 ICT
-    - cron: '25 3 * * 1-5'   # 10:25 ICT
-    - cron: '25 4 * * 1-5'   # 11:25 ICT
-    - cron: '25 5 * * 1-5'   # 12:25 ICT
-    - cron: '25 6 * * 1-5'   # 13:25 ICT
-    - cron: '25 7 * * 1-5'   # 14:25 ICT  ← BUG #12 FIX: added (was missing)
+    # Vietnam market hours: 09:00-15:00 ICT (UTC+7), nghỉ trưa 11:30-13:00
+    # 5 runs/ngày tại :30 — bỏ 12:30 ICT (giờ nghỉ trưa)
+    - cron: '30 2 * * 1-5'   # 09:30 ICT (= 2:30 UTC)
+    - cron: '30 3 * * 1-5'   # 10:30 ICT
+    - cron: '30 4 * * 1-5'   # 11:30 ICT
+    - cron: '30 6 * * 1-5'   # 13:30 ICT
+    - cron: '30 7 * * 1-5'   # 14:30 ICT
   workflow_dispatch:
 
 jobs:
@@ -141,6 +139,16 @@ jobs:
         run: |
           source /opt/vnstock/.venv/bin/activate
           python steps/step_scoring.py
+
+      # NEW: Trade levels (entry/SL/TP) — runs AFTER scoring.
+      # Reads signals.json + order_flow.json only (no API calls).
+      - name: Step Price Levels
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_price_levels.py
 
       - name: Commit output
         run: |
