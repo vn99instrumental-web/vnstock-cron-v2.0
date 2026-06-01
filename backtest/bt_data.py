@@ -171,11 +171,13 @@ def compute_ta(df: pd.DataFrame, symbol: str = "") -> pd.DataFrame:
         adx_df = ta.trend.adx(length=14)
         df["adx"] = adx_df["ADX_14"] if "ADX_14" in adx_df.columns else np.nan
 
-        # supertrend() trả DataFrame: SUPERT_10_3.0 (line), SUPERTd_10_3.0 (direction)
-        # SUPERTd = +1 (bullish) / -1 (bearish) → dùng trực tiếp
+        # supertrend() trả DataFrame: SUPERT_10_3.0 (line value), SUPERTd (direction)
+        # Production so sánh: price > ST line → bullish. Lấy SUPERT_ (line), KHÔNG dùng SUPERTd.
         st_df = ta.trend.supertrend(length=10, multiplier=3.0)
-        st_dir_col = [c for c in st_df.columns if c.startswith("SUPERTd")]
-        df["supertrend_dir"] = st_df[st_dir_col[0]] if st_dir_col else np.nan
+        st_line_col = [c for c in st_df.columns
+                       if c.startswith("SUPERT_") and not c.startswith("SUPERTd")
+                       and not c.startswith("SUPERTl") and not c.startswith("SUPERTs")]
+        df["supertrend"] = st_df[st_line_col[0]] if st_line_col else np.nan
 
         # ── Momentum ───────────────────────────────────────────────────
         df["rsi"] = ta.momentum.rsi(length=14)
@@ -208,9 +210,8 @@ def compute_ta(df: pd.DataFrame, symbol: str = "") -> pd.DataFrame:
         df["cmf"] = ta.volume.cmf(length=20)
         df["mfi"] = ta.volume.mfi(length=14)
 
-        # OBV trend: so với EMA của chính OBV (production logic: OBV vs direction)
-        df["obv_ema"]   = df["obv"].ewm(span=20, adjust=False).mean()
-        df["obv_trend"] = (df["obv"] > df["obv_ema"]).astype(int) * 2 - 1  # +1/-1
+        # ema_cross_pct: production dùng để so với OBV (confirm/divergence)
+        df["ema_cross_pct"] = (df["ema20"] - df["ema50"]) / df["ema50"].replace(0, np.nan) * 100
 
         df["vol_ma20"]  = df["volume"].rolling(20).mean()
         df["vol_ratio"] = df["volume"] / df["vol_ma20"].replace(0, np.nan)
@@ -280,14 +281,13 @@ def score_technical_raw(row: pd.Series) -> dict:
     ema50     = row.get("ema50")
     ema200    = row.get("ema200")
     adx       = row.get("adx")
-    st_dir    = row.get("supertrend_dir")   # +1 bullish / -1 bearish (SUPERTd)
+    supertrend = row.get("supertrend")   # ST line value (so với price, như production)
     rsi       = row.get("rsi")
     macd_hist = row.get("macd_hist")
     stoch_k   = row.get("stoch_k")
     stoch_d   = row.get("stoch_d")
     cmf       = row.get("cmf")
     mfi       = row.get("mfi")
-    obv_trend = row.get("obv_trend")         # +1 / -1 (OBV vs EMA20 của OBV)
     vol_ratio = row.get("vol_ratio")
     bb_pos    = row.get("bb_pos")
 
@@ -309,10 +309,10 @@ def score_technical_raw(row: pd.Series) -> dict:
             s["trend"] += W["trend"]["adx_strong"]
         # adx < 20 → +0 (sideways, không penalize)
 
-    if st_dir is not None and not pd.isna(st_dir):
-        # SUPERTd_10_3.0: +1 = uptrend (bullish), -1 = downtrend (bearish)
+    if supertrend is not None and not pd.isna(supertrend) and price:
+        # Production: price > ST line → bullish (+5), price < ST line → bearish (-5)
         try:
-            if float(st_dir) > 0:
+            if price > float(supertrend):
                 s["trend"] += W["trend"]["supertrend"]
             else:
                 s["trend"] -= W["trend"]["supertrend"]
@@ -347,39 +347,44 @@ def score_technical_raw(row: pd.Series) -> dict:
                 s["momentum"] -= W["momentum"]["stoch_cross"]
 
     # ── Volume ─────────────────────────────────────────────────────────
+    # ── Volume ── (khớp production step_scoring.py)
     if cmf is not None:
         c = float(cmf)
+        # Production: chỉ |cmf| > 0.1 mới tính, không có cmf_weak
         if c > 0.1:    s["volume"] += W["volume"]["cmf_strong"]
         elif c < -0.1: s["volume"] -= W["volume"]["cmf_strong"]
-        elif c > 0:    s["volume"] += W["volume"]["cmf_weak"]
-        else:          s["volume"] -= W["volume"]["cmf_weak"]
 
     if mfi is not None:
         m = float(mfi)
-        if m > 60:   s["volume"] += W["volume"]["mfi_high"]
-        elif m < 40: s["volume"] += W["volume"]["mfi_low"]   # negative
+        # Production: <20 oversold +8 | >80 overbought -5 | else 0
+        if m < 20:   s["volume"] += W["volume"]["mfi_oversold"]    # +8
+        elif m > 80: s["volume"] += W["volume"]["mfi_overbought"]  # -5
 
-    if obv_trend is not None and not pd.isna(obv_trend):
-        # obv_trend = +1 (OBV > EMA20 của OBV) / -1 — tính sẵn trong compute_ta
+    # OBV: production so OBV với ema_cross_pct (cùng chiều = confirm +4)
+    obv       = row.get("obv")
+    ema_cross = row.get("ema_cross_pct")
+    if obv is not None and ema_cross is not None and not pd.isna(obv) and not pd.isna(ema_cross):
         try:
-            s["volume"] += W["volume"]["obv_trend"] if float(obv_trend) > 0 else -W["volume"]["obv_trend"]
+            o, ec = float(obv), float(ema_cross)
+            if (o > 0 and ec > 0) or (o < 0 and ec < 0):
+                s["volume"] += W["volume"]["obv_confirm"]      # +4 confirm
+            else:
+                s["volume"] -= W["volume"]["obv_confirm"]      # -4 divergence
         except (TypeError, ValueError):
             pass
 
-    if vol_ratio is not None:
+    if vol_ratio is not None and not pd.isna(vol_ratio):
         vr = float(vol_ratio)
         if vr > 2.0:   s["volume"] += W["volume"]["vol_ratio_2x"]
         elif vr > 1.5: s["volume"] += W["volume"]["vol_ratio_1_5x"]
         elif vr < 0.5: s["volume"] += W["volume"]["vol_ratio_low"]
 
-    # ── Volatility (BB) ────────────────────────────────────────────────
-    if bb_pos is not None:
+    # ── Volatility (BB) ── (khớp production: chỉ <0.2 và >0.8)
+    if bb_pos is not None and not pd.isna(bb_pos):
         b = float(bb_pos)
-        W_v = W["volatility"]
-        if b > 0.8:       s["volatility"] += W_v["bb_upper"]    # negative
-        elif b < 0.2:     s["volatility"] += W_v["bb_lower"]    # positive
-        elif b > 0.5:     s["volatility"] += W_v["bb_mid_up"]
-        else:             s["volatility"] += W_v["bb_mid_down"]
+        # Production: bb_pos < 0.2 → +5 oversold | > 0.8 → -5 overbought | else 0
+        if b < 0.2:    s["volatility"] += W["volatility"]["bb_lower"]   # +5
+        elif b > 0.8:  s["volatility"] += W["volatility"]["bb_upper"]   # -5
 
     # ── Build output: raw + capped ─────────────────────────────────────
     result = {}
@@ -425,9 +430,9 @@ def process_symbol(symbol: str) -> pd.DataFrame | None:
         *[f"ret_{h}d" for h in HORIZONS],
         *[f"label_{h}d" for h in HORIZONS],
         # TA raw (để debug)
-        "ema20", "ema50", "ema200", "adx", "supertrend_dir", "rsi",
+        "ema20", "ema50", "ema200", "ema_cross_pct", "adx", "supertrend", "rsi",
         "macd_hist", "stoch_k", "stoch_d",
-        "cmf", "mfi", "obv", "obv_trend", "bb_pos",
+        "cmf", "mfi", "obv", "bb_pos",
     ]
     keep_cols = [c for c in keep_cols if c in df.columns]
     df_out    = pd.concat([df[keep_cols], df_scores], axis=1)
