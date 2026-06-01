@@ -110,7 +110,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py') }}
+          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
           restore-keys: |
             backtest-dataset-v2-full-
 
@@ -248,7 +248,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v2-${{ github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py') }}
+          key: backtest-dataset-v2-${{ github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
 
       # ── Upload artifacts (tải về nếu muốn phân tích thêm) ───────────
       - name: Upload reports as artifact
