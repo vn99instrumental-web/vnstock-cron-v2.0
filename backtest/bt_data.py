@@ -401,6 +401,108 @@ def score_technical_raw(row: pd.Series) -> dict:
 
 
 # ══════════════════════════════════════════════════════════════════════
+# SCORE TECHNICAL V2 — SỬA DẤU theo audit (horizon 5d)
+# ══════════════════════════════════════════════════════════════════════
+# Thay đổi so với bản hiện tại (dựa trên bằng chứng audit 73k rows):
+#   ĐẢO  price_vs_ema200 : trên EMA200 → TRỪ điểm (spearman -0.055, mean-rev)
+#   ĐẢO  CMF             : >0.1 → TRỪ điểm (spearman -0.043, mean-rev)
+#   GIỮ  RSI             : <30 → cộng (đã đúng mean-rev)
+#   GIỮ  BB              : <0.2 → cộng (đã đúng mean-rev)
+#   ĐỔI  MFI             : >60 → cộng / <40 → trừ (threshold edge +0.58%, NOT mean-rev)
+#   THÊM ADX hướng       : ADX>25 + giá<EMA200 (mean-rev mạnh) → tăng tín hiệu mean-rev
+#   GIẢM MACD, Stoch     : ~nhiễu → weight ×0.5
+#   BỎ   ema_cross, supertrend khỏi trend (spearman yếu/đảo) → chỉ giữ EMA200 mean-rev
+# ══════════════════════════════════════════════════════════════════════
+
+def score_technical_v2(row: pd.Series) -> dict:
+    """
+    Biến thể sửa dấu theo audit. CHỈ dùng trong backtest để so sánh.
+    Không phản ánh production. Group caps giữ nguyên để so sánh công bằng.
+    """
+    from backtest.bt_config import CURRENT_CAPS
+
+    s = {"trend": 0, "momentum": 0, "volume": 0, "volatility": 0}
+
+    atr_pct = float(row.get("atr_pct") or 0)
+    flat    = atr_pct < 0.5
+    w       = 0.5 if flat else 1.0
+
+    price     = float(row.get("close") or 0)
+    ema200    = row.get("ema200")
+    adx       = row.get("adx")
+    rsi       = row.get("rsi")
+    macd_hist = row.get("macd_hist")
+    stoch_k   = row.get("stoch_k")
+    stoch_d   = row.get("stoch_d")
+    cmf       = row.get("cmf")
+    mfi       = row.get("mfi")
+    bb_pos    = row.get("bb_pos")
+
+    # ── Trend = mean-reversion quanh EMA200 (ĐẢO dấu) ──────────────────
+    # spearman price_vs_ema200 = -0.055: càng trên EMA200 càng dễ giảm
+    if price and ema200 and not pd.isna(ema200):
+        dist_pct = (price - float(ema200)) / float(ema200) * 100
+        # Xa trên EMA200 → mean-rev short; xa dưới → mean-rev long
+        if dist_pct > 15:    s["trend"] -= 15   # quá cao → kỳ vọng giảm
+        elif dist_pct > 5:   s["trend"] -= 8
+        elif dist_pct < -15: s["trend"] += 15   # quá thấp → kỳ vọng bật
+        elif dist_pct < -5:  s["trend"] += 8
+
+    # ADX cao = xu hướng mạnh → khuếch đại tín hiệu mean-rev (không phải momentum)
+    # spearman adx +0.035 ở dạng raw, nhưng kết hợp hướng EMA200 cho mean-rev
+    if adx and adx > 25 and price and ema200 and not pd.isna(ema200):
+        if price > float(ema200):
+            s["trend"] -= 5   # trend mạnh + đang cao → tăng kỳ vọng đảo chiều
+        else:
+            s["trend"] += 5
+
+    # ── Momentum = RSI mean-rev (GIỮ) + MACD/Stoch giảm trọng số ───────
+    if rsi:
+        r = float(rsi)
+        if r < 30:          s["momentum"] += 15   # oversold → long (giữ)
+        elif r > 70:        s["momentum"] -= 15   # overbought → short (tăng từ -10)
+        elif r < 45:        s["momentum"] += 5
+        elif r > 55:        s["momentum"] -= 5
+
+    if macd_hist is not None and not pd.isna(macd_hist):
+        # spearman -0.017 (yếu, hơi mean-rev) → weight thấp, đảo dấu nhẹ
+        s["momentum"] += round((-5 if float(macd_hist) > 0 else 5) * w)
+
+    if stoch_k is not None and not pd.isna(stoch_k):
+        k = float(stoch_k)
+        if k < 20:   s["momentum"] += 3   # oversold mean-rev (giảm từ 5)
+        elif k > 80: s["momentum"] -= 3
+
+    # ── Volume = CMF ĐẢO + MFI threshold trend ─────────────────────────
+    if cmf is not None and not pd.isna(cmf):
+        c = float(cmf)
+        # ĐẢO: CMF cao (inflow nhiều) → spearman -0.043 → kỳ vọng giảm
+        if c > 0.1:    s["volume"] -= 8
+        elif c < -0.1: s["volume"] += 8
+
+    if mfi is not None and not pd.isna(mfi):
+        m = float(mfi)
+        # MFI threshold: >60 bullish (edge +0.58%), <40 bearish — KHÔNG mean-rev
+        if m > 60:   s["volume"] += 6
+        elif m < 40: s["volume"] -= 6
+
+    # ── Volatility = BB mean-rev (GIỮ) ─────────────────────────────────
+    if bb_pos is not None and not pd.isna(bb_pos):
+        b = float(bb_pos)
+        if b < 0.2:   s["volatility"] += 5   # near lower → long (giữ)
+        elif b > 0.8: s["volatility"] -= 5   # near upper → short
+
+    # ── Build output ───────────────────────────────────────────────────
+    result = {}
+    for g, raw in s.items():
+        cap = CURRENT_CAPS[g]
+        result[f"{g}_v2_raw"]    = raw
+        result[f"{g}_v2_capped"] = max(-cap, min(cap, raw))
+    result["tech_score_v2"] = sum(result[f"{g}_v2_capped"] for g in s)
+    return result
+
+
+# ══════════════════════════════════════════════════════════════════════
 # PROCESS ONE SYMBOL
 # ══════════════════════════════════════════════════════════════════════
 
@@ -418,9 +520,12 @@ def process_symbol(symbol: str) -> pd.DataFrame | None:
     if len(df) < 20:
         return None
 
-    # Score mỗi ngày
+    # Score mỗi ngày — cả bản hiện tại lẫn v2 (sửa dấu)
     score_rows = df.apply(score_technical_raw, axis=1)
     df_scores  = pd.DataFrame(score_rows.tolist(), index=df.index)
+
+    v2_rows    = df.apply(score_technical_v2, axis=1)
+    df_v2      = pd.DataFrame(v2_rows.tolist(), index=df.index)
 
     # Ghép lại — chỉ giữ cột cần thiết
     keep_cols = [
@@ -435,7 +540,7 @@ def process_symbol(symbol: str) -> pd.DataFrame | None:
         "cmf", "mfi", "obv", "bb_pos",
     ]
     keep_cols = [c for c in keep_cols if c in df.columns]
-    df_out    = pd.concat([df[keep_cols], df_scores], axis=1)
+    df_out    = pd.concat([df[keep_cols], df_scores, df_v2], axis=1)
     df_out.insert(0, "symbol", symbol)
 
     return df_out
