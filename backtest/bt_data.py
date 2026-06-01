@@ -102,41 +102,55 @@ def today_ict() -> str:
 def fetch_ohlcv(symbol: str) -> pd.DataFrame | None:
     """
     Fetch daily OHLCV từ VCI — cùng source với step_snapshot.py.
-    Trả None nếu không đủ history.
+    Trả None nếu không đủ history. Retry với backoff khi gặp rate limit.
     """
-    try:
-        from vnstock_data import Quote
-        df = Quote(source="VCI", symbol=symbol).history(
-            start=START_DATE,
-            end=today_ict(),
-            interval="1D",
-        )
-        if df is None or df.empty:
+    import time as _time
+    from vnstock_data import Quote
+
+    MAX_RETRIES = 4
+    for attempt in range(MAX_RETRIES):
+        try:
+            df = Quote(source="VCI", symbol=symbol).history(
+                start=START_DATE,
+                end=today_ict(),
+                interval="1D",
+            )
+            if df is None or df.empty:
+                return None
+
+            df = df.sort_values("time").reset_index(drop=True)
+            df["time"] = pd.to_datetime(df["time"])
+
+            # Rename columns nếu cần (VCI có thể trả volume/vol)
+            rename = {}
+            for col in df.columns:
+                if col.lower() in ("vol", "volume"):
+                    rename[col] = "volume"
+                if col.lower() in ("open", "high", "low", "close"):
+                    rename[col] = col.lower()
+            if rename:
+                df = df.rename(columns=rename)
+
+            # Cần ít nhất MIN_HISTORY ngày
+            if len(df) < MIN_HISTORY:
+                log.debug(f"  {symbol}: chỉ có {len(df)} ngày (cần {MIN_HISTORY})")
+                return None
+
+            return df
+
+        except Exception as e:
+            msg = str(e).lower()
+            is_rate = "rate limit" in msg or "giới hạn" in msg or "300/300" in msg or "429" in msg
+            if is_rate and attempt < MAX_RETRIES - 1:
+                # Backoff: 15s, 30s, 45s (rate limit reset mỗi phút)
+                wait = 15 * (attempt + 1)
+                log.warning(f"  {symbol}: rate limit — chờ {wait}s (lần {attempt+1}/{MAX_RETRIES})")
+                _time.sleep(wait)
+                continue
+            log.warning(f"  {symbol}: fetch lỗi — {e}")
             return None
 
-        df = df.sort_values("time").reset_index(drop=True)
-        df["time"] = pd.to_datetime(df["time"])
-
-        # Rename columns nếu cần (VCI có thể trả volume/vol)
-        rename = {}
-        for col in df.columns:
-            if col.lower() in ("vol", "volume"):
-                rename[col] = "volume"
-            if col.lower() in ("open", "high", "low", "close"):
-                rename[col] = col.lower()
-        if rename:
-            df = df.rename(columns=rename)
-
-        # Cần ít nhất MIN_HISTORY ngày
-        if len(df) < MIN_HISTORY:
-            log.debug(f"  {symbol}: chỉ có {len(df)} ngày (cần {MIN_HISTORY})")
-            return None
-
-        return df
-
-    except Exception as e:
-        log.warning(f"  {symbol}: fetch lỗi — {e}")
-        return None
+    return None
 
 
 # ══════════════════════════════════════════════════════════════════════
