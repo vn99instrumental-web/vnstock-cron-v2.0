@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-03T01:10:32.599758+07:00",
+  "generated_at": "2026-06-03T01:14:48.778690+07:00",
   "schema_version": 7,
   "ttl_days": 30,
-  "count": 341,
+  "count": 342,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -19959,6 +19959,69 @@
         "cashflow": -10,
         "growth": 10,
         "total": -8,
+        "max": 38
+      }
+    },
+    "HAP": {
+      "symbol": "HAP",
+      "fetched_at": "2026-06-03T01:14:36.949410+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": -5.9,
+        "pb": 0.7,
+        "roe": -9.83,
+        "roa": -8.87,
+        "eps": -1239.48,
+        "bvps": 10498.0,
+        "beta": 0.19,
+        "div_yield": 0.0,
+        "gross_margin": 13.58,
+        "net_margin": -96.09,
+        "quick_ratio": 8.02,
+        "interest_cov": -485.2,
+        "ev_ebitda": 0.0
+      },
+      "income": {
+        "revenue": 151341887.0,
+        "gross_profit": 25590147.0,
+        "net_profit": -4140598.0,
+        "operating_profit": -3634970.0,
+        "eps": -37.0,
+        "rev_growth_qoq": 0.1583,
+        "profit_growth_qoq": 0.5243,
+        "rev_growth_yoy": 0.1583,
+        "profit_growth_yoy": 0.5243,
+        "net_profit_year": -105812784.0
+      },
+      "balance": {
+        "total_assets": 1254938167.0,
+        "equity": 1164724642.0,
+        "total_liab": 90213526.0,
+        "short_debt": 17472408.0,
+        "long_debt": null,
+        "debt_to_equity": 0.077
+      },
+      "cashflow": {
+        "cf_operating": 48582642.0,
+        "cf_investing": -21078011.0,
+        "cf_financing": -8924450.0,
+        "cf_period": "annual",
+        "cf_free": 27504631.0,
+        "cf_quality": -0.46,
+        "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": -3,
+        "cashflow": 0,
+        "growth": 8,
+        "total": 5,
         "max": 38
       }
     }
