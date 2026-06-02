@@ -11,6 +11,17 @@ on:
     - cron: '30 7 * * 1-5'   # 14:30 ICT
   workflow_dispatch:
 
+# Đảm bảo bước "git push" luôn có quyền ghi, kể cả khi repo để
+# Workflow permissions = read-only (đặc biệt cần để ý sau khi chuyển private).
+permissions:
+  contents: write
+
+# Khi GitHub dồn nhiều scheduled run rồi xả cùng lúc, group này serialize
+# các run intraday → không có 2 run cùng commit/push một lúc.
+concurrency:
+  group: vnstock-intraday
+  cancel-in-progress: false
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -28,6 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
@@ -150,12 +162,36 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step_price_levels.py
 
+      # ──────────────────────────────────────────────────────────────────
+      # COMMIT OUTPUT — hardened:
+      # GitHub hay xả nhiều run gần nhau → daily + intraday có thể push
+      # đụng nhau (non-fast-forward rejected). Pull --rebase + retry loop
+      # giúp run sau tự nối tiếp thay vì fail và mất data lần đó.
+      # ──────────────────────────────────────────────────────────────────
       - name: Commit output
         run: |
           git config user.name  "github-actions[bot]"
-          git config user.email \
-            "github-actions[bot]@users.noreply.github.com"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git add output/
-          git diff --staged --quiet || \
-            git commit -m "data: $(date +'%Y-%m-%d %H:%M') ICT"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit — skipping."
+            exit 0
+          fi
+          git commit -m "data: $(date +'%Y-%m-%d %H:%M') ICT"
+
+          pushed=0
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "✅ pushed (attempt $i)"
+              pushed=1
+              break
+            fi
+            echo "⚠️ push attempt $i failed — retrying..."
+            sleep $((RANDOM % 5 + 3))
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "❌ push failed after 5 attempts"
+            exit 1
+          fi
