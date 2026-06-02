@@ -1,52 +1,72 @@
 {
-  "generated_at": "2026-06-02T09:52:40.500184+07:00",
+  "generated_at": "2026-06-02T14:41:46.632154+07:00",
   "buy_count": 1,
-  "exit_count": 2,
+  "exit_count": 4,
   "buy_levels": [
     {
-      "symbol": "ITC",
+      "symbol": "VVS",
       "exchange": "HSX",
       "decision": "BUY",
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
-      "price": 13.45,
-      "entry": 13.0,
-      "entry_low": 13.0,
-      "entry_high": 13.45,
-      "stop_loss": 12.65,
-      "risk_pct": 2.69,
-      "tp1": 13.5,
-      "tp2": 14.0,
-      "rr_tp1": 1.43,
+      "price": 123.7,
+      "entry": 115.8,
+      "entry_low": 115.8,
+      "entry_high": 123.7,
+      "stop_loss": 112.0,
+      "risk_pct": 3.28,
+      "tp1": 121.5,
+      "tp2": 127.1,
+      "rr_tp1": 1.5,
       "rr_headroom": null,
       "size_hint": "HALF",
-      "nearest_support": 13.0,
+      "nearest_support": 115.8,
       "nearest_resist": null,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "",
+      "flags": "STOP_BELOW_FLOOR",
       "skip": ""
     }
   ],
   "exit_levels": [
     {
-      "symbol": "DAH",
+      "symbol": "TDH",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 3.09,
-      "exit_trigger": 2.98,
+      "price": 3.98,
+      "exit_trigger": 3.88,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "DBD",
+      "symbol": "TSC",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 50.0,
-      "exit_trigger": 48.55,
+      "price": 2.51,
+      "exit_trigger": 2.31,
       "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TPC",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 7.21,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
+    },
+    {
+      "symbol": "CII",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 16.65,
+      "exit_trigger": 16.4,
+      "note": "Thoát ngay (market)"
     }
   ]
 }
