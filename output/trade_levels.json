@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-02T09:22:32.256800+07:00",
+  "generated_at": "2026-06-02T09:52:40.500184+07:00",
   "buy_count": 1,
-  "exit_count": 7,
+  "exit_count": 2,
   "buy_levels": [
     {
       "symbol": "ITC",
@@ -9,93 +9,43 @@
       "decision": "BUY",
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
-      "price": 13.0,
-      "entry": 12.9,
-      "entry_low": 12.9,
-      "entry_high": 13.0,
-      "stop_loss": 12.05,
-      "risk_pct": 6.59,
-      "tp1": 13.9,
-      "tp2": 13.9,
-      "rr_tp1": 1.18,
-      "rr_headroom": 0.18,
+      "price": 13.45,
+      "entry": 13.0,
+      "entry_low": 13.0,
+      "entry_high": 13.45,
+      "stop_loss": 12.65,
+      "risk_pct": 2.69,
+      "tp1": 13.5,
+      "tp2": 14.0,
+      "rr_tp1": 1.43,
+      "rr_headroom": null,
       "size_hint": "HALF",
-      "nearest_support": 12.9,
-      "nearest_resist": 13.05,
+      "nearest_support": 13.0,
+      "nearest_resist": null,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "TP1_AT_CEILING,TIGHT_HEADROOM,STOP_BELOW_FLOOR",
+      "flags": "",
       "skip": ""
     }
   ],
   "exit_levels": [
-    {
-      "symbol": "JVC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "LOW",
-      "entry_style": "EXIT",
-      "price": 3.91,
-      "exit_trigger": 3.86,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "BMC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 13.4,
-      "exit_trigger": 13.1,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TSC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 2.45,
-      "exit_trigger": 2.31,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
     {
       "symbol": "DAH",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 3.1,
+      "price": 3.09,
       "exit_trigger": 2.98,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "SJS",
+      "symbol": "DBD",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 49.4,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "NNC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 46.2,
-      "exit_trigger": 43.25,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "BFC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 58.7,
-      "exit_trigger": 58.1,
+      "price": 50.0,
+      "exit_trigger": 48.55,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
