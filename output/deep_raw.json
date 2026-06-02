@@ -1,153 +1,11 @@
 [
   {
-    "symbol": "TDH",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-02 14:41",
-    "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 3.98,
-    "price_type": "realtime",
-    "intra_buy_vol": 71800.0,
-    "intra_sell_vol": 329300.0,
-    "intra_delta": -257500.0,
-    "intra_buy_ratio": 0.18,
-    "depth_buy": 126300.0,
-    "depth_sell": 351700.0,
-    "depth_buy_ratio": 0.26,
-    "ema20": 3.88,
-    "ema50": 3.91,
-    "adx": 15.04,
-    "supertrend": 4.17,
-    "ema200": 4.29,
-    "ema_cross_pct": -0.77,
-    "price_vs_ema20_pct": 2.58,
-    "price_vs_ema200_pct": -7.23,
-    "rsi": 54.92,
-    "macd": -0.04,
-    "macd_sig": -0.01,
-    "macd_hist": -0.03,
-    "stoch_k": 30.02,
-    "stoch_d": 13.02,
-    "bb_upper": 3.68,
-    "bb_mid": 3.91,
-    "bb_lower": 4.14,
-    "atr": 0.15,
-    "bb_position": 0.35,
-    "atr_pct": 3.77,
-    "obv": 13120700.0,
-    "cmf": 0.11,
-    "mfi": 43.76,
-    "vol_ma_ratio": 4.39,
-    "vol_today": 478400.0,
-    "vol_avg_20d": 109030.0,
-    "_ohlcv_5d": [
-      {
-        "date": "2026-05-27",
-        "open": 3.78,
-        "high": 3.83,
-        "low": 3.78,
-        "close": 3.82,
-        "volume": 58800,
-        "vs_avg5d_pct": -59.3
-      },
-      {
-        "date": "2026-05-28",
-        "open": 3.87,
-        "high": 3.87,
-        "low": 3.73,
-        "close": 3.75,
-        "volume": 104200,
-        "vs_avg5d_pct": -27.9
-      },
-      {
-        "date": "2026-05-29",
-        "open": 3.86,
-        "high": 3.86,
-        "low": 3.7,
-        "close": 3.71,
-        "volume": 39900,
-        "vs_avg5d_pct": -72.4
-      },
-      {
-        "date": "2026-06-01",
-        "open": 3.71,
-        "high": 3.83,
-        "low": 3.71,
-        "close": 3.72,
-        "volume": 41500,
-        "vs_avg5d_pct": -71.3
-      },
-      {
-        "date": "2026-06-02",
-        "open": 3.8,
-        "high": 3.98,
-        "low": 3.72,
-        "close": 3.98,
-        "volume": 478400,
-        "vs_avg5d_pct": 230.9
-      }
-    ],
-    "ff_buy_val_5d": null,
-    "ff_sell_val_5d": null,
-    "ff_net_val_5d": null,
-    "ff_net_val_20d": null,
-    "ff_trend": null,
-    "ff_consistency": null,
-    "ff_acceleration": null,
-    "insider_count": 5.0,
-    "insider_latest": "Mua",
-    "insider_name": "Lê Ngọc Xuân",
-    "r_period": "2026-Q1",
-    "r_pe": 4.45,
-    "r_pb": 2.68,
-    "r_roe": 4.05,
-    "r_roa": 16.08,
-    "r_eps": 981.6,
-    "r_bvps": 1628.0,
-    "r_beta": 0.87,
-    "r_div_yield": 0.0,
-    "r_gross_margin": 22.25,
-    "r_net_margin": 10.85,
-    "r_quick_ratio": 0.29,
-    "r_interest_cov": 380.27,
-    "r_ev_ebitda": 0.0,
-    "is_revenue": 17829115.0,
-    "is_gross_profit": 6142579.0,
-    "is_net_profit": 13271303.0,
-    "is_operating_profit": -3719736.0,
-    "is_eps": 118.0,
-    "is_rev_growth": 1.2303,
-    "is_profit_growth": 1.3405,
-    "is_rev_growth_yoy": 1.2303,
-    "is_profit_growth_yoy": 1.3405,
-    "bs_total_assets": 685360737.0,
-    "bs_equity": 183414858.0,
-    "bs_total_liab": 501945878.0,
-    "bs_short_debt": NaN,
-    "bs_long_debt": 849997.0,
-    "bs_debt_to_equity": 2.737,
-    "cf_operating": -23754320.0,
-    "cf_investing": -8329416.0,
-    "cf_financing": 3349997.0,
-    "cf_free": -32083736.0,
-    "cf_quality_ratio": -0.22,
-    "finance_score": 7.0,
-    "finance_score_fund": 7.0,
-    "finance_score_cf": -10.0,
-    "finance_score_growth": 10.0,
-    "industry": "Bất động sản",
-    "icb_code": "8600",
-    "ff_room": null,
-    "ff_data_invalid": true
-  },
-  {
     "symbol": "JVC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 3.98,
     "price_type": "realtime",
     "intra_buy_vol": 107000.0,
@@ -284,46 +142,188 @@
     "ff_data_invalid": true
   },
   {
+    "symbol": "TDH",
+    "group": "GAINER",
+    "exchange": "HSX",
+    "time": "2026-06-02 14:45",
+    "date": "2026-06-02",
+    "snap_time": "14:45",
+    "price": 3.98,
+    "price_type": "realtime",
+    "intra_buy_vol": 71400.0,
+    "intra_sell_vol": 329300.0,
+    "intra_delta": -257900.0,
+    "intra_buy_ratio": 0.18,
+    "depth_buy": 126300.0,
+    "depth_sell": 351700.0,
+    "depth_buy_ratio": 0.26,
+    "ema20": 3.88,
+    "ema50": 3.91,
+    "adx": 15.04,
+    "supertrend": 4.17,
+    "ema200": 4.29,
+    "ema_cross_pct": -0.77,
+    "price_vs_ema20_pct": 2.58,
+    "price_vs_ema200_pct": -7.23,
+    "rsi": 54.92,
+    "macd": -0.04,
+    "macd_sig": -0.01,
+    "macd_hist": -0.03,
+    "stoch_k": 30.02,
+    "stoch_d": 13.02,
+    "bb_upper": 3.68,
+    "bb_mid": 3.91,
+    "bb_lower": 4.14,
+    "atr": 0.15,
+    "bb_position": 0.35,
+    "atr_pct": 3.77,
+    "obv": 13121700.0,
+    "cmf": 0.11,
+    "mfi": 43.8,
+    "vol_ma_ratio": 4.4,
+    "vol_today": 479400.0,
+    "vol_avg_20d": 109030.0,
+    "_ohlcv_5d": [
+      {
+        "date": "2026-05-27",
+        "open": 3.78,
+        "high": 3.83,
+        "low": 3.78,
+        "close": 3.82,
+        "volume": 58800,
+        "vs_avg5d_pct": -59.4
+      },
+      {
+        "date": "2026-05-28",
+        "open": 3.87,
+        "high": 3.87,
+        "low": 3.73,
+        "close": 3.75,
+        "volume": 104200,
+        "vs_avg5d_pct": -28.0
+      },
+      {
+        "date": "2026-05-29",
+        "open": 3.86,
+        "high": 3.86,
+        "low": 3.7,
+        "close": 3.71,
+        "volume": 39900,
+        "vs_avg5d_pct": -72.4
+      },
+      {
+        "date": "2026-06-01",
+        "open": 3.71,
+        "high": 3.83,
+        "low": 3.71,
+        "close": 3.72,
+        "volume": 41500,
+        "vs_avg5d_pct": -71.3
+      },
+      {
+        "date": "2026-06-02",
+        "open": 3.8,
+        "high": 3.98,
+        "low": 3.72,
+        "close": 3.98,
+        "volume": 479400,
+        "vs_avg5d_pct": 231.2
+      }
+    ],
+    "ff_buy_val_5d": null,
+    "ff_sell_val_5d": null,
+    "ff_net_val_5d": null,
+    "ff_net_val_20d": null,
+    "ff_trend": null,
+    "ff_consistency": null,
+    "ff_acceleration": null,
+    "insider_count": 5.0,
+    "insider_latest": "Mua",
+    "insider_name": "Lê Ngọc Xuân",
+    "r_period": "2026-Q1",
+    "r_pe": 4.45,
+    "r_pb": 2.68,
+    "r_roe": 4.05,
+    "r_roa": 16.08,
+    "r_eps": 981.6,
+    "r_bvps": 1628.0,
+    "r_beta": 0.87,
+    "r_div_yield": 0.0,
+    "r_gross_margin": 22.25,
+    "r_net_margin": 10.85,
+    "r_quick_ratio": 0.29,
+    "r_interest_cov": 380.27,
+    "r_ev_ebitda": 0.0,
+    "is_revenue": 17829115.0,
+    "is_gross_profit": 6142579.0,
+    "is_net_profit": 13271303.0,
+    "is_operating_profit": -3719736.0,
+    "is_eps": 118.0,
+    "is_rev_growth": 1.2303,
+    "is_profit_growth": 1.3405,
+    "is_rev_growth_yoy": 1.2303,
+    "is_profit_growth_yoy": 1.3405,
+    "bs_total_assets": 685360737.0,
+    "bs_equity": 183414858.0,
+    "bs_total_liab": 501945878.0,
+    "bs_short_debt": NaN,
+    "bs_long_debt": 849997.0,
+    "bs_debt_to_equity": 2.737,
+    "cf_operating": -23754320.0,
+    "cf_investing": -8329416.0,
+    "cf_financing": 3349997.0,
+    "cf_free": -32083736.0,
+    "cf_quality_ratio": -0.22,
+    "finance_score": 7.0,
+    "finance_score_fund": 7.0,
+    "finance_score_cf": -10.0,
+    "finance_score_growth": 10.0,
+    "industry": "Bất động sản",
+    "icb_code": "8600",
+    "ff_room": null,
+    "ff_data_invalid": true
+  },
+  {
     "symbol": "VVS",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 123.7,
+    "snap_time": "14:45",
+    "price": 123.6,
     "price_type": "realtime",
     "intra_buy_vol": 57800.0,
-    "intra_sell_vol": 20000.0,
-    "intra_delta": 37800.0,
-    "intra_buy_ratio": 0.74,
+    "intra_sell_vol": 19000.0,
+    "intra_delta": 38800.0,
+    "intra_buy_ratio": 0.75,
     "depth_buy": 129100.0,
     "depth_sell": 50800.0,
     "depth_buy_ratio": 0.72,
-    "ema20": 115.48,
+    "ema20": 115.47,
     "ema50": 114.54,
     "adx": 10.98,
     "supertrend": 100.74,
     "ema200": 77.06,
-    "ema_cross_pct": 0.82,
-    "price_vs_ema20_pct": 7.12,
-    "price_vs_ema200_pct": 60.52,
-    "rsi": 57.37,
-    "macd": 0.2,
+    "ema_cross_pct": 0.81,
+    "price_vs_ema20_pct": 7.04,
+    "price_vs_ema200_pct": 60.39,
+    "rsi": 57.3,
+    "macd": 0.19,
     "macd_sig": 1.3,
     "macd_hist": -1.1,
-    "stoch_k": 77.54,
-    "stoch_d": 73.92,
-    "bb_upper": 104.05,
-    "bb_mid": 113.22,
-    "bb_lower": 122.38,
+    "stoch_k": 77.4,
+    "stoch_d": 73.87,
+    "bb_upper": 104.07,
+    "bb_mid": 113.21,
+    "bb_lower": 122.35,
     "atr": 6.52,
     "bb_position": -0.07,
-    "atr_pct": 5.27,
-    "obv": 3749635.0,
+    "atr_pct": 5.28,
+    "obv": 3776435.0,
     "cmf": 0.13,
-    "mfi": 58.94,
-    "vol_ma_ratio": 1.5,
-    "vol_today": 180200.0,
+    "mfi": 59.5,
+    "vol_ma_ratio": 1.73,
+    "vol_today": 207000.0,
     "vol_avg_20d": 119770.0,
     "_ohlcv_5d": [
       {
@@ -333,7 +333,7 @@
         "low": 117.1,
         "close": 120.5,
         "volume": 337300,
-        "vs_avg5d_pct": 120.6
+        "vs_avg5d_pct": 113.1
       },
       {
         "date": "2026-05-28",
@@ -342,7 +342,7 @@
         "low": 114.0,
         "close": 117.0,
         "volume": 94200,
-        "vs_avg5d_pct": -38.4
+        "vs_avg5d_pct": -40.5
       },
       {
         "date": "2026-05-29",
@@ -351,7 +351,7 @@
         "low": 114.5,
         "close": 115.0,
         "volume": 76100,
-        "vs_avg5d_pct": -50.2
+        "vs_avg5d_pct": -51.9
       },
       {
         "date": "2026-06-01",
@@ -360,16 +360,16 @@
         "low": 114.0,
         "close": 115.7,
         "volume": 76800,
-        "vs_avg5d_pct": -49.8
+        "vs_avg5d_pct": -51.5
       },
       {
         "date": "2026-06-02",
         "open": 116.6,
         "high": 123.7,
         "low": 115.5,
-        "close": 123.7,
-        "volume": 180200,
-        "vs_avg5d_pct": 17.8
+        "close": 123.6,
+        "volume": 207000,
+        "vs_avg5d_pct": 30.8
       }
     ],
     "ff_buy_val_5d": null,
@@ -429,14 +429,14 @@
     "symbol": "HID",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 4.37,
     "price_type": "realtime",
-    "intra_buy_vol": 153000.0,
+    "intra_buy_vol": 152000.0,
     "intra_sell_vol": 120500.0,
-    "intra_delta": 32500.0,
+    "intra_delta": 31500.0,
     "intra_buy_ratio": 0.56,
     "depth_buy": 173100.0,
     "depth_sell": 182900.0,
@@ -461,11 +461,11 @@
     "atr": 0.21,
     "bb_position": 0.48,
     "atr_pct": 4.81,
-    "obv": 4493200.0,
+    "obv": 4494500.0,
     "cmf": -0.35,
-    "mfi": 28.54,
-    "vol_ma_ratio": 0.88,
-    "vol_today": 357400.0,
+    "mfi": 28.55,
+    "vol_ma_ratio": 0.89,
+    "vol_today": 358700.0,
     "vol_avg_20d": 404020.0,
     "_ohlcv_5d": [
       {
@@ -475,7 +475,7 @@
         "low": 4.19,
         "close": 4.25,
         "volume": 589900,
-        "vs_avg5d_pct": 30.7
+        "vs_avg5d_pct": 30.6
       },
       {
         "date": "2026-05-28",
@@ -493,7 +493,7 @@
         "low": 4.1,
         "close": 4.1,
         "volume": 621000,
-        "vs_avg5d_pct": 37.6
+        "vs_avg5d_pct": 37.5
       },
       {
         "date": "2026-06-01",
@@ -502,7 +502,7 @@
         "low": 4.05,
         "close": 4.09,
         "volume": 317600,
-        "vs_avg5d_pct": -29.6
+        "vs_avg5d_pct": -29.7
       },
       {
         "date": "2026-06-02",
@@ -510,8 +510,8 @@
         "high": 4.37,
         "low": 4.05,
         "close": 4.37,
-        "volume": 357400,
-        "vs_avg5d_pct": -20.8
+        "volume": 358700,
+        "vs_avg5d_pct": -20.6
       }
     ],
     "ff_buy_val_5d": null,
@@ -571,15 +571,15 @@
     "symbol": "TSC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 2.51,
     "price_type": "realtime",
-    "intra_buy_vol": 200300.0,
+    "intra_buy_vol": 172800.0,
     "intra_sell_vol": 156100.0,
-    "intra_delta": 44200.0,
-    "intra_buy_ratio": 0.56,
+    "intra_delta": 16700.0,
+    "intra_buy_ratio": 0.53,
     "depth_buy": 261000.0,
     "depth_sell": 204500.0,
     "depth_buy_ratio": 0.56,
@@ -603,11 +603,11 @@
     "atr": 0.07,
     "bb_position": -0.25,
     "atr_pct": 2.79,
-    "obv": -985700.0,
+    "obv": -984600.0,
     "cmf": 0.23,
-    "mfi": 54.66,
-    "vol_ma_ratio": 3.98,
-    "vol_today": 560700.0,
+    "mfi": 54.69,
+    "vol_ma_ratio": 3.99,
+    "vol_today": 561800.0,
     "vol_avg_20d": 140715.0,
     "_ohlcv_5d": [
       {
@@ -644,7 +644,7 @@
         "low": 2.2,
         "close": 2.35,
         "volume": 495900,
-        "vs_avg5d_pct": 94.8
+        "vs_avg5d_pct": 94.7
       },
       {
         "date": "2026-06-02",
@@ -652,8 +652,8 @@
         "high": 2.51,
         "low": 2.45,
         "close": 2.51,
-        "volume": 560700,
-        "vs_avg5d_pct": 120.3
+        "volume": 561800,
+        "vs_avg5d_pct": 120.5
       }
     ],
     "ff_buy_val_5d": null,
@@ -713,14 +713,14 @@
     "symbol": "HQC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 2.74,
     "price_type": "realtime",
     "intra_buy_vol": 0.0,
-    "intra_sell_vol": 1153500.0,
-    "intra_delta": -1153500.0,
+    "intra_sell_vol": 1152500.0,
+    "intra_delta": -1152500.0,
     "intra_buy_ratio": 0.0,
     "depth_buy": 1535100.0,
     "depth_sell": 7909000.0,
@@ -745,11 +745,11 @@
     "atr": 0.07,
     "bb_position": -0.33,
     "atr_pct": 2.55,
-    "obv": 47471300.0,
+    "obv": 47475400.0,
     "cmf": -0.02,
     "mfi": 68.07,
     "vol_ma_ratio": 6.22,
-    "vol_today": 12818400.0,
+    "vol_today": 12822500.0,
     "vol_avg_20d": 2060695.0,
     "_ohlcv_5d": [
       {
@@ -794,8 +794,8 @@
         "high": 2.74,
         "low": 2.71,
         "close": 2.74,
-        "volume": 12818400,
-        "vs_avg5d_pct": 215.6
+        "volume": 12822500,
+        "vs_avg5d_pct": 215.7
       }
     ],
     "ff_buy_val_5d": null,
@@ -855,9 +855,9 @@
     "symbol": "C32",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 12.9,
     "price_type": "realtime",
     "intra_buy_vol": 9800.0,
@@ -882,7 +882,7 @@
     "stoch_k": 21.67,
     "stoch_d": 15.66,
     "bb_upper": 11.64,
-    "bb_mid": 13.39,
+    "bb_mid": 13.38,
     "bb_lower": 15.13,
     "atr": 0.62,
     "bb_position": 0.64,
@@ -997,15 +997,15 @@
     "symbol": "ST8",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 3.32,
     "price_type": "realtime",
     "intra_buy_vol": 121000.0,
-    "intra_sell_vol": 128400.0,
-    "intra_delta": -7400.0,
-    "intra_buy_ratio": 0.49,
+    "intra_sell_vol": 108600.0,
+    "intra_delta": 12400.0,
+    "intra_buy_ratio": 0.53,
     "depth_buy": 183000.0,
     "depth_sell": 258400.0,
     "depth_buy_ratio": 0.41,
@@ -1029,11 +1029,11 @@
     "atr": 0.09,
     "bb_position": 0.03,
     "atr_pct": 2.71,
-    "obv": -2087100.0,
-    "cmf": 0.17,
-    "mfi": 54.03,
-    "vol_ma_ratio": 6.18,
-    "vol_today": 575300.0,
+    "obv": -2083400.0,
+    "cmf": 0.16,
+    "mfi": 54.12,
+    "vol_ma_ratio": 6.22,
+    "vol_today": 579000.0,
     "vol_avg_20d": 93140.0,
     "_ohlcv_5d": [
       {
@@ -1052,7 +1052,7 @@
         "low": 2.93,
         "close": 3.0,
         "volume": 167500,
-        "vs_avg5d_pct": -37.4
+        "vs_avg5d_pct": -37.6
       },
       {
         "date": "2026-05-29",
@@ -1061,7 +1061,7 @@
         "low": 2.96,
         "close": 2.96,
         "volume": 61500,
-        "vs_avg5d_pct": -77.0
+        "vs_avg5d_pct": -77.1
       },
       {
         "date": "2026-06-01",
@@ -1070,7 +1070,7 @@
         "low": 2.95,
         "close": 3.16,
         "volume": 458600,
-        "vs_avg5d_pct": 71.3
+        "vs_avg5d_pct": 70.9
       },
       {
         "date": "2026-06-02",
@@ -1078,8 +1078,8 @@
         "high": 3.38,
         "low": 3.28,
         "close": 3.32,
-        "volume": 575300,
-        "vs_avg5d_pct": 115.0
+        "volume": 579000,
+        "vs_avg5d_pct": 115.7
       }
     ],
     "ff_buy_val_5d": null,
@@ -1139,14 +1139,14 @@
     "symbol": "VNE",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 3.25,
     "price_type": "realtime",
     "intra_buy_vol": 267800.0,
-    "intra_sell_vol": 133500.0,
-    "intra_delta": 134300.0,
+    "intra_sell_vol": 133400.0,
+    "intra_delta": 134400.0,
     "intra_buy_ratio": 0.67,
     "depth_buy": 1397900.0,
     "depth_sell": 1471400.0,
@@ -1171,11 +1171,11 @@
     "atr": 0.22,
     "bb_position": 0.27,
     "atr_pct": 6.77,
-    "obv": 11161800.0,
+    "obv": 11180800.0,
     "cmf": 0.06,
-    "mfi": 51.42,
-    "vol_ma_ratio": 1.94,
-    "vol_today": 2896300.0,
+    "mfi": 51.38,
+    "vol_ma_ratio": 1.95,
+    "vol_today": 2915300.0,
     "vol_avg_20d": 1491835.0,
     "_ohlcv_5d": [
       {
@@ -1185,7 +1185,7 @@
         "low": 2.8,
         "close": 2.91,
         "volume": 3026500,
-        "vs_avg5d_pct": -1.4
+        "vs_avg5d_pct": -1.5
       },
       {
         "date": "2026-05-28",
@@ -1194,7 +1194,7 @@
         "low": 3.0,
         "close": 3.11,
         "volume": 3351200,
-        "vs_avg5d_pct": 9.2
+        "vs_avg5d_pct": 9.0
       },
       {
         "date": "2026-05-29",
@@ -1203,7 +1203,7 @@
         "low": 3.32,
         "close": 3.32,
         "volume": 1100500,
-        "vs_avg5d_pct": -64.1
+        "vs_avg5d_pct": -64.2
       },
       {
         "date": "2026-06-01",
@@ -1212,7 +1212,7 @@
         "low": 3.09,
         "close": 3.1,
         "volume": 4972100,
-        "vs_avg5d_pct": 62.0
+        "vs_avg5d_pct": 61.8
       },
       {
         "date": "2026-06-02",
@@ -1220,8 +1220,8 @@
         "high": 3.31,
         "low": 2.9,
         "close": 3.25,
-        "volume": 2896300,
-        "vs_avg5d_pct": -5.6
+        "volume": 2915300,
+        "vs_avg5d_pct": -5.1
       }
     ],
     "ff_buy_val_5d": null,
@@ -1281,43 +1281,43 @@
     "symbol": "CMG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 28.45,
+    "snap_time": "14:45",
+    "price": 28.4,
     "price_type": "realtime",
     "intra_buy_vol": 77700.0,
-    "intra_sell_vol": 42300.0,
-    "intra_delta": 35400.0,
+    "intra_sell_vol": 41300.0,
+    "intra_delta": 36400.0,
     "intra_buy_ratio": 0.65,
     "depth_buy": 638700.0,
     "depth_sell": 229700.0,
     "depth_buy_ratio": 0.74,
-    "ema20": 27.88,
+    "ema20": 27.87,
     "ema50": 28.69,
     "adx": 17.68,
     "supertrend": 28.95,
     "ema200": 32.49,
-    "ema_cross_pct": -2.82,
-    "price_vs_ema20_pct": 2.04,
-    "price_vs_ema200_pct": -12.43,
-    "rsi": 54.41,
-    "macd": -0.18,
+    "ema_cross_pct": -2.86,
+    "price_vs_ema20_pct": 1.9,
+    "price_vs_ema200_pct": -12.59,
+    "rsi": 53.99,
+    "macd": -0.19,
     "macd_sig": 0.06,
     "macd_hist": -0.25,
-    "stoch_k": 37.07,
-    "stoch_d": 32.27,
-    "bb_upper": 26.9,
+    "stoch_k": 36.17,
+    "stoch_d": 31.96,
+    "bb_upper": 26.91,
     "bb_mid": 27.76,
-    "bb_lower": 28.62,
+    "bb_lower": 28.61,
     "atr": 0.75,
-    "bb_position": 0.1,
+    "bb_position": 0.12,
     "atr_pct": 2.64,
-    "obv": 10161054.0,
-    "cmf": 0.11,
-    "mfi": 61.63,
-    "vol_ma_ratio": 3.1,
-    "vol_today": 875500.0,
+    "obv": 10169654.0,
+    "cmf": 0.1,
+    "mfi": 61.7,
+    "vol_ma_ratio": 3.13,
+    "vol_today": 884100.0,
     "vol_avg_20d": 282670.0,
     "_ohlcv_5d": [
       {
@@ -1327,7 +1327,7 @@
         "low": 27.75,
         "close": 28.0,
         "volume": 145700,
-        "vs_avg5d_pct": -53.5
+        "vs_avg5d_pct": -53.8
       },
       {
         "date": "2026-05-28",
@@ -1336,7 +1336,7 @@
         "low": 27.6,
         "close": 27.6,
         "volume": 167100,
-        "vs_avg5d_pct": -46.7
+        "vs_avg5d_pct": -47.0
       },
       {
         "date": "2026-05-29",
@@ -1345,7 +1345,7 @@
         "low": 27.0,
         "close": 27.0,
         "volume": 265800,
-        "vs_avg5d_pct": -15.2
+        "vs_avg5d_pct": -15.7
       },
       {
         "date": "2026-06-01",
@@ -1354,16 +1354,16 @@
         "low": 27.0,
         "close": 27.35,
         "volume": 113800,
-        "vs_avg5d_pct": -63.7
+        "vs_avg5d_pct": -63.9
       },
       {
         "date": "2026-06-02",
         "open": 27.0,
         "high": 28.65,
         "low": 27.0,
-        "close": 28.45,
-        "volume": 875500,
-        "vs_avg5d_pct": 179.2
+        "close": 28.4,
+        "volume": 884100,
+        "vs_avg5d_pct": 180.4
       }
     ],
     "ff_buy_val_5d": null,
@@ -1423,10 +1423,10 @@
     "symbol": "DQC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 9.77,
+    "snap_time": "14:45",
+    "price": 9.81,
     "price_type": "realtime",
     "intra_buy_vol": 33100.0,
     "intra_sell_vol": 63800.0,
@@ -1441,25 +1441,25 @@
     "supertrend": 12.02,
     "ema200": 10.78,
     "ema_cross_pct": 1.8,
-    "price_vs_ema20_pct": -9.29,
-    "price_vs_ema200_pct": -9.37,
-    "rsi": 35.87,
-    "macd": -0.1,
+    "price_vs_ema20_pct": -8.91,
+    "price_vs_ema200_pct": -9.0,
+    "rsi": 36.26,
+    "macd": -0.09,
     "macd_sig": -0.2,
     "macd_hist": 0.1,
-    "stoch_k": 14.58,
-    "stoch_d": 12.62,
-    "bb_upper": 10.09,
+    "stoch_k": 15.26,
+    "stoch_d": 12.84,
+    "bb_upper": 10.1,
     "bb_mid": 11.02,
     "bb_lower": 11.95,
     "atr": 0.55,
-    "bb_position": 1.17,
-    "atr_pct": 5.63,
-    "obv": 351000.0,
+    "bb_position": 1.16,
+    "atr_pct": 5.61,
+    "obv": 341000.0,
     "cmf": -0.05,
-    "mfi": 12.91,
-    "vol_ma_ratio": 3.95,
-    "vol_today": 97000.0,
+    "mfi": 12.56,
+    "vol_ma_ratio": 4.35,
+    "vol_today": 107000.0,
     "vol_avg_20d": 24585.0,
     "_ohlcv_5d": [
       {
@@ -1469,7 +1469,7 @@
         "low": 10.6,
         "close": 10.6,
         "volume": 9800,
-        "vs_avg5d_pct": -72.3
+        "vs_avg5d_pct": -73.8
       },
       {
         "date": "2026-05-28",
@@ -1478,7 +1478,7 @@
         "low": 10.15,
         "close": 10.15,
         "volume": 45100,
-        "vs_avg5d_pct": 27.6
+        "vs_avg5d_pct": 20.8
       },
       {
         "date": "2026-05-29",
@@ -1487,7 +1487,7 @@
         "low": 10.15,
         "close": 10.5,
         "volume": 14800,
-        "vs_avg5d_pct": -58.1
+        "vs_avg5d_pct": -60.4
       },
       {
         "date": "2026-06-01",
@@ -1496,16 +1496,16 @@
         "low": 10.5,
         "close": 10.5,
         "volume": 10000,
-        "vs_avg5d_pct": -71.7
+        "vs_avg5d_pct": -73.2
       },
       {
         "date": "2026-06-02",
         "open": 10.8,
         "high": 10.8,
         "low": 9.77,
-        "close": 9.77,
-        "volume": 97000,
-        "vs_avg5d_pct": 174.5
+        "close": 9.81,
+        "volume": 107000,
+        "vs_avg5d_pct": 186.6
       }
     ],
     "ff_buy_val_5d": null,
@@ -1565,14 +1565,14 @@
     "symbol": "NVL",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 14.2,
     "price_type": "realtime",
-    "intra_buy_vol": 578200.0,
+    "intra_buy_vol": 578100.0,
     "intra_sell_vol": 0.0,
-    "intra_delta": 578200.0,
+    "intra_delta": 578100.0,
     "intra_buy_ratio": 1.0,
     "depth_buy": 17005000.0,
     "depth_sell": 9322600.0,
@@ -1597,11 +1597,11 @@
     "atr": 0.82,
     "bb_position": 1.03,
     "atr_pct": 5.77,
-    "obv": 294319900.0,
+    "obv": 294043500.0,
     "cmf": -0.11,
-    "mfi": 29.8,
-    "vol_ma_ratio": 1.06,
-    "vol_today": 26533600.0,
+    "mfi": 29.77,
+    "vol_ma_ratio": 1.07,
+    "vol_today": 26810000.0,
     "vol_avg_20d": 24981730.0,
     "_ohlcv_5d": [
       {
@@ -1611,7 +1611,7 @@
         "low": 14.95,
         "close": 15.4,
         "volume": 19953600,
-        "vs_avg5d_pct": 26.5
+        "vs_avg5d_pct": 26.0
       },
       {
         "date": "2026-05-28",
@@ -1620,7 +1620,7 @@
         "low": 15.05,
         "close": 15.05,
         "volume": 7728500,
-        "vs_avg5d_pct": -51.0
+        "vs_avg5d_pct": -51.2
       },
       {
         "date": "2026-05-29",
@@ -1629,7 +1629,7 @@
         "low": 14.7,
         "close": 15.1,
         "volume": 16672600,
-        "vs_avg5d_pct": 5.7
+        "vs_avg5d_pct": 5.3
       },
       {
         "date": "2026-06-01",
@@ -1638,7 +1638,7 @@
         "low": 14.95,
         "close": 15.25,
         "volume": 7995400,
-        "vs_avg5d_pct": -49.3
+        "vs_avg5d_pct": -49.5
       },
       {
         "date": "2026-06-02",
@@ -1646,8 +1646,8 @@
         "high": 15.35,
         "low": 14.2,
         "close": 14.2,
-        "volume": 26533600,
-        "vs_avg5d_pct": 68.2
+        "volume": 26810000,
+        "vs_avg5d_pct": 69.3
       }
     ],
     "ff_buy_val_5d": null,
@@ -1707,14 +1707,14 @@
     "symbol": "OGC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 3.03,
     "price_type": "realtime",
     "intra_buy_vol": 250800.0,
-    "intra_sell_vol": 1435100.0,
-    "intra_delta": -1184300.0,
+    "intra_sell_vol": 1435000.0,
+    "intra_delta": -1184200.0,
     "intra_buy_ratio": 0.15,
     "depth_buy": 428400.0,
     "depth_sell": 2057900.0,
@@ -1739,11 +1739,11 @@
     "atr": 0.15,
     "bb_position": 0.54,
     "atr_pct": 4.95,
-    "obv": 9005600.0,
-    "cmf": 0.03,
-    "mfi": 51.28,
-    "vol_ma_ratio": 2.94,
-    "vol_today": 2499100.0,
+    "obv": 8860600.0,
+    "cmf": 0.02,
+    "mfi": 50.88,
+    "vol_ma_ratio": 3.11,
+    "vol_today": 2644100.0,
     "vol_avg_20d": 850695.0,
     "_ohlcv_5d": [
       {
@@ -1753,7 +1753,7 @@
         "low": 3.0,
         "close": 3.29,
         "volume": 2345700,
-        "vs_avg5d_pct": 26.8
+        "vs_avg5d_pct": 24.8
       },
       {
         "date": "2026-05-28",
@@ -1762,7 +1762,7 @@
         "low": 3.21,
         "close": 3.39,
         "volume": 1826200,
-        "vs_avg5d_pct": -1.3
+        "vs_avg5d_pct": -2.8
       },
       {
         "date": "2026-05-29",
@@ -1771,7 +1771,7 @@
         "low": 3.25,
         "close": 3.25,
         "volume": 1475100,
-        "vs_avg5d_pct": -20.3
+        "vs_avg5d_pct": -21.5
       },
       {
         "date": "2026-06-01",
@@ -1780,7 +1780,7 @@
         "low": 3.19,
         "close": 3.25,
         "volume": 1103100,
-        "vs_avg5d_pct": -40.4
+        "vs_avg5d_pct": -41.3
       },
       {
         "date": "2026-06-02",
@@ -1788,8 +1788,8 @@
         "high": 3.2,
         "low": 3.03,
         "close": 3.03,
-        "volume": 2499100,
-        "vs_avg5d_pct": 35.1
+        "volume": 2644100,
+        "vs_avg5d_pct": 40.7
       }
     ],
     "ff_buy_val_5d": null,
@@ -1849,9 +1849,9 @@
     "symbol": "TPC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 7.21,
     "price_type": "realtime",
     "intra_buy_vol": 0.0,
@@ -1991,9 +1991,9 @@
     "symbol": "DBT",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 12.0,
     "price_type": "realtime",
     "intra_buy_vol": 100.0,
@@ -2133,43 +2133,43 @@
     "symbol": "PDR",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 15.3,
+    "snap_time": "14:45",
+    "price": 15.25,
     "price_type": "realtime",
     "intra_buy_vol": 134000.0,
-    "intra_sell_vol": 171600.0,
-    "intra_delta": -37600.0,
-    "intra_buy_ratio": 0.44,
+    "intra_sell_vol": 163600.0,
+    "intra_delta": -29600.0,
+    "intra_buy_ratio": 0.45,
     "depth_buy": 5298700.0,
     "depth_sell": 13701800.0,
     "depth_buy_ratio": 0.28,
-    "ema20": 16.26,
-    "ema50": 16.38,
+    "ema20": 16.25,
+    "ema50": 16.37,
     "adx": 12.49,
     "supertrend": 17.37,
     "ema200": 18.7,
     "ema_cross_pct": -0.73,
-    "price_vs_ema20_pct": -5.9,
-    "price_vs_ema200_pct": -18.18,
-    "rsi": 36.92,
+    "price_vs_ema20_pct": -6.15,
+    "price_vs_ema200_pct": -18.45,
+    "rsi": 36.46,
     "macd": -0.08,
     "macd_sig": -0.1,
     "macd_hist": 0.02,
-    "stoch_k": 29.23,
-    "stoch_d": 45.41,
-    "bb_upper": 15.56,
+    "stoch_k": 28.47,
+    "stoch_d": 45.16,
+    "bb_upper": 15.54,
     "bb_mid": 16.36,
-    "bb_lower": 17.16,
+    "bb_lower": 17.17,
     "atr": 0.59,
-    "bb_position": 1.16,
-    "atr_pct": 3.86,
-    "obv": 240172221.0,
-    "cmf": 0.05,
-    "mfi": 52.39,
-    "vol_ma_ratio": 1.54,
-    "vol_today": 19021500.0,
+    "bb_position": 1.18,
+    "atr_pct": 3.87,
+    "obv": 239063021.0,
+    "cmf": 0.04,
+    "mfi": 52.12,
+    "vol_ma_ratio": 1.63,
+    "vol_today": 20130700.0,
     "vol_avg_20d": 12367270.0,
     "_ohlcv_5d": [
       {
@@ -2179,7 +2179,7 @@
         "low": 16.8,
         "close": 17.0,
         "volume": 13736100,
-        "vs_avg5d_pct": 0.9
+        "vs_avg5d_pct": -0.7
       },
       {
         "date": "2026-05-28",
@@ -2188,7 +2188,7 @@
         "low": 16.45,
         "close": 16.5,
         "volume": 15848700,
-        "vs_avg5d_pct": 16.4
+        "vs_avg5d_pct": 14.5
       },
       {
         "date": "2026-05-29",
@@ -2197,7 +2197,7 @@
         "low": 16.0,
         "close": 16.05,
         "volume": 12247300,
-        "vs_avg5d_pct": -10.0
+        "vs_avg5d_pct": -11.5
       },
       {
         "date": "2026-06-01",
@@ -2206,16 +2206,16 @@
         "low": 15.8,
         "close": 16.1,
         "volume": 7216600,
-        "vs_avg5d_pct": -47.0
+        "vs_avg5d_pct": -47.8
       },
       {
         "date": "2026-06-02",
         "open": 16.05,
         "high": 16.05,
         "low": 15.05,
-        "close": 15.3,
-        "volume": 19021500,
-        "vs_avg5d_pct": 39.7
+        "close": 15.25,
+        "volume": 20130700,
+        "vs_avg5d_pct": 45.5
       }
     ],
     "ff_buy_val_5d": null,
@@ -2275,43 +2275,43 @@
     "symbol": "CII",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 16.65,
+    "snap_time": "14:45",
+    "price": 16.55,
     "price_type": "realtime",
-    "intra_buy_vol": 283900.0,
+    "intra_buy_vol": 280300.0,
     "intra_sell_vol": 206300.0,
-    "intra_delta": 77600.0,
+    "intra_delta": 74000.0,
     "intra_buy_ratio": 0.58,
     "depth_buy": 8172600.0,
     "depth_sell": 13599400.0,
     "depth_buy_ratio": 0.38,
-    "ema20": 18.02,
+    "ema20": 18.01,
     "ema50": 18.31,
     "adx": 14.84,
     "supertrend": 19.19,
     "ema200": 19.6,
-    "ema_cross_pct": -1.58,
-    "price_vs_ema20_pct": -7.6,
-    "price_vs_ema200_pct": -15.05,
-    "rsi": 34.46,
-    "macd": -0.4,
-    "macd_sig": -0.19,
+    "ema_cross_pct": -1.64,
+    "price_vs_ema20_pct": -8.11,
+    "price_vs_ema200_pct": -15.56,
+    "rsi": 33.8,
+    "macd": -0.41,
+    "macd_sig": -0.2,
     "macd_hist": -0.21,
-    "stoch_k": 8.44,
-    "stoch_d": 6.69,
-    "bb_upper": 16.66,
+    "stoch_k": 7.41,
+    "stoch_d": 6.35,
+    "bb_upper": 16.64,
     "bb_mid": 18.3,
-    "bb_lower": 19.95,
+    "bb_lower": 19.96,
     "atr": 0.76,
-    "bb_position": 1.0,
-    "atr_pct": 4.56,
-    "obv": 434528122.0,
-    "cmf": -0.26,
-    "mfi": 20.18,
-    "vol_ma_ratio": 1.25,
-    "vol_today": 21862600.0,
+    "bb_position": 1.03,
+    "atr_pct": 4.59,
+    "obv": 433489822.0,
+    "cmf": -0.27,
+    "mfi": 20.09,
+    "vol_ma_ratio": 1.31,
+    "vol_today": 22900900.0,
     "vol_avg_20d": 17445045.0,
     "_ohlcv_5d": [
       {
@@ -2321,7 +2321,7 @@
         "low": 17.9,
         "close": 17.9,
         "volume": 7248800,
-        "vs_avg5d_pct": -35.9
+        "vs_avg5d_pct": -37.1
       },
       {
         "date": "2026-05-28",
@@ -2330,7 +2330,7 @@
         "low": 17.45,
         "close": 17.45,
         "volume": 10977900,
-        "vs_avg5d_pct": -2.9
+        "vs_avg5d_pct": -4.7
       },
       {
         "date": "2026-05-29",
@@ -2339,7 +2339,7 @@
         "low": 17.1,
         "close": 17.1,
         "volume": 9460400,
-        "vs_avg5d_pct": -16.3
+        "vs_avg5d_pct": -17.9
       },
       {
         "date": "2026-06-01",
@@ -2348,16 +2348,16 @@
         "low": 17.15,
         "close": 17.5,
         "volume": 6996000,
-        "vs_avg5d_pct": -38.1
+        "vs_avg5d_pct": -39.3
       },
       {
         "date": "2026-06-02",
         "open": 17.5,
         "high": 17.6,
         "low": 16.3,
-        "close": 16.65,
-        "volume": 21862600,
-        "vs_avg5d_pct": 93.3
+        "close": 16.55,
+        "volume": 22900900,
+        "vs_avg5d_pct": 98.8
       }
     ],
     "ff_buy_val_5d": null,
@@ -2417,9 +2417,9 @@
     "symbol": "HRC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 43.0,
     "price_type": "realtime",
     "intra_buy_vol": 2500.0,
@@ -2559,9 +2559,9 @@
     "symbol": "TDM",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
+    "snap_time": "14:45",
     "price": 57.9,
     "price_type": "realtime",
     "intra_buy_vol": 0.0,
@@ -2591,11 +2591,11 @@
     "atr": 1.66,
     "bb_position": 0.34,
     "atr_pct": 2.87,
-    "obv": 471205.0,
+    "obv": 471105.0,
     "cmf": 0.35,
-    "mfi": 29.27,
+    "mfi": 29.25,
     "vol_ma_ratio": 0.29,
-    "vol_today": 5200.0,
+    "vol_today": 5300.0,
     "vol_avg_20d": 18210.0,
     "_ohlcv_5d": [
       {
@@ -2605,7 +2605,7 @@
         "low": 57.1,
         "close": 57.2,
         "volume": 2300,
-        "vs_avg5d_pct": 16.2
+        "vs_avg5d_pct": 15.0
       },
       {
         "date": "2026-05-28",
@@ -2614,7 +2614,7 @@
         "low": 57.1,
         "close": 57.2,
         "volume": 600,
-        "vs_avg5d_pct": -69.7
+        "vs_avg5d_pct": -70.0
       },
       {
         "date": "2026-05-29",
@@ -2623,7 +2623,7 @@
         "low": 57.0,
         "close": 57.5,
         "volume": 600,
-        "vs_avg5d_pct": -69.7
+        "vs_avg5d_pct": -70.0
       },
       {
         "date": "2026-06-01",
@@ -2632,7 +2632,7 @@
         "low": 57.0,
         "close": 60.5,
         "volume": 1200,
-        "vs_avg5d_pct": -39.4
+        "vs_avg5d_pct": -40.0
       },
       {
         "date": "2026-06-02",
@@ -2640,8 +2640,8 @@
         "high": 58.9,
         "low": 57.9,
         "close": 57.9,
-        "volume": 5200,
-        "vs_avg5d_pct": 162.6
+        "volume": 5300,
+        "vs_avg5d_pct": 165.0
       }
     ],
     "ff_buy_val_5d": null,
@@ -2701,10 +2701,10 @@
     "symbol": "FUETCC50",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-02 14:41",
+    "time": "2026-06-02 14:45",
     "date": "2026-06-02",
-    "snap_time": "14:41",
-    "price": 14.75,
+    "snap_time": "14:45",
+    "price": 14.65,
     "price_type": "realtime",
     "intra_buy_vol": 7000.0,
     "intra_sell_vol": 17900.0,
@@ -2714,30 +2714,30 @@
     "depth_sell": 17900.0,
     "depth_buy_ratio": 0.28,
     "ema20": 15.12,
-    "ema50": 14.87,
-    "adx": 11.31,
+    "ema50": 14.86,
+    "adx": 11.01,
     "supertrend": 14.52,
     "ema200": 14.09,
-    "ema_cross_pct": 1.68,
-    "price_vs_ema20_pct": -2.45,
-    "price_vs_ema200_pct": 4.68,
-    "rsi": 43.42,
-    "macd": 0.08,
+    "ema_cross_pct": 1.75,
+    "price_vs_ema20_pct": -3.11,
+    "price_vs_ema200_pct": 3.97,
+    "rsi": 41.78,
+    "macd": 0.07,
     "macd_sig": -0.08,
     "macd_hist": 0.15,
-    "stoch_k": 25.65,
-    "stoch_d": 28.44,
-    "bb_upper": 14.82,
-    "bb_mid": 15.26,
-    "bb_lower": 15.69,
-    "atr": 0.35,
-    "bb_position": 1.08,
-    "atr_pct": 2.37,
-    "obv": -637100.0,
-    "cmf": 0.5,
-    "mfi": 67.71,
-    "vol_ma_ratio": 0.75,
-    "vol_today": 24900.0,
+    "stoch_k": 25.08,
+    "stoch_d": 28.25,
+    "bb_upper": 14.79,
+    "bb_mid": 15.25,
+    "bb_lower": 15.71,
+    "atr": 0.36,
+    "bb_position": 1.15,
+    "atr_pct": 2.46,
+    "obv": -639100.0,
+    "cmf": 0.49,
+    "mfi": 67.3,
+    "vol_ma_ratio": 0.81,
+    "vol_today": 26900.0,
     "vol_avg_20d": 33035.0,
     "_ohlcv_5d": [
       {
@@ -2747,7 +2747,7 @@
         "low": 15.11,
         "close": 15.13,
         "volume": 26900,
-        "vs_avg5d_pct": 44.0
+        "vs_avg5d_pct": 41.0
       },
       {
         "date": "2026-05-28",
@@ -2756,7 +2756,7 @@
         "low": 15.03,
         "close": 15.13,
         "volume": 2800,
-        "vs_avg5d_pct": -85.0
+        "vs_avg5d_pct": -85.3
       },
       {
         "date": "2026-05-29",
@@ -2765,7 +2765,7 @@
         "low": 14.98,
         "close": 15.1,
         "volume": 6100,
-        "vs_avg5d_pct": -67.3
+        "vs_avg5d_pct": -68.0
       },
       {
         "date": "2026-06-01",
@@ -2774,16 +2774,16 @@
         "low": 14.87,
         "close": 15.39,
         "volume": 32700,
-        "vs_avg5d_pct": 75.1
+        "vs_avg5d_pct": 71.4
       },
       {
         "date": "2026-06-02",
         "open": 15.36,
         "high": 15.36,
-        "low": 14.73,
-        "close": 14.75,
-        "volume": 24900,
-        "vs_avg5d_pct": 33.3
+        "low": 14.65,
+        "close": 14.65,
+        "volume": 26900,
+        "vs_avg5d_pct": 41.0
       }
     ],
     "ff_buy_val_5d": null,
