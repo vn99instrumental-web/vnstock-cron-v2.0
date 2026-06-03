@@ -7,6 +7,12 @@ CHANGELOG:
     - History fetch length 4M → 12M (cần ≥200 ngày cho EMA200)
     - get_ta(): add ema200, vol_ma_ratio (today/avg20d)
     - enrich_finance(): expose debt_to_equity field
+  2026-06-02 — FIX bb_position (Bug #11):
+    pandas_ta.bbands() trả cột [BBL, BBM, BBU, BBB, BBP] — Lower ở index 0,
+    Upper ở index 2. Code cũ dùng safe_val(bb,0)→bb_upper khiến upper/lower
+    bị TRÁO → bb_position đảo dấu, ra ngoài [0,1] (thấy: -0.25, 1.15).
+    Fix: lấy cột theo TÊN (BBL/BBM/BBU) + dùng BBP (%B) pandas_ta tính sẵn,
+    clamp về [0,1]. Volatility_score trước đây dùng sai → giờ mới đáng tin.
 """
 import os
 import sys
@@ -171,18 +177,37 @@ def get_ta(symbol: str) -> dict:
     res["stoch_k"]   = safe_val(stoch, 0)
     res["stoch_d"]   = safe_val(stoch, 1)
 
-    # Volatility
+    # ── Volatility — FIX 2026-06: lấy theo TÊN cột (Bug #11) ──────────
+    # pandas_ta.bbands() trả [BBL_20_2.0, BBM_20_2.0, BBU_20_2.0,
+    #                         BBB_20_2.0, BBP_20_2.0]
+    # Trước đây dùng safe_val(bb,0/1/2) → upper/lower bị tráo.
     bb = ta.volatility.bbands(length=20, std=2.0)
-    res["bb_upper"] = safe_val(bb, 0)
-    res["bb_mid"]   = safe_val(bb, 1)
-    res["bb_lower"] = safe_val(bb, 2)
+
+    def _bb_col(prefix):
+        """Lấy cột bbands theo prefix tên, trả giá trị cuối (đúng thứ tự)."""
+        if bb is None or not hasattr(bb, "columns"):
+            return None
+        cols = [c for c in bb.columns if c.startswith(prefix)]
+        if not cols:
+            return None
+        val = bb[cols[0]].iloc[-1]
+        return round(float(val), 2) if pd.notna(val) else None
+
+    res["bb_lower"] = _bb_col("BBL")   # Lower band
+    res["bb_mid"]   = _bb_col("BBM")   # Mid (SMA20)
+    res["bb_upper"] = _bb_col("BBU")   # Upper band
     res["atr"]      = safe_val(ta.volatility.atr(length=14))
 
-    if res["bb_upper"] and res["bb_lower"] and \
-       (res["bb_upper"] - res["bb_lower"]) != 0:
-        res["bb_position"] = round(
-            (last_close - res["bb_lower"]) /
-            (res["bb_upper"] - res["bb_lower"]), 2)
+    # bb_position: ưu tiên BBP (%B) pandas_ta tính sẵn — chuẩn hóa, clamp [0,1].
+    # Fallback tự tính nếu không có cột BBP.
+    bbp = _bb_col("BBP")
+    if bbp is not None:
+        res["bb_position"] = round(max(0.0, min(1.0, bbp)), 2)
+    elif res["bb_upper"] and res["bb_lower"] and \
+         (res["bb_upper"] - res["bb_lower"]) != 0:
+        raw = (last_close - res["bb_lower"]) / (res["bb_upper"] - res["bb_lower"])
+        res["bb_position"] = round(max(0.0, min(1.0, raw)), 2)
+
     if res.get("atr") and last_close:
         res["atr_pct"] = round(res["atr"] / last_close * 100, 2)
 
@@ -222,64 +247,34 @@ def get_ta(symbol: str) -> dict:
     return res
 
 # =====================================================
-# FLOW
+# FLOW — CafeF foreign_trade (VCI broken)
 # =====================================================
-
-def _parse_cafef_ff(df: pd.DataFrame) -> pd.DataFrame | None:
-    if df is None or df.empty:
-        return None
-    date_col = next(
-        (c for c in df.columns if c in ("date","time","trading_date","trade_date")),
-        None
-    )
-    if date_col:
-        df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
-        cutoff        = pd.Timestamp.now() - pd.Timedelta(days=25)
-        df            = df[df[date_col] >= cutoff].sort_values(date_col, ascending=True)
-
-    cols   = set(df.columns)
-    rename = {}
-    for c in ("fr_buy_value","fr_buy_volume","buy_value","buy_vol","fr_buy_value_matched"):
-        if c in cols: rename[c] = "ff_buy"; break
-    for c in ("fr_sell_value","fr_sell_volume","sell_value","sell_vol","fr_sell_value_matched"):
-        if c in cols: rename[c] = "ff_sell"; break
-    for c in ("fr_net_value","fr_net_volume","net_value","net_vol","fr_net_value_total"):
-        if c in cols: rename[c] = "ff_net"; break
-    for c in ("fr_current_room","current_room","room"):
-        if c in cols: rename[c] = "ff_room"; break
-
-    if rename:
-        df = df.rename(columns=rename)
-
-    if "ff_net" not in df.columns:
-        if "ff_buy" in df.columns and "ff_sell" in df.columns:
-            df["ff_net"] = (pd.to_numeric(df["ff_buy"],  errors="coerce").fillna(0)
-                          - pd.to_numeric(df["ff_sell"], errors="coerce").fillna(0))
-
-    if "ff_net" not in df.columns:
-        log.warning(f"  CafeF FF: unknown cols {list(df.columns)[:8]}")
-        return None
-
-    for c in ("ff_buy", "ff_sell", "ff_net"):
-        if c in df.columns:
-            df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
-
-    return df.reset_index(drop=True)
-
 
 def get_flow(symbol: str) -> dict:
     res = {"symbol": symbol}
 
-    df_raw = safe_run(f"foreign_trade {symbol}",
-              lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
-                  start=start_str(20), end=today_str()))
-
-    df_ft = _parse_cafef_ff(df_raw)
+    # Foreign trade — CafeF (filter 25d gần nhất, sort ASC)
+    df_ft = safe_run(f"foreign_trade {symbol}",
+             lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
+                 start=start_str(25), end=today_str()))
 
     if df_ft is not None and not df_ft.empty:
-        net  = df_ft["ff_net"]
-        buy  = df_ft["ff_buy"]  if "ff_buy"  in df_ft.columns else pd.Series(dtype=float)
-        sell = df_ft["ff_sell"] if "ff_sell" in df_ft.columns else pd.Series(dtype=float)
+        # Normalize column names (CafeF variant)
+        rename = {
+            "fr_buy_value_matched" : "buy_val",
+            "fr_sell_value_matched": "sell_val",
+            "fr_net_value_total"   : "net_val",
+        }
+        for old, new in rename.items():
+            if old in df_ft.columns:
+                df_ft = df_ft.rename(columns={old: new})
+
+        buy  = pd.to_numeric(df_ft.get("buy_val"),  errors="coerce").dropna() \
+               if "buy_val"  in df_ft.columns else pd.Series(dtype=float)
+        sell = pd.to_numeric(df_ft.get("sell_val"), errors="coerce").dropna() \
+               if "sell_val" in df_ft.columns else pd.Series(dtype=float)
+        net  = pd.to_numeric(df_ft.get("net_val"),  errors="coerce").dropna() \
+               if "net_val"  in df_ft.columns else pd.Series(dtype=float)
 
         res["ff_buy_val_5d"]  = float(buy.tail(5).sum())  if not buy.empty  else 0.0
         res["ff_sell_val_5d"] = float(sell.tail(5).sum()) if not sell.empty else 0.0
@@ -304,7 +299,7 @@ def get_flow(symbol: str) -> dict:
         log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
                  f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
 
-    # Insider deal
+    # Insider deal — VCI → CafeF fallback
     df_id = safe_run(f"insider_deal_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=5))
     if df_id is None:
@@ -326,10 +321,14 @@ def get_flow(symbol: str) -> dict:
 
     return res
 
+# =====================================================
+# ENRICH FINANCE — từ finance cache (KBS)
+# =====================================================
 
 def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     """
     Phase 1.5: expose debt_to_equity for scoring.
+    Lazy fetch nếu cache miss.
     """
     entry = fin_cache.get(symbol)
 
