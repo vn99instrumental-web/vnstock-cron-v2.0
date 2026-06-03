@@ -81,6 +81,8 @@ STRUCT_BUFFER    = 0.3    # struct_stop = support - 0.3×ATR
 TP1_RR           = 1.5    # R:R cho TP1
 TP2_RR_CAP       = 3.0    # cap TP2 ở entry + 3×risk nếu kháng cự quá xa
 MIN_RR_HEADROOM  = 1.5    # RR tới kháng cự < ngưỡng → flag
+TP_MIN_GAP_ATR   = 0.5    # TP2 phải cao hơn TP1 tối thiểu 0.5×ATR (tránh trùng)
+TP_MIN_GAP_PCT   = 0.03   # ...hoặc tối thiểu 3% TP1 (lấy max 2 ngưỡng)
 
 # Breakout entry conditions (HYBRID)
 BREAKOUT_MOM_MIN     = 14     # momentum_score ≥ 14 (~60% cap 23)
@@ -272,24 +274,61 @@ def compute_levels(sig: dict, of_summary: dict, of_full: dict) -> dict:
     # ════════════════════════════════════════════════
     tp1 = tp2 = rr_headroom = None
     if not skip:
+        band     = PRICE_BAND.get((exchange or "HSX").upper(), 0.07)
+        ceiling  = price * (1 + band)            # giá trần phiên
+        min_gap  = max(TP_MIN_GAP_ATR * atr, 0)  # khoảng cách tối thiểu TP1↔TP2
+
+        # ── TP1: R-multiple, cap ở trần ──
         tp1 = entry + TP1_RR * risk_per_share
+        tp1_capped = False
+        if tp1 > ceiling:
+            tp1 = ceiling
+            tp1_capped = True
+
+        # ── TP2: kháng cự gần nhất (cap entry+3R), cap ở trần ──
         if nearest_resist is not None:
             tp2_raw = min(nearest_resist, entry + TP2_RR_CAP * risk_per_share)
             rr_headroom = round((nearest_resist - entry) / risk_per_share, 2)
         else:
             tp2_raw = entry + TP2_RR_CAP * risk_per_share
-        tp2 = max(tp2_raw, tp1)   # đảm bảo tp2 ≥ tp1
+        tp2 = min(tp2_raw, ceiling)
 
-        # VN price band: cap TP ở giá trần (so với price làm reference)
-        band = PRICE_BAND.get((exchange or "HSX").upper(), 0.07)
-        ceiling = price * (1 + band)
-        if tp1 > ceiling:
-            tp1 = ceiling
-            flags_out.append("TP1_AT_CEILING")
-        if tp2 > ceiling:
-            tp2 = ceiling
+        # ── Đảm bảo TP2 tách biệt TP1 (FIX: tránh tp1 == tp2) ──
+        # Khoảng cách tối thiểu: max(0.5×ATR, 3% TP1)
+        gap_needed = max(min_gap, tp1 * TP_MIN_GAP_PCT)
+        if tp2 < tp1 + gap_needed:
+            # TP2 không đủ cao hơn TP1
+            room_to_ceiling = ceiling - tp1
+            if room_to_ceiling >= gap_needed and not tp1_capped:
+                # Còn chỗ tới trần → đẩy TP2 lên sát trần
+                tp2 = min(tp1 + gap_needed, ceiling)
+                flags_out.append("TP2_FORCED_GAP")
+            elif tp1_capped:
+                # TP1 đã đụng trần → không thể có TP2 cao hơn trong phiên.
+                # Lùi TP1 xuống để TP2 = trần, tạo 2 mức phân biệt.
+                tp2 = ceiling
+                tp1 = tp2 - gap_needed
+                flags_out.append("TP1_PULLED_BACK")
+                flags_out.append("TP_NEAR_CEILING")
+            else:
+                # Room quá hẹp, không tách được → chỉ 1 mục tiêu
+                tp2 = None
+                flags_out.append("SINGLE_TP_ONLY")
+
         tp1 = _round_tick(tp1, exchange, "down")
-        tp2 = _round_tick(tp2, exchange, "down")
+        if tp2 is not None:
+            tp2 = _round_tick(tp2, exchange, "down")
+            # round có thể kéo tp2 về == tp1 với mã giá thấp (tick lớn) → ép lệch 1 tick
+            if tp2 <= tp1:
+                tp2 = _round_tick(tp1 + max(gap_needed, _tick_size(tp1, exchange)),
+                                  exchange, "up")
+                if tp2 > _round_tick(ceiling, exchange, "down"):
+                    tp2 = None
+                    if "SINGLE_TP_ONLY" not in flags_out:
+                        flags_out.append("SINGLE_TP_ONLY")
+
+        if tp1 >= _round_tick(ceiling, exchange, "down") and "TP_NEAR_CEILING" not in flags_out:
+            flags_out.append("TP1_AT_CEILING")
 
         if rr_headroom is not None and rr_headroom < MIN_RR_HEADROOM:
             flags_out.append("TIGHT_HEADROOM")
