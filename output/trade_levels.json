@@ -1,17 +1,27 @@
 {
-  "generated_at": "2026-06-03T07:53:48.870814+07:00",
+  "generated_at": "2026-06-03T09:21:11.946692+07:00",
   "buy_count": 0,
   "exit_count": 9,
   "buy_levels": [],
   "exit_levels": [
     {
-      "symbol": "TSC",
+      "symbol": "JVC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "LOW",
+      "entry_style": "EXIT",
+      "price": 4.19,
+      "exit_trigger": 3.89,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "DAH",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 2.51,
-      "exit_trigger": 2.31,
+      "price": 3.2,
+      "exit_trigger": 3.09,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -20,8 +30,28 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 2.74,
-      "exit_trigger": 2.51,
+      "price": 2.8,
+      "exit_trigger": 2.59,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TSC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 2.42,
+      "exit_trigger": 2.32,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "FUEDCMID",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "LOW",
+      "entry_style": "EXIT",
+      "price": 13.05,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -30,68 +60,38 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 3.32,
-      "exit_trigger": 3.14,
+      "price": 3.24,
+      "exit_trigger": 3.15,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "HSL",
+      "symbol": "LGL",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 5.0,
-      "exit_trigger": 4.93,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TPC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 7.21,
+      "price": 5.43,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "CII",
+      "symbol": "CNG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 16.55,
+      "price": 21.7,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "HAP",
+      "symbol": "NNC",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 6.62,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TTF",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 2.3,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TAL",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 29.0,
-      "exit_trigger": null,
+      "price": 46.0,
+      "exit_trigger": 43.25,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
