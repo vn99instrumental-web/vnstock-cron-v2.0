@@ -134,6 +134,23 @@ def compute_block(df: pd.DataFrame) -> dict:
             }
     block["by_confidence"] = bc
 
+    # ── by_snap_time (sáng vs chiều — chỉ có nghĩa khi ghi mọi run) ──
+    bst = {}
+    if "snap_time" in df.columns:
+        for snap, g in df.groupby("snap_time"):
+            if not snap:
+                continue
+            r5 = g["ret_5d"].dropna()
+            # phân bố decision tại snap này (xem model có flip nhiều không)
+            dec_counts = g["decision"].value_counts().to_dict() if "decision" in g else {}
+            bst[str(snap)] = {
+                "n": int(len(g)),
+                "avg_ret_5d":  _r(r5.mean()) if len(r5) else None,
+                "win_rate_5d": _r((r5 > 0).mean() * 100) if len(r5) else None,
+                "decisions":   {str(k): int(v) for k, v in dec_counts.items()},
+            }
+    block["by_snap_time"] = dict(sorted(bst.items()))
+
     # ── group IC (Spearman vs ret_5d) ──
     ic = {}
     for c in GROUP_SCORE_COLS:
