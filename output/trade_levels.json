@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-04T11:22:40.603508+07:00",
+  "generated_at": "2026-06-04T11:34:53.581601+07:00",
   "buy_count": 3,
-  "exit_count": 5,
+  "exit_count": 3,
   "buy_levels": [
     {
       "symbol": "C32",
@@ -55,10 +55,10 @@
       "decision": "BUY",
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
-      "price": 46.0,
+      "price": 45.9,
       "entry": 45.8,
       "entry_low": 45.75,
-      "entry_high": 46.0,
+      "entry_high": 45.9,
       "stop_loss": 44.9,
       "risk_pct": 1.97,
       "tp1": 47.1,
@@ -102,26 +102,6 @@
       "entry_style": "EXIT",
       "price": 2.55,
       "exit_trigger": 2.52,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "CCC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 7.5,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "HQC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 2.72,
-      "exit_trigger": 2.7,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
