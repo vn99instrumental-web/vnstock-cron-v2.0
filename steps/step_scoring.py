@@ -513,6 +513,13 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     np_g_yoy   = row.get("is_profit_growth_yoy")
     np_g_qoq   = row.get("is_profit_growth")
 
+    # FIX 2026-06-03: NaN khác None — pd.notna() lọc cả None lẫn NaN.
+    # Trước đây NaN lọt qua "is not None" → chấm -1 với label "nan%" (sai).
+    rev_g_yoy  = rev_g_yoy if pd.notna(rev_g_yoy) else None
+    rev_g_qoq  = rev_g_qoq if pd.notna(rev_g_qoq) else None
+    np_g_yoy   = np_g_yoy  if pd.notna(np_g_yoy)  else None
+    np_g_qoq   = np_g_qoq  if pd.notna(np_g_qoq)  else None
+
     rev_g     = rev_g_yoy if rev_g_yoy is not None else rev_g_qoq
     rev_label = "RevG-YoY" if rev_g_yoy is not None else "RevG-QoQ"
     np_g     = np_g_yoy if np_g_yoy is not None else np_g_qoq
