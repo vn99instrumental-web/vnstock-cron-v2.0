@@ -1,0 +1,131 @@
+# =============================================================================
+# cron_weekly.yml — Vòng feedback hàng tuần (eval đề xuất + phân tích)
+# =============================================================================
+# T7 sáng (08:00 ICT). Đọc ledger predictions (do cron_intraday ghi trong
+# tuần), đối chiếu giá thật từ VCI -> outcomes, rồi tổng hợp performance.
+# Ghi output/history/{outcomes,performance}/ và commit về repo.
+#
+# Setup (cache restore + verify) bám theo backtest.yml — KHÔNG cài lại sponsor
+# package, chỉ dùng venv đã cache (daily/intraday đã warm cache trong tuần).
+# Thứ T7 không có run intraday nên không lo đụng push.
+# =============================================================================
+
+name: cron_weekly
+
+on:
+  workflow_dispatch:
+    inputs:
+      horizon:
+        description: 'So phien sau signal_date de dong outcome (test: de 1-2)'
+        required: false
+        default: '10'
+  schedule:
+    - cron: '0 1 * * 6'     # 01:00 UTC T7 = 08:00 ICT T7
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cron-weekly
+  cancel-in-progress: false
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:   ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0          # full history de rebase/push sach
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # -- Restore vnstock venv (dung chung cache voi production) --
+      - name: Compute cache key
+        id: cache-suffix
+        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+
+      - name: Restore vnstock cache
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
+
+      - name: Verify venv + dependencies
+        run: |
+          VENV_PY="/opt/vnstock/.venv/bin/python"
+          if [ ! -x "$VENV_PY" ]; then
+            echo "Venv python khong tim thay tai $VENV_PY"
+            echo "Cache miss — can daily/intraday chay truoc de warm cache."
+            exit 1
+          fi
+          echo "Venv: $VENV_PY"
+          $VENV_PY -c "
+          import vnstock_data; print('vnstock_data: OK')
+          import pandas; print(f'pandas: {pandas.__version__}')
+          "
+          $VENV_PY -c "import pandas" 2>/dev/null || \
+            $VENV_PY -m pip install pandas --quiet
+
+      # -- Eval: doi chieu pred du tuoi voi gia that --
+      - name: Eval predictions
+        env:
+          EVAL_HORIZON_BARS: ${{ inputs.horizon || '10' }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_eval_predictions.py
+
+      # -- Analyze: tong hop performance report --
+      - name: Analyze performance
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python scripts/analyze_performance.py
+
+      # -- Commit (pull --rebase + retry, giong intraday) --
+      - name: Commit history ledger
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add output/
+          if git diff --staged --quiet; then
+            echo "No changes to commit — skipping."
+            exit 0
+          fi
+          git commit -m "weekly: eval + performance $(date +'%Y-%m-%d')"
+
+          pushed=0
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "pushed (attempt $i)"
+              pushed=1
+              break
+            fi
+            echo "push attempt $i failed — retrying..."
+            sleep $((RANDOM % 5 + 3))
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "push failed after 5 attempts"
+            exit 1
+          fi
