@@ -222,17 +222,26 @@ def _vnindex_trend() -> dict:
     chg_5d  = _chg(5)
     chg_20d = _chg(20)
 
-    # ── Phân loại regime ──
+    # ── Phân loại regime (refined 2026-06-04) ──
+    # Kết hợp VỊ TRÍ EMA + MOMENTUM (% thay đổi) để bắt "đang yếu đi" sớm,
+    # không chờ tới khi thủng cả EMA200 mới báo DOWNTREND.
+    # Bug cũ: VNINDEX dưới EMA50, giảm 6 phiên (-3.8%) nhưng vẫn trên EMA200
+    #         → bị xếp SIDEWAYS (0đ). Quá lỏng.
     above_50  = close > ema50
     above_200 = (close > ema200) if ema200 is not None else above_50
+    c5  = chg_5d  if chg_5d  is not None else 0.0
     c20 = chg_20d if chg_20d is not None else 0.0
 
-    if above_50 and above_200 and c20 > 0:
-        regime = "UPTREND"
-    elif (not above_50) and (not above_200) and c20 <= -8:
-        regime = "DEEP_DOWN"          # giảm sâu — rủi ro hệ thống cao nhất
-    elif (not above_50) and (not above_200):
+    # DEEP_DOWN: giảm sâu thực sự (dưới cả 2 EMA, hoặc sụp >8% trong 20 phiên)
+    if ((not above_50) and (not above_200)) or c20 <= -8:
+        regime = "DEEP_DOWN"
+    # DOWNTREND: yếu rõ — dưới EMA50 VÀ momentum âm (giảm liên tục)
+    elif (not above_50) and (c20 <= -2 or c5 <= -3):
         regime = "DOWNTREND"
+    # UPTREND: trên cả 2 EMA VÀ momentum dương
+    elif above_50 and above_200 and c20 > 0:
+        regime = "UPTREND"
+    # Còn lại: đi ngang / chưa rõ
     else:
         regime = "SIDEWAYS"
 
