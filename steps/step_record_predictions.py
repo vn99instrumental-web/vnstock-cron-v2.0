@@ -21,9 +21,13 @@ NGUYÊN TẮC LƯU TRỮ LÂU DÀI (đã chốt):
     theo từng phiên bản mô hình (BẮT BUỘC khi tune trọng số).
 
 KHI NÀO GHI:
-  - Chỉ ghi ở RUN CUỐI NGÀY (giờ ICT ≥ ANCHOR_HOUR_ICT, mặc định 14) để
-    lấy order flow cuối phiên. Các run sớm hơn bỏ qua.
-  - Ép ghi bất kể giờ: đặt env FORCE_RECORD=1 (dùng khi debug.yml).
+  - Mặc định: MỌI run intraday đều ghi (ANCHOR_HOUR_ICT=0). Mỗi run là một
+    observation độc lập — cho phép phân tích decision sáng vs chiều, model
+    có flip nhiều trong ngày không, v.v.
+  - pred_id chứa cả snap_time ("HPG_2026-06-04_1325") → 5 run/ngày → 5
+    record/symbol/ngày. Cùng run bị retry (cùng snap_time) → dedup chặn.
+  - Muốn quay lại "chỉ ghi run cuối": set env RECORD_ANCHOR_HOUR=14.
+  - Ép ghi bất kể giờ: FORCE_RECORD=1.
 
 ⚠️ scoring_version: signals.json KHÔNG mang version → khai báo cứng ở đây.
    MỖI LẦN đổi trọng số / cap / threshold trong step_scoring.py → bump
@@ -68,7 +72,7 @@ TRADE_LEVELS_FILE = "trade_levels.json"
 HISTORY_SUBDIR  = "history/predictions"   # dưới OUTPUT_DIR
 
 # Chỉ ghi ở run cuối ngày (ICT). Run cuối ~14:25 → hour == 14.
-ANCHOR_HOUR_ICT = int(os.getenv("RECORD_ANCHOR_HOUR", "14"))
+ANCHOR_HOUR_ICT = int(os.getenv("RECORD_ANCHOR_HOUR", "0"))
 FORCE_RECORD    = os.getenv("FORCE_RECORD", "").lower() in ("1", "true", "yes")
 
 BUY_DECISIONS  = {"BUY", "STRONG BUY"}
@@ -150,10 +154,15 @@ def _build_record(sig: dict, signal_date: str, recorded_at: str,
     if not sym:
         return None
 
+    # pred_id chứa cả snap_time → mỗi run trong ngày là 1 record riêng.
+    # Cùng run bị retry (cùng snap_time) → dedup chặn ghi trùng.
+    snap = (sig.get("snap_time") or now_ict().strftime("%H:%M")).replace(":", "")
+    pid  = f"{sym}_{signal_date}_{snap}"
+
     rec = {
         "schema_version": SCHEMA_VERSION,
         "scoring_version": SCORING_VERSION,
-        "pred_id":   f"{sym}_{signal_date}",
+        "pred_id":   pid,
         "signal_date": signal_date,
         "recorded_at": recorded_at,
         "snap_time": sig.get("snap_time"),
