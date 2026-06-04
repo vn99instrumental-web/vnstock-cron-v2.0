@@ -219,6 +219,7 @@ def _vnindex_trend() -> dict:
         prev = float(df["close"].iloc[-1 - n])
         return round((close - prev) / prev * 100, 2) if prev else None
 
+    chg_1d  = _chg(1)
     chg_5d  = _chg(5)
     chg_20d = _chg(20)
 
@@ -249,6 +250,7 @@ def _vnindex_trend() -> dict:
         "vnindex_close"   : round(close, 2),
         "vnindex_ema50"   : round(ema50, 2),
         "vnindex_ema200"  : round(ema200, 2) if ema200 is not None else None,
+        "vnindex_chg_1d"  : chg_1d,
         "vnindex_chg_5d"  : chg_5d,
         "vnindex_chg_20d" : chg_20d,
         "market_regime"   : regime,
@@ -303,6 +305,7 @@ def get_market_context() -> list:
         "vnindex_close"    : trend.get("vnindex_close"),
         "vnindex_ema50"    : trend.get("vnindex_ema50"),
         "vnindex_ema200"   : trend.get("vnindex_ema200"),
+        "vnindex_chg_1d"   : trend.get("vnindex_chg_1d"),
         "vnindex_chg_5d"   : trend.get("vnindex_chg_5d"),
         "vnindex_chg_20d"  : trend.get("vnindex_chg_20d"),
         "updated_at"       : now_ict().strftime("%Y-%m-%d %H:%M"),
