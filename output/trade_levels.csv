@@ -1,3 +1,6 @@
 ﻿symbol,exchange,decision,confidence,entry_style,price,entry_low,entry,entry_high,stop_loss,risk_pct,tp1,tp2,rr_tp1,rr_headroom,size_hint,nearest_support,nearest_resist,levels_used,flags,skip
 C32,HSX,BUY,MEDIUM,PULLBACK,14.75,,,,,13.89,,,,,NO_TRADE,13.12,14.93,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",SKIP_WIDE_STOP,wide_stop
-BSR,HSX,BUY,MEDIUM,PULLBACK,28.75,28.65,28.65,28.75,26.95,5.93,29.8,30.75,0.68,0.26,HALF,28.66,29.1,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","TP1_PULLED_BACK,TP_NEAR_CEILING,TIGHT_HEADROOM",
+GMD,HSX,BUY,MEDIUM,BREAKOUT,77.0,76.8,77.0,77.0,72.4,5.97,79.9,82.3,0.63,0.73,HALF,75.0,80.34,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","TP1_PULLED_BACK,TP_NEAR_CEILING,TIGHT_HEADROOM",
+VRE,HSX,BUY,MEDIUM,PULLBACK,31.35,31.1,31.1,31.35,29.5,5.14,33.5,,1.5,0.84,HALF,31.12,32.45,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","SINGLE_TP_ONLY,TP1_AT_CEILING,TIGHT_HEADROOM",
+ITC,HSX,BUY,MEDIUM,PULLBACK,12.5,12.3,12.35,12.5,12.05,2.43,12.75,13.15,1.33,1.33,HALF,12.34,12.75,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","TP2_FORCED_GAP,TIGHT_HEADROOM",
+LPB,HSX,BUY,MEDIUM,PULLBACK,46.4,46.0,46.0,46.4,45.1,1.96,47.3,48.75,1.44,1.78,HALF,46.0,47.6,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",TP2_FORCED_GAP,
