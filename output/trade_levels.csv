@@ -1,4 +1,2 @@
 ﻿symbol,exchange,decision,confidence,entry_style,price,entry_low,entry,entry_high,stop_loss,risk_pct,tp1,tp2,rr_tp1,rr_headroom,size_hint,nearest_support,nearest_resist,levels_used,flags,skip
-VND,HSX,BUY,MEDIUM,PULLBACK,17.95,17.6,17.6,17.95,16.6,5.68,19.1,,1.5,0.36,HALF,16.8,17.96,"ema20,ema50,bb,supertrend,low_5d,atr","SINGLE_TP_ONLY,TIGHT_HEADROOM,STOP_BELOW_FLOOR",
-LPB,HSX,BUY,MEDIUM,PULLBACK,48.0,47.65,47.7,48.0,45.1,5.45,49.8,51.3,0.81,2.65,HALF,47.68,54.6,"ema20,ema50,bb,supertrend,low_5d,atr","TP1_PULLED_BACK,TP_NEAR_CEILING",
-CRC,HSX,BUY,MEDIUM,PULLBACK,6.0,,,,,8.03,,,,,NO_TRADE,5.98,6.88,"ema20,ema50,bb,supertrend,low_5d,atr",SKIP_WIDE_STOP,wide_stop
+BSR,HSX,BUY,MEDIUM,PULLBACK,28.65,28.3,28.3,28.65,26.95,4.77,30.3,,1.48,0.3,HALF,28.3,28.7,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","SINGLE_TP_ONLY,TIGHT_HEADROOM",
