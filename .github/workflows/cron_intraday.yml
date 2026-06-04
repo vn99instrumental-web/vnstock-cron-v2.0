@@ -8,8 +8,13 @@ on:
     - cron: '30 3 * * 1-5'   # 10:30 ICT
     - cron: '30 4 * * 1-5'   # 11:30 ICT
     - cron: '30 6 * * 1-5'   # 13:30 ICT
-    - cron: '30 7 * * 1-5'   # 14:30 ICT
+    - cron: '30 7 * * 1-5'   # 14:30 ICT  ← record predictions THỰC SỰ ghi ở run này
   workflow_dispatch:
+    inputs:
+      force_record:
+        description: 'Ep ghi predictions ke ca ngoai run 14:30 (de test)'
+        type: boolean
+        default: false
 
 # Đảm bảo bước "git push" luôn có quyền ghi, kể cả khi repo để
 # Workflow permissions = read-only (đặc biệt cần để ý sau khi chuyển private).
@@ -161,6 +166,22 @@ jobs:
         run: |
           source /opt/vnstock/.venv/bin/activate
           python steps/step_price_levels.py
+
+      # ──────────────────────────────────────────────────────────────────
+      # NEW: Forward log — ghi đề xuất vào output/history/predictions/
+      # để weekly đối chiếu với giá thật. Không gọi API; chỉ đọc
+      # signals.json + trade_levels.json. Gate hour>=14 trong code →
+      # 4 run sớm hơn log "bỏ qua" rồi thoát (đúng thiết kế).
+      # FORCE_RECORD=1 (nút workflow_dispatch) để test ngoài giờ.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Step Record Predictions (forward log)
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          FORCE_RECORD:      ${{ inputs.force_record && '1' || '' }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_record_predictions.py
 
       # ──────────────────────────────────────────────────────────────────
       # COMMIT OUTPUT — hardened:
