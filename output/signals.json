@@ -3,9 +3,9 @@
     "symbol": "HRC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 44.4,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -147,7 +147,7 @@
     "fundamental_score": 0,
     "cf_score": -10,
     "growth_score": 10,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.06,
     "confluence_bonus": 0,
     "tech_score": -30,
@@ -201,19 +201,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -32.06,
+    "total_score": -30.06,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | ADX=18.43 sideways 0 | ST=50.58 bearish -5 | RSI=46.58 neutral +5 | MACD hist=-0.36<0 -10 | Stoch K=6.61 oversold +5 | Stoch K>3.64 cross up +3 | MFI=37.85 weak -6 | OBV divergence -4 | Vol=0.31x avg weak -3 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=59.2% strong +5 | ProfitG-YoY=132.7% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [PVCFC và Samsung C T tăng cường hợp tác ... · petrotimes ·  2026]"
+    "signals": "EMA20<EMA50 -15 | ADX=18.43 sideways 0 | ST=50.58 bearish -5 | RSI=46.58 neutral +5 | MACD hist=-0.36<0 -10 | Stoch K=6.61 oversold +5 | Stoch K>3.64 cross up +3 | MFI=37.85 weak -6 | OBV divergence -4 | Vol=0.31x avg weak -3 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=59.2% strong +5 | ProfitG-YoY=132.7% strong +5 | Market FAIR+sideways 0 | News NEUTRAL -0.06 [PVCFC và Samsung C T tăng cường hợp tác ... · petrotimes ·  2026]"
   },
   {
     "symbol": "VJC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 184.6,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -355,7 +355,7 @@
     "fundamental_score": -14,
     "cf_score": 5,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": 0.19,
     "confluence_bonus": 0,
     "tech_score": 28,
@@ -407,19 +407,19 @@
         "type": "industry"
       }
     ],
-    "total_score": 17.19,
+    "total_score": 19.19,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price 15%>EMA200 (extended) -5 | ADX=18.93 sideways 0 | ST=164.92 bullish +5 | MACD hist=0.07>0 +10 | Stoch K>48.83 cross up +3 | CMF=0.14 inflow (overbought) -8 | MFI=60.49 strong inflow +6 | OBV confirms trend +4 | Vol=1.54x avg elevated +3 | BB pos=1.0 near upper (overbought) -5 | PE=54.93 expensive -5 | PB=4.98 expensive -3 | ROE=2.07% weak -3 | D/E=4.612 very high -3 | CFO>0 real cash +5 | RevG-YoY=-0.4% slight decline -1 | ProfitG-YoY=1.9% positive +1 | Market FAIR+downtrend -2 | News NEUTRAL +0.19 [Gửi ngân hàng, cho đối tác vay, tập đoàn... · tuoitre ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 15%>EMA200 (extended) -5 | ADX=18.93 sideways 0 | ST=164.92 bullish +5 | MACD hist=0.07>0 +10 | Stoch K>48.83 cross up +3 | CMF=0.14 inflow (overbought) -8 | MFI=60.49 strong inflow +6 | OBV confirms trend +4 | Vol=1.54x avg elevated +3 | BB pos=1.0 near upper (overbought) -5 | PE=54.93 expensive -5 | PB=4.98 expensive -3 | ROE=2.07% weak -3 | D/E=4.612 very high -3 | CFO>0 real cash +5 | RevG-YoY=-0.4% slight decline -1 | ProfitG-YoY=1.9% positive +1 | Market FAIR+sideways 0 | News NEUTRAL +0.19 [Gửi ngân hàng, cho đối tác vay, tập đoàn... · tuoitre ·  2026]"
   },
   {
     "symbol": "HSL",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 5.25,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -561,7 +561,7 @@
     "fundamental_score": -6,
     "cf_score": -10,
     "growth_score": 2,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.08,
     "confluence_bonus": -5,
     "tech_score": -14,
@@ -584,19 +584,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -35.08,
+    "total_score": -33.08,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -28%<EMA200 (oversold) +8 | ADX=19.45 sideways 0 | ST=5.28 bearish -5 | MACD hist=-0.07<0 -10 | Stoch K>67.29 cross up +3 | CMF=0.53 inflow (overbought) -8 | MFI=73.4 strong inflow +6 | OBV confirms trend +4 | Vol=7.47x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | OF vol+663% buy 0.65 | PE=691.36 expensive -5 | PB=0.6 below book +5 | ROE=-0.21% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=214.8% strong +5 | ProfitG-YoY=-161.5% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bear (5/10 groups) -5"
+    "signals": "EMA20<EMA50 -15 | Price -28%<EMA200 (oversold) +8 | ADX=19.45 sideways 0 | ST=5.28 bearish -5 | MACD hist=-0.07<0 -10 | Stoch K>67.29 cross up +3 | CMF=0.53 inflow (overbought) -8 | MFI=73.4 strong inflow +6 | OBV confirms trend +4 | Vol=7.47x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | OF vol+663% buy 0.65 | PE=691.36 expensive -5 | PB=0.6 below book +5 | ROE=-0.21% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=214.8% strong +5 | ProfitG-YoY=-161.5% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bear (5/10 groups) -5"
   },
   {
     "symbol": "C32",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 15.75,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -738,7 +738,7 @@
     "fundamental_score": 12,
     "cf_score": -10,
     "growth_score": 2,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": 16,
@@ -788,21 +788,21 @@
         "type": "macro"
       }
     ],
-    "total_score": 17.95,
+    "total_score": 19.95,
     "decision": "NEUTRAL",
     "confidence": "LOW",
     "pattern_flags": [
       "UNCLEAR"
     ],
-    "signals": "EMA20>EMA50 +15 | Price 40%>EMA200 (overextended) -8 | ST=13.58 bullish +5 | MACD hist=0.26>0 +10 | Stoch K=96.75 overbought -5 | CMF=0.27 inflow (overbought) -8 | MFI=90.4 strong inflow +6 | OBV confirms trend +4 | Vol=5.1x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | OF vol+164% sell 0.00 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=71.8% strong +5 | ProfitG-YoY=-518.7% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 40%>EMA200 (overextended) -8 | ST=13.58 bullish +5 | MACD hist=0.26>0 +10 | Stoch K=96.75 overbought -5 | CMF=0.27 inflow (overbought) -8 | MFI=90.4 strong inflow +6 | OBV confirms trend +4 | Vol=5.1x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | OF vol+164% sell 0.00 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=71.8% strong +5 | ProfitG-YoY=-518.7% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
   },
   {
     "symbol": "CRE",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 7.85,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -944,7 +944,7 @@
     "fundamental_score": -6,
     "cf_score": 0,
     "growth_score": 10,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": 38,
@@ -996,19 +996,19 @@
         "type": "macro"
       }
     ],
-    "total_score": 39.95,
-    "decision": "NEUTRAL",
+    "total_score": 41.95,
+    "decision": "BUY",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price -8%<EMA200 (below) +5 | ADX=14.23 sideways 0 | ST=7.19 bullish +5 | RSI=53.61 neutral +5 | MACD hist=0.06>0 +10 | Stoch K<69.24 cross down -3 | CMF=0.41 inflow (overbought) -8 | OBV confirms trend +4 | Vol=2.39x avg breakout +5 | PE=53.0 expensive -5 | PB=0.67 below book +5 | ROE=0.16% weak -3 | D/E=nan very high -3 | CFO=nan (sector-skip) 0 | RevG-YoY=126.0% strong +5 | ProfitG-YoY=1218.4% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price -8%<EMA200 (below) +5 | ADX=14.23 sideways 0 | ST=7.19 bullish +5 | RSI=53.61 neutral +5 | MACD hist=0.06>0 +10 | Stoch K<69.24 cross down -3 | CMF=0.41 inflow (overbought) -8 | OBV confirms trend +4 | Vol=2.39x avg breakout +5 | PE=53.0 expensive -5 | PB=0.67 below book +5 | ROE=0.16% weak -3 | D/E=nan very high -3 | CFO=nan (sector-skip) 0 | RevG-YoY=126.0% strong +5 | ProfitG-YoY=1218.4% strong +5 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
   },
   {
     "symbol": "TCO",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 13.05,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -1150,7 +1150,7 @@
     "fundamental_score": -8,
     "cf_score": -10,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.08,
     "confluence_bonus": 0,
     "tech_score": 2,
@@ -1183,19 +1183,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -18.08,
+    "total_score": -16.08,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price 10%>EMA200 (extended) -5 | ST=15.07 bearish -5 | RSI=40.41 neutral +5 | MACD hist=-0.05<0 -10 | Stoch K=17.89 oversold +5 | MFI=27.53 weak -6 | OBV confirms trend +4 | Vol=0.17x avg weak -3 | BB pos=0.12 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=32.1497724173 expensive -5 | PB=1.1448401009 fair +3 | ROE=3.65720411% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Bước ngoặt hậu tái cấu trúc: Janus Group... · thanhnien ·  26 1]"
+    "signals": "EMA20>EMA50 +15 | Price 10%>EMA200 (extended) -5 | ST=15.07 bearish -5 | RSI=40.41 neutral +5 | MACD hist=-0.05<0 -10 | Stoch K=17.89 oversold +5 | MFI=27.53 weak -6 | OBV confirms trend +4 | Vol=0.17x avg weak -3 | BB pos=0.12 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=32.1497724173 expensive -5 | PB=1.1448401009 fair +3 | ROE=3.65720411% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | Market FAIR+sideways 0 | News NEUTRAL -0.08 [Bước ngoặt hậu tái cấu trúc: Janus Group... · thanhnien ·  26 1]"
   },
   {
     "symbol": "TNT",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 11.15,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -1337,7 +1337,7 @@
     "fundamental_score": -6,
     "cf_score": -10,
     "growth_score": 2,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": 3,
@@ -1384,19 +1384,19 @@
         "type": "industry"
       }
     ],
-    "total_score": -13.05,
+    "total_score": -11.05,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price 30%>EMA200 (overextended) -8 | ADX=14.98 sideways 0 | ST=12.07 bearish -5 | MACD hist=0.16>0 +10 | Stoch K>32.34 cross up +3 | CMF=0.14 inflow (overbought) -8 | OBV confirms trend +4 | Vol=0.41x avg weak -3 | BB pos=0.89 near upper (overbought) -5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=28.8% strong +5 | ProfitG-YoY=-88.9% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tiếng nổ kép trên bầu trời Mỹ từ thiên t... · tuoitre ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 30%>EMA200 (overextended) -8 | ADX=14.98 sideways 0 | ST=12.07 bearish -5 | MACD hist=0.16>0 +10 | Stoch K>32.34 cross up +3 | CMF=0.14 inflow (overbought) -8 | OBV confirms trend +4 | Vol=0.41x avg weak -3 | BB pos=0.89 near upper (overbought) -5 | PE=32.51 expensive -5 | PB=0.69 below book +5 | ROE=0.9% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=28.8% strong +5 | ProfitG-YoY=-88.9% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Tiếng nổ kép trên bầu trời Mỹ từ thiên t... · tuoitre ·  2026]"
   },
   {
     "symbol": "VIC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:21",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 207.0,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -1538,7 +1538,7 @@
     "fundamental_score": -14,
     "cf_score": 0,
     "growth_score": -6,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.02,
     "confluence_bonus": 0,
     "tech_score": 28,
@@ -1588,19 +1588,19 @@
         "type": "industry"
       }
     ],
-    "total_score": 5.98,
+    "total_score": 7.98,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price 48%>EMA200 (overextended) -8 | ST=193.4 bullish +5 | RSI=49.82 neutral +5 | MACD hist=4.82>0 +10 | Stoch K>17.45 cross up +3 | MFI=37.6 weak -6 | OBV confirms trend +4 | PE=49.13 expensive -5 | PB=8.66 expensive -3 | ROE=4.32% weak -3 | D/E=6.405 very high -3 | CFO=69244889000 (sector-skip) 0 | RevG-YoY=-44.9% declining -3 | ProfitG-YoY=-108.3% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.02 [Bức tranh sôi động của tỉnh tăng trưởng ... · cafebiz ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 48%>EMA200 (overextended) -8 | ST=193.4 bullish +5 | RSI=49.82 neutral +5 | MACD hist=4.82>0 +10 | Stoch K>17.45 cross up +3 | MFI=37.6 weak -6 | OBV confirms trend +4 | PE=49.13 expensive -5 | PB=8.66 expensive -3 | ROE=4.32% weak -3 | D/E=6.405 very high -3 | CFO=69244889000 (sector-skip) 0 | RevG-YoY=-44.9% declining -3 | ProfitG-YoY=-108.3% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.02 [Bức tranh sôi động của tỉnh tăng trưởng ... · cafebiz ·  2026]"
   },
   {
     "symbol": "HTN",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 7.35,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -1742,7 +1742,7 @@
     "fundamental_score": -6,
     "cf_score": 0,
     "growth_score": -6,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": -11,
@@ -1794,19 +1794,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -25.05,
+    "total_score": -23.05,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -16%<EMA200 (oversold) +8 | ADX=16.85 sideways 0 | ST=7.96 bearish -5 | RSI=43.57 neutral +5 | MACD hist=-0.05<0 -10 | Stoch K=11.87 oversold +5 | Stoch K>8.23 cross up +3 | CMF=-0.41 outflow (oversold) +8 | MFI=19.89 weak -6 | OBV divergence -4 | PE=42.14 expensive -5 | PB=0.5 below book +5 | ROE=-1.75% weak -3 | D/E=3.724 very high -3 | CFO=590502743 (sector-skip) 0 | RevG-YoY=-39.3% declining -3 | ProfitG-YoY=-39.2% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -16%<EMA200 (oversold) +8 | ADX=16.85 sideways 0 | ST=7.96 bearish -5 | RSI=43.57 neutral +5 | MACD hist=-0.05<0 -10 | Stoch K=11.87 oversold +5 | Stoch K>8.23 cross up +3 | CMF=-0.41 outflow (oversold) +8 | MFI=19.89 weak -6 | OBV divergence -4 | PE=42.14 expensive -5 | PB=0.5 below book +5 | ROE=-1.75% weak -3 | D/E=3.724 very high -3 | CFO=590502743 (sector-skip) 0 | RevG-YoY=-39.3% declining -3 | ProfitG-YoY=-39.2% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
   },
   {
     "symbol": "DAH",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 3.37,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -1948,7 +1948,7 @@
     "fundamental_score": 0,
     "cf_score": 0,
     "growth_score": 10,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": -27,
@@ -1995,19 +1995,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -19.05,
+    "total_score": -17.05,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | ADX=25.31 strong +5 | ST=2.95 bullish +5 | RSI=80.35 overbought -10 | MACD hist=0.02>0 +10 | Stoch K=95.45 overbought -5 | Stoch K<96.69 cross down -3 | CMF=0.22 inflow (overbought) -8 | MFI=84.31 strong inflow +6 | OBV divergence -4 | BB pos=1.0 near upper (overbought) -5 | OF pattern=WEAK -3 | PE=-4.45 negative (loss) -5 | PB=0.37 below book +5 | ROE=-7.26% weak -3 | D/E=0.17 very low +3 | CFO>0 real cash +5 | CF quality=-0.01 low -5 | RevG-YoY=20.8% strong +5 | ProfitG-YoY=64.4% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Du lịch Việt lập kỷ lục mới trong tháng ... · dantri ·  2026]"
+    "signals": "EMA20<EMA50 -15 | ADX=25.31 strong +5 | ST=2.95 bullish +5 | RSI=80.35 overbought -10 | MACD hist=0.02>0 +10 | Stoch K=95.45 overbought -5 | Stoch K<96.69 cross down -3 | CMF=0.22 inflow (overbought) -8 | MFI=84.31 strong inflow +6 | OBV divergence -4 | BB pos=1.0 near upper (overbought) -5 | OF pattern=WEAK -3 | PE=-4.45 negative (loss) -5 | PB=0.37 below book +5 | ROE=-7.26% weak -3 | D/E=0.17 very low +3 | CFO>0 real cash +5 | CF quality=-0.01 low -5 | RevG-YoY=20.8% strong +5 | ProfitG-YoY=64.4% strong +5 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Du lịch Việt lập kỷ lục mới trong tháng ... · dantri ·  2026]"
   },
   {
     "symbol": "AAT",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 2.71,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -2149,7 +2149,7 @@
     "fundamental_score": 13,
     "cf_score": -10,
     "growth_score": -4,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.08,
     "confluence_bonus": -5,
     "tech_score": -35,
@@ -2172,19 +2172,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -43.08,
+    "total_score": -41.08,
     "decision": "STRONG SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -15%<EMA200 (oversold) +8 | ST=2.97 bearish -5 | MACD hist=-0.02<0 -10 | Stoch K<45.24 cross down -3 | MFI=16.92 weak -6 | OBV divergence -4 | Vol=1.99x avg elevated +3 | BB pos=0.0 near lower (oversold) +5 | OF pattern=SPIKE_SELL -5 | OF vol+209% sell 0.28 | PE=6.72 very cheap +10 | PB=0.3 below book +5 | ROE=0.88% weak -3 | D/E=0.931 healthy +1 | CFO<0 cash burn -10 | CF quality=-3.81 low -5 | RevG-YoY=-13.5% declining -3 | ProfitG-YoY=-3.4% slight decline -1 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bear (6/10 groups) -5"
+    "signals": "EMA20<EMA50 -15 | Price -15%<EMA200 (oversold) +8 | ST=2.97 bearish -5 | MACD hist=-0.02<0 -10 | Stoch K<45.24 cross down -3 | MFI=16.92 weak -6 | OBV divergence -4 | Vol=1.99x avg elevated +3 | BB pos=0.0 near lower (oversold) +5 | OF pattern=SPIKE_SELL -5 | OF vol+209% sell 0.28 | PE=6.72 very cheap +10 | PB=0.3 below book +5 | ROE=0.88% weak -3 | D/E=0.931 healthy +1 | CFO<0 cash burn -10 | CF quality=-3.81 low -5 | RevG-YoY=-13.5% declining -3 | ProfitG-YoY=-3.4% slight decline -1 | Market FAIR+sideways 0 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bear (6/10 groups) -5"
   },
   {
     "symbol": "DBT",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 10.8,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -2326,7 +2326,7 @@
     "fundamental_score": 7,
     "cf_score": -10,
     "growth_score": 10,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.08,
     "confluence_bonus": 5,
     "tech_score": 50,
@@ -2349,19 +2349,19 @@
         "type": "macro"
       }
     ],
-    "total_score": 59.92,
+    "total_score": 61.92,
     "decision": "BUY",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price -5%<EMA200 (below) +5 | ADX=28.91 strong +5 | ST=11.74 bearish -5 | RSI=27.71 oversold +15 | MACD hist=0.25>0 +10 | Stoch K=0.0 oversold +5 | CMF=0.65 inflow (overbought) -8 | MFI=77.4 strong inflow +6 | OBV confirms trend +4 | Vol=0.19x avg weak -3 | BB pos=0.0 near lower (oversold) +5 | OF vol+622% buy 0.65 | PE=14.54 cheap +7 | PB=0.85 below book +5 | ROE=0.87% weak -3 | D/E=2.407 high -2 | CFO<0 cash burn -10 | CF quality=-0.76 low -5 | RevG-YoY=50.8% strong +5 | ProfitG-YoY=289.9% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bull (6/10 groups) +5"
+    "signals": "EMA20>EMA50 +15 | Price -5%<EMA200 (below) +5 | ADX=28.91 strong +5 | ST=11.74 bearish -5 | RSI=27.71 oversold +15 | MACD hist=0.25>0 +10 | Stoch K=0.0 oversold +5 | CMF=0.65 inflow (overbought) -8 | MFI=77.4 strong inflow +6 | OBV confirms trend +4 | Vol=0.19x avg weak -3 | BB pos=0.0 near lower (oversold) +5 | OF vol+622% buy 0.65 | PE=14.54 cheap +7 | PB=0.85 below book +5 | ROE=0.87% weak -3 | D/E=2.407 high -2 | CFO<0 cash burn -10 | CF quality=-0.76 low -5 | RevG-YoY=50.8% strong +5 | ProfitG-YoY=289.9% strong +5 | Market FAIR+sideways 0 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bull (6/10 groups) +5"
   },
   {
     "symbol": "TPC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 6.41,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -2503,7 +2503,7 @@
     "fundamental_score": -4,
     "cf_score": -10,
     "growth_score": -2,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.06,
     "confluence_bonus": 0,
     "tech_score": -8,
@@ -2557,19 +2557,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -26.06,
+    "total_score": -24.06,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | ADX=47.28 strong +5 | ST=7.94 bearish -5 | RSI=15.42 oversold +15 | MACD hist=-1.08<0 -10 | Stoch K=0.33 oversold +5 | CMF=0.11 inflow (overbought) -8 | MFI=12.96 weak -6 | OBV confirms trend +4 | Vol=30.88x avg breakout +5 | BB pos=0.01 near lower (oversold) +5 | OF vol+147926% sell 0.00 | PE=25.11 expensive -5 | PB=1.04 fair +3 | ROE=0.22% weak -3 | D/E=0.748 healthy +1 | CFO<0 cash burn -10 | RevG-YoY=9.5% positive +1 | ProfitG-YoY=-48.8% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [PVCFC và Samsung C T tăng cường hợp tác ... · petrotimes ·  2026]"
+    "signals": "EMA20<EMA50 -15 | ADX=47.28 strong +5 | ST=7.94 bearish -5 | RSI=15.42 oversold +15 | MACD hist=-1.08<0 -10 | Stoch K=0.33 oversold +5 | CMF=0.11 inflow (overbought) -8 | MFI=12.96 weak -6 | OBV confirms trend +4 | Vol=30.88x avg breakout +5 | BB pos=0.01 near lower (oversold) +5 | OF vol+147926% sell 0.00 | PE=25.11 expensive -5 | PB=1.04 fair +3 | ROE=0.22% weak -3 | D/E=0.748 healthy +1 | CFO<0 cash burn -10 | RevG-YoY=9.5% positive +1 | ProfitG-YoY=-48.8% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.06 [PVCFC và Samsung C T tăng cường hợp tác ... · petrotimes ·  2026]"
   },
   {
     "symbol": "VNE",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 2.68,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -2711,7 +2711,7 @@
     "fundamental_score": 18,
     "cf_score": 10,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": -27,
@@ -2761,19 +2761,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -1.05,
+    "total_score": 0.95,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -46%<EMA200 (oversold) +8 | ADX=29.02 strong +5 | ST=3.43 bearish -5 | MACD hist=-0.2<0 -10 | Stoch K<58.42 cross down -3 | OBV divergence -4 | OF pattern=WEAK -3 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.62% excellent +5 | D/E=2.832 high -2 | CFO>0 real cash +5 | CF quality=1.59 high +5 | RevG-YoY=15.6% good +3 | ProfitG-YoY=-197.0% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -46%<EMA200 (oversold) +8 | ADX=29.02 strong +5 | ST=3.43 bearish -5 | MACD hist=-0.2<0 -10 | Stoch K<58.42 cross down -3 | OBV divergence -4 | OF pattern=WEAK -3 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.62% excellent +5 | D/E=2.832 high -2 | CFO>0 real cash +5 | CF quality=1.59 high +5 | RevG-YoY=15.6% good +3 | ProfitG-YoY=-197.0% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
   },
   {
     "symbol": "HQC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 2.62,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -2915,7 +2915,7 @@
     "fundamental_score": 6,
     "cf_score": 0,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": 0.25,
     "confluence_bonus": 0,
     "tech_score": -11,
@@ -2964,21 +2964,21 @@
         "type": "industry"
       }
     ],
-    "total_score": -6.75,
+    "total_score": -4.75,
     "decision": "NEUTRAL",
     "confidence": "LOW",
     "pattern_flags": [
       "UNCLEAR"
     ],
-    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ST=2.59 bullish +5 | RSI=54.88 neutral +5 | MACD hist=-0.0<0 -10 | Stoch K<81.09 cross down -3 | MFI=61.12 strong inflow +6 | OBV divergence -4 | Vol=1.67x avg elevated +3 | OF pattern=WEAK -3 | PE=23.49 fair +3 | PB=0.32 below book +5 | ROE=1.01% weak -3 | D/E=0.642 healthy +1 | CFO=nan (sector-skip) 0 | Market FAIR+downtrend -2 | News NEUTRAL +0.25 [Cổ phiếu Địa ốc Hoàng Quân (HQC) có biến... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ST=2.59 bullish +5 | RSI=54.88 neutral +5 | MACD hist=-0.0<0 -10 | Stoch K<81.09 cross down -3 | MFI=61.12 strong inflow +6 | OBV divergence -4 | Vol=1.67x avg elevated +3 | OF pattern=WEAK -3 | PE=23.49 fair +3 | PB=0.32 below book +5 | ROE=1.01% weak -3 | D/E=0.642 healthy +1 | CFO=nan (sector-skip) 0 | Market FAIR+sideways 0 | News NEUTRAL +0.25 [Cổ phiếu Địa ốc Hoàng Quân (HQC) có biến... · cafebiz ·  2026]"
   },
   {
     "symbol": "TDM",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 59.0,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -3120,7 +3120,7 @@
     "fundamental_score": -11,
     "cf_score": -10,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.08,
     "confluence_bonus": 0,
     "tech_score": 30,
@@ -3153,19 +3153,19 @@
         "type": "macro"
       }
     ],
-    "total_score": 6.92,
+    "total_score": 8.92,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | ADX=18.34 sideways 0 | ST=54.93 bullish +5 | RSI=54.7 neutral +5 | MACD hist=0.49>0 +10 | Stoch K<75.99 cross down -3 | OBV confirms trend +4 | Vol=0.04x avg weak -3 | OF pattern=WEAK -3 | PE=29.99 expensive -5 | PB=2.45 neutral 0 | ROE=0.4% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Trường Đại học Thủ Dầu Một xét tuyển 4 p... · vnexpress ·  2026]"
+    "signals": "EMA20>EMA50 +15 | ADX=18.34 sideways 0 | ST=54.93 bullish +5 | RSI=54.7 neutral +5 | MACD hist=0.49>0 +10 | Stoch K<75.99 cross down -3 | OBV confirms trend +4 | Vol=0.04x avg weak -3 | OF pattern=WEAK -3 | PE=29.99 expensive -5 | PB=2.45 neutral 0 | ROE=0.4% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | Market FAIR+sideways 0 | News NEUTRAL -0.08 [Trường Đại học Thủ Dầu Một xét tuyển 4 p... · vnexpress ·  2026]"
   },
   {
     "symbol": "CDC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:21",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 18.2,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -3307,7 +3307,7 @@
     "fundamental_score": -7,
     "cf_score": -10,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.27,
     "confluence_bonus": 0,
     "tech_score": 14,
@@ -3356,19 +3356,19 @@
         "type": "industry"
       }
     ],
-    "total_score": -5.27,
+    "total_score": -3.27,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price 10%>EMA200 (extended) -5 | ADX=35.02 strong +5 | ST=21.39 bearish -5 | MACD hist=0.57>0 +10 | Stoch K=8.54 oversold +5 | CMF=0.46 inflow (overbought) -8 | MFI=39.42 weak -6 | OBV confirms trend +4 | Vol=0.35x avg weak -3 | BB pos=0.0 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=41.68 expensive -5 | PB=1.51 fair +3 | ROE=1.28% weak -3 | D/E=2.399 high -2 | CFO<0 cash burn -10 | RevG-YoY=-10.7% declining -3 | ProfitG-YoY=12.8% good +3 | Market FAIR+downtrend -2 | News NEUTRAL -0.27 [Người phụ nữ bị phạt 7,5 triệu đồng vì c... · dantri ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 10%>EMA200 (extended) -5 | ADX=35.02 strong +5 | ST=21.39 bearish -5 | MACD hist=0.57>0 +10 | Stoch K=8.54 oversold +5 | CMF=0.46 inflow (overbought) -8 | MFI=39.42 weak -6 | OBV confirms trend +4 | Vol=0.35x avg weak -3 | BB pos=0.0 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=41.68 expensive -5 | PB=1.51 fair +3 | ROE=1.28% weak -3 | D/E=2.399 high -2 | CFO<0 cash burn -10 | RevG-YoY=-10.7% declining -3 | ProfitG-YoY=12.8% good +3 | Market FAIR+sideways 0 | News NEUTRAL -0.27 [Người phụ nữ bị phạt 7,5 triệu đồng vì c... · dantri ·  2026]"
   },
   {
     "symbol": "ASP",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:21",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 7.71,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -3510,7 +3510,7 @@
     "fundamental_score": 10,
     "cf_score": 10,
     "growth_score": 0,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.08,
     "confluence_bonus": 0,
     "tech_score": 22,
@@ -3533,19 +3533,19 @@
         "type": "macro"
       }
     ],
-    "total_score": 39.92,
-    "decision": "NEUTRAL",
+    "total_score": 41.92,
+    "decision": "BUY",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price 38%>EMA200 (overextended) -8 | ADX=44.91 strong +5 | ST=6.97 bullish +5 | MACD hist=0.35>0 +10 | Stoch K>50.71 cross up +3 | MFI=33.38 weak -6 | OBV confirms trend +4 | Vol=0.32x avg weak -3 | OF pattern=WEAK -3 | PE=7.22 very cheap +10 | PB=0.52 below book +5 | ROE=3.51% weak -3 | D/E=2.929 high -2 | CFO>0 real cash +5 | CF quality=4.08 high +5 | RevG-YoY=14.0% good +3 | ProfitG-YoY=-266.2% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 38%>EMA200 (overextended) -8 | ADX=44.91 strong +5 | ST=6.97 bullish +5 | MACD hist=0.35>0 +10 | Stoch K>50.71 cross up +3 | MFI=33.38 weak -6 | OBV confirms trend +4 | Vol=0.32x avg weak -3 | OF pattern=WEAK -3 | PE=7.22 very cheap +10 | PB=0.52 below book +5 | ROE=3.51% weak -3 | D/E=2.929 high -2 | CFO>0 real cash +5 | CF quality=4.08 high +5 | RevG-YoY=14.0% good +3 | ProfitG-YoY=-266.2% declining -3 | Market FAIR+sideways 0 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026]"
   },
   {
     "symbol": "TDH",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:20",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 3.73,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -3687,7 +3687,7 @@
     "fundamental_score": 5,
     "cf_score": 0,
     "growth_score": 10,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.05,
     "confluence_bonus": 0,
     "tech_score": -25,
@@ -3739,19 +3739,19 @@
         "type": "macro"
       }
     ],
-    "total_score": -12.05,
+    "total_score": -10.05,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ADX=13.67 sideways 0 | ST=4.17 bearish -5 | RSI=41.9 neutral +5 | MACD hist=-0.03<0 -10 | Stoch K<52.53 cross down -3 | OBV divergence -4 | BB pos=0.12 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=4.45 very cheap +10 | PB=2.68 neutral 0 | ROE=4.05% weak -3 | D/E=2.737 high -2 | CFO=-23754320 (sector-skip) 0 | RevG-YoY=123.0% strong +5 | ProfitG-YoY=134.1% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ADX=13.67 sideways 0 | ST=4.17 bearish -5 | RSI=41.9 neutral +5 | MACD hist=-0.03<0 -10 | Stoch K<52.53 cross down -3 | OBV divergence -4 | BB pos=0.12 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=4.45 very cheap +10 | PB=2.68 neutral 0 | ROE=4.05% weak -3 | D/E=2.737 high -2 | CFO=-23754320 (sector-skip) 0 | RevG-YoY=123.0% strong +5 | ProfitG-YoY=134.1% strong +5 | Market FAIR+sideways 0 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
   },
   {
     "symbol": "VVS",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-05 15:21",
+    "time": "2026-06-05 23:44",
     "date": "2026-06-05",
-    "snap_time": "15:20",
+    "snap_time": "23:44",
     "price": 120.5,
     "price_type": "last_close",
     "price_date": "2026-06-05",
@@ -3893,7 +3893,7 @@
     "fundamental_score": 12,
     "cf_score": 10,
     "growth_score": 10,
-    "context_score": -2,
+    "context_score": 0,
     "news_score": -0.09,
     "confluence_bonus": 5,
     "tech_score": 31,
@@ -3942,12 +3942,12 @@
         "type": "macro"
       }
     ],
-    "total_score": 65.91,
+    "total_score": 67.91,
     "decision": "BUY",
     "confidence": "HIGH",
     "pattern_flags": [
       "CONSENSUS_BULL"
     ],
-    "signals": "EMA20>EMA50 +15 | Price 54%>EMA200 (overextended) -8 | ADX=13.8 sideways 0 | ST=106.85 bullish +5 | RSI=53.22 neutral +5 | MACD hist=0.12>0 +10 | Stoch K<84.73 cross down -3 | MFI=66.23 strong inflow +6 | OBV confirms trend +4 | OF pattern=WEAK -3 | PE=4.32 very cheap +10 | PB=2.14 neutral 0 | ROE=26.94% excellent +5 | D/E=6.783 very high -3 | CFO>0 real cash +5 | CF quality=6.64 high +5 | RevG-YoY=82.9% strong +5 | ProfitG-YoY=111.3% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.09 [Tăng trưởng xanh thúc đẩy nhu cầu điện t... · petrotimes ·  2026] | CONFLUENCE bull (6/10 groups) +5"
+    "signals": "EMA20>EMA50 +15 | Price 54%>EMA200 (overextended) -8 | ADX=13.8 sideways 0 | ST=106.85 bullish +5 | RSI=53.22 neutral +5 | MACD hist=0.12>0 +10 | Stoch K<84.73 cross down -3 | MFI=66.23 strong inflow +6 | OBV confirms trend +4 | OF pattern=WEAK -3 | PE=4.32 very cheap +10 | PB=2.14 neutral 0 | ROE=26.94% excellent +5 | D/E=6.783 very high -3 | CFO>0 real cash +5 | CF quality=6.64 high +5 | RevG-YoY=82.9% strong +5 | ProfitG-YoY=111.3% strong +5 | Market FAIR+sideways 0 | News NEUTRAL -0.09 [Tăng trưởng xanh thúc đẩy nhu cầu điện t... · petrotimes ·  2026] | CONFLUENCE bull (6/10 groups) +5"
   }
 ]
