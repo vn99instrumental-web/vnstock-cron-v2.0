@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-05T10:16:24.982586+07:00",
+  "generated_at": "2026-06-05T10:20:59.164828+07:00",
   "buy_count": 0,
   "exit_count": 8,
   "buy_levels": [],
@@ -55,16 +55,6 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "ST8",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 3.0,
-      "exit_trigger": 2.97,
-      "note": "Thoát ngay (market)"
-    },
-    {
       "symbol": "TAL",
       "exchange": "HSX",
       "decision": "SELL",
@@ -73,6 +63,16 @@
       "price": 28.6,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "ST8",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 2.99,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
     },
     {
       "symbol": "AAT",
