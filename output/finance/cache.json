@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-05T11:21:05.262393+07:00",
+  "generated_at": "2026-06-05T13:21:01.408721+07:00",
   "schema_version": 7,
   "ttl_days": 30,
-  "count": 364,
+  "count": 365,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -21395,6 +21395,69 @@
         "fundamental": 9,
         "cashflow": 10,
         "growth": 10,
+        "total": 29,
+        "max": 38
+      }
+    },
+    "FMC": {
+      "symbol": "FMC",
+      "fetched_at": "2026-06-05T13:20:50.130241+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 6.29,
+        "pb": 0.87,
+        "roe": 6.18,
+        "roa": 7.91,
+        "eps": 5592.49,
+        "bvps": 40451.0,
+        "beta": 0.58,
+        "div_yield": 0.06,
+        "gross_margin": 18.06,
+        "net_margin": 10.64,
+        "quick_ratio": 1.32,
+        "interest_cov": 11.55,
+        "ev_ebitda": 0.0
+      },
+      "income": {
+        "revenue": 1876441530.0,
+        "gross_profit": 197273184.0,
+        "net_profit": 80440808.0,
+        "operating_profit": 100760355.0,
+        "eps": 1230.0,
+        "rev_growth_qoq": -0.0573,
+        "profit_growth_qoq": 1.7162,
+        "rev_growth_yoy": -0.0573,
+        "profit_growth_yoy": 1.7162,
+        "net_profit_year": 348660610.0
+      },
+      "balance": {
+        "total_assets": 4867239600.0,
+        "equity": 2645032263.0,
+        "total_liab": 2222207337.0,
+        "short_debt": 1527740584.0,
+        "long_debt": null,
+        "debt_to_equity": 0.84
+      },
+      "cashflow": {
+        "cf_operating": 513349801.0,
+        "cf_investing": -912602519.0,
+        "cf_financing": 461464762.0,
+        "cf_period": "annual",
+        "cf_free": -399252718.0,
+        "cf_quality": 1.47,
+        "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 15,
+        "cashflow": 10,
+        "growth": 4,
         "total": 29,
         "max": 38
       }
