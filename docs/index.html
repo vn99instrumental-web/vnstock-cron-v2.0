@@ -1,1 +1,435 @@
-<!-- placeholder -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VNStock · Signal Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07111b;--surf:#0d1e2e;--surf2:#112438;--border:#1c3248;--border2:#244060;
+  --text:#c8dcea;--muted:#4e7a99;--dim:#1e3a52;
+  --sb:#00e896;--sb-bg:#001f12;--buy:#34c26e;--buy-bg:#041508;
+  --neu:#f5c240;--neu-bg:#1a1400;--sell:#e86030;--sell-bg:#1a0800;
+  --ss:#e02040;--ss-bg:#180308;--acc:#14b8d4;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,17,27,.94);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:50px}
+.logo{font-family:var(--mono);font-size:13px;color:var(--acc);letter-spacing:.06em}
+.logo em{color:var(--muted);font-style:normal}
+.topbar-r{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--buy);animation:blink 2s infinite;margin-right:4px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.vtag{font-size:9px;background:#0d2035;border:1px solid #1a3555;color:var(--acc);padding:2px 7px;border-radius:2px}
+.mstrip{background:linear-gradient(90deg,#090f18,#0c1c2e 60%,#07111b);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;gap:22px;overflow-x:auto}
+.mi{display:flex;flex-direction:column;gap:1px;min-width:72px;flex-shrink:0}
+.mi-l{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.mi-v{font-family:var(--mono);font-size:12px;font-weight:700}
+.up{color:var(--buy)}.dn{color:var(--sell)}.warn{color:var(--neu)}.hi{color:var(--acc)}
+.sep{width:1px;height:26px;background:var(--border);flex-shrink:0}
+.regime{margin-left:auto;flex-shrink:0;font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 12px;border-radius:2px;border:1px solid var(--neu-b,#604800);background:var(--neu-bg);color:var(--neu)}
+.page{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 84px)}
+@media(max-width:720px){.page{grid-template-columns:1fr}.sidebar{display:none}}
+.sidebar{background:var(--surf);border-right:1px solid var(--border);padding:14px 0;overflow-y:auto}
+.sb-s{padding:0 14px 14px}
+.sb-t{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.fbs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:5px}
+.fb{font-family:var(--mono);font-size:9px;padding:3px 7px;border:1px solid var(--border);border-radius:2px;background:0;color:var(--muted);cursor:pointer;transition:all .15s}
+.fb:hover{border-color:var(--acc);color:var(--text)}
+.fb.on{border-color:var(--acc);background:#0c2035;color:var(--acc)}
+.fb.on-sb{border-color:var(--sb);background:var(--sb-bg);color:var(--sb)}
+.fb.on-buy{border-color:var(--buy);background:var(--buy-bg);color:var(--buy)}
+.fb.on-neu{border-color:var(--neu);background:var(--neu-bg);color:var(--neu)}
+.fb.on-sell{border-color:var(--sell);background:var(--sell-bg);color:var(--sell)}
+.fb.on-ss{border-color:var(--ss);background:var(--ss-bg);color:var(--ss)}
+.stat-r{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #101e2c;font-size:11px}
+.stat-r:last-child{border:none}
+.sk{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.sv{font-family:var(--mono);font-weight:700}
+.main{padding:16px 18px}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.tsel{font-family:var(--mono);font-size:10px;background:var(--surf);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:2px;cursor:pointer}
+.tsel:focus{outline:none;border-color:var(--acc)}
+.tcnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.tcnt b{color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px}
+@media(max-width:500px){.grid{grid-template-columns:1fr}}
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:5px;overflow:hidden;position:relative;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.card.open{border-color:var(--acc)}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.card.SB::before{background:var(--sb)}.card.BUY::before{background:var(--buy)}
+.card.NEU::before{background:var(--neu)}.card.SEL::before{background:var(--sell)}.card.SS::before{background:var(--ss)}
+.ch{padding:12px 14px 10px 17px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ch-l{display:flex;flex-direction:column;gap:4px}
+.sym-line{display:flex;align-items:center;gap:8px}
+.sym{font-family:var(--mono);font-size:19px;font-weight:700;color:#dceefa;letter-spacing:.05em}
+.dec-badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 9px;border-radius:2px;border:1px solid;letter-spacing:.06em}
+.db-SB{background:var(--sb-bg);border-color:var(--sb);color:var(--sb)}
+.db-BUY{background:var(--buy-bg);border-color:var(--buy);color:var(--buy)}
+.db-NEU{background:var(--neu-bg);border-color:var(--neu);color:var(--neu)}
+.db-SEL{background:var(--sell-bg);border-color:var(--sell);color:var(--sell)}
+.db-SS{background:var(--ss-bg);border-color:var(--ss);color:var(--ss)}
+.meta-line{font-size:11px;color:var(--muted);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.ch-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.score-big{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1}
+.c-sb{color:var(--sb)}.c-buy{color:var(--buy)}.c-neu{color:var(--neu)}.c-sell{color:var(--sell)}.c-ss{color:var(--ss)}
+/* TRADE BLOCK */
+.trade-blk{padding:10px 14px 10px 17px;border-top:1px solid var(--border)}
+.trade-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.tl{font-size:11px;color:var(--muted);width:95px;flex-shrink:0}
+.tv{font-family:var(--mono);font-size:13px;font-weight:600}
+.tv.price{font-size:16px;color:#e0eefa}
+.tv.tp{color:var(--buy)}.tv.sl{color:var(--sell)}.tv.entry{color:var(--acc)}
+.pct{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:2px}
+.pct-p{background:var(--buy-bg);color:var(--buy)}.pct-n{background:var(--sell-bg);color:var(--sell)}
+.rr-blk{margin-top:6px;padding:7px 10px;border-radius:3px;background:#0a1a28;border:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:10px}
+.rr-val{color:var(--text);font-weight:700;font-size:13px}
+.rr-note{color:var(--muted)}
+.size-chip{font-weight:700;padding:2px 8px;border-radius:2px;font-size:10px;border:1px solid}
+.sc-FULL{border-color:var(--sb);color:var(--sb);background:var(--sb-bg)}
+.sc-HALF{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
+.sc-NO{border-color:var(--muted);color:var(--muted);background:transparent}
+/* VERDICT */
+.verdict-blk{padding:10px 14px 10px 17px;border-top:1px solid var(--border)}
+.pc-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;font-size:12px;line-height:1.55}
+.pc-item:last-child{margin-bottom:0}
+.warn-box{margin-top:8px;padding:7px 10px;border-radius:3px;background:#0d1822;border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.6}
+.pflag{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:2px;border:1px solid;letter-spacing:.05em;margin:0 4px 4px 0}
+.pf-BULL_TRAP_RISK{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
+.pf-CONSENSUS_BULL{border-color:var(--sb);color:var(--sb);background:var(--sb-bg)}
+/* SCORE BARS */
+.sbar-blk{padding:10px 14px 8px 17px;border-top:1px solid var(--border)}
+.sbar-ttl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.sbar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.sbar-icon{font-size:10px;flex-shrink:0}
+.sbar-lbl{font-size:11px;color:var(--muted);width:82px;flex-shrink:0}
+.sbar-track{flex:1;height:6px;background:#0d1e2e;border-radius:3px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:3px}
+.sbar-num{font-family:var(--mono);font-size:10px;width:54px;text-align:right;flex-shrink:0}
+.sum-row{display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding-top:7px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px}
+.sum-val{font-size:14px;font-weight:700}
+/* TABS */
+.card-detail{display:none;border-top:1px solid var(--border);background:#080f18}
+.card.open .card-detail{display:block}
+.tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc)}
+.pane{display:none;padding:14px 14px 14px 17px}
+.pane.on{display:block}
+/* INDICATOR GROUPS — Telegram style bullets */
+.ind-grp{margin-bottom:16px}
+.ind-grp-hdr{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--acc);margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid var(--border);letter-spacing:.06em}
+.ind-grp-desc{font-size:10px;color:var(--muted);margin-top:1px;font-family:var(--sans);font-style:italic}
+.ind-bullet{display:flex;gap:7px;font-size:12px;line-height:1.6;padding:4px 0;border-bottom:1px solid #0d1b28;color:var(--text)}
+.ind-bullet:last-child{border:none}
+.ind-dot{flex-shrink:0;color:var(--muted);margin-top:4px;font-size:10px}
+/* SCORING TABLE */
+.score-section{margin-bottom:18px}
+.score-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-top:none;font-size:11px}
+.score-table th{background:#0a1624;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;white-space:nowrap}
+.score-table td{padding:8px 10px;line-height:1.5;border-bottom:1px solid #0d1b28;vertical-align:top}
+.score-table tr:last-child td{border-bottom:none}
+.score-table tr:hover td{background:rgba(20,184,212,.03)}
+.ind-name{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--text)}
+.ind-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.data-val{font-family:var(--mono);font-size:12px;font-weight:700}
+.formula-text{font-size:10px;color:var(--muted);font-family:var(--mono);line-height:1.5}
+.pts-chip{font-family:var(--mono);font-size:11px;font-weight:700;display:inline-block;padding:2px 7px;border-radius:2px;border:1px solid;white-space:nowrap}
+.pts-pos-strong{background:var(--sb-bg);border-color:var(--sb);color:var(--sb)}
+.pts-pos{background:var(--buy-bg);border-color:var(--buy);color:var(--buy)}
+.pts-zero{background:transparent;border-color:var(--dim);color:var(--muted)}
+.pts-neg{background:var(--sell-bg);border-color:var(--sell);color:var(--sell)}
+.pts-neg-strong{background:var(--ss-bg);border-color:var(--ss);color:var(--ss)}
+.rating{font-size:9px;padding:2px 7px;border-radius:2px;font-weight:700;letter-spacing:.04em;white-space:nowrap;display:inline-block}
+.r-excellent{background:var(--sb-bg);color:var(--sb)}
+.r-good{background:var(--buy-bg);color:var(--buy)}
+.r-ok{background:#151000;color:#b08020}
+.r-weak{background:var(--sell-bg);color:var(--sell)}
+.r-bad{background:var(--ss-bg);color:var(--ss)}
+.r-na{background:transparent;color:var(--muted)}
+.explain-main{font-size:11px;color:var(--text);line-height:1.6;margin-bottom:4px}
+.explain-rule{font-size:10px;color:var(--muted);line-height:1.5;padding:4px 8px;background:#0a1622;border-left:2px solid var(--dim);border-radius:0 2px 2px 0;margin-top:4px}
+.ss-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:4px 4px 0 0;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;border:1px solid var(--border);margin-bottom:0}
+.ss-total{font-size:13px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">VNStock<em>/signal</em> <span class="vtag">v3·P1+2</span></div>
+  <div class="topbar-r">
+    <span><span class="live-dot"></span>LIVE</span>
+    <span id="ts-disp"></span>
+    <span>VN100+HNX30</span>
+  </div>
+</header>
+<div class="mstrip" id="mstrip-bar">
+  <!-- filled by JS from context data -->
+</div>
+<div class="page">
+  <aside class="sidebar">
+    <div class="sb-s">
+      <div class="sb-t">Bộ lọc</div>
+      <div class="fl">Decision</div>
+      <div class="fbs" id="fd">
+        <button class="fb on" data-v="ALL">Tất cả</button>
+        <button class="fb" data-v="BUY">BUY</button>
+        <button class="fb" data-v="STRONG BUY">S.BUY</button>
+        <button class="fb" data-v="NEUTRAL">NEU</button>
+        <button class="fb" data-v="SELL">SELL</button>
+        <button class="fb" data-v="STRONG SELL">S.SELL</button>
+      </div>
+      <div class="fl">Nhóm</div>
+      <div class="fbs" id="fg">
+        <button class="fb on" data-v="ALL">Tất cả</button>
+        <button class="fb" data-v="GAINER">GAINER</button>
+        <button class="fb" data-v="LOSER">LOSER</button>
+      </div>
+    </div>
+    <div class="sb-s">
+      <div class="sb-t">Thống kê</div>
+      <div id="stats"></div>
+    </div>
+    <div class="sb-s">
+      <div class="sb-t">Ngưỡng</div>
+      <div style="font-family:var(--mono);font-size:10px;line-height:2;color:var(--muted)">
+        <span style="color:var(--sb)">≥80</span> STRONG BUY<br>
+        <span style="color:var(--buy)">≥40</span> MUA<br>
+        <span style="color:var(--neu)">≥−15</span> NEUTRAL<br>
+        <span style="color:var(--sell)">≥−40</span> BÁN<br>
+        <span style="color:var(--ss)">&lt;−40</span> STRONG SELL
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="toolbar">
+      <label style="font-family:var(--mono);font-size:10px;color:var(--muted)">SẮP XẾP</label>
+      <select class="tsel" id="srt">
+        <option value="sd">Điểm ↓ cao → thấp</option>
+        <option value="sa">Điểm ↑ thấp → cao</option>
+        <option value="sym">Mã A→Z</option>
+      </select>
+      <div class="tcnt">Hiển thị <b id="cnt">0</b> mã</div>
+    </div>
+    <div class="grid" id="cards"></div>
+  </main>
+</div>
+
+<script>
+// ── Injected data from n8n ──────────────────────────────────
+const ALL_DATA = [{"symbol":"DBT","exchange":"HSX","decision":"BUY","confidence":"MEDIUM","entry_style":"BREAKOUT","price":10.8,"entry_low":10.75,"entry":10.8,"entry_high":10.8,"stop_loss":10.35,"risk_pct":4.17,"tp1":11.45,"tp2":"","rr_tp1":1.44,"rr_headroom":0.44,"size_hint":"HALF","nearest_support":"","nearest_resist":11,"flags":"SINGLE_TP_ONLY,TIGHT_HEADROOM","updated":"2026-06-05T13:51:01.878952+07:00","group":"LOSER","time":"2026-06-05 13:50","date":"2026-06-05","snap_time":"13:50","price_type":"realtime","intra_buy_vol":4800,"intra_sell_vol":1600,"intra_delta":3200,"intra_buy_ratio":0.75,"depth_buy":4800,"depth_sell":1600,"depth_buy_ratio":0.75,"ema20":11.93,"ema50":11.61,"adx":28.91,"supertrend":11.74,"ema200":11.39,"ema_cross_pct":2.76,"price_vs_ema20_pct":-9.47,"price_vs_ema200_pct":-5.18,"rsi":27.71,"macd":0.03,"macd_sig":-0.22,"macd_hist":0.25,"stoch_k":0,"stoch_d":17.28,"bb_lower":11.06,"bb_mid":12.16,"bb_upper":13.25,"atr":0.28,"bb_position":0,"atr_pct":2.59,"obv":760511,"cmf":0.66,"mfi":77.67,"vol_ma_ratio":0.17,"vol_today":6400,"vol_avg_20d":38075,"ff_buy_val_5d":null,"ff_sell_val_5d":null,"ff_net_val_5d":null,"ff_net_val_20d":null,"insider_count":5,"insider_latest":"Bán","insider_name":"Nguyễn Thái Dương","r_period":"2026-Q1","r_pe":14.54,"r_pb":0.85,"r_roe":0.87,"r_roa":1.64,"r_eps":773.99,"r_bvps":13227,"r_beta":0.05,"r_div_yield":0,"r_gross_margin":31.63,"r_net_margin":1.14,"r_quick_ratio":0.5,"r_interest_cov":1.81,"r_ev_ebitda":25.24,"is_revenue":243175.12,"is_gross_profit":95247.66,"is_net_profit":10355.06,"is_operating_profit":11962.46,"is_eps":null,"is_rev_growth":0.51,"is_profit_growth":2.9,"is_rev_growth_yoy":0.51,"is_profit_growth_yoy":2.9,"bs_total_assets":990017.07,"bs_equity":290608.65,"bs_total_liab":699408.42,"bs_short_debt":533741.16,"bs_long_debt":14924.64,"bs_debt_to_equity":2.41,"cf_operating":-10851.18,"cf_investing":20244.93,"cf_financing":3589.87,"cf_free":9393.75,"cf_quality_ratio":-0.76,"finance_score":9,"finance_score_fund":9,"finance_score_cf":-10,"finance_score_growth":10,"industry":"Y tế","icb_code":4500,"ff_room":null,"ff_trend":null,"ff_consistency":null,"ff_acceleration":null,"ff_data_invalid":"True","market_valuation":"FAIR","trend_score":20,"momentum_score":23,"volume_score":-1,"volatility_score":5,"order_flow_score":8,"ff_score":0,"fundamental_score":7,"cf_score":-10,"growth_score":10,"context_score":-2,"news_score":-0.08,"confluence_bonus":5,"tech_score":55,"fund_score":7,"news_industry":0,"news_mention":0,"news_macro":-0.08,"total_score":64.92,"updated_at":"2026-06-05 13:51","news_evidence":"macro·petrotimes·Nhận định thị trường chứng khoán ngày 27·27 May 2026·+1.50","pattern_flags":null,"_ctx_close":1831.55,"_ctx_chg_1d":0.69,"_ctx_chg_5d":-1.72,"_ctx_chg_20d":-4.06,"_ctx_regime":"DOWNTREND","_ctx_valuation":"FAIR","_ctx_pe":13.77,"_ctx_pb":2.09,"_ctx_pe_pct":44.1,"_ctx_pb_pct":70.3,"_ctx_ema50":1836.53,"_ctx_ema200":1723.94,"_of_total_trades":8,"_of_buy_count":3,"_of_sell_count":5,"_of_buy_vol":4800,"_of_sell_vol":1600,"_of_buy_ratio":0.75,"_of_sell_ratio":0.25,"_of_avg_size":800,"_of_trader_type":"Retail","_of_pattern":"SPIKE_BUY","_of_distribution":"NORMAL","_of_vol_spike":524.4,"_verdict":{"pros":["Xu hướng tăng mạnh, rõ ràng","Doanh nghiệp tăng trưởng tốt (LN +290%, DT +51% YoY)","Lực mua chủ động chiếm ưu thế"],"cons":["Lời/Lỗ chỉ 1.44 (dưới 2) → nên mua ít, ăn ít rủi ro","Sinh lời kém: ROE=0.87%"]},"_groups":{"trend":{"icon":"📈","name":"Xu hướng"},"momentum":{"icon":"⚡","name":"Động lượng"},"volume":{"icon":"📦","name":"Khối lượng"},"volatility":{"icon":"🎢","name":"Biến động"},"order_flow":{"icon":"🔄","name":"Lực khớp lệnh"},"ff":{"icon":"🌐","name":"Nước ngoài"},"fundamental":{"icon":"🏢","name":"Cơ bản"},"cf":{"icon":"💵","name":"Dòng tiền"},"growth":{"icon":"🚀","name":"Tăng trưởng"},"context":{"icon":"🌏","name":"Thị trường"},"news":{"icon":"📰","name":"Tin tức"},"confluence":{"icon":"🤝","name":"Đồng thuận"}},"_groups_arr":[{"key":"trend","icon":"📈","name":"Xu hướng","desc":"giá đang đi lên hay xuống","score":20,"cap":30,"bullets":["EMA20 vượt lên trên EMA50 → đường giá ngắn hạn cắt lên dài hạn (tín hiệu tăng)","Giá -5% dưới EMA200 → xu hướng dài hạn còn yếu","ADX=28.91 → xu hướng RẤT MẠNH, rõ ràng (ADX>25 là đáng tin cậy)","Supertrend=11.74 báo GIẢM (giá dưới đường Supertrend)"]},{"key":"momentum","icon":"⚡","name":"Động lượng","desc":"đà tăng/giảm còn mạnh không","score":23,"cap":23,"bullets":["RSI=27.71 → QUÁ BÁN (<30), đã giảm sâu, có thể hồi phục","MACD histogram=0.25 (dương) → đà tăng đang được củng cố","Stochastic K=0.0 → vùng quá bán, có thể bật lên"]},{"key":"volume","icon":"📦","name":"Khối lượng","desc":"tổng KL đã khớp vs trung bình (dòng tiền)","score":-1,"cap":20,"bullets":["CMF=0.66 → dòng tiền đang chảy VÀO (mua ròng, CMF>0)","MFI=77.67 → lực mua mạnh theo dòng tiền","OBV (dòng tiền tích lũy) CÙNG chiều giá → khối lượng xác nhận xu hướng (đáng tin)","Khối lượng=0.17 lần trung bình → rất yếu, ít người giao dịch"]},{"key":"volatility","icon":"🎢","name":"Biến động","desc":"giá đang ở vùng cao hay thấp của dải dao động","score":5,"cap":5,"bullets":["Vị trí Bollinger=0.0 → gần dải DƯỚI (giá thấp, rủi ro mua thấp hơn)"]},{"key":"order_flow","icon":"🔄","name":"Lực khớp lệnh","desc":"số lệnh & lượng khớp THẬT, mua/bán thật hay ảo","score":8,"cap":10,"bullets":["Khớp MUA: 3 lệnh · 5K cp","Khớp BÁN: 5 lệnh · 2K cp","Tỷ lệ mua chủ động: 75% → phe MUA chủ động mạnh","TB 800 cp/lệnh (8 lệnh) → lệnh nhỏ lẻ → có thể kê giá/tạo thanh khoản ảo","Khối lượng đột biến +524% so bình thường","Mô hình: Đột biến lệnh MUA → lực cầu thật"]},{"key":"ff","icon":"🌐","name":"Nước ngoài","desc":"nhà đầu tư nước ngoài mua hay bán","score":0,"cap":20,"bullets":["(Không có tín hiệu nước ngoài cụ thể)"]},{"key":"fundamental","icon":"🏢","name":"Cơ bản","desc":"doanh nghiệp định giá rẻ hay đắt","score":7,"cap":20,"bullets":["P/E=14.54 → định giá rẻ","P/B=0.85 → giá DƯỚI giá trị sổ sách (rẻ, P/B<1)","ROE=0.87% → sinh lời KÉM trên vốn","Nợ/Vốn (D/E)=2.407 → đòn bẩy cao"]},{"key":"cf","icon":"💵","name":"Dòng tiền","desc":"công ty làm ra tiền thật hay đốt tiền","score":-10,"cap":10,"bullets":["Dòng tiền kinh doanh âm nhẹ tỷ (ÂM) → công ty đang đốt tiền","Chất lượng dòng tiền -0.76 (>1 là tốt) → thấp — lợi nhuận chưa thành tiền"]},{"key":"growth","icon":"🚀","name":"Tăng trưởng","desc":"doanh thu/lợi nhuận tăng hay giảm","score":10,"cap":10,"bullets":["Doanh thu tăng 50.8% so cùng kỳ → tăng trưởng MẠNH","Lợi nhuận tăng 289.9% so cùng kỳ → tăng trưởng MẠNH"]},{"key":"context","icon":"🌏","name":"Thị trường","desc":"VNINDEX đang đắt hay rẻ","score":-2,"cap":5,"bullets":["P/E thị trường 13.77 (rẻ hơn 56% thời gian 5 năm qua → trung bình)","P/B thị trường 2.09 (cao hơn 70% lịch sử → đắt)","VNINDEX 1831.55 đang GIẢM, nằm dưới EMA50 (1836.53) · hôm qua +0.69%, 5 phiên -1.72%, 20 phiên -4.06%","VNINDEX đang GIẢM -4.06%/20 phiên → cổ phiếu dễ bị kéo theo, nên chờ ổn định hoặc chỉ mua thăm dò nhỏ"]},{"key":"news","icon":"📰","name":"Tin tức","desc":"tin tốt hay xấu cho ngành/mã","score":-0.08,"cap":5,"bullets":["[macro] petrotimes: Nhận định thị trường chứng khoán ngày 27"]},{"key":"confluence","icon":"🤝","name":"Đồng thuận","desc":"nhiều nhóm cùng đồng ý hướng đi","score":5,"cap":10,"bullets":["6/10 nhóm chỉ báo cùng đồng thuận hướng TĂNG"]}],"_flags_vn":{"SINGLE_TP_ONLY":"Giá quá gần kháng cự nên chỉ đặt 1 mục tiêu chốt lời — bán hết một lần khi đạt mục tiêu.","TIGHT_HEADROOM":"Khoảng cách tới kháng cự rất hẹp → tiềm năng lời thấp, chỉ nên vào lượng nhỏ."}}];
+const RUN_META = {"run_date":"2026-06-05","snap_time":"13:50","updated_at":"2026-06-05 13:51","context":{"_ctx_close":1831.55,"_ctx_chg_1d":0.69,"_ctx_chg_5d":-1.72,"_ctx_chg_20d":-4.06,"_ctx_regime":"DOWNTREND","_ctx_pe":13.77,"_ctx_pb":2.09,"_ctx_pe_pct":44.1,"_ctx_pb_pct":70.3,"_ctx_ema50":1836.53,"_ctx_ema200":1723.94}};
+
+// ── Helpers ─────────────────────────────────────────────────
+const fs = v => { const n = parseFloat(v)||0; return (n>0?'+':'')+n.toFixed(Math.abs(n)>=10||n%1===0?0:2); };
+const DC = d => ({'STRONG BUY':'SB','STRONG_BUY':'SB','BUY':'BUY','NEUTRAL':'NEU','SELL':'SEL','STRONG SELL':'SS','STRONG_SELL':'SS'})[d]||'NEU';
+const SC = s => s>=80?'c-sb':s>=40?'c-buy':s>=-15?'c-neu':s>=-40?'c-sell':'c-ss';
+
+const KEYS  = ['trend','momentum','volume','volatility','order_flow','ff','fundamental','cf','growth','context','news','confluence'];
+const CAPS  = {trend:30,momentum:23,volume:20,volatility:5,order_flow:10,ff:20,fundamental:20,cf:10,growth:10,context:5,news:5,confluence:10};
+const SCORE_KEY = {trend:'trend_score',momentum:'momentum_score',volume:'volume_score',volatility:'volatility_score',order_flow:'order_flow_score',ff:'ff_score',fundamental:'fundamental_score',cf:'cf_score',growth:'growth_score',context:'context_score',news:'news_score',confluence:'confluence_bonus'};
+
+// ── Market strip ─────────────────────────────────────────────
+(function initStrip() {
+  const ctx = RUN_META.context || {};
+  const reg = ctx._ctx_regime || 'FAIR';
+  const regCls = reg.includes('DOWN') ? 'regime-dn' : reg.includes('UP') ? 'regime-up' : 'regime-fair';
+  const items = [
+    {l:'VNINDEX', v: ctx._ctx_close || '—', cls: (ctx._ctx_chg_1d||0)>=0?'up':'dn'},
+    {l:'1D', v: ctx._ctx_chg_1d != null ? (ctx._ctx_chg_1d>0?'+':'')+ctx._ctx_chg_1d+'%' : '—', cls: (ctx._ctx_chg_1d||0)>=0?'up':'dn'},
+    {l:'5D', v: ctx._ctx_chg_5d != null ? (ctx._ctx_chg_5d>0?'+':'')+ctx._ctx_chg_5d+'%' : '—', cls: (ctx._ctx_chg_5d||0)>=0?'up':'dn'},
+    {l:'P/E TT', v: ctx._ctx_pe ? ctx._ctx_pe+'×' : '—', cls:'warn'},
+    {l:'P/B TT', v: ctx._ctx_pb ? ctx._ctx_pb+'×' : '—', cls:'warn'},
+    {l:'Scored',  v: ALL_DATA.length, cls:'hi'},
+  ];
+  document.getElementById('mstrip-bar').innerHTML =
+    items.map(i => `<div class="mi"><div class="mi-l">${i.l}</div><div class="mi-v ${i.cls}">${i.v}</div></div><div class="sep"></div>`).join('')+
+    `<div class="regime">${reg} · Snap: ${RUN_META.snap_time||''}</div>`;
+  document.getElementById('ts-disp').textContent = RUN_META.run_date + ' · ' + RUN_META.snap_time + ' ICT';
+})();
+
+// ── Render card ──────────────────────────────────────────────
+function renderCard(d, idx) {
+  const dc = DC(d.decision);
+  const sc = SC(d.total_score);
+
+  // Score bars
+  const barsHtml = KEYS.map(k => {
+    const v   = parseFloat(d[SCORE_KEY[k]])||0;
+    const cap = CAPS[k];
+    const pct = Math.min(100, Math.abs(v)/cap*100);
+    const col = v>0 ? (Math.abs(v)>cap*.65?'var(--sb)':'var(--buy)') : v<0 ? (Math.abs(v)>cap*.65?'var(--ss)':'var(--sell)') : 'var(--muted)';
+    const nc  = v>0?'color:var(--buy)':v<0?'color:var(--sell)':'color:var(--muted)';
+    const info = d._groups && d._groups[k];
+    return `<div class="sbar-row">
+      <span class="sbar-icon">${info ? info.icon : ''}</span>
+      <span class="sbar-lbl">${info ? info.name : k}</span>
+      <div class="sbar-track"><div class="sbar-fill" style="width:${pct}%;background:${col}"></div></div>
+      <span class="sbar-num" style="${nc}">${fs(v)}/${cap>0?'+':''}${cap}</span>
+    </div>`;
+  }).join('');
+
+  // Trade block
+  const hasTrade = d.entry_low && d.tp1 && d.stop_loss;
+  const tradeHtml = hasTrade ? `
+  <div class="trade-blk">
+    <div class="trade-row"><span class="tl">💰 Giá hiện tại</span><span class="tv price">${d.price}</span></div>
+    <div class="trade-row"><span class="tl">🟩 Vùng mua</span><span class="tv entry">${d.entry_low} – ${d.entry_high||d.entry}</span></div>
+    <div class="trade-row"><span class="tl">🎯 Chốt lời</span><span class="tv tp">${d.tp1} ${d.tp2?'/ '+d.tp2:''}</span></div>
+    <div class="trade-row"><span class="tl">🛑 Cắt lỗ</span><span class="tv sl">${d.stop_loss} <span class="pct pct-n">-${d.risk_pct||'?'}%</span></span></div>
+    <div class="rr-blk">
+      <span>📊 R:R <span class="rr-val">${d.rr_tp1||'?'}</span></span>
+      <span class="size-chip sc-${d.size_hint||'NO'}">${d.size_hint||'?'}</span>
+      <span class="rr-note">${d.entry_style||''}</span>
+    </div>
+    ${d.flags ? d.flags.split(',').map(f => d._flags_vn && d._flags_vn[f.trim()] ? `<div class="warn-box">⚠️ ${d._flags_vn[f.trim()]}</div>` : '').join('') : ''}
+  </div>` : `<div class="trade-blk">
+    <div class="trade-row"><span class="tl">💰 Giá hiện tại</span><span class="tv price">${d.price}</span></div>
+    <div class="rr-blk"><span class="size-chip sc-NO">KHÔNG VÀO LỆNH</span></div>
+  </div>`;
+
+  // Verdict
+  const verdict = d._verdict || {pros:[], cons:[]};
+  const flags = (d.pattern_flags && d.pattern_flags !== 'None' && d.pattern_flags) ? String(d.pattern_flags).split(',').map(f => f.trim()).filter(Boolean) : [];
+  const verdictHtml = `<div class="verdict-blk">
+    ${flags.map(f => `<span class="pflag pf-${f}">${f}</span>`).join('')}
+    <div style="margin-top:${flags.length?'6px':'0'}">
+      ${verdict.pros.map(p => `<div class="pc-item"><span>✅</span><span>${p}</span></div>`).join('')}
+      ${verdict.cons.map(c => `<div class="pc-item"><span>⚠️</span><span>${c}</span></div>`).join('')}
+    </div>
+  </div>`;
+
+  // Indicator groups (Telegram-style bullets)
+  const groupsHtml = (d._groups_arr || []).map(g => {
+    const sCol = g.score>0?'var(--buy)':g.score<0?'var(--sell)':'var(--muted)';
+    const bullets = (g.bullets||[]).map(b => `<div class="ind-bullet"><span class="ind-dot">•</span><span>${b}</span></div>`).join('');
+    return `<div class="ind-grp">
+      <div class="ind-grp-hdr">
+        <span>${g.icon} ${g.name} <span style="font-weight:400;color:var(--muted);font-size:9px">— ${g.desc}</span></span>
+        <span class="ss-total" style="color:${sCol}">${fs(g.score)}đ / ±${g.cap}</span>
+      </div>
+      ${bullets}
+    </div>`;
+  }).join('');
+
+  return `<div class="card ${dc}" id="c${idx}" onclick="tog(${idx})">
+    <div class="ch">
+      <div class="ch-l">
+        <div class="sym-line">
+          <span class="sym">${d.symbol}</span>
+          <span class="dec-badge db-${dc}">${d.decision}</span>
+        </div>
+        <div class="meta-line">
+          <span>📅 ${d.snap_time}</span><span>·</span>
+          <span>${d.industry||''}</span><span>·</span>
+          <span>${d.exchange||''}</span>
+          ${d.group ? `<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:2px;border:1px solid ${d.group==='GAINER'?'var(--buy-b,#0c4020)':'var(--sell-bg)'}; color:${d.group==='GAINER'?'var(--buy)':'var(--sell)'}">${d.group}</span>` : ''}
+        </div>
+        <div class="meta-line">Confidence: <b style="font-family:var(--mono);color:${d.confidence==='HIGH'?'var(--sb)':d.confidence==='LOW'?'var(--sell)':'var(--neu)'}">${d.confidence||'—'}</b></div>
+      </div>
+      <div class="ch-r">
+        <div class="score-big ${sc}">${fs(d.total_score)}</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">/ 168 tổng</div>
+      </div>
+    </div>
+    ${tradeHtml}
+    ${verdictHtml}
+    <div class="sbar-blk">
+      <div class="sbar-ttl">📊 Điểm từng nhóm</div>
+      ${barsHtml}
+      <div class="sum-row">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em">TỔNG</span>
+        <span class="sum-val ${sc}">${fs(d.total_score)} / 168</span>
+      </div>
+    </div>
+    <div class="card-detail" id="det${idx}">
+      <div class="tabs" onclick="event.stopPropagation()">
+        <div class="tab on" onclick="stab(event,${idx},'tele')">📱 Diễn giải (Telegram)</div>
+        <div class="tab" onclick="stab(event,${idx},'trade')">💼 Trade Setup</div>
+      </div>
+      <div class="pane on" id="p${idx}-tele">${groupsHtml}</div>
+      <div class="pane" id="p${idx}-trade">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">
+          EMA20: <b style="color:var(--text)">${d.ema20||'—'}</b> &nbsp;·&nbsp;
+          EMA50: <b style="color:var(--text)">${d.ema50||'—'}</b> &nbsp;·&nbsp;
+          EMA200: <b style="color:var(--text)">${d.ema200||'—'}</b><br>
+          RSI: <b style="color:var(--text)">${d.rsi||'—'}</b> &nbsp;·&nbsp;
+          ADX: <b style="color:var(--text)">${d.adx||'—'}</b> &nbsp;·&nbsp;
+          MACD hist: <b style="color:var(--text)">${d.macd_hist||'—'}</b><br>
+          P/E: <b style="color:var(--text)">${d.r_pe||'—'}</b> &nbsp;·&nbsp;
+          P/B: <b style="color:var(--text)">${d.r_pb||'—'}</b> &nbsp;·&nbsp;
+          ROE: <b style="color:var(--text)">${d.r_roe||'—'}%</b><br>
+          DT YoY: <b style="color:var(--text)">${d.is_rev_growth_yoy!=null?((d.is_rev_growth_yoy*100).toFixed(1)+'%'):'—'}</b> &nbsp;·&nbsp;
+          LN YoY: <b style="color:var(--text)">${d.is_profit_growth_yoy!=null?((d.is_profit_growth_yoy*100).toFixed(1)+'%'):'—'}</b><br>
+          CF Op: <b style="color:${(d.cf_operating||0)>0?'var(--buy)':'var(--sell)'}">${d.cf_operating!=null?((d.cf_operating/1e6).toFixed(1)+' tỷ'):'—'}</b> &nbsp;·&nbsp;
+          CF Quality: <b style="color:var(--text)">${d.cf_quality_ratio||'—'}</b>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── State & render ───────────────────────────────────────────
+let fDec='ALL', fGrp='ALL', srt='sd';
+
+function applyAll() {
+  let items = [...ALL_DATA];
+  if (fDec !== 'ALL') items = items.filter(d => d.decision === fDec);
+  if (fGrp !== 'ALL') items = items.filter(d => d.group === fGrp);
+  if (srt==='sd') items.sort((a,b) => b.total_score - a.total_score);
+  else if (srt==='sa') items.sort((a,b) => a.total_score - b.total_score);
+  else items.sort((a,b) => a.symbol.localeCompare(b.symbol));
+  document.getElementById('cnt').textContent = items.length;
+  document.getElementById('cards').innerHTML = items.map((d,i) => renderCard(d, ALL_DATA.indexOf(d))).join('');
+  updateStats();
+}
+
+function updateStats() {
+  const c = {SB:0,BUY:0,NEU:0,SELL:0,SS:0};
+  ALL_DATA.forEach(d => { const dc=DC(d.decision); if(dc==='SB')c.SB++; else if(dc==='BUY')c.BUY++; else if(dc==='NEU')c.NEU++; else if(dc==='SEL')c.SELL++; else c.SS++; });
+  const avg = (ALL_DATA.reduce((s,d) => s+(parseFloat(d.total_score)||0), 0) / ALL_DATA.length).toFixed(1);
+  document.getElementById('stats').innerHTML = [
+    {k:'STRONG BUY',v:c.SB,c:'var(--sb)'},{k:'MUA',v:c.BUY,c:'var(--buy)'},
+    {k:'NEUTRAL',v:c.NEU,c:'var(--neu)'},{k:'BÁN',v:c.SELL,c:'var(--sell)'},
+    {k:'STRONG SELL',v:c.SS,c:'var(--ss)'},{k:'ĐIỂM TB',v:avg,c:'var(--text)'},
+  ].map(r => `<div class="stat-r"><div class="sk">${r.k}</div><div class="sv" style="color:${r.c}">${r.v}</div></div>`).join('');
+}
+
+function tog(idx) {
+  const c = document.getElementById('c'+idx);
+  c.classList.toggle('open');
+}
+function stab(e, idx, pane) {
+  e.stopPropagation();
+  const det = document.getElementById('det'+idx);
+  det.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  det.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  e.target.classList.add('on');
+  document.getElementById('p'+idx+'-'+pane).classList.add('on');
+}
+function setupFilter(id, setter, map) {
+  document.getElementById(id).addEventListener('click', e => {
+    if (!e.target.dataset.v) return;
+    document.querySelectorAll('#'+id+' .fb').forEach(b => {
+      b.className = 'fb';
+      if (b === e.target) b.className = 'fb ' + (map ? (map[b.dataset.v]||'on') : 'on');
+    });
+    setter(e.target.dataset.v); applyAll();
+  });
+}
+setupFilter('fd', v => fDec=v, {'ALL':'on','STRONG BUY':'on-sb','BUY':'on-buy','NEUTRAL':'on-neu','SELL':'on-sell','STRONG SELL':'on-ss'});
+setupFilter('fg', v => fGrp=v, null);
+document.getElementById('srt').addEventListener('change', e => { srt=e.target.value; applyAll(); });
+applyAll();
+</script>
+</body>
+</html>
