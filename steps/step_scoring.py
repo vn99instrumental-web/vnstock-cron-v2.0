@@ -39,6 +39,7 @@ CHANGELOG:
                      VALUE_OPPORTUNITY, MIXED)
     - order_flow_score, volatility_score, confluence_bonus
 """
+import math
 import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -256,26 +257,41 @@ def score_order_flow(of_data: dict) -> tuple[int, list[str]]:
 # ═════════════════════════════════════════════════════════════════
 WALL_MIN_VOL = 5_000
 
+def _ob_valid(v) -> bool:
+    """Kiểm tra giá trị bid/ask hợp lệ (không None, không NaN, > 0)."""
+    if v is None:
+        return False
+    try:
+        f = float(v)
+        return not math.isnan(f) and f > 0
+    except (TypeError, ValueError):
+        return False
+
+
 def score_depth(row: dict) -> tuple[int, list[str]]:
     cur_price = row.get("price")
     if not cur_price or cur_price <= 0:
         return 0, []
 
-    # Thu thập bid/ask từ row (3 mức)
-    bids = []
-    asks = []
+    # Thu thập bid/ask từ row (3 mức) — lưu tất cả, WALL_MIN_VOL chỉ dùng khi tính điểm
+    bids_all = []   # (price, vol) — tất cả mức hợp lệ
+    asks_all = []
     for i in (1, 2, 3):
         bp = row.get(f"bid_price_{i}")
         bv = row.get(f"bid_vol_{i}")
         ap = row.get(f"ask_price_{i}")
         av = row.get(f"ask_vol_{i}")
-        if bp and bv and bv >= WALL_MIN_VOL:
-            bids.append((float(bp), float(bv)))
-        if ap and av and av >= WALL_MIN_VOL:
-            asks.append((float(ap), float(av)))
+        if _ob_valid(bp) and _ob_valid(bv):
+            bids_all.append((float(bp), float(bv)))
+        if _ob_valid(ap) and _ob_valid(av):
+            asks_all.append((float(ap), float(av)))
 
-    if not bids and not asks:
+    if not bids_all and not asks_all:
         return 0, []   # ngoài giờ GD hoặc không có data
+
+    # Chỉ tính điểm với wall hợp lệ (vol >= WALL_MIN_VOL)
+    bids = [(p, v) for p, v in bids_all if v >= WALL_MIN_VOL]
+    asks = [(p, v) for p, v in asks_all if v >= WALL_MIN_VOL]
 
     depth_score = 0
     sigs = []
@@ -879,7 +895,7 @@ if __name__ == "__main__":
             f"score={result['total_score']:.2f} "
             f"(T={result['trend_score']} M={result['momentum_score']} "
             f"V={result['volume_score']} Vol={result['volatility_score']} "
-            f"OF={result['order_flow_score']} "
+            f"OF={result['order_flow_score']} D={result['depth_score']} "
             f"FF={result['ff_score']} F={result['fundamental_score']} "
             f"CF={result['cf_score']} G={result['growth_score']} "
             f"N={result['news_score']:.1f} "
