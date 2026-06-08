@@ -1,5 +1,5 @@
 """
-scripts/debug_bidask.py — Thử price_depth() với msn, dnse
+scripts/debug_bidask_v2.py — Thử price_depth() với msn, dnse
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
