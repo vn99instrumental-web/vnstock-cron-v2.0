@@ -130,6 +130,21 @@ jobs:
             fi
           done
 
+      # ──────────────────────────────────────────────────────────────────
+      # Context Refresh — VNINDEX price/trend (realtime fields only).
+      # Overwrite vnindex_close, chg_1d/5d/20d, EMA50/200, market_regime.
+      # PE/PB/valuation từ cron_daily KHÔNG bị đụng đến.
+      # Chạy TRƯỚC step_snapshot để step_scoring dùng được data mới nhất.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Step Context Refresh — VNINDEX realtime
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_context_refresh.py
+
       - name: Step Snapshot — Ranking + Deep (concurrent)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
