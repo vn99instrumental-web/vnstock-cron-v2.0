@@ -1,4 +1,4 @@
 ﻿symbol,exchange,decision,confidence,entry_style,price,entry_low,entry,entry_high,stop_loss,risk_pct,tp1,tp2,rr_tp1,rr_headroom,size_hint,nearest_support,nearest_resist,levels_used,flags,skip
-HII,HSX,BUY,HIGH,PULLBACK,6.29,6.12,6.12,6.29,5.84,4.58,6.54,,1.5,1.07,FULL,6.12,6.42,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,SINGLE_TP_ONLY,TIGHT_HEADROOM,STOP_BELOW_FLOOR",
+HII,HSX,BUY,HIGH,BREAKOUT,6.26,6.24,6.26,6.26,6.05,3.35,6.57,,1.48,0.76,FULL,6.12,6.42,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,SINGLE_TP_ONLY,TIGHT_HEADROOM",
 VVS,HSX,BUY,MEDIUM,PULLBACK,112.1,,,,,9.54,,,,,NO_TRADE,102.68,117.0,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",SKIP_WIDE_STOP,wide_stop
-ASP,HSX,BUY,MEDIUM,PULLBACK,7.38,7.35,7.35,7.38,7.07,3.81,7.76,,1.46,1.29,HALF,7.35,7.71,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","SINGLE_TP_ONLY,TIGHT_HEADROOM",
+ASP,HSX,BUY,HIGH,BREAKOUT,7.3,7.28,7.3,7.3,7.07,3.15,7.64,,1.48,1.78,FULL,7.18,7.71,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,SINGLE_TP_ONLY",
