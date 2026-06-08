@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger(__name__)
 
 SYMBOLS  = ["BSR", "HPG", "VCB"]
-SOURCES  = ["msn", "dnse"]   # vci đã biết = matched vol, tcbs bị chặn
+SOURCES  = ["VND", "MAS"]   # vci = matched vol, kbs chưa thử price_depth
 
 log.info(f"Time: {now_ict():%Y-%m-%d %H:%M:%S} ICT  |  market_open={is_market_open()}")
 
