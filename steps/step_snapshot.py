@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from vnstock_data import TopStock, Quote, Trading
+from vnstock_data import TopStock, Quote, Trading, Market
 from vnstock_ta import Indicator
 
 from utils.helpers import (
@@ -111,17 +111,22 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
             row["price_type"] = "last_close"
             row["price_date"] = str(df_hist["time"].iloc[-1])[:10]
 
-    df_depth = safe_run(f"price_depth {symbol}",
-        lambda: Quote(source="VCI", symbol=symbol).price_depth())
-    if df_depth is not None and not df_depth.empty:
-        try:
-            b = float(pd.to_numeric(df_depth["buy_volume"],  errors="coerce").sum())
-            s = float(pd.to_numeric(df_depth["sell_volume"], errors="coerce").sum())
-            row["depth_buy"]       = b
-            row["depth_sell"]      = s
-            row["depth_buy_ratio"] = round(b / (b + s), 2) if (b + s) > 0 else None
-        except Exception as e:
-            log.error(f"depth error {symbol}: {e}")
+    # ── Order book (bid/ask lệnh chờ) — chỉ fetch khi market_open ──
+    # Nguồn: Market.equity().order_book() → KBS, 3 mức bid/ask
+    # Ngoài giờ GD: skip, các field = None (score_depth tự bỏ qua)
+    if market_open:
+        df_ob = safe_run(f"order_book {symbol}",
+            lambda: Market().equity(symbol).order_book())
+        if df_ob is not None and not df_ob.empty:
+            try:
+                ob = df_ob.iloc[0]
+                for i in (1, 2, 3):
+                    row[f"bid_price_{i}"] = to_float(ob.get(f"bid_price_{i}"))
+                    row[f"bid_vol_{i}"]   = to_float(ob.get(f"bid_vol_{i}"))
+                    row[f"ask_price_{i}"] = to_float(ob.get(f"ask_price_{i}"))
+                    row[f"ask_vol_{i}"]   = to_float(ob.get(f"ask_vol_{i}"))
+            except Exception as e:
+                log.error(f"order_book error {symbol}: {e}")
 
     return row
 
