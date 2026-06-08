@@ -247,6 +247,81 @@ def score_order_flow(of_data: dict) -> tuple[int, list[str]]:
 # MAIN SCORING ENGINE
 # =====================================================
 
+
+# ═════════════════════════════════════════════════════════════════
+# DEPTH SCORE (max ±5) — Phase 3: Order book bid/ask
+# Đọc bid_price_1..3 / ask_price_1..3 từ deep_raw (Market.equity)
+# Chỉ có data khi market_open; ngoài giờ GD → tất cả None → return 0
+# Wall hợp lệ: vol >= WALL_MIN_VOL = 5000
+# ═════════════════════════════════════════════════════════════════
+WALL_MIN_VOL = 5_000
+
+def score_depth(row: dict) -> tuple[int, list[str]]:
+    cur_price = row.get("price")
+    if not cur_price or cur_price <= 0:
+        return 0, []
+
+    # Thu thập bid/ask từ row (3 mức)
+    bids = []
+    asks = []
+    for i in (1, 2, 3):
+        bp = row.get(f"bid_price_{i}")
+        bv = row.get(f"bid_vol_{i}")
+        ap = row.get(f"ask_price_{i}")
+        av = row.get(f"ask_vol_{i}")
+        if bp and bv and bv >= WALL_MIN_VOL:
+            bids.append((float(bp), float(bv)))
+        if ap and av and av >= WALL_MIN_VOL:
+            asks.append((float(ap), float(av)))
+
+    if not bids and not asks:
+        return 0, []   # ngoài giờ GD hoặc không có data
+
+    depth_score = 0
+    sigs = []
+
+    # ── Ask walls (tường bán phía trên) ──
+    ask_walls_near  = [(p, v) for p, v in asks if 0 < (p - cur_price) / cur_price <= 0.02]
+    ask_walls_mid   = [(p, v) for p, v in asks if 0.02 < (p - cur_price) / cur_price <= 0.05]
+    ask_walls_clear = not ask_walls_near and not ask_walls_mid
+
+    if ask_walls_near:
+        best = max(ask_walls_near, key=lambda x: x[1])
+        pct  = (best[0] - cur_price) / cur_price * 100
+        depth_score -= 2
+        sigs.append(f"AskWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, +{pct:.1f}%) -2")
+    elif ask_walls_mid:
+        best = max(ask_walls_mid, key=lambda x: x[1])
+        pct  = (best[0] - cur_price) / cur_price * 100
+        depth_score -= 1
+        sigs.append(f"AskWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, +{pct:.1f}%) -1")
+    elif ask_walls_clear:
+        depth_score += 1
+        sigs.append("AskClear (no wall ≤5%) +1")
+
+    # ── Bid walls (tường mua phía dưới) ──
+    bid_walls_near = [(p, v) for p, v in bids if 0 < (cur_price - p) / cur_price <= 0.02]
+    bid_walls_mid  = [(p, v) for p, v in bids if 0.02 < (cur_price - p) / cur_price <= 0.05]
+    no_bid_wall    = not bid_walls_near and not bid_walls_mid
+
+    if bid_walls_near:
+        best = max(bid_walls_near, key=lambda x: x[1])
+        pct  = (cur_price - best[0]) / cur_price * 100
+        depth_score += 2
+        sigs.append(f"BidWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, -{pct:.1f}%) +2")
+    elif bid_walls_mid:
+        best = max(bid_walls_mid, key=lambda x: x[1])
+        pct  = (cur_price - best[0]) / cur_price * 100
+        depth_score += 1
+        sigs.append(f"BidWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, -{pct:.1f}%) +1")
+    elif no_bid_wall:
+        depth_score -= 1
+        sigs.append("NoBidWall (no support ≤5%) -1")
+
+    depth_score = max(-5, min(5, depth_score))
+    return depth_score, sigs
+
+
 def score_symbol(row: dict, context: dict, news_scores: dict,
                  order_flow_map: dict) -> dict:
     """
@@ -417,6 +492,13 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     of_score, of_sigs = score_order_flow(order_flow_map.get(sym, {}))
     s["order_flow"] = of_score
     sigs.extend(of_sigs)
+
+    # ═════════════════════════════════════════════
+    # DEPTH (max ±5) — Phase 3: bid/ask order book
+    # ═════════════════════════════════════════════
+    d_score, d_sigs = score_depth(row)
+    s["depth"] = d_score
+    sigs.extend(d_sigs)
 
     # ═════════════════════════════════════════════
     # FOREIGN FLOW (max ±20)
@@ -609,6 +691,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     momentum_score    = max(-23, min(23, s.get("momentum",    0)))
     volume_score      = max(-20, min(20, s.get("volume",      0)))
     volatility_score  = max(-5,  min(5,  s.get("volatility",  0)))
+    depth_score       = max(-5,  min(5,  s.get("depth",       0)))
     order_flow_score  = max(-10, min(10, s.get("order_flow",  0)))
     ff_score          = max(-20, min(20, s.get("ff",          0)))
     fundamental_score = max(-20, min(20, s.get("fundamental", 0)))
@@ -625,7 +708,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     group_scores = {
         "trend": trend_score, "momentum": momentum_score,
         "volume": volume_score, "volatility": volatility_score,
-        "order_flow": order_flow_score, "ff": ff_score,
+        "order_flow": order_flow_score, "depth": depth_score, "ff": ff_score,
         "fundamental": fundamental_score, "cf": cf_score,
         "growth": growth_score, "news": news_score_final,
     }
@@ -634,7 +717,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     SIGNAL_THRESHOLD_PCT = 0.30
     GROUP_CAPS = {
         "trend": 30, "momentum": 23, "volume": 20, "volatility": 5,
-        "order_flow": 10, "ff": 20, "fundamental": 20,
+        "order_flow": 10, "depth": 5, "ff": 20, "fundamental": 20,
         "cf": 10, "growth": 10, "news": 5,
     }
 
@@ -669,7 +752,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     # TOTAL SCORE
     # ═════════════════════════════════════════════
     total = (trend_score + momentum_score + volume_score + volatility_score +
-             order_flow_score + ff_score + fundamental_score + cf_score +
+             order_flow_score + depth_score + ff_score + fundamental_score + cf_score +
              growth_score + context_score + news_score_final + confluence_bonus)
 
     # ═════════════════════════════════════════════
@@ -724,6 +807,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
         "volume_score"        : volume_score,
         "volatility_score"    : volatility_score,    # NEW
         "order_flow_score"    : order_flow_score,    # NEW
+        "depth_score"         : depth_score,          # Phase 3
         "ff_score"            : ff_score,
         "fundamental_score"   : fundamental_score,
         "cf_score"            : cf_score,
