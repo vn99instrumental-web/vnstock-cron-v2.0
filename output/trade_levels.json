@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-09T09:51:42.817323+07:00",
+  "generated_at": "2026-06-09T10:51:14.104540+07:00",
   "buy_count": 1,
-  "exit_count": 7,
+  "exit_count": 6,
   "buy_levels": [
     {
       "symbol": "VVS",
@@ -9,21 +9,21 @@
       "decision": "BUY",
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
-      "price": 109.5,
-      "entry": 107.5,
-      "entry_low": 107.5,
-      "entry_high": 109.5,
-      "stop_loss": 104.2,
-      "risk_pct": 3.07,
-      "tp1": 112.4,
-      "tp2": 117.1,
+      "price": 108.0,
+      "entry": 106.5,
+      "entry_low": 106.5,
+      "entry_high": 108.0,
+      "stop_loss": 103.2,
+      "risk_pct": 3.1,
+      "tp1": 111.4,
+      "tp2": 114.7,
       "rr_tp1": 1.48,
-      "rr_headroom": 5.81,
+      "rr_headroom": 0.76,
       "size_hint": "HALF",
-      "nearest_support": 107.5,
-      "nearest_resist": 126.67,
+      "nearest_support": 106.5,
+      "nearest_resist": 109.0,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "",
+      "flags": "TP2_FORCED_GAP,TIGHT_HEADROOM",
       "skip": ""
     }
   ],
@@ -39,14 +39,14 @@
       "note": "Thoát ngay (market)"
     },
     {
-      "symbol": "CIG",
+      "symbol": "HRC",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 6.84,
-      "exit_trigger": 6.21,
-      "note": "Thoát ngay (market)"
+      "price": 44.4,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "SGT",
@@ -54,18 +54,8 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 14.5,
-      "exit_trigger": 14.4,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TCO",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 12.5,
-      "exit_trigger": null,
+      "price": 14.55,
+      "exit_trigger": 14.5,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -79,22 +69,22 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "AFX",
+      "symbol": "TCO",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 10.0,
-      "exit_trigger": null,
+      "price": 12.55,
+      "exit_trigger": 12.5,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "TNI",
+      "symbol": "NBB",
       "exchange": "HSX",
       "decision": "SELL",
-      "confidence": "MEDIUM",
+      "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 4.68,
+      "price": 16.7,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
