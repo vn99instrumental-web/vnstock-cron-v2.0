@@ -682,36 +682,11 @@ function switchView(view) {
   document.getElementById('cards-panel').classList.toggle('hidden', isHist);
   document.getElementById('nav-signals').classList.toggle('on', !isHist);
   document.getElementById('nav-history').classList.toggle('on', isHist);
-  if (isHist && !histLoaded) loadHistory();
+  if (isHist) renderHistory();  // luôn render lại khi vào tab Lịch sử
 }
 
 async function loadHistory() {
   renderHistory();
-}
-
-function parseCSV(text) {
-  const lines = text.trim().split('
-');
-  if (lines.length < 2) return [];
-  const headers = splitCSVLine(lines[0]);
-  return lines.slice(1).map(line => {
-    const vals = splitCSVLine(line);
-    const obj  = {};
-    headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
-    return obj;
-  }).filter(r => r.symbol && r.symbol !== '(no BUY signals)');
-}
-
-function splitCSVLine(line) {
-  const result = []; let cur = ''; let inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (c === '"') { inQ = !inQ; }
-    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
-    else { cur += c; }
-  }
-  result.push(cur);
-  return result;
 }
 
 function renderHistory() {
@@ -781,22 +756,17 @@ function renderHistory() {
     '</tr>';
   }).join('');
 
-  body.outerHTML = '<table class="hist-table">' +
+  body.innerHTML = '<table class="hist-table">' +
     '<thead><tr>' +
       '<th>Ngày</th><th>Giờ</th><th>Mã</th><th>Đề xuất</th><th>Điểm</th>' +
       SCORE_COLS.map(k => '<th title="' + LABELS[k] + '">' + LABELS[k].substring(0,4) + '</th>').join('') +
       '<th>Tin cậy</th><th>TP1</th><th>SL</th><th>VNINDEX</th>' +
     '</tr></thead>' +
-    '<tbody id="hist-body">' + rows_html + '</tbody>' +
+    '<tbody>' + rows_html + '</tbody>' +
   '</table>';
 }
 
-// Set default date filter = 7 ngày trước
-(function() {
-  const d = new Date(); d.setDate(d.getDate() - 7);
-  const iso = d.toISOString().slice(0,10);
-  document.getElementById('h-from').value = iso;
-})();
+// Không set default date filter — hiện toàn bộ lịch sử khi mở tab
 </script>
 </body>
 </html>
