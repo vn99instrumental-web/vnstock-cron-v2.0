@@ -139,7 +139,7 @@
     "momentum_score": -5,
     "volume_score": 7,
     "volatility_score": -5,
-    "order_flow_score": -8,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 12,
@@ -148,7 +148,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": 0,
-    "tech_score": 6,
+    "tech_score": 14,
     "fund_score": 4,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -195,13 +195,13 @@
         "type": "macro"
       }
     ],
-    "total_score": 7.95,
+    "total_score": 15.95,
     "decision": "NEUTRAL",
     "confidence": "LOW",
     "pattern_flags": [
       "UNCLEAR"
     ],
-    "signals": "EMA20>EMA50 +15 | Price 49%>EMA200 (overextended) -8 | ADX=26.22 strong +5 | ST=14.02 bullish +5 | RSI=73.09 overbought -10 | MACD hist=0.34>0 +10 | Stoch K=100.0 overbought -5 | CMF=0.67 inflow (overbought) -8 | MFI=95.73 strong inflow +6 | OBV confirms trend +4 | Vol=16.45x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | OF pattern=SPIKE_SELL -5 | OF vol+477% sell 0.26 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=71.8% strong +5 | ProfitG-YoY=-518.7% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price 49%>EMA200 (overextended) -8 | ADX=26.22 strong +5 | ST=14.02 bullish +5 | RSI=73.09 overbought -10 | MACD hist=0.34>0 +10 | Stoch K=100.0 overbought -5 | CMF=0.67 inflow (overbought) -8 | MFI=95.73 strong inflow +6 | OBV confirms trend +4 | Vol=16.45x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | PE=4.13 very cheap +10 | PB=0.28 below book +5 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=71.8% strong +5 | ProfitG-YoY=-518.7% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
   },
   {
     "symbol": "CIG",
@@ -343,7 +343,7 @@
     "momentum_score": -7,
     "volume_score": -7,
     "volatility_score": -5,
-    "order_flow_score": -8,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 15,
@@ -352,7 +352,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": -5,
-    "tech_score": -39,
+    "tech_score": -31,
     "fund_score": 15,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -399,13 +399,13 @@
         "type": "macro"
       }
     ],
-    "total_score": -31.05,
+    "total_score": -23.05,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [
       "VALUE_OPPORTUNITY"
     ],
-    "signals": "EMA20<EMA50 -15 | Price -16%<EMA200 (oversold) +8 | ADX=18.98 sideways 0 | ST=6.54 bearish -5 | MACD hist=-0.07<0 -10 | Stoch K>50.99 cross up +3 | CMF=0.56 inflow (overbought) -8 | OBV divergence -4 | Vol=4.31x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | OF pattern=SPIKE_SELL -5 | OF vol+215% sell 0.25 | PE=3.15 very cheap +10 | PB=1.1 fair +3 | ROE=24.38% excellent +5 | D/E=4.472 very high -3 | CFO<0 cash burn -10 | CF quality=-1.97 low -5 | RevG-YoY=287.6% strong +5 | ProfitG-YoY=771.4% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026] | CONFLUENCE bear (6/10 groups) -5"
+    "signals": "EMA20<EMA50 -15 | Price -16%<EMA200 (oversold) +8 | ADX=18.98 sideways 0 | ST=6.54 bearish -5 | MACD hist=-0.07<0 -10 | Stoch K>50.99 cross up +3 | CMF=0.56 inflow (overbought) -8 | OBV divergence -4 | Vol=4.31x avg breakout +5 | BB pos=1.0 near upper (overbought) -5 | PE=3.15 very cheap +10 | PB=1.1 fair +3 | ROE=24.38% excellent +5 | D/E=4.472 very high -3 | CFO<0 cash burn -10 | CF quality=-1.97 low -5 | RevG-YoY=287.6% strong +5 | ProfitG-YoY=771.4% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026] | CONFLUENCE bear (5/10 groups) -5"
   },
   {
     "symbol": "HQC",
@@ -925,7 +925,7 @@
     "momentum_score": -8,
     "volume_score": -7,
     "volatility_score": 0,
-    "order_flow_score": -3,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 18,
@@ -934,7 +934,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": 0,
-    "tech_score": -25,
+    "tech_score": -22,
     "fund_score": 28,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -981,11 +981,11 @@
         "type": "macro"
       }
     ],
-    "total_score": 0.95,
+    "total_score": 3.95,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -42%<EMA200 (oversold) +8 | ADX=28.46 strong +5 | ST=3.43 bearish -5 | RSI=43.97 neutral +5 | MACD hist=-0.19<0 -10 | Stoch K<49.83 cross down -3 | OBV divergence -4 | Vol=0.25x avg weak -3 | OF pattern=WEAK -3 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.62% excellent +5 | D/E=2.832 high -2 | CFO>0 real cash +5 | CF quality=1.59 high +5 | RevG-YoY=15.6% good +3 | ProfitG-YoY=-197.0% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -42%<EMA200 (oversold) +8 | ADX=28.46 strong +5 | ST=3.43 bearish -5 | RSI=43.97 neutral +5 | MACD hist=-0.19<0 -10 | Stoch K<49.83 cross down -3 | OBV divergence -4 | Vol=0.25x avg weak -3 | PE=6.88 very cheap +10 | PB=0.55 below book +5 | ROE=28.62% excellent +5 | D/E=2.832 high -2 | CFO>0 real cash +5 | CF quality=1.59 high +5 | RevG-YoY=15.6% good +3 | ProfitG-YoY=-197.0% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
   },
   {
     "symbol": "SVD",
@@ -1302,7 +1302,7 @@
     "momentum_score": -2,
     "volume_score": -4,
     "volatility_score": 0,
-    "order_flow_score": -8,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 0,
@@ -1311,7 +1311,7 @@
     "context_score": -2,
     "news_score": -0.06,
     "confluence_bonus": 0,
-    "tech_score": -34,
+    "tech_score": -26,
     "fund_score": 0,
     "news_industry": 0.020000000000000018,
     "news_mention": 0.0,
@@ -1362,11 +1362,11 @@
         "type": "macro"
       }
     ],
-    "total_score": -36.06,
+    "total_score": -28.06,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | ADX=17.85 sideways 0 | ST=50.58 bearish -5 | RSI=51.65 neutral +5 | MACD hist=-0.45<0 -10 | Stoch K>10.69 cross up +3 | OBV divergence -4 | OF pattern=SPIKE_SELL -5 | OF vol+229% sell 0.21 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=59.2% strong +5 | ProfitG-YoY=132.7% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [PVCFC và Samsung C T tăng cường hợp tác ... · petrotimes ·  2026]"
+    "signals": "EMA20<EMA50 -15 | ADX=17.85 sideways 0 | ST=50.58 bearish -5 | RSI=51.65 neutral +5 | MACD hist=-0.45<0 -10 | Stoch K>10.69 cross up +3 | OBV divergence -4 | PE=24.76 fair +3 | PB=1.42 fair +3 | ROE=1.49% weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | RevG-YoY=59.2% strong +5 | ProfitG-YoY=132.7% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [PVCFC và Samsung C T tăng cường hợp tác ... · petrotimes ·  2026]"
   },
   {
     "symbol": "CCC",
@@ -1508,7 +1508,7 @@
     "momentum_score": -8,
     "volume_score": -1,
     "volatility_score": 0,
-    "order_flow_score": -3,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": -3,
@@ -1517,7 +1517,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": 0,
-    "tech_score": -19,
+    "tech_score": -16,
     "fund_score": -13,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -1564,11 +1564,11 @@
         "type": "macro"
       }
     ],
-    "total_score": -34.05,
+    "total_score": -31.05,
     "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -34%<EMA200 (oversold) +8 | ADX=33.84 strong +5 | ST=8.57 bearish -5 | RSI=44.84 neutral +5 | MACD hist=-0.1<0 -10 | Stoch K<31.93 cross down -3 | MFI=65.35 strong inflow +6 | OBV divergence -4 | Vol=0.05x avg weak -3 | OF pattern=WEAK -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -34%<EMA200 (oversold) +8 | ADX=33.84 strong +5 | ST=8.57 bearish -5 | RSI=44.84 neutral +5 | MACD hist=-0.1<0 -10 | Stoch K<31.93 cross down -3 | MFI=65.35 strong inflow +6 | OBV divergence -4 | Vol=0.05x avg weak -3 | D/E=nan very high -3 | CFO<0 cash burn -10 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
   },
   {
     "symbol": "AAT",
@@ -1710,7 +1710,7 @@
     "momentum_score": -5,
     "volume_score": -18,
     "volatility_score": 0,
-    "order_flow_score": -3,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 13,
@@ -1718,8 +1718,8 @@
     "growth_score": -4,
     "context_score": -2,
     "news_score": -0.08,
-    "confluence_bonus": -5,
-    "tech_score": -41,
+    "confluence_bonus": 0,
+    "tech_score": -38,
     "fund_score": -1,
     "news_industry": 0.0,
     "news_mention": 0.0,
@@ -1739,11 +1739,11 @@
         "type": "macro"
       }
     ],
-    "total_score": -49.08,
+    "total_score": -41.08,
     "decision": "STRONG SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ST=2.97 bearish -5 | RSI=43.39 neutral +5 | MACD hist=-0.02<0 -10 | CMF=0.13 inflow (overbought) -8 | MFI=22.36 weak -6 | OBV divergence -4 | OF pattern=WEAK -3 | PE=6.72 very cheap +10 | PB=0.3 below book +5 | ROE=0.88% weak -3 | D/E=0.931 healthy +1 | CFO<0 cash burn -10 | CF quality=-3.81 low -5 | RevG-YoY=-13.5% declining -3 | ProfitG-YoY=-3.4% slight decline -1 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026] | CONFLUENCE bear (5/10 groups) -5"
+    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ST=2.97 bearish -5 | RSI=43.39 neutral +5 | MACD hist=-0.02<0 -10 | CMF=0.13 inflow (overbought) -8 | MFI=22.36 weak -6 | OBV divergence -4 | PE=6.72 very cheap +10 | PB=0.3 below book +5 | ROE=0.88% weak -3 | D/E=0.931 healthy +1 | CFO<0 cash burn -10 | CF quality=-3.81 low -5 | RevG-YoY=-13.5% declining -3 | ProfitG-YoY=-3.4% slight decline -1 | Market FAIR+downtrend -2 | News NEUTRAL -0.08 [Nhận định thị trường chứng khoán ngày 27... · petrotimes ·  2026]"
   },
   {
     "symbol": "VRC",
@@ -1885,7 +1885,7 @@
     "momentum_score": -8,
     "volume_score": -9,
     "volatility_score": 0,
-    "order_flow_score": -3,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": -2,
@@ -1894,7 +1894,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": 0,
-    "tech_score": -40,
+    "tech_score": -37,
     "fund_score": 0,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -1943,11 +1943,11 @@
         "type": "macro"
       }
     ],
-    "total_score": -42.05,
-    "decision": "STRONG SELL",
+    "total_score": -39.05,
+    "decision": "SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | ADX=17.65 sideways 0 | ST=13.93 bearish -5 | RSI=51.32 neutral +5 | MACD hist=-0.01<0 -10 | Stoch K<47.41 cross down -3 | CMF=0.3 inflow (overbought) -8 | MFI=65.46 strong inflow +6 | OBV divergence -4 | Vol=0.01x avg weak -3 | OF pattern=WEAK -3 | PE=68.47 expensive -5 | PB=0.59 below book +5 | ROE=0.03% weak -3 | D/E=0.371 healthy +1 | CFO=-5377708 (sector-skip) 0 | RevG-YoY=552.3% strong +5 | ProfitG-YoY=-97.2% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
+    "signals": "EMA20<EMA50 -15 | ADX=17.65 sideways 0 | ST=13.93 bearish -5 | RSI=51.32 neutral +5 | MACD hist=-0.01<0 -10 | Stoch K<47.41 cross down -3 | CMF=0.3 inflow (overbought) -8 | MFI=65.46 strong inflow +6 | OBV divergence -4 | Vol=0.01x avg weak -3 | PE=68.47 expensive -5 | PB=0.59 below book +5 | ROE=0.03% weak -3 | D/E=0.371 healthy +1 | CFO=-5377708 (sector-skip) 0 | RevG-YoY=552.3% strong +5 | ProfitG-YoY=-97.2% declining -3 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
   },
   {
     "symbol": "VVS",
@@ -2291,7 +2291,7 @@
     "momentum_score": 2,
     "volume_score": -5,
     "volatility_score": 5,
-    "order_flow_score": -8,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 10,
@@ -2300,7 +2300,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": 0,
-    "tech_score": -21,
+    "tech_score": -13,
     "fund_score": 10,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -2347,11 +2347,11 @@
         "type": "macro"
       }
     ],
-    "total_score": -13.05,
+    "total_score": -5.05,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ST=48.43 bearish -5 | RSI=27.29 oversold +15 | MACD hist=-0.17<0 -10 | Stoch K<45.94 cross down -3 | CMF=0.57 inflow (overbought) -8 | MFI=39.86 weak -6 | OBV confirms trend +4 | Vol=2.6x avg breakout +5 | BB pos=0.0 near lower (oversold) +5 | OF pattern=SPIKE_SELL -5 | OF vol+170% sell 0.24 | PE=10.54 cheap +7 | PB=2.77 neutral 0 | D/E=0.256 very low +3 | CFO<0 cash burn -10 | RevG-YoY=30.4% strong +5 | ProfitG-YoY=115.9% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
+    "signals": "EMA20<EMA50 -15 | Price -13%<EMA200 (below) +5 | ST=48.43 bearish -5 | RSI=27.29 oversold +15 | MACD hist=-0.17<0 -10 | Stoch K<45.94 cross down -3 | CMF=0.57 inflow (overbought) -8 | MFI=39.86 weak -6 | OBV confirms trend +4 | Vol=2.6x avg breakout +5 | BB pos=0.0 near lower (oversold) +5 | PE=10.54 cheap +7 | PB=2.77 neutral 0 | D/E=0.256 very low +3 | CFO<0 cash burn -10 | RevG-YoY=30.4% strong +5 | ProfitG-YoY=115.9% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Nghị quyết 09 xác lập các trụ cột để TPH... · vietstock ·  2026]"
   },
   {
     "symbol": "GEE",
@@ -3430,7 +3430,7 @@
     "momentum_score": 15,
     "volume_score": 6,
     "volatility_score": 5,
-    "order_flow_score": -8,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 13,
@@ -3439,7 +3439,7 @@
     "context_score": -2,
     "news_score": -0.06,
     "confluence_bonus": 5,
-    "tech_score": 36,
+    "tech_score": 44,
     "fund_score": 13,
     "news_industry": 0.020000000000000018,
     "news_mention": 0.0,
@@ -3485,11 +3485,11 @@
         "type": "macro"
       }
     ],
-    "total_score": 51.94,
+    "total_score": 59.94,
     "decision": "BUY",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price -16%<EMA200 (oversold) +8 | ADX=17.26 sideways 0 | ST=19.2 bearish -5 | MACD hist=0.08>0 +10 | Stoch K=14.18 oversold +5 | CMF=-0.22 outflow (oversold) +8 | MFI=28.26 weak -6 | OBV confirms trend +4 | BB pos=0.0 near lower (oversold) +5 | OF pattern=SPIKE_SELL -5 | OF vol+103% sell 0.32 | PE=6.22 very cheap +10 | PB=1.61 fair +3 | CFO=-6969094559 (sector-skip) 0 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [Chứng khoán 2-6: Nên làm gì khi thị trườ... · tuoitre ·  2026] | CONFLUENCE bull (5/10 groups) +5"
+    "signals": "EMA20>EMA50 +15 | Price -16%<EMA200 (oversold) +8 | ADX=17.26 sideways 0 | ST=19.2 bearish -5 | MACD hist=0.08>0 +10 | Stoch K=14.18 oversold +5 | CMF=-0.22 outflow (oversold) +8 | MFI=28.26 weak -6 | OBV confirms trend +4 | BB pos=0.0 near lower (oversold) +5 | PE=6.22 very cheap +10 | PB=1.61 fair +3 | CFO=-6969094559 (sector-skip) 0 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [Chứng khoán 2-6: Nên làm gì khi thị trườ... · tuoitre ·  2026] | CONFLUENCE bull (5/10 groups) +5"
   },
   {
     "symbol": "CRE",
@@ -3631,7 +3631,7 @@
     "momentum_score": 12,
     "volume_score": -4,
     "volatility_score": 0,
-    "order_flow_score": -3,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": -6,
@@ -3640,7 +3640,7 @@
     "context_score": -2,
     "news_score": -0.05,
     "confluence_bonus": 0,
-    "tech_score": 30,
+    "tech_score": 33,
     "fund_score": 4,
     "news_industry": 0.029999999999999805,
     "news_mention": 0.0,
@@ -3689,11 +3689,11 @@
         "type": "macro"
       }
     ],
-    "total_score": 31.95,
+    "total_score": 34.95,
     "decision": "NEUTRAL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20>EMA50 +15 | Price -12%<EMA200 (below) +5 | ADX=13.36 sideways 0 | ST=7.19 bullish +5 | RSI=45.27 neutral +5 | MACD hist=0.06>0 +10 | Stoch K<53.3 cross down -3 | CMF=0.37 inflow (overbought) -8 | OBV confirms trend +4 | OF pattern=WEAK -3 | PE=53.0 expensive -5 | PB=0.67 below book +5 | ROE=0.16% weak -3 | D/E=nan very high -3 | CFO=nan (sector-skip) 0 | RevG-YoY=126.0% strong +5 | ProfitG-YoY=1218.4% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
+    "signals": "EMA20>EMA50 +15 | Price -12%<EMA200 (below) +5 | ADX=13.36 sideways 0 | ST=7.19 bullish +5 | RSI=45.27 neutral +5 | MACD hist=0.06>0 +10 | Stoch K<53.3 cross down -3 | CMF=0.37 inflow (overbought) -8 | OBV confirms trend +4 | PE=53.0 expensive -5 | PB=0.67 below book +5 | ROE=0.16% weak -3 | D/E=nan very high -3 | CFO=nan (sector-skip) 0 | RevG-YoY=126.0% strong +5 | ProfitG-YoY=1218.4% strong +5 | Market FAIR+downtrend -2 | News NEUTRAL -0.05 [Tin nhanh chứng khoán ngày 2 6 VN Index ... · petrotimes ·  2026]"
   },
   {
     "symbol": "BVH",
@@ -3835,7 +3835,7 @@
     "momentum_score": -8,
     "volume_score": -20,
     "volatility_score": 5,
-    "order_flow_score": -3,
+    "order_flow_score": 0,
     "depth_score": 0,
     "ff_score": 0,
     "fundamental_score": 4,
@@ -3844,7 +3844,7 @@
     "context_score": -2,
     "news_score": -0.06,
     "confluence_bonus": 0,
-    "tech_score": -46,
+    "tech_score": -43,
     "fund_score": 4,
     "news_industry": 0.020000000000000018,
     "news_mention": 0.0,
@@ -3892,10 +3892,10 @@
         "type": "macro"
       }
     ],
-    "total_score": -44.06,
+    "total_score": -41.06,
     "decision": "STRONG SELL",
     "confidence": "MEDIUM",
     "pattern_flags": [],
-    "signals": "EMA20<EMA50 -15 | ST=72.93 bearish -5 | RSI=40.44 neutral +5 | MACD hist=-0.98<0 -10 | Stoch K<53.19 cross down -3 | CMF=0.38 inflow (overbought) -8 | MFI=36.87 weak -6 | OBV divergence -4 | Vol=0.42x avg weak -3 | BB pos=0.14 near lower (oversold) +5 | OF pattern=WEAK -3 | PE=14.16 cheap +7 | PB=5.68 expensive -3 | ROE=11.78% neutral 0 | CFO=5793873751 (sector-skip) 0 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [Agency Day 2026: Kết nối đối tác, cập nh... · cafebiz ·  2026]"
+    "signals": "EMA20<EMA50 -15 | ST=72.93 bearish -5 | RSI=40.44 neutral +5 | MACD hist=-0.98<0 -10 | Stoch K<53.19 cross down -3 | CMF=0.38 inflow (overbought) -8 | MFI=36.87 weak -6 | OBV divergence -4 | Vol=0.42x avg weak -3 | BB pos=0.14 near lower (oversold) +5 | PE=14.16 cheap +7 | PB=5.68 expensive -3 | ROE=11.78% neutral 0 | CFO=5793873751 (sector-skip) 0 | Market FAIR+downtrend -2 | News NEUTRAL -0.06 [Agency Day 2026: Kết nối đối tác, cập nh... · cafebiz ·  2026]"
   }
 ]

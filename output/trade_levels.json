@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T01:10:58.614702+07:00",
+  "generated_at": "2026-06-09T08:40:03.057491+07:00",
   "buy_count": 4,
   "exit_count": 8,
   "buy_levels": [
@@ -21,8 +21,8 @@
       "rr_headroom": null,
       "size_hint": "NO_TRADE",
       "nearest_support": 102.68,
-      "nearest_resist": 117.0,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "nearest_resist": 126.63,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
       "flags": "SKIP_WIDE_STOP",
       "skip": "wide_stop"
     },
@@ -41,11 +41,11 @@
       "tp1": 7.65,
       "tp2": null,
       "rr_tp1": 1.47,
-      "rr_headroom": 1.66,
+      "rr_headroom": 2.13,
       "size_hint": "FULL",
       "nearest_support": 7.18,
-      "nearest_resist": 7.71,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "nearest_resist": 7.86,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
       "flags": "CONSENSUS_BULL,SINGLE_TP_ONLY",
       "skip": ""
     },
@@ -62,14 +62,14 @@
       "stop_loss": 28.75,
       "risk_pct": 2.54,
       "tp1": 30.6,
-      "tp2": 31.5,
+      "tp2": 31.65,
       "rr_tp1": 1.47,
-      "rr_headroom": 1.53,
+      "rr_headroom": 3.13,
       "size_hint": "FULL",
       "nearest_support": 29.49,
-      "nearest_resist": 30.65,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "CONSENSUS_BULL,TP2_FORCED_GAP",
+      "nearest_resist": 31.85,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
+      "flags": "CONSENSUS_BULL",
       "skip": ""
     },
     {
@@ -87,11 +87,11 @@
       "tp1": 17.45,
       "tp2": 18.0,
       "rr_tp1": 0.64,
-      "rr_headroom": 0.23,
+      "rr_headroom": 1.23,
       "size_hint": "HALF",
       "nearest_support": 16.75,
-      "nearest_resist": 17.0,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "nearest_resist": 18.1,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
       "flags": "TP1_PULLED_BACK,TP_NEAR_CEILING,TIGHT_HEADROOM,STOP_BELOW_FLOOR",
       "skip": ""
     }
@@ -104,7 +104,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 6.47,
-      "exit_trigger": 6.45,
+      "exit_trigger": 6.15,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -134,7 +134,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 7.7,
-      "exit_trigger": 7.68,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -144,18 +144,18 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 2.8,
-      "exit_trigger": 2.74,
+      "exit_trigger": null,
       "note": "Thoát ngay (market)"
     },
     {
       "symbol": "VRC",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 12.95,
       "exit_trigger": 12.85,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "GEE",
@@ -164,7 +164,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 96.0,
-      "exit_trigger": 95.8,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
