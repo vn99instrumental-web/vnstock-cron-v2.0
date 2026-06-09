@@ -27,14 +27,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--buy);animation:blink 2s infinite;margin-right:4px}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .vtag{font-size:9px;background:#0d2035;border:1px solid #1a3555;color:var(--acc);padding:2px 7px;border-radius:2px}
-.mstrip{background:linear-gradient(90deg,#090f18,#0c1c2e 60%,#07111b);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;gap:22px;overflow-x:auto}
-.mi{display:flex;flex-direction:column;gap:1px;min-width:72px;flex-shrink:0}
-.mi-l{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.mi-v{font-family:var(--mono);font-size:12px;font-weight:700}
-.up{color:var(--buy)}.dn{color:var(--sell)}.warn{color:var(--neu)}.hi{color:var(--acc)}
-.sep{width:1px;height:26px;background:var(--border);flex-shrink:0}
-.regime{margin-left:auto;flex-shrink:0;font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 12px;border-radius:2px;border:1px solid var(--neu-b,#604800);background:var(--neu-bg);color:var(--neu)}
-.page{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 84px)}
+.page{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 50px)}
 .sidebar{background:var(--surf);border-right:1px solid var(--border);padding:14px 0;overflow-y:auto}
 .sb-s{padding:0 14px 14px}
 .sb-t{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--border)}
@@ -67,10 +60,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   .filter-row2 .fbs{margin:0}
   .filter-row2 .tsel{font-size:9px;padding:3px 7px}
   .filter-row2 .tcnt{white-space:nowrap}
-  /* Stats: inline chips */
-  .sb-stats{padding:3px 0 2px !important}
-  .sb-stats #stats{display:flex;flex-wrap:wrap;gap:4px}
-  .sb-stats #stats .stat-r{border:1px solid var(--border);border-radius:2px;padding:1px 6px;gap:4px;flex:0 0 auto;font-size:9px}
   /* Ngưỡng: ẩn trên mobile */
   .sb-thresh{display:none}
 }
@@ -102,8 +91,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .db-SEL{background:var(--sell-bg);border-color:var(--sell);color:var(--sell)}
 .db-SS{background:var(--ss-bg);border-color:var(--ss);color:var(--ss)}
 .meta-line{font-size:11px;color:var(--muted);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.ch-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
-.score-big{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1}
+.ch-r{display:flex;flex-direction:row;align-items:baseline;gap:3px;flex-shrink:0}
+.score-big{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1}
+.score-sub{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .c-sb{color:var(--sb)}.c-buy{color:var(--buy)}.c-neu{color:var(--neu)}.c-sell{color:var(--sell)}.c-ss{color:var(--ss)}
 /* TRADE BLOCK */
 .trade-blk{padding:10px 14px 10px 17px;border-top:1px solid var(--border)}
@@ -121,6 +111,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .sc-FULL{border-color:var(--sb);color:var(--sb);background:var(--sb-bg)}
 .sc-HALF{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
 .sc-NO{border-color:var(--muted);color:var(--muted);background:transparent}
+.action-chip{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px;border:1px solid;margin-left:auto;flex-shrink:0}
+.action-chip.sc-FULL{border-color:var(--sb);color:var(--sb);background:var(--sb-bg)}
+.action-chip.sc-HALF{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
+.action-chip.sc-NO{border-color:var(--muted);color:var(--muted);background:transparent}
 
 /* ── OF + DEPTH PANEL (song song) ───────────────────────── */
 .of-depth-panel{
@@ -253,7 +247,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     <span>VN100+HNX30</span>
   </div>
 </header>
-<div class="mstrip" id="mstrip-bar"></div>
 <div class="page">
   <aside class="sidebar">
     <div class="sb-s">
@@ -279,12 +272,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
           <option value="sa">Điểm ↑</option>
           <option value="sym">A→Z</option>
         </select>
-        <div class="tcnt"><b id="cnt">0</b> mã</div>
       </div>
-    </div>
-    <div class="sb-s sb-stats">
-      <div class="sb-t">Thống kê</div>
-      <div id="stats"></div>
     </div>
     <div class="sb-s sb-thresh">
       <div class="sb-t">Ngưỡng</div>
@@ -316,22 +304,7 @@ const CAPS  = {trend:30,momentum:23,volume:20,volatility:5,order_flow:10,ff:20,f
 const SCORE_KEY = {trend:'trend_score',momentum:'momentum_score',volume:'volume_score',volatility:'volatility_score',order_flow:'order_flow_score',ff:'ff_score',fundamental:'fundamental_score',cf:'cf_score',growth:'growth_score',context:'context_score',news:'news_score',confluence:'confluence_bonus'};
 
 // ── Market strip ─────────────────────────────────────────────
-(function initStrip() {
-  const ctx = RUN_META.context || {};
-  const reg = ctx._ctx_regime || 'FAIR';
-  const items = [
-    {l:'VNINDEX', v: ctx._ctx_close || '—', cls: (ctx._ctx_chg_1d||0)>=0?'up':'dn'},
-    {l:'1D', v: ctx._ctx_chg_1d != null ? (ctx._ctx_chg_1d>0?'+':'')+ctx._ctx_chg_1d+'%' : '—', cls: (ctx._ctx_chg_1d||0)>=0?'up':'dn'},
-    {l:'5D', v: ctx._ctx_chg_5d != null ? (ctx._ctx_chg_5d>0?'+':'')+ctx._ctx_chg_5d+'%' : '—', cls: (ctx._ctx_chg_5d||0)>=0?'up':'dn'},
-    {l:'P/E TT', v: ctx._ctx_pe ? ctx._ctx_pe+'×' : '—', cls:'warn'},
-    {l:'P/B TT', v: ctx._ctx_pb ? ctx._ctx_pb+'×' : '—', cls:'warn'},
-    {l:'Scored',  v: ALL_DATA.length, cls:'hi'},
-  ];
-  document.getElementById('mstrip-bar').innerHTML =
-    items.map(i => `<div class="mi"><div class="mi-l">${i.l}</div><div class="mi-v ${i.cls}">${i.v}</div></div><div class="sep"></div>`).join('')+
-    `<div class="regime">${reg} · Snap: ${RUN_META.snap_time||''}</div>`;
-  document.getElementById('ts-disp').textContent = RUN_META.run_date + ' · ' + RUN_META.snap_time + ' ICT';
-})();
+document.getElementById('ts-disp').textContent = RUN_META.run_date + ' · ' + RUN_META.snap_time + ' ICT';
 
 // ── Build OF block HTML ──────────────────────────────────────
 function buildOFHtml(d) {
@@ -467,17 +440,19 @@ function renderCard(d, idx) {
   const hasTrade = d.entry_low && d.tp1 && d.stop_loss;
   const tradeHtml = `
 <div class="trade-blk">
-  <div class="trade-row"><span class="tl">💰 Giá hiện tại</span><span class="tv price">${d.price}</span></div>
+  <div class="trade-row">
+    <span class="tl">💰 Giá hiện tại</span>
+    <span class="tv price">${d.price}</span>
+    ${hasTrade ? `<span class="action-chip sc-${d.size_hint||'NO'}">${d.size_hint||'?'}</span>` : `<span class="action-chip sc-NO">KHÔNG VÀO LỆNH</span>`}
+  </div>
   ${hasTrade ? `
   <div class="trade-row"><span class="tl">🟩 Vùng mua</span><span class="tv entry">${d.entry_low} – ${d.entry_high||d.entry}</span></div>
   <div class="trade-row"><span class="tl">🎯 Chốt lời</span><span class="tv tp">${d.tp1}${d.tp2?' / '+d.tp2:''}</span></div>
   <div class="trade-row"><span class="tl">🛑 Cắt lỗ</span><span class="tv sl">${d.stop_loss} <span class="pct pct-n">-${d.risk_pct||'?'}%</span></span></div>
   <div class="rr-blk">
     <span>📊 R:R <span class="rr-val">${d.rr_tp1||'?'}</span></span>
-    <span class="size-chip sc-${d.size_hint||'NO'}">${d.size_hint||'?'}</span>
     <span class="rr-note">${d.entry_style||''}</span>
-  </div>` : `
-  <div class="rr-blk"><span class="size-chip sc-NO">KHÔNG VÀO LỆNH</span></div>`}
+  </div>` : ''}
 
   <!-- OF + Depth song song -->
   <div class="of-depth-panel">
@@ -524,16 +499,17 @@ function renderCard(d, idx) {
           <span class="dec-badge db-${dc}">${d.decision}</span>
         </div>
         <div class="meta-line">
-          <span>📅 ${d.snap_time}</span><span>·</span>
           <span>${d.industry||''}</span><span>·</span>
           <span>${d.exchange||''}</span>
-          ${d.group ? `<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:2px;border:1px solid ${d.group==='GAINER'?'var(--buy-b,#0c4020)':'var(--sell-bg)'}; color:${d.group==='GAINER'?'var(--buy)':'var(--sell)'}">${d.group}</span>` : ''}
         </div>
-        <div class="meta-line">Confidence: <b style="font-family:var(--mono);color:${d.confidence==='HIGH'?'var(--sb)':d.confidence==='LOW'?'var(--sell)':'var(--neu)'}">${d.confidence||'—'}</b></div>
+        <div class="meta-line">
+          ${d.group ? `<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:2px;border:1px solid ${d.group==='GAINER'?'var(--buy-b,#0c4020)':'var(--sell-bg)'}
+          
+        </div>
       </div>
       <div class="ch-r">
-        <div class="score-big ${sc}">${fs(d.total_score)}</div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">/ 168 tổng</div>
+        <span class="score-big ${sc}">${fs(d.total_score)}</span>
+        <span class="score-sub"> / 168</span>
       </div>
     </div>
     ${tradeHtml}
@@ -583,20 +559,7 @@ function applyAll() {
   if (srt==='sd') items.sort((a,b) => b.total_score - a.total_score);
   else if (srt==='sa') items.sort((a,b) => a.total_score - b.total_score);
   else items.sort((a,b) => a.symbol.localeCompare(b.symbol));
-  document.getElementById('cnt').textContent = items.length;
   document.getElementById('cards').innerHTML = items.map((d,i) => renderCard(d, ALL_DATA.indexOf(d))).join('');
-  updateStats();
-}
-
-function updateStats() {
-  const c = {SB:0,BUY:0,NEU:0,SELL:0,SS:0};
-  ALL_DATA.forEach(d => { const dc=DC(d.decision); if(dc==='SB')c.SB++; else if(dc==='BUY')c.BUY++; else if(dc==='NEU')c.NEU++; else if(dc==='SEL')c.SELL++; else c.SS++; });
-  const avg = (ALL_DATA.reduce((s,d) => s+(parseFloat(d.total_score)||0), 0) / ALL_DATA.length).toFixed(1);
-  document.getElementById('stats').innerHTML = [
-    {k:'STRONG BUY',v:c.SB,c:'var(--sb)'},{k:'MUA',v:c.BUY,c:'var(--buy)'},
-    {k:'NEUTRAL',v:c.NEU,c:'var(--neu)'},{k:'BÁN',v:c.SELL,c:'var(--sell)'},
-    {k:'STRONG SELL',v:c.SS,c:'var(--ss)'},{k:'ĐIỂM TB',v:avg,c:'var(--text)'},
-  ].map(r => `<div class="stat-r"><div class="sk">${r.k}</div><div class="sv" style="color:${r.c}">${r.v}</div></div>`).join('');
 }
 
 function tog(idx) { document.getElementById('c'+idx).classList.toggle('open'); }
