@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-09T13:51:26.043731+07:00",
+  "generated_at": "2026-06-09T14:26:29.820920+07:00",
   "buy_count": 1,
-  "exit_count": 9,
+  "exit_count": 7,
   "buy_levels": [
     {
       "symbol": "VVS",
@@ -9,19 +9,19 @@
       "decision": "BUY",
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
-      "price": 117.0,
+      "price": 118.8,
       "entry": null,
       "entry_low": null,
       "entry_high": null,
       "stop_loss": null,
-      "risk_pct": 9.35,
+      "risk_pct": 10.67,
       "tp1": null,
       "tp2": null,
       "rr_tp1": null,
       "rr_headroom": null,
       "size_hint": "NO_TRADE",
-      "nearest_support": 115.5,
-      "nearest_resist": 126.86,
+      "nearest_support": 117.23,
+      "nearest_resist": 119.0,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
       "flags": "SKIP_WIDE_STOP",
       "skip": "wide_stop"
@@ -59,16 +59,6 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "VRC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 12.2,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "SGT",
       "exchange": "HSX",
       "decision": "SELL",
@@ -79,44 +69,34 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "GEE",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 91.5,
-      "exit_trigger": 91.4,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "DQC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 9.35,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "TCO",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 12.55,
+      "price": 12.5,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "NBB",
+      "symbol": "PLP",
       "exchange": "HSX",
       "decision": "SELL",
-      "confidence": "LOW",
+      "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 16.7,
+      "price": 4.05,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "SHI",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "HIGH",
+      "entry_style": "EXIT",
+      "price": 13.7,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
     }
   ]
 }
