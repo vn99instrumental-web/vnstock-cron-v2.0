@@ -251,6 +251,36 @@ function setupFB(id, setter, clsMap, onChange) {
   });
 }
 
+function setVisible(id, visible) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = visible ? '' : 'none';
+}
+function noDataMsg(canvasId, msg) {
+  var ch = Chart.getChart(canvasId);
+  if (!ch) return;
+  // clear chart và hiện text
+  ch.data.labels = [];
+  ch.data.datasets.forEach(function(ds){ ds.data = []; });
+  ch.update('none');
+  var wrap = ch.canvas.parentElement;
+  var existing = wrap.querySelector('.no-data-msg');
+  if (!existing) {
+    var div = document.createElement('div');
+    div.className = 'no-data-msg';
+    div.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;pointer-events:none;';
+    wrap.appendChild(div);
+    existing = div;
+  }
+  existing.textContent = msg || 'Chưa có data intraday';
+}
+function clearNoData(canvasId) {
+  var ch = Chart.getChart(canvasId);
+  if (!ch) return;
+  var wrap = ch.canvas.parentElement;
+  var existing = wrap.querySelector('.no-data-msg');
+  if (existing) existing.textContent = '';
+}
+
 function updateCharts() {
   const filtered = getFiltered();
   document.getElementById('filter-count').textContent = filtered.length + ' / ' + ALL.length + ' mã';
@@ -267,25 +297,31 @@ function updateCharts() {
 
   // Gainer
   (function() {
-    const s = [...gainers].sort(function(a,b){ return brOf(b)-brOf(a); });
+    var hasBR = hasBrData(gainers);
+    var s = [...gainers].sort(function(a,b){ return (brOf(b)||0)-(brOf(a)||0); });
+    if (hasBR) { clearNoData('gainerBar'); } else { noDataMsg('gainerBar', 'Buy ratio: chưa có data intraday'); }
     upd('gainerBar', s.map(function(d){ return d.symbol; }), [
-      {data: s.map(function(d){ return Math.round(brOf(d)*100); })},
+      {data: s.map(function(d){ var v=brOf(d); return v!=null?Math.round(v*100):null; })},
       {data: s.map(function(d){ return d.vol_ma_ratio||0; })}
     ]);
   })();
 
   // Loser
   (function() {
-    const s = [...losers].sort(function(a,b){ return brOf(a)-brOf(b); });
+    var hasBR = hasBrData(losers);
+    var s = [...losers].sort(function(a,b){ return (brOf(a)||0)-(brOf(b)||0); });
+    if (hasBR) { clearNoData('loserBar'); } else { noDataMsg('loserBar', 'Buy ratio: chưa có data intraday'); }
     upd('loserBar', s.map(function(d){ return d.symbol; }), [
-      {data: s.map(function(d){ return Math.round(brOf(d)*100); })},
+      {data: s.map(function(d){ var v=brOf(d); return v!=null?Math.round(v*100):null; })},
       {data: s.map(function(d){ return d.vol_ma_ratio||0; })}
     ]);
   })();
 
   // OF bar
   (function() {
-    const s = [...filtered].sort(function(a,b){ return brOf(b)-brOf(a); });
+    if (!hasVolData(filtered)) { noDataMsg('ofBar', 'Order flow vol: chưa có data intraday'); return; }
+    clearNoData('ofBar');
+    var s = [...filtered].sort(function(a,b){ return (brOf(b)||0)-(brOf(a)||0); });
     upd('ofBar', s.map(function(d){ return d.symbol; }), [
       {data: s.map(function(d){ return Math.round(buyVolOf(d)/1000); })},
       {data: s.map(function(d){ return -Math.round(sellVolOf(d)/1000); })}
@@ -294,9 +330,11 @@ function updateCharts() {
 
   // Buy ratio line
   (function() {
-    const s = [...filtered].sort(function(a,b){ return brOf(b)-brOf(a); });
-    const ratios = s.map(function(d){ return Math.round(brOf(d)*100); });
-    const n = s.length;
+    if (!hasBrData(filtered)) { noDataMsg('brLine', 'Buy ratio: chưa có data intraday'); return; }
+    clearNoData('brLine');
+    var s = filtered.filter(function(d){ return brOf(d)!=null; }).sort(function(a,b){ return brOf(b)-brOf(a); });
+    var ratios = s.map(function(d){ return Math.round(brOf(d)*100); });
+    var n = s.length;
     upd('brLine', s.map(function(d){ return d.symbol; }), [
       {data: ratios, pointBackgroundColor: ratios.map(function(v){ return v>=60?'#34c26e':v<=40?'#e86030':'#f5c240'; })},
       {data: Array(n).fill(50)},
@@ -348,13 +386,22 @@ function decColor(d) {
   return 'rgba(245,194,64,0.7)';
 }
 function brOf(d) {
-  return d._of_buy_ratio ?? d.intra_buy_ratio ?? 0;
+  // trả null nếu không có data thực — tránh hiển thị 0 giả
+  if (d._of_buy_ratio != null) return d._of_buy_ratio;
+  if (d.intra_buy_ratio != null) return d.intra_buy_ratio;
+  return null;
+}
+function hasBrData(arr) {
+  return arr.some(function(d){ return brOf(d) != null; });
 }
 function buyVolOf(d) {
   return d._of_buy_vol || d.intra_buy_vol || d.buy_vol || 0;
 }
 function sellVolOf(d) {
   return d._of_sell_vol || d.intra_sell_vol || d.sell_vol || 0;
+}
+function hasVolData(arr) {
+  return arr.some(function(d){ return buyVolOf(d) > 0; });
 }
 
 // ── Tạo tất cả charts 1 lần, sau đó updateCharts() fill data ─
