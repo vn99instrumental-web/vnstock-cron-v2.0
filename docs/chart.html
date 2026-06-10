@@ -125,11 +125,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
     <div class="chart-row">
       <div class="chart-card">
         <div class="chart-card-title">TOP GAINER <span>buy ratio % + vol/avg (đường)</span></div>
-        <div class="chart-wrap"><canvas id="gainerBar"></canvas></div>
+        <div class="chart-wrap"><canvas id="gainerBar" height="220"></canvas></div>
       </div>
       <div class="chart-card">
         <div class="chart-card-title">TOP LOSER <span>buy ratio % + vol/avg (đường)</span></div>
-        <div class="chart-wrap"><canvas id="loserBar"></canvas></div>
+        <div class="chart-wrap"><canvas id="loserBar" height="220"></canvas></div>
       </div>
     </div>
   </div>
@@ -138,7 +138,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
     <div class="section-label">🔄 Order Flow — Khối lượng mua / bán chủ động</div>
     <div class="chart-card-wide">
       <div class="chart-card-title">BUY VOL vs SELL VOL (nghìn cp) <span>sorted by buy ratio cao → thấp</span></div>
-      <div class="chart-wrap"><canvas id="ofBar"></canvas></div>
+      <div class="chart-wrap"><canvas id="ofBar" height="200"></canvas></div>
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:var(--buy)"></div>Khớp MUA</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--sell)"></div>Khớp BÁN</div>
@@ -150,7 +150,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
     <div class="section-label">⚡ Tỷ lệ mua chủ động (%) — Đường lực mua toàn thị trường</div>
     <div class="chart-card-wide">
       <div class="chart-card-title">BUY RATIO % <span>≥60% mua mạnh · ≤40% bán mạnh · đường đứt = 50%</span></div>
-      <div class="chart-wrap"><canvas id="brLine"></canvas></div>
+      <div class="chart-wrap"><canvas id="brLine" height="160"></canvas></div>
     </div>
   </div>
 
@@ -158,7 +158,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
     <div class="section-label">🏢 Tech Score vs Fund Score — 4 góc phần tư</div>
     <div class="chart-card-wide">
       <div class="chart-card-title">KỸ THUẬT vs CƠ BẢN <span>bubble = vol_today · màu = decision</span></div>
-      <div class="chart-wrap"><canvas id="scatter"></canvas></div>
+      <div class="chart-wrap"><canvas id="scatter" height="260"></canvas></div>
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:var(--buy)"></div>BUY</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--neu)"></div>NEUTRAL</div>
@@ -172,11 +172,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
     <div class="chart-row">
       <div class="chart-card">
         <div class="chart-card-title">RSI <span>đỏ ≥70 overbought · xanh ≤30 oversold</span></div>
-        <div class="chart-wrap"><canvas id="rsiBar"></canvas></div>
+        <div class="chart-wrap"><canvas id="rsiBar" height="220"></canvas></div>
       </div>
       <div class="chart-card">
         <div class="chart-card-title">VOL / AVG20D <span>cyan ≥3x bùng nổ · mờ &lt;0.5x yếu</span></div>
-        <div class="chart-wrap"><canvas id="volBar"></canvas></div>
+        <div class="chart-wrap"><canvas id="volBar" height="220"></canvas></div>
       </div>
     </div>
   </div>
@@ -199,7 +199,7 @@ Chart.defaults.font.family = "'Space Mono', monospace";
 Chart.defaults.font.size = 10;
 Chart.defaults.animation = false;          // tắt animation toàn cục
 Chart.defaults.responsive = true;          // auto-scale theo container
-Chart.defaults.maintainAspectRatio = true; // giữ tỉ lệ, scale đều trên mọi thiết bị
+Chart.defaults.maintainAspectRatio = false; // height cố định, width tự scale
 
 const GC = 'rgba(28,50,72,0.7)';
 const TC = '#4e7a99';
@@ -207,9 +207,9 @@ const TC = '#4e7a99';
 // ── Shared static options (merge vào mỗi chart) ──────────────
 // responsive:false + animation:false đặt tại mỗi options để chắc chắn
 const STATIC = {
-  responsive: true,            // tự scale theo chiều rộng container
-  animation: false,            // không có hiệu ứng zoom/transition
-  maintainAspectRatio: true,   // giữ tỉ lệ width:height cố định
+  responsive: true,             // tự scale chiều rộng theo container
+  animation: false,             // không có hiệu ứng zoom/transition
+  maintainAspectRatio: false,   // height cố định theo canvas attr, width scale tự do
 };
 
 // ── Context header ───────────────────────────────────────────
@@ -363,7 +363,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     },
     options:{
       ...STATIC,
-      aspectRatio: 2.2,
       plugins:{legend:{display:true,labels:{color:TC,boxWidth:10,font:{size:9}}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
@@ -388,7 +387,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     },
     options:{
       ...STATIC,
-      aspectRatio: 2.2,
       plugins:{legend:{display:true,labels:{color:TC,boxWidth:10,font:{size:9}}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
@@ -415,7 +413,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     },
     options:{
       ...STATIC,
-      aspectRatio: 3.0,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw)}K cp`}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
@@ -444,7 +441,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     },
     options:{
       ...STATIC,
-      aspectRatio: 3.5,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Buy ratio: ${c.raw}%`}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
@@ -472,7 +468,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     }]},
     options:{
       ...STATIC,
-      aspectRatio: 1.8,
       plugins:{
         legend:{display:false},
         tooltip:{callbacks:{label:c=>{const p=c.raw;return `${p.label} | Tech:${p.x} Fund:${p.y} Score:${p.score}`;}}}
@@ -513,7 +508,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     }]},
     options:{
       ...STATIC,
-      aspectRatio: 2.2,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`RSI: ${c.raw.toFixed(1)}`}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:45},grid:{color:GC}},
@@ -543,7 +537,6 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     }]},
     options:{
       ...STATIC,
-      aspectRatio: 2.2,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Vol ratio: ${c.raw.toFixed(2)}x`}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:45},grid:{color:GC}},
