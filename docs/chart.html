@@ -287,8 +287,8 @@ function updateCharts() {
   (function() {
     const s = [...filtered].sort(function(a,b){ return brOf(b)-brOf(a); });
     upd('ofBar', s.map(function(d){ return d.symbol; }), [
-      {data: s.map(function(d){ return Math.round((d._of_buy_vol||d.intra_buy_vol||0)/1000); })},
-      {data: s.map(function(d){ return -Math.round((d._of_sell_vol||d.intra_sell_vol||0)/1000); })}
+      {data: s.map(function(d){ return Math.round(buyVolOf(d)/1000); })},
+      {data: s.map(function(d){ return -Math.round(sellVolOf(d)/1000); })}
     ]);
   })();
 
@@ -347,22 +347,27 @@ function decColor(d) {
   if (d==='SELL'||d==='STRONG SELL') return 'rgba(232,96,48,0.85)';
   return 'rgba(245,194,64,0.7)';
 }
-function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
+function brOf(d) {
+  return d._of_buy_ratio ?? d.intra_buy_ratio ?? 0;
+}
+function buyVolOf(d) {
+  return d._of_buy_vol || d.intra_buy_vol || d.buy_vol || 0;
+}
+function sellVolOf(d) {
+  return d._of_sell_vol || d.intra_sell_vol || d.sell_vol || 0;
+}
 
-// ── Gainer bar ───────────────────────────────────────────────
-(function() {
-  const s = [...GAINERS].sort((a,b)=>brOf(b)-brOf(a));
+// ── Tạo tất cả charts 1 lần, sau đó updateCharts() fill data ─
+function initCharts() {
+  // Gainer bar
   new Chart(document.getElementById('gainerBar'), {
     type:'bar',
-    data:{
-      labels: s.map(d=>d.symbol),
-      datasets:[
-        {label:'Buy Ratio %',data:s.map(d=>Math.round(brOf(d)*100)),backgroundColor:'rgba(52,194,110,0.75)',borderRadius:2,yAxisID:'y'},
-        {label:'Vol/Avg',data:s.map(d=>d.vol_ma_ratio||0),type:'line',tension:0.3,borderColor:'rgba(20,184,212,0.9)',backgroundColor:'rgba(20,184,212,0.1)',pointRadius:3,yAxisID:'y2'}
-      ]
-    },
-    options:{
-      ...STATIC,
+    data:{ labels:[], datasets:[
+      {label:'Buy Ratio %', data:[], backgroundColor:'rgba(52,194,110,0.75)', borderRadius:2, yAxisID:'y'},
+      {label:'Vol/Avg',     data:[], type:'line', tension:0.3, borderColor:'rgba(20,184,212,0.9)',
+       backgroundColor:'rgba(20,184,212,0.1)', pointRadius:3, yAxisID:'y2'}
+    ]},
+    options:{ ...STATIC,
       plugins:{legend:{display:true,labels:{color:TC,boxWidth:10,font:{size:9}}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
@@ -371,22 +376,16 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
       }
     }
   });
-})();
 
-// ── Loser bar ────────────────────────────────────────────────
-(function() {
-  const s = [...LOSERS].sort((a,b)=>brOf(a)-brOf(b));
+  // Loser bar
   new Chart(document.getElementById('loserBar'), {
     type:'bar',
-    data:{
-      labels: s.map(d=>d.symbol),
-      datasets:[
-        {label:'Buy Ratio %',data:s.map(d=>Math.round(brOf(d)*100)),backgroundColor:'rgba(232,96,48,0.75)',borderRadius:2,yAxisID:'y'},
-        {label:'Vol/Avg',data:s.map(d=>d.vol_ma_ratio||0),type:'line',tension:0.3,borderColor:'rgba(20,184,212,0.9)',backgroundColor:'rgba(20,184,212,0.1)',pointRadius:3,yAxisID:'y2'}
-      ]
-    },
-    options:{
-      ...STATIC,
+    data:{ labels:[], datasets:[
+      {label:'Buy Ratio %', data:[], backgroundColor:'rgba(232,96,48,0.75)', borderRadius:2, yAxisID:'y'},
+      {label:'Vol/Avg',     data:[], type:'line', tension:0.3, borderColor:'rgba(20,184,212,0.9)',
+       backgroundColor:'rgba(20,184,212,0.1)', pointRadius:3, yAxisID:'y2'}
+    ]},
+    options:{ ...STATIC,
       plugins:{legend:{display:true,labels:{color:TC,boxWidth:10,font:{size:9}}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
@@ -395,82 +394,49 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
       }
     }
   });
-})();
 
-// ── Order flow bar ───────────────────────────────────────────
-(function() {
-  const s = [...ALL].sort((a,b)=>brOf(b)-brOf(a));
-  const buyK  = s.map(d=>Math.round((d._of_buy_vol||d.intra_buy_vol||0)/1000));
-  const sellK = s.map(d=>-Math.round((d._of_sell_vol||d.intra_sell_vol||0)/1000));
+  // OF bar
   new Chart(document.getElementById('ofBar'), {
     type:'bar',
-    data:{
-      labels:s.map(d=>d.symbol),
-      datasets:[
-        {label:'Buy Vol (K)',data:buyK,backgroundColor:'rgba(52,194,110,0.8)',borderRadius:2},
-        {label:'Sell Vol (K)',data:sellK,backgroundColor:'rgba(232,96,48,0.8)',borderRadius:2}
-      ]
-    },
-    options:{
-      ...STATIC,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw)}K cp`}}},
+    data:{ labels:[], datasets:[
+      {label:'Buy Vol (K)',  data:[], backgroundColor:'rgba(52,194,110,0.8)',  borderRadius:2},
+      {label:'Sell Vol (K)', data:[], backgroundColor:'rgba(232,96,48,0.8)', borderRadius:2}
+    ]},
+    options:{ ...STATIC,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){ return c.dataset.label+': '+Math.abs(c.raw)+'K cp'; }}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
         y:{ticks:{color:TC,callback:v=>Math.abs(v)+'K'},grid:{color:GC}}
       }
     }
   });
-})();
 
-// ── Buy ratio line ────────────────────────────────────────────
-(function() {
-  const s = [...ALL].sort((a,b)=>brOf(b)-brOf(a));
-  const ratios = s.map(d=>Math.round(brOf(d)*100));
+  // Buy ratio line
   new Chart(document.getElementById('brLine'), {
     type:'line',
-    data:{
-      labels:s.map(d=>d.symbol),
-      datasets:[
-        {label:'Buy Ratio %',data:ratios,borderColor:'#14b8d4',
-         pointBackgroundColor:ratios.map(v=>v>=60?'#34c26e':v<=40?'#e86030':'#f5c240'),
-         pointRadius:5,tension:0.3,fill:false},
-        {label:'50%',data:Array(s.length).fill(50),borderColor:'rgba(78,122,153,0.4)',borderDash:[4,3],pointRadius:0},
-        {label:'60%',data:Array(s.length).fill(60),borderColor:'rgba(52,194,110,0.25)',borderDash:[2,4],pointRadius:0},
-        {label:'40%',data:Array(s.length).fill(40),borderColor:'rgba(232,96,48,0.25)',borderDash:[2,4],pointRadius:0},
-      ]
-    },
-    options:{
-      ...STATIC,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Buy ratio: ${c.raw}%`}}},
+    data:{ labels:[], datasets:[
+      {label:'Buy Ratio %', data:[], borderColor:'#14b8d4', pointBackgroundColor:[], pointRadius:5, tension:0.3, fill:false},
+      {label:'50%', data:[], borderColor:'rgba(78,122,153,0.4)',  borderDash:[4,3], pointRadius:0},
+      {label:'60%', data:[], borderColor:'rgba(52,194,110,0.25)', borderDash:[2,4], pointRadius:0},
+      {label:'40%', data:[], borderColor:'rgba(232,96,48,0.25)',  borderDash:[2,4], pointRadius:0},
+    ]},
+    options:{ ...STATIC,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){ return 'Buy ratio: '+c.raw+'%'; }}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
         y:{ticks:{color:TC,callback:v=>v+'%'},grid:{color:GC},min:0,max:100}
       }
     }
   });
-})();
 
-// ── Scatter: tech vs fund ────────────────────────────────────
-(function() {
-  const pts = ALL.map(d=>({
-    x: d.tech_score||0,
-    y: d.fund_score||0,
-    r: Math.max(4,Math.min(22,Math.sqrt((d.vol_today||1000)/5000))),
-    label:d.symbol, decision:d.decision, score:d.total_score
-  }));
+  // Scatter
   new Chart(document.getElementById('scatter'), {
     type:'bubble',
-    data:{datasets:[{
-      data:pts,
-      backgroundColor:pts.map(p=>decColor(p.decision)),
-      borderColor:pts.map(p=>decColor(p.decision)),
-      borderWidth:1
-    }]},
-    options:{
-      ...STATIC,
+    data:{ datasets:[{ data:[], backgroundColor:[], borderColor:[], borderWidth:1 }] },
+    options:{ ...STATIC,
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:c=>{const p=c.raw;return `${p.label} | Tech:${p.x} Fund:${p.y} Score:${p.score}`;}}}
+        tooltip:{callbacks:{label:function(c){ var p=c.raw; return p.label+' | Tech:'+p.x+' Fund:'+p.y+' Score:'+p.score; }}}
       },
       scales:{
         x:{ticks:{color:TC},grid:{color:GC},title:{display:true,text:'Tech Score',color:TC},min:-55,max:45},
@@ -479,36 +445,27 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     },
     plugins:[{
       afterDraw(ch) {
-        const c=ch.ctx,xa=ch.scales.x,ya=ch.scales.y;
-        const x0=xa.getPixelForValue(0),y0=ya.getPixelForValue(0);
-        c.save();c.strokeStyle='rgba(78,122,153,0.35)';c.lineWidth=1;c.setLineDash([4,3]);
-        c.beginPath();c.moveTo(xa.left,y0);c.lineTo(xa.right,y0);c.stroke();
-        c.beginPath();c.moveTo(x0,ya.top);c.lineTo(x0,ya.bottom);c.stroke();
-        c.font='9px Space Mono';c.fillStyle='rgba(200,220,234,0.7)';
+        const c=ch.ctx, xa=ch.scales.x, ya=ch.scales.y;
+        const x0=xa.getPixelForValue(0), y0=ya.getPixelForValue(0);
+        c.save(); c.strokeStyle='rgba(78,122,153,0.35)'; c.lineWidth=1; c.setLineDash([4,3]);
+        c.beginPath(); c.moveTo(xa.left,y0); c.lineTo(xa.right,y0); c.stroke();
+        c.beginPath(); c.moveTo(x0,ya.top);  c.lineTo(x0,ya.bottom); c.stroke();
+        c.font='9px Space Mono'; c.fillStyle='rgba(200,220,234,0.7)';
         ch.data.datasets[0].data.forEach((p,i)=>{
           const mx=ch.getDatasetMeta(0).data[i];
-          c.fillText(p.label,mx.x+6,mx.y-5);
+          if (mx) c.fillText(p.label, mx.x+6, mx.y-5);
         });
         c.restore();
       }
     }]
   });
-})();
 
-// ── RSI bar ──────────────────────────────────────────────────
-(function() {
-  const s=[...ALL].sort((a,b)=>(a.rsi||50)-(b.rsi||50));
-  const rsis=s.map(d=>d.rsi||0);
-  new Chart(document.getElementById('rsiBar'),{
+  // RSI bar
+  new Chart(document.getElementById('rsiBar'), {
     type:'bar',
-    data:{labels:s.map(d=>d.symbol),datasets:[{
-      data:rsis,
-      backgroundColor:rsis.map(v=>v>=70?'rgba(232,96,48,0.8)':v<=30?'rgba(52,194,110,0.8)':'rgba(245,194,64,0.6)'),
-      borderRadius:2
-    }]},
-    options:{
-      ...STATIC,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`RSI: ${c.raw.toFixed(1)}`}}},
+    data:{ labels:[], datasets:[{ data:[], backgroundColor:[], borderRadius:2 }] },
+    options:{ ...STATIC,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){ return 'RSI: '+c.raw.toFixed(1); }}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:45},grid:{color:GC}},
         y:{ticks:{color:TC},grid:{color:GC},min:0,max:100}
@@ -516,36 +473,30 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
     },
     plugins:[{afterDraw(ch){
       const c=ch.ctx,ya=ch.scales.y,xa=ch.scales.x;
-      c.save();c.lineWidth=1;c.setLineDash([3,3]);
-      c.strokeStyle='rgba(232,96,48,0.5)';c.beginPath();const y70=ya.getPixelForValue(70);c.moveTo(xa.left,y70);c.lineTo(xa.right,y70);c.stroke();
-      c.strokeStyle='rgba(52,194,110,0.5)';c.beginPath();const y30=ya.getPixelForValue(30);c.moveTo(xa.left,y30);c.lineTo(xa.right,y30);c.stroke();
+      c.save(); c.lineWidth=1; c.setLineDash([3,3]);
+      c.strokeStyle='rgba(232,96,48,0.5)';  c.beginPath(); const y70=ya.getPixelForValue(70); c.moveTo(xa.left,y70); c.lineTo(xa.right,y70); c.stroke();
+      c.strokeStyle='rgba(52,194,110,0.5)'; c.beginPath(); const y30=ya.getPixelForValue(30); c.moveTo(xa.left,y30); c.lineTo(xa.right,y30); c.stroke();
       c.restore();
     }}]
   });
-})();
 
-// ── Vol ratio bar ─────────────────────────────────────────────
-(function() {
-  const s=[...ALL].sort((a,b)=>(b.vol_ma_ratio||0)-(a.vol_ma_ratio||0));
-  const vols=s.map(d=>d.vol_ma_ratio||0);
-  new Chart(document.getElementById('volBar'),{
+  // Vol bar
+  new Chart(document.getElementById('volBar'), {
     type:'bar',
-    data:{labels:s.map(d=>d.symbol),datasets:[{
-      data:vols,
-      backgroundColor:vols.map(v=>v>=3?'rgba(20,184,212,0.85)':v>=1.5?'rgba(20,184,212,0.5)':v<0.5?'rgba(78,122,153,0.3)':'rgba(78,122,153,0.55)'),
-      borderRadius:2
-    }]},
-    options:{
-      ...STATIC,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Vol ratio: ${c.raw.toFixed(2)}x`}}},
+    data:{ labels:[], datasets:[{ data:[], backgroundColor:[], borderRadius:2 }] },
+    options:{ ...STATIC,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){ return 'Vol ratio: '+c.raw.toFixed(2)+'x'; }}}},
       scales:{
         x:{ticks:{color:TC,maxRotation:45},grid:{color:GC}},
         y:{ticks:{color:TC,callback:v=>v+'x'},grid:{color:GC}}
       }
     }
   });
-})();
-updateCharts(); // initial render
+}
+
+
+initCharts();    // tạo canvas chart
+updateCharts();  // fill data lần đầu
 </script>
 </body>
 </html>
