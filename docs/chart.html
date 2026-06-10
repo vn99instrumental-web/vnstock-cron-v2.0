@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Market Movers Chart</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+</script>
 <style>
 :root {
   --bg:#07111b;--surf:#0d1e2e;--border:#1c3248;--text:#c8dcea;--muted:#4e7a99;--dim:#1e3a52;
@@ -43,11 +44,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--muted)}
 .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 
-.insight-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
-.insight-card{background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:10px 12px}
-.insight-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
-.insight-val{font-family:var(--mono);font-size:15px;font-weight:700}
-.insight-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:10px 18px;background:var(--surf);border-bottom:1px solid var(--border)}
+.filter-group{display:flex;align-items:center;gap:6px}
+.filter-label{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.filter-btns{display:flex;gap:4px;flex-wrap:wrap}
+.fb{font-family:var(--mono);font-size:9px;padding:3px 8px;border:1px solid var(--border);border-radius:2px;background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.fb:hover{border-color:var(--acc);color:var(--text)}
+.fb.on-all{border-color:var(--acc);background:#0c2035;color:var(--acc)}
+.fb.on-buy{border-color:var(--buy);background:var(--buy-bg);color:var(--buy)}
+.fb.on-sb{border-color:#00e896;background:#001f12;color:#00e896}
+.fb.on-neu{border-color:var(--neu);background:#1a1400;color:var(--neu)}
+.fb.on-sell{border-color:var(--sell);background:var(--sell-bg);color:var(--sell)}
+.fb.on-ss{border-color:#e02040;background:#180308;color:#e02040}
+.filter-count{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--muted)}
 .c-buy{color:var(--buy)}.c-sell{color:var(--sell)}.c-neu{color:var(--neu)}.c-acc{color:var(--acc)}
 
 .table-card{background:var(--surf);border:1px solid var(--border);border-radius:4px;overflow:hidden}
@@ -91,9 +100,43 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 
 <div class="container">
 
-  <div>
-    <div class="section-label">📌 Tổng quan phiên</div>
-    <div class="insight-strip" id="insight-strip"></div>
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Decision</span>
+      <div class="filter-btns" id="fd">
+        <button class="fb on-all" data-v="ALL">Tất cả</button>
+        <button class="fb" data-v="BUY">BUY</button>
+        <button class="fb" data-v="STRONG BUY">S.BUY</button>
+        <button class="fb" data-v="NEUTRAL">NEU</button>
+        <button class="fb" data-v="SELL">SELL</button>
+        <button class="fb" data-v="STRONG SELL">S.SELL</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Nhóm</span>
+      <div class="filter-btns" id="fg">
+        <button class="fb on-all" data-v="ALL">Tất cả</button>
+        <button class="fb" data-v="GAINER">Tăng</button>
+        <button class="fb" data-v="LOSER">Giảm</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Buy ratio</span>
+      <div class="filter-btns" id="fbr">
+        <button class="fb on-all" data-v="ALL">Tất cả</button>
+        <button class="fb" data-v="STRONG">≥60% mua</button>
+        <button class="fb" data-v="WEAK">≤40% bán</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Vol</span>
+      <div class="filter-btns" id="fvol">
+        <button class="fb on-all" data-v="ALL">Tất cả</button>
+        <button class="fb" data-v="HIGH">≥2x bùng nổ</button>
+        <button class="fb" data-v="LOW">&lt;0.5x yếu</button>
+      </div>
+    </div>
+    <div class="filter-count" id="filter-count"></div>
   </div>
 
   <div>
@@ -220,31 +263,150 @@ const STATIC = {
   document.getElementById('ctx-regime').textContent = c._ctx_regime || 'FAIR';
 })();
 
-// ── Insight strip ─────────────────────────────────────────────
-(function() {
-  const buyDom  = ALL.filter(d => (d._of_buy_ratio??d.intra_buy_ratio??0) >= 0.6).length;
-  const sellDom = ALL.filter(d => (d._of_buy_ratio??d.intra_buy_ratio??0) <= 0.4).length;
-  const highVol = ALL.filter(d => (d.vol_ma_ratio||0) >= 2).length;
-  const ob = ALL.filter(d => (d.rsi||0) >= 70).length;
-  const os = ALL.filter(d => (d.rsi||100) <= 30).length;
-  const avg = (ALL.reduce((s,d)=>s+(d.total_score||0),0)/ALL.length).toFixed(1);
-  const buyC  = ALL.filter(d => d.decision==='BUY'||d.decision==='STRONG BUY').length;
-  const sellC = ALL.filter(d => d.decision==='SELL'||d.decision==='STRONG SELL').length;
-  const spikeUp = ALL.filter(d => (d._of_vol_spike||0) > 50).length;
-  const its = [
-    {l:'Mua chủ động ≥60%', v:buyDom,  sub:`/ ${ALL.length} mã`, c:'c-buy'},
-    {l:'Bán chủ động ≤40%', v:sellDom, sub:`/ ${ALL.length} mã`, c:'c-sell'},
-    {l:'Vol bùng nổ ≥2x',   v:highVol, sub:'mã vol bất thường',    c:'c-acc'},
-    {l:'RSI overbought',    v:ob,      sub:'mã RSI ≥ 70',           c:'c-sell'},
-    {l:'RSI oversold',      v:os,      sub:'mã RSI ≤ 30',           c:'c-buy'},
-    {l:'Vol spike >50%',    v:spikeUp, sub:'mã đột biến KL',        c:'c-acc'},
-    {l:'Avg Total Score',   v:avg,     sub:'điểm tb toàn danh sách',c:parseFloat(avg)>0?'c-buy':'c-sell'},
-    {l:'BUY signals',       v:buyC,    sub:'mã decision BUY',       c:'c-buy'},
-    {l:'SELL signals',      v:sellC,   sub:'mã decision SELL',      c:'c-sell'},
-  ];
-  document.getElementById('insight-strip').innerHTML =
-    its.map(i=>`<div class="insight-card"><div class="insight-label">${i.l}</div><div class="insight-val ${i.c}">${i.v}</div><div class="insight-sub">${i.sub}</div></div>`).join('');
-})();
+// ── Filter state & logic ─────────────────────────────────────
+let fDec='ALL', fGrp='ALL', fBR='ALL', fVol='ALL';
+
+function getFiltered() {
+  return ALL.filter(function(d) {
+    if (fDec !== 'ALL' && d.decision !== fDec) return false;
+    if (fGrp !== 'ALL' && d.group !== fGrp) return false;
+    if (fBR === 'STRONG' && brOf(d) < 0.6) return false;
+    if (fBR === 'WEAK'   && brOf(d) > 0.4) return false;
+    if (fVol === 'HIGH'  && (d.vol_ma_ratio||0) < 2)    return false;
+    if (fVol === 'LOW'   && (d.vol_ma_ratio||0) >= 0.5) return false;
+    return true;
+  });
+}
+
+const DEC_CLS = {'ALL':'on-all','BUY':'on-buy','STRONG BUY':'on-sb','NEUTRAL':'on-neu','SELL':'on-sell','STRONG SELL':'on-ss'};
+
+function setupFB(id, setter, clsMap, onChange) {
+  document.getElementById(id).addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-v]');
+    if (!btn) return;
+    document.querySelectorAll('#'+id+' .fb').forEach(function(b){ b.className='fb'; });
+    const cls = clsMap ? (clsMap[btn.dataset.v]||'on-all') : 'on-all';
+    btn.className = 'fb ' + cls;
+    setter(btn.dataset.v);
+    onChange();
+  });
+}
+
+function updateCharts() {
+  const filtered = getFiltered();
+  document.getElementById('filter-count').textContent = filtered.length + ' / ' + ALL.length + ' mã';
+  const gainers = filtered.filter(function(d){ return d.group==='GAINER'; });
+  const losers  = filtered.filter(function(d){ return d.group==='LOSER'; });
+
+  function upd(id, labels, datasets) {
+    const ch = Chart.getChart(id);
+    if (!ch) return;
+    ch.data.labels = labels;
+    datasets.forEach(function(ds, i) { Object.assign(ch.data.datasets[i], ds); });
+    ch.update('none');
+  }
+
+  // Gainer
+  (function() {
+    const s = [...gainers].sort(function(a,b){ return brOf(b)-brOf(a); });
+    upd('gainerBar', s.map(function(d){ return d.symbol; }), [
+      {data: s.map(function(d){ return Math.round(brOf(d)*100); })},
+      {data: s.map(function(d){ return d.vol_ma_ratio||0; })}
+    ]);
+  })();
+
+  // Loser
+  (function() {
+    const s = [...losers].sort(function(a,b){ return brOf(a)-brOf(b); });
+    upd('loserBar', s.map(function(d){ return d.symbol; }), [
+      {data: s.map(function(d){ return Math.round(brOf(d)*100); })},
+      {data: s.map(function(d){ return d.vol_ma_ratio||0; })}
+    ]);
+  })();
+
+  // OF bar
+  (function() {
+    const s = [...filtered].sort(function(a,b){ return brOf(b)-brOf(a); });
+    upd('ofBar', s.map(function(d){ return d.symbol; }), [
+      {data: s.map(function(d){ return Math.round((d._of_buy_vol||d.intra_buy_vol||0)/1000); })},
+      {data: s.map(function(d){ return -Math.round((d._of_sell_vol||d.intra_sell_vol||0)/1000); })}
+    ]);
+  })();
+
+  // Buy ratio line
+  (function() {
+    const s = [...filtered].sort(function(a,b){ return brOf(b)-brOf(a); });
+    const ratios = s.map(function(d){ return Math.round(brOf(d)*100); });
+    const n = s.length;
+    upd('brLine', s.map(function(d){ return d.symbol; }), [
+      {data: ratios, pointBackgroundColor: ratios.map(function(v){ return v>=60?'#34c26e':v<=40?'#e86030':'#f5c240'; })},
+      {data: Array(n).fill(50)},
+      {data: Array(n).fill(60)},
+      {data: Array(n).fill(40)}
+    ]);
+  })();
+
+  // Scatter
+  (function() {
+    const pts = filtered.map(function(d){ return {x:d.tech_score||0,y:d.fund_score||0,r:Math.max(4,Math.min(22,Math.sqrt((d.vol_today||1000)/5000))),label:d.symbol,decision:d.decision,score:d.total_score}; });
+    const ch = Chart.getChart('scatter');
+    if (ch) {
+      ch.data.datasets[0].data = pts;
+      ch.data.datasets[0].backgroundColor = pts.map(function(p){ return decColor(p.decision); });
+      ch.data.datasets[0].borderColor = pts.map(function(p){ return decColor(p.decision); });
+      ch.update('none');
+    }
+  })();
+
+  // RSI
+  (function() {
+    const s = [...filtered].sort(function(a,b){ return (a.rsi||50)-(b.rsi||50); });
+    const rsis = s.map(function(d){ return d.rsi||0; });
+    upd('rsiBar', s.map(function(d){ return d.symbol; }), [
+      {data: rsis, backgroundColor: rsis.map(function(v){ return v>=70?'rgba(232,96,48,0.8)':v<=30?'rgba(52,194,110,0.8)':'rgba(245,194,64,0.6)'; })}
+    ]);
+  })();
+
+  // Vol
+  (function() {
+    const s = [...filtered].sort(function(a,b){ return (b.vol_ma_ratio||0)-(a.vol_ma_ratio||0); });
+    const vols = s.map(function(d){ return d.vol_ma_ratio||0; });
+    upd('volBar', s.map(function(d){ return d.symbol; }), [
+      {data: vols, backgroundColor: vols.map(function(v){ return v>=3?'rgba(20,184,212,0.85)':v>=1.5?'rgba(20,184,212,0.5)':v<0.5?'rgba(78,122,153,0.3)':'rgba(78,122,153,0.55)'; })}
+    ]);
+  })();
+
+  // Table
+  (function() {
+    const s = [...filtered].sort(function(a,b){ return (b.total_score||0)-(a.total_score||0); });
+    const dc = function(d){ return d.replace(/ /g,'_'); };
+    document.getElementById('detail-tbody').innerHTML = s.map(function(d){
+      const br=brOf(d), sr=1-br, brP=Math.round(br*100), srP=Math.round(sr*100);
+      const rC=d.rsi>=70?'c-sell':d.rsi<=30?'c-buy':'c-neu';
+      const sC=(d.total_score||0)>=40?'c-buy':(d.total_score||0)<=-15?'c-sell':'c-neu';
+      const tC=(d.tech_score||0)>0?'var(--buy)':(d.tech_score||0)<0?'var(--sell)':'var(--muted)';
+      const fC=(d.fund_score||0)>0?'var(--buy)':(d.fund_score||0)<0?'var(--sell)':'var(--muted)';
+      return '<tr>'+
+        '<td><span class="sym-badge">'+d.symbol+'</span></td>'+
+        '<td style="font-family:var(--mono);font-size:9px;color:'+(d.group==='GAINER'?'var(--buy)':'var(--sell)')+'">'+d.group+'</td>'+
+        '<td class="r">'+d.price+'</td>'+
+        '<td class="r" style="color:'+(brP>=60?'var(--buy)':brP<=40?'var(--sell)':'var(--neu)')+'">'+brP+'%</td>'+
+        '<td><div class="of-bar-wrap"><div class="of-bar-track"><div class="of-bar-buy" style="width:'+brP+'%"></div><div class="of-bar-sell" style="width:'+srP+'%"></div></div><span class="of-pct" style="color:var(--muted)">'+brP+'/'+srP+'</span></div></td>'+
+        '<td class="r" style="color:'+((d.vol_ma_ratio||0)>=2?'var(--acc)':(d.vol_ma_ratio||0)<0.5?'var(--muted)':'var(--text)')+'">'+((d.vol_ma_ratio||0).toFixed(2))+'x</td>'+
+        '<td class="r '+rC+'">'+(d.rsi?d.rsi.toFixed(1):'—')+'</td>'+
+        '<td class="r" style="color:'+tC+'">'+(((d.tech_score||0)>0?'+':'')+(d.tech_score||0))+'</td>'+
+        '<td class="r" style="color:'+fC+'">'+(((d.fund_score||0)>0?'+':'')+(d.fund_score||0))+'</td>'+
+        '<td class="r '+sC+'">'+(((d.total_score||0)>0?'+':'')+(d.total_score||0).toFixed(1))+'</td>'+
+        '<td><span class="dec-chip dc-'+dc(d.decision||'NEUTRAL')+'">'+(d.decision||'—')+'</span></td>'+
+        '</tr>';
+    }).join('');
+  })();
+}
+
+setupFB('fd',   function(v){ fDec=v; }, DEC_CLS, updateCharts);
+setupFB('fg',   function(v){ fGrp=v; }, null,    updateCharts);
+setupFB('fbr',  function(v){ fBR=v;  }, null,    updateCharts);
+setupFB('fvol', function(v){ fVol=v; }, null,    updateCharts);
 
 function decColor(d) {
   if (d==='BUY'||d==='STRONG BUY')   return 'rgba(52,194,110,0.85)';
@@ -450,31 +612,8 @@ function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
   });
 })();
 
-// ── Detail table ──────────────────────────────────────────────
-(function() {
-  const s=[...ALL].sort((a,b)=>(b.total_score||0)-(a.total_score||0));
-  const dc=d=>d.replace(/ /g,'_');
-  document.getElementById('detail-tbody').innerHTML = s.map(d=>{
-    const br=brOf(d), sr=1-br, brP=Math.round(br*100), srP=Math.round(sr*100);
-    const rC=d.rsi>=70?'c-sell':d.rsi<=30?'c-buy':'c-neu';
-    const sC=(d.total_score||0)>=40?'c-buy':(d.total_score||0)<=-15?'c-sell':'c-neu';
-    const tC=(d.tech_score||0)>0?'var(--buy)':(d.tech_score||0)<0?'var(--sell)':'var(--muted)';
-    const fC=(d.fund_score||0)>0?'var(--buy)':(d.fund_score||0)<0?'var(--sell)':'var(--muted)';
-    return `<tr>
-      <td><span class="sym-badge">${d.symbol}</span></td>
-      <td style="font-family:var(--mono);font-size:9px;color:${d.group==='GAINER'?'var(--buy)':'var(--sell)'}">${d.group}</td>
-      <td class="r">${d.price}</td>
-      <td class="r" style="color:${brP>=60?'var(--buy)':brP<=40?'var(--sell)':'var(--neu)'}">${brP}%</td>
-      <td><div class="of-bar-wrap"><div class="of-bar-track"><div class="of-bar-buy" style="width:${brP}%"></div><div class="of-bar-sell" style="width:${srP}%"></div></div><span class="of-pct" style="color:var(--muted)">${brP}/${srP}</span></div></td>
-      <td class="r" style="color:${(d.vol_ma_ratio||0)>=2?'var(--acc)':(d.vol_ma_ratio||0)<0.5?'var(--muted)':'var(--text)'}">${(d.vol_ma_ratio||0).toFixed(2)}x</td>
-      <td class="r ${rC}">${d.rsi?d.rsi.toFixed(1):'—'}</td>
-      <td class="r" style="color:${tC}">${(d.tech_score||0)>0?'+':''}${d.tech_score||0}</td>
-      <td class="r" style="color:${fC}">${(d.fund_score||0)>0?'+':''}${d.fund_score||0}</td>
-      <td class="r ${sC}">${(d.total_score||0)>0?'+':''}${(d.total_score||0).toFixed(1)}</td>
-      <td><span class="dec-chip dc-${dc(d.decision||'NEUTRAL')}">${d.decision||'—'}</span></td>
-    </tr>`;
-  }).join('');
 })();
+updateCharts(); // initial render
 </script>
 </body>
 </html>
