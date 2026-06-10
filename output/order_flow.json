@@ -3,7 +3,7 @@
     "symbol": "NVL",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -262,7 +262,7 @@
     "symbol": "HSL",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -350,10 +350,101 @@
     }
   },
   {
+    "symbol": "LDG",
+    "group": "GAINER",
+    "exchange": "HSX",
+    "time": "2026-06-10 17:23",
+    "date": "2026-06-10",
+    "history_5d": [
+      {
+        "date": "2026-06-04",
+        "open": 2.82,
+        "high": 2.82,
+        "low": 2.74,
+        "close": 2.76,
+        "volume": 571900,
+        "vs_avg5d_pct": 1.2
+      },
+      {
+        "date": "2026-06-05",
+        "open": 2.76,
+        "high": 2.78,
+        "low": 2.72,
+        "close": 2.72,
+        "volume": 473900,
+        "vs_avg5d_pct": -16.1
+      },
+      {
+        "date": "2026-06-08",
+        "open": 2.72,
+        "high": 2.74,
+        "low": 2.65,
+        "close": 2.68,
+        "volume": 864500,
+        "vs_avg5d_pct": 53.1
+      },
+      {
+        "date": "2026-06-09",
+        "open": 2.68,
+        "high": 2.86,
+        "low": 2.68,
+        "close": 2.86,
+        "volume": 506700,
+        "vs_avg5d_pct": -10.3
+      },
+      {
+        "date": "2026-06-10",
+        "open": 3.06,
+        "high": 3.06,
+        "low": 3.06,
+        "close": 3.06,
+        "volume": 407200,
+        "vs_avg5d_pct": -27.9
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 3.06,
+        "trade_count": 122,
+        "volume": 407200,
+        "buy_count": 0,
+        "sell_count": 120,
+        "buy_volume": 0,
+        "sell_volume": 160800,
+        "count_pct": 100.0,
+        "volume_pct": 100.0,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "LDG",
+      "group": "GAINER",
+      "poc_by_count": 3.06,
+      "poc_by_volume": 3.06,
+      "poc_diverge": false,
+      "value_area_high": 3.06,
+      "value_area_low": 3.06,
+      "value_area_pct": 100.0,
+      "total_trades": 122,
+      "total_volume": 407200,
+      "avg_trade_size": 3338.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.0,
+      "sell_ratio_today": 1.0,
+      "current_price": 3.06,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 604250.0,
+      "vol_today": 407200.0,
+      "vol_spike_pct": -32.6,
+      "distribution_type": "INSUFFICIENT_DATA",
+      "pattern": "WEAK"
+    }
+  },
+  {
     "symbol": "VPG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -633,101 +724,10 @@
     }
   },
   {
-    "symbol": "LDG",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-10 15:14",
-    "date": "2026-06-10",
-    "history_5d": [
-      {
-        "date": "2026-06-04",
-        "open": 2.82,
-        "high": 2.82,
-        "low": 2.74,
-        "close": 2.76,
-        "volume": 571900,
-        "vs_avg5d_pct": 1.2
-      },
-      {
-        "date": "2026-06-05",
-        "open": 2.76,
-        "high": 2.78,
-        "low": 2.72,
-        "close": 2.72,
-        "volume": 473900,
-        "vs_avg5d_pct": -16.1
-      },
-      {
-        "date": "2026-06-08",
-        "open": 2.72,
-        "high": 2.74,
-        "low": 2.65,
-        "close": 2.68,
-        "volume": 864500,
-        "vs_avg5d_pct": 53.1
-      },
-      {
-        "date": "2026-06-09",
-        "open": 2.68,
-        "high": 2.86,
-        "low": 2.68,
-        "close": 2.86,
-        "volume": 506700,
-        "vs_avg5d_pct": -10.3
-      },
-      {
-        "date": "2026-06-10",
-        "open": 3.06,
-        "high": 3.06,
-        "low": 3.06,
-        "close": 3.06,
-        "volume": 407200,
-        "vs_avg5d_pct": -27.9
-      }
-    ],
-    "volume_profile": [
-      {
-        "price": 3.06,
-        "trade_count": 122,
-        "volume": 407200,
-        "buy_count": 0,
-        "sell_count": 120,
-        "buy_volume": 0,
-        "sell_volume": 160800,
-        "count_pct": 100.0,
-        "volume_pct": 100.0,
-        "buy_ratio": 0.0
-      }
-    ],
-    "summary": {
-      "symbol": "LDG",
-      "group": "GAINER",
-      "poc_by_count": 3.06,
-      "poc_by_volume": 3.06,
-      "poc_diverge": false,
-      "value_area_high": 3.06,
-      "value_area_low": 3.06,
-      "value_area_pct": 100.0,
-      "total_trades": 122,
-      "total_volume": 407200,
-      "avg_trade_size": 3338.0,
-      "trader_type": "Mixed",
-      "buy_ratio_today": 0.0,
-      "sell_ratio_today": 1.0,
-      "current_price": 3.06,
-      "price_vs_poc_pct": 0.0,
-      "vol_5d_avg": 604250.0,
-      "vol_today": 407200.0,
-      "vol_spike_pct": -32.6,
-      "distribution_type": "INSUFFICIENT_DATA",
-      "pattern": "WEAK"
-    }
-  },
-  {
     "symbol": "TSC",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -1010,7 +1010,7 @@
     "symbol": "C32",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -1101,7 +1101,7 @@
     "symbol": "APG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -1420,7 +1420,7 @@
     "symbol": "BKG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -1619,7 +1619,7 @@
     "symbol": "CII",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -1854,7 +1854,7 @@
     "symbol": "DLG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -2149,7 +2149,7 @@
     "symbol": "CIG",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -2360,7 +2360,7 @@
     "symbol": "TCO",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -2571,7 +2571,7 @@
     "symbol": "TNI",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -2794,7 +2794,7 @@
     "symbol": "HRC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -3089,7 +3089,7 @@
     "symbol": "SGT",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -3228,7 +3228,7 @@
     "symbol": "DSC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -3403,7 +3403,7 @@
     "symbol": "LIX",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -3554,7 +3554,7 @@
     "symbol": "TCI",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -3837,7 +3837,7 @@
     "symbol": "HQC",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
@@ -4072,7 +4072,7 @@
     "symbol": "SHI",
     "group": "LOSER",
     "exchange": "HSX",
-    "time": "2026-06-10 15:14",
+    "time": "2026-06-10 17:23",
     "date": "2026-06-10",
     "history_5d": [
       {
