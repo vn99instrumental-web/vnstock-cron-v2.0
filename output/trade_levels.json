@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-10T01:20:16.148968+07:00",
+  "generated_at": "2026-06-10T09:08:15.266244+07:00",
   "buy_count": 1,
   "exit_count": 7,
   "buy_levels": [
@@ -21,8 +21,8 @@
       "rr_headroom": null,
       "size_hint": "NO_TRADE",
       "nearest_support": 117.2,
-      "nearest_resist": 119.0,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "nearest_resist": 127.01,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
       "flags": "SKIP_WIDE_STOP",
       "skip": "wide_stop"
     }
@@ -55,7 +55,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 44.0,
-      "exit_trigger": 42.2,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -75,7 +75,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 44.95,
-      "exit_trigger": 44.0,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -85,7 +85,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 9.39,
-      "exit_trigger": 9.35,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -95,7 +95,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 28.4,
-      "exit_trigger": 28.1,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
