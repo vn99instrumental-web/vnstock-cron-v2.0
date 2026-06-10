@@ -1,1 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Movers Chart</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#07111b;--surf:#0d1e2e;--border:#1c3248;--text:#c8dcea;--muted:#4e7a99;--dim:#1e3a52;
+  --buy:#34c26e;--buy-bg:#041508;--sell:#e86030;--sell-bg:#1a0800;--acc:#14b8d4;--neu:#f5c240;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
 
+.header{padding:14px 20px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header-title{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.08em}
+.header-meta{font-family:var(--mono);font-size:10px;color:var(--muted);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.vnindex-chip{display:flex;align-items:center;gap:6px;background:var(--surf);border:1px solid var(--border);border-radius:3px;padding:3px 10px;font-family:var(--mono);font-size:10px}
+.regime-chip{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 9px;border-radius:2px;background:#1a1400;border:1px solid #604800;color:var(--neu)}
+
+.container{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.section-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.chart-row{grid-template-columns:1fr}}
+
+.chart-card{background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:14px 16px 12px}
+.chart-card-title{font-family:var(--mono);font-size:10px;color:var(--text);letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.chart-card-title span{color:var(--muted);font-size:9px}
+.chart-wrap{position:relative}
+.chart-card-wide{background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:14px 16px 12px}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+.insight-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.insight-card{background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:10px 12px}
+.insight-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.insight-val{font-family:var(--mono);font-size:15px;font-weight:700}
+.insight-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.c-buy{color:var(--buy)}.c-sell{color:var(--sell)}.c-neu{color:var(--neu)}.c-acc{color:var(--acc)}
+
+.table-card{background:var(--surf);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{background:#0a1624;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;white-space:nowrap}
+.tbl th.r{text-align:right}
+.tbl td{padding:7px 10px;border-bottom:1px solid #0d1b28;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(20,184,212,.03)}
+.tbl td.r{text-align:right;font-family:var(--mono);font-size:10px}
+.sym-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:#dceefa}
+.dec-chip{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;border:1px solid;white-space:nowrap}
+.dc-BUY{background:var(--buy-bg);border-color:var(--buy);color:var(--buy)}
+.dc-STRONG_BUY{background:var(--buy-bg);border-color:#00e896;color:#00e896}
+.dc-NEUTRAL{background:#1a1400;border-color:var(--neu);color:var(--neu)}
+.dc-SELL{background:var(--sell-bg);border-color:var(--sell);color:var(--sell)}
+.dc-STRONG_SELL{background:#180308;border-color:#e02040;color:#e02040}
+.of-bar-wrap{display:flex;align-items:center;gap:5px}
+.of-bar-track{flex:1;height:4px;background:#0d1e2e;border-radius:2px;overflow:hidden;position:relative;min-width:60px}
+.of-bar-buy{position:absolute;left:0;top:0;height:100%;background:var(--buy);border-radius:2px}
+.of-bar-sell{position:absolute;right:0;top:0;height:100%;background:var(--sell);border-radius:2px}
+.of-pct{font-family:var(--mono);font-size:9px;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">📊 TOP MARKET MOVERS — VNINDEX INTRADAY</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Updated: 2026-06-09 14:56 ICT</div>
+  </div>
+  <div class="header-meta">
+    <div class="vnindex-chip">
+      <span style="color:var(--muted)">VNINDEX</span>
+      <span id="ctx-close" style="font-weight:700;color:var(--text)">—</span>
+      <span id="ctx-1d" style="font-weight:700">—</span>
+    </div>
+    <div class="regime-chip" id="ctx-regime">—</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div>
+    <div class="section-label">📌 Tổng quan phiên</div>
+    <div class="insight-strip" id="insight-strip"></div>
+  </div>
+
+  <div>
+    <div class="section-label">📈 Top Gainer &amp; Loser — Buy Ratio + Vol/Avg</div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-card-title">TOP GAINER <span>buy ratio % + vol/avg (đường)</span></div>
+        <div class="chart-wrap"><canvas id="gainerBar" height="220"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">TOP LOSER <span>buy ratio % + vol/avg (đường)</span></div>
+        <div class="chart-wrap"><canvas id="loserBar" height="220"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">🔄 Order Flow — Khối lượng mua / bán chủ động</div>
+    <div class="chart-card-wide">
+      <div class="chart-card-title">BUY VOL vs SELL VOL (nghìn cp) <span>sorted by buy ratio cao → thấp</span></div>
+      <div class="chart-wrap"><canvas id="ofBar" height="200"></canvas></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--buy)"></div>Khớp MUA</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--sell)"></div>Khớp BÁN</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">⚡ Tỷ lệ mua chủ động (%) — Đường lực mua toàn thị trường</div>
+    <div class="chart-card-wide">
+      <div class="chart-card-title">BUY RATIO % <span>≥60% mua mạnh · ≤40% bán mạnh · đường đứt = 50%</span></div>
+      <div class="chart-wrap"><canvas id="brLine" height="160"></canvas></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">🏢 Tech Score vs Fund Score — 4 góc phần tư</div>
+    <div class="chart-card-wide">
+      <div class="chart-card-title">KỸ THUẬT vs CƠ BẢN <span>bubble = vol_today · màu = decision</span></div>
+      <div class="chart-wrap"><canvas id="scatter" height="260"></canvas></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--buy)"></div>BUY</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--neu)"></div>NEUTRAL</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--sell)"></div>SELL / STRONG SELL</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">📦 RSI &amp; Volume Ratio — Momentum + Dòng tiền</div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-card-title">RSI <span>đỏ ≥70 overbought · xanh ≤30 oversold</span></div>
+        <div class="chart-wrap"><canvas id="rsiBar" height="220"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">VOL / AVG20D <span>cyan ≥3x bùng nổ · mờ &lt;0.5x yếu</span></div>
+        <div class="chart-wrap"><canvas id="volBar" height="220"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">📋 Bảng chi tiết</div>
+    <div class="table-card">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mã</th><th>Nhóm</th>
+            <th class="r">Giá</th>
+            <th class="r">Buy%</th>
+            <th style="min-width:110px">OF Bar</th>
+            <th class="r">Vol/Avg</th>
+            <th class="r">RSI</th>
+            <th class="r">Tech</th>
+            <th class="r">Fund</th>
+            <th class="r">Score</th>
+            <th>Decision</th>
+          </tr>
+        </thead>
+        <tbody id="detail-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = [{"symbol":"VNE","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":3.06,"intra_buy_vol":0,"intra_sell_vol":364500,"intra_buy_ratio":0,"vol_ma_ratio":0.28,"vol_today":449300,"vol_avg_20d":1590455,"rsi":48.99,"total_score":6.95,"tech_score":-19,"fund_score":28,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Xây dựng và Vật liệu","_of_buy_vol":null,"_of_sell_vol":364500,"_of_buy_ratio":0,"_of_sell_ratio":1,"_of_pattern":"WEAK","_of_vol_spike":-62,"_of_avg_size":2826,"_of_total_trades":159,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"HSL","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":6,"intra_buy_vol":0,"intra_sell_vol":67900,"intra_buy_ratio":0,"vol_ma_ratio":0.5,"vol_today":160500,"vol_avg_20d":320925,"rsi":77.91,"total_score":-52.08,"tech_score":-31,"fund_score":-14,"decision":"STRONG SELL","confidence":"MEDIUM","industry":"Thực phẩm và đồ uống","_of_buy_vol":null,"_of_sell_vol":67900,"_of_buy_ratio":0,"_of_sell_ratio":1,"_of_pattern":"WEAK","_of_vol_spike":-78.3,"_of_avg_size":4115,"_of_total_trades":39,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"C32","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":18,"intra_buy_vol":0,"intra_sell_vol":136200,"intra_buy_ratio":0,"vol_ma_ratio":4.9,"vol_today":227500,"vol_avg_20d":46460,"rsi":76.72,"total_score":15.95,"tech_score":14,"fund_score":4,"decision":"NEUTRAL","confidence":"LOW","industry":"Xây dựng và Vật liệu","_of_buy_vol":null,"_of_sell_vol":136200,"_of_buy_ratio":0,"_of_sell_ratio":1,"_of_pattern":"NORMAL","_of_vol_spike":23.2,"_of_avg_size":3921,"_of_total_trades":58,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"BKG","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":2.52,"intra_buy_vol":300100,"intra_sell_vol":256800,"intra_buy_ratio":0.54,"vol_ma_ratio":4.88,"vol_today":603500,"vol_avg_20d":123645,"rsi":53.88,"total_score":-10.08,"tech_score":-16,"fund_score":8,"decision":"NEUTRAL","confidence":"LOW","industry":"Hàng cá nhân & Gia dụng","_of_buy_vol":336900,"_of_sell_vol":266600,"_of_buy_ratio":0.56,"_of_sell_ratio":0.44,"_of_pattern":"SPIKE_NEUTRAL","_of_vol_spike":163.3,"_of_avg_size":2187,"_of_total_trades":276,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"LDG","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":2.86,"intra_buy_vol":126200,"intra_sell_vol":246400,"intra_buy_ratio":0.34,"vol_ma_ratio":0.76,"vol_today":506700,"vol_avg_20d":670590,"rsi":38.51,"total_score":-7.05,"tech_score":-11,"fund_score":6,"decision":"NEUTRAL","confidence":"LOW","industry":"Bất động sản","_of_buy_vol":224100,"_of_sell_vol":260100,"_of_buy_ratio":0.46,"_of_sell_ratio":0.54,"_of_pattern":"CONTENTION","_of_vol_spike":-11.6,"_of_avg_size":1747,"_of_total_trades":290,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"DSC","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":13.6,"intra_buy_vol":8100,"intra_sell_vol":300,"intra_buy_ratio":0.96,"vol_ma_ratio":1.12,"vol_today":18400,"vol_avg_20d":16360,"rsi":69.28,"total_score":-27.06,"tech_score":-32,"fund_score":7,"decision":"SELL","confidence":"MEDIUM","industry":"Dịch vụ tài chính","_of_buy_vol":8100,"_of_sell_vol":300,"_of_buy_ratio":0.96,"_of_sell_ratio":0.04,"_of_pattern":"NORMAL","_of_vol_spike":0.3,"_of_avg_size":1082,"_of_total_trades":17,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"SVD","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":4.97,"intra_buy_vol":8900,"intra_sell_vol":14500,"intra_buy_ratio":0.38,"vol_ma_ratio":0.74,"vol_today":23500,"vol_avg_20d":31680,"rsi":71.84,"total_score":-5.08,"tech_score":9,"fund_score":-12,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Hàng cá nhân & Gia dụng","_of_buy_vol":8900,"_of_sell_vol":14500,"_of_buy_ratio":0.38,"_of_sell_ratio":0.62,"_of_pattern":"WEAK","_of_vol_spike":-43.7,"_of_avg_size":839,"_of_total_trades":28,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"VVS","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":118.5,"intra_buy_vol":50600,"intra_sell_vol":20800,"intra_buy_ratio":0.71,"vol_ma_ratio":1.21,"vol_today":169800,"vol_avg_20d":140110,"rsi":51.32,"total_score":62.92,"tech_score":28,"fund_score":32,"decision":"BUY","confidence":"MEDIUM","industry":"Ô tô và phụ tùng","_of_buy_vol":77400,"_of_sell_vol":80700,"_of_buy_ratio":0.49,"_of_sell_ratio":0.51,"_of_pattern":"CONTENTION","_of_vol_spike":16.3,"_of_avg_size":307,"_of_total_trades":550,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"ACB","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":26.5,"intra_buy_vol":624600,"intra_sell_vol":17300,"intra_buy_ratio":0.97,"vol_ma_ratio":1.86,"vol_today":48784500,"vol_avg_20d":26173540,"rsi":68.27,"total_score":30.05,"tech_score":22,"fund_score":10,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Ngân hàng","_of_buy_vol":30949700,"_of_sell_vol":11894800,"_of_buy_ratio":0.72,"_of_sell_ratio":0.28,"_of_pattern":"CONTENTION","_of_vol_spike":19.8,"_of_avg_size":4450,"_of_total_trades":10000,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"NNC","group":"GAINER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":44,"intra_buy_vol":31800,"intra_sell_vol":4500,"intra_buy_ratio":0.88,"vol_ma_ratio":1.22,"vol_today":43300,"vol_avg_20d":35545,"rsi":39.95,"total_score":-19.05,"tech_score":-27,"fund_score":10,"decision":"SELL","confidence":"MEDIUM","industry":"Xây dựng và Vật liệu","_of_buy_vol":31800,"_of_sell_vol":4500,"_of_buy_ratio":0.88,"_of_sell_ratio":0.12,"_of_pattern":"CONTENTION","_of_vol_spike":-8.3,"_of_avg_size":503,"_of_total_trades":86,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"TPC","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":6,"intra_buy_vol":107600,"intra_sell_vol":29400,"intra_buy_ratio":0.79,"vol_ma_ratio":1.45,"vol_today":137000,"vol_avg_20d":94425,"rsi":14.24,"total_score":-23.06,"tech_score":-5,"fund_score":-16,"decision":"SELL","confidence":"MEDIUM","industry":"Hóa chất","_of_buy_vol":107600,"_of_sell_vol":29400,"_of_buy_ratio":0.79,"_of_sell_ratio":0.21,"_of_pattern":"WEAK","_of_vol_spike":-52.3,"_of_avg_size":34250,"_of_total_trades":4,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"HRC","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":44.95,"intra_buy_vol":1900,"intra_sell_vol":6600,"intra_buy_ratio":0.22,"vol_ma_ratio":0.67,"vol_today":8700,"vol_avg_20d":12930,"rsi":47.7,"total_score":-22.06,"tech_score":-20,"fund_score":0,"decision":"SELL","confidence":"MEDIUM","industry":"Hóa chất","_of_buy_vol":1900,"_of_sell_vol":6600,"_of_buy_ratio":0.22,"_of_sell_ratio":0.78,"_of_pattern":"CONTENTION","_of_vol_spike":100,"_of_avg_size":181,"_of_total_trades":48,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"NVL","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":13.25,"intra_buy_vol":138100,"intra_sell_vol":168200,"intra_buy_ratio":0.45,"vol_ma_ratio":0.7,"vol_today":14028700,"vol_avg_20d":20003615,"rsi":31.18,"total_score":-5.93,"tech_score":-15,"fund_score":11,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Bất động sản","_of_buy_vol":2290600,"_of_sell_vol":7456500,"_of_buy_ratio":0.24,"_of_sell_ratio":0.76,"_of_pattern":"WEAK","_of_vol_spike":-41.1,"_of_avg_size":2445,"_of_total_trades":5735,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"DQC","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":9.39,"intra_buy_vol":900,"intra_sell_vol":6400,"intra_buy_ratio":0.12,"vol_ma_ratio":0.26,"vol_today":7600,"vol_avg_20d":29100,"rsi":35.67,"total_score":-35.08,"tech_score":-23,"fund_score":-10,"decision":"SELL","confidence":"MEDIUM","industry":"Hàng cá nhân & Gia dụng","_of_buy_vol":900,"_of_sell_vol":6400,"_of_buy_ratio":0.12,"_of_sell_ratio":0.88,"_of_pattern":"WEAK","_of_vol_spike":-82.6,"_of_avg_size":400,"_of_total_trades":19,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"SZL","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":48.85,"intra_buy_vol":1500,"intra_sell_vol":26100,"intra_buy_ratio":0.05,"vol_ma_ratio":2.58,"vol_today":27700,"vol_avg_20d":10745,"rsi":34.34,"total_score":21.95,"tech_score":5,"fund_score":19,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Bất động sản","_of_buy_vol":1500,"_of_sell_vol":26100,"_of_buy_ratio":0.05,"_of_sell_ratio":0.95,"_of_pattern":"SPIKE_SELL","_of_vol_spike":361.7,"_of_avg_size":369,"_of_total_trades":75,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"PLX","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":40.5,"intra_buy_vol":74700,"intra_sell_vol":69900,"intra_buy_ratio":0.52,"vol_ma_ratio":0.45,"vol_today":2504400,"vol_avg_20d":5582770,"rsi":49.36,"total_score":-3.08,"tech_score":-22,"fund_score":21,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Dầu khí","_of_buy_vol":726100,"_of_sell_vol":1578400,"_of_buy_ratio":0.32,"_of_sell_ratio":0.68,"_of_pattern":"WEAK","_of_vol_spike":-40,"_of_avg_size":830,"_of_total_trades":3018,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"TAL","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":28.4,"intra_buy_vol":5400,"intra_sell_vol":59900,"intra_buy_ratio":0.08,"vol_ma_ratio":0.46,"vol_today":102300,"vol_avg_20d":223047,"rsi":32.16,"total_score":-30.05,"tech_score":-30,"fund_score":2,"decision":"SELL","confidence":"MEDIUM","industry":"Bất động sản","_of_buy_vol":8800,"_of_sell_vol":87000,"_of_buy_ratio":0.09,"_of_sell_ratio":0.91,"_of_pattern":"CONTENTION","_of_vol_spike":-8.6,"_of_avg_size":353,"_of_total_trades":290,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"CKG","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":6.95,"intra_buy_vol":5200,"intra_sell_vol":35200,"intra_buy_ratio":0.13,"vol_ma_ratio":0.95,"vol_today":42600,"vol_avg_20d":44905,"rsi":22.61,"total_score":4.95,"tech_score":1,"fund_score":6,"decision":"NEUTRAL","confidence":"LOW","industry":"Bất động sản","_of_buy_vol":5200,"_of_sell_vol":35200,"_of_buy_ratio":0.13,"_of_sell_ratio":0.87,"_of_pattern":"SPIKE_SELL","_of_vol_spike":124.2,"_of_avg_size":888,"_of_total_trades":48,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"NAF","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":51.1,"intra_buy_vol":64700,"intra_sell_vol":340200,"intra_buy_ratio":0.16,"vol_ma_ratio":1.53,"vol_today":1014400,"vol_avg_20d":663095,"rsi":47.36,"total_score":35.92,"tech_score":23,"fund_score":15,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Thực phẩm và đồ uống","_of_buy_vol":130600,"_of_sell_vol":868800,"_of_buy_ratio":0.13,"_of_sell_ratio":0.87,"_of_pattern":"CONTENTION","_of_vol_spike":57.6,"_of_avg_size":1749,"_of_total_trades":580,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"},{"symbol":"PVP","group":"LOSER","exchange":"HSX","date":"2026-06-09","snap_time":"14:56","time":"2026-06-09 14:56","price":17.4,"intra_buy_vol":44900,"intra_sell_vol":144800,"intra_buy_ratio":0.24,"vol_ma_ratio":0.28,"vol_today":269100,"vol_avg_20d":961920,"rsi":47.04,"total_score":25.92,"tech_score":21,"fund_score":7,"decision":"NEUTRAL","confidence":"MEDIUM","industry":"Hàng & Dịch vụ Công nghiệp","_of_buy_vol":53600,"_of_sell_vol":168500,"_of_buy_ratio":0.24,"_of_sell_ratio":0.76,"_of_pattern":"WEAK","_of_vol_spike":-29.5,"_of_avg_size":1103,"_of_total_trades":244,"_ctx_close":1793.05,"_ctx_chg_1d":0.14,"_ctx_chg_5d":-1.83,"_ctx_regime":"DOWNTREND"}];
+
+// deduplicate by symbol
+const seen = {};
+DATA.forEach(d => { if (!seen[d.symbol]) seen[d.symbol] = d; });
+const ALL     = Object.values(seen);
+const GAINERS = ALL.filter(d => d.group === 'GAINER');
+const LOSERS  = ALL.filter(d => d.group === 'LOSER');
+
+// ── Chart.js defaults ────────────────────────────────────────
+Chart.defaults.color = '#4e7a99';
+Chart.defaults.font.family = "'Space Mono', monospace";
+Chart.defaults.font.size = 10;
+const GC = 'rgba(28,50,72,0.7)';
+const TC = '#4e7a99';
+
+// ── Context header ───────────────────────────────────────────
+(function() {
+  const c = ALL[0]; if (!c) return;
+  document.getElementById('ctx-close').textContent = c._ctx_close || '—';
+  const chg = c._ctx_chg_1d;
+  const el = document.getElementById('ctx-1d');
+  if (chg != null) { el.textContent = (chg>=0?'+':'')+chg+'%'; el.style.color = chg>=0?'var(--buy)':'var(--sell)'; }
+  document.getElementById('ctx-regime').textContent = c._ctx_regime || 'FAIR';
+})();
+
+// ── Insight strip ─────────────────────────────────────────────
+(function() {
+  const buyDom  = ALL.filter(d => (d._of_buy_ratio??d.intra_buy_ratio??0) >= 0.6).length;
+  const sellDom = ALL.filter(d => (d._of_buy_ratio??d.intra_buy_ratio??0) <= 0.4).length;
+  const highVol = ALL.filter(d => (d.vol_ma_ratio||0) >= 2).length;
+  const ob = ALL.filter(d => (d.rsi||0) >= 70).length;
+  const os = ALL.filter(d => (d.rsi||100) <= 30).length;
+  const avg = (ALL.reduce((s,d)=>s+(d.total_score||0),0)/ALL.length).toFixed(1);
+  const buyC  = ALL.filter(d => d.decision==='BUY'||d.decision==='STRONG BUY').length;
+  const sellC = ALL.filter(d => d.decision==='SELL'||d.decision==='STRONG SELL').length;
+  const spikeUp = ALL.filter(d => (d._of_vol_spike||0) > 50).length;
+
+  const its = [
+    {l:'Mua chủ động ≥60%', v:buyDom,  sub:`/ ${ALL.length} mã`, c:'c-buy'},
+    {l:'Bán chủ động ≤40%', v:sellDom, sub:`/ ${ALL.length} mã`, c:'c-sell'},
+    {l:'Vol bùng nổ ≥2x',   v:highVol, sub:'mã vol bất thường',    c:'c-acc'},
+    {l:'RSI overbought',    v:ob,      sub:'mã RSI ≥ 70',           c:'c-sell'},
+    {l:'RSI oversold',      v:os,      sub:'mã RSI ≤ 30',           c:'c-buy'},
+    {l:'Vol spike >50%',    v:spikeUp, sub:'mã đột biến KL',        c:'c-acc'},
+    {l:'Avg Total Score',   v:avg,     sub:'điểm tb toàn danh sách',c:parseFloat(avg)>0?'c-buy':'c-sell'},
+    {l:'BUY signals',       v:buyC,    sub:'mã decision BUY',       c:'c-buy'},
+    {l:'SELL signals',      v:sellC,   sub:'mã decision SELL',      c:'c-sell'},
+  ];
+  document.getElementById('insight-strip').innerHTML =
+    its.map(i=>`<div class="insight-card"><div class="insight-label">${i.l}</div><div class="insight-val ${i.c}">${i.v}</div><div class="insight-sub">${i.sub}</div></div>`).join('');
+})();
+
+// ── Helpers ──────────────────────────────────────────────────
+function decColor(d) {
+  if (d==='BUY'||d==='STRONG BUY')   return 'rgba(52,194,110,0.85)';
+  if (d==='SELL'||d==='STRONG SELL') return 'rgba(232,96,48,0.85)';
+  return 'rgba(245,194,64,0.7)';
+}
+function brOf(d) { return d._of_buy_ratio??d.intra_buy_ratio??0; }
+
+// ── Gainer bar ───────────────────────────────────────────────
+(function() {
+  const s = [...GAINERS].sort((a,b)=>brOf(b)-brOf(a));
+  new Chart(document.getElementById('gainerBar'), {
+    type:'bar',
+    data:{
+      labels: s.map(d=>d.symbol),
+      datasets:[
+        {label:'Buy Ratio %',data:s.map(d=>Math.round(brOf(d)*100)),backgroundColor:'rgba(52,194,110,0.75)',borderRadius:2,yAxisID:'y'},
+        {label:'Vol/Avg',data:s.map(d=>d.vol_ma_ratio||0),type:'line',tension:0.3,borderColor:'rgba(20,184,212,0.9)',backgroundColor:'rgba(20,184,212,0.1)',pointRadius:3,yAxisID:'y2'}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:true,labels:{color:TC,boxWidth:10,font:{size:9}}}},
+      scales:{
+        x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
+        y:{ticks:{color:TC,callback:v=>v+'%'},grid:{color:GC},min:0,max:100},
+        y2:{position:'right',ticks:{color:'#14b8d4',callback:v=>v+'x'},grid:{display:false}}
+      }
+    }
+  });
+})();
+
+// ── Loser bar ────────────────────────────────────────────────
+(function() {
+  const s = [...LOSERS].sort((a,b)=>brOf(a)-brOf(b));
+  new Chart(document.getElementById('loserBar'), {
+    type:'bar',
+    data:{
+      labels: s.map(d=>d.symbol),
+      datasets:[
+        {label:'Buy Ratio %',data:s.map(d=>Math.round(brOf(d)*100)),backgroundColor:'rgba(232,96,48,0.75)',borderRadius:2,yAxisID:'y'},
+        {label:'Vol/Avg',data:s.map(d=>d.vol_ma_ratio||0),type:'line',tension:0.3,borderColor:'rgba(20,184,212,0.9)',backgroundColor:'rgba(20,184,212,0.1)',pointRadius:3,yAxisID:'y2'}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:true,labels:{color:TC,boxWidth:10,font:{size:9}}}},
+      scales:{
+        x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
+        y:{ticks:{color:TC,callback:v=>v+'%'},grid:{color:GC},min:0,max:100},
+        y2:{position:'right',ticks:{color:'#14b8d4',callback:v=>v+'x'},grid:{display:false}}
+      }
+    }
+  });
+})();
+
+// ── Order flow bar ───────────────────────────────────────────
+(function() {
+  const s = [...ALL].sort((a,b)=>brOf(b)-brOf(a));
+  const buyK  = s.map(d=>Math.round((d._of_buy_vol||d.intra_buy_vol||0)/1000));
+  const sellK = s.map(d=>-Math.round((d._of_sell_vol||d.intra_sell_vol||0)/1000));
+  new Chart(document.getElementById('ofBar'), {
+    type:'bar',
+    data:{
+      labels:s.map(d=>d.symbol),
+      datasets:[
+        {label:'Buy Vol (K)',data:buyK,backgroundColor:'rgba(52,194,110,0.8)',borderRadius:2},
+        {label:'Sell Vol (K)',data:sellK,backgroundColor:'rgba(232,96,48,0.8)',borderRadius:2}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw)}K cp`}}},
+      scales:{
+        x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
+        y:{ticks:{color:TC,callback:v=>Math.abs(v)+'K'},grid:{color:GC}}
+      }
+    }
+  });
+})();
+
+// ── Buy ratio line ────────────────────────────────────────────
+(function() {
+  const s = [...ALL].sort((a,b)=>brOf(b)-brOf(a));
+  const ratios = s.map(d=>Math.round(brOf(d)*100));
+  new Chart(document.getElementById('brLine'), {
+    type:'line',
+    data:{
+      labels:s.map(d=>d.symbol),
+      datasets:[
+        {label:'Buy Ratio %',data:ratios,borderColor:'#14b8d4',
+         pointBackgroundColor:ratios.map(v=>v>=60?'#34c26e':v<=40?'#e86030':'#f5c240'),
+         pointRadius:5,tension:0.3,fill:false},
+        {label:'50%',data:Array(s.length).fill(50),borderColor:'rgba(78,122,153,0.4)',borderDash:[4,3],pointRadius:0},
+        {label:'60%',data:Array(s.length).fill(60),borderColor:'rgba(52,194,110,0.25)',borderDash:[2,4],pointRadius:0},
+        {label:'40%',data:Array(s.length).fill(40),borderColor:'rgba(232,96,48,0.25)',borderDash:[2,4],pointRadius:0},
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Buy ratio: ${c.raw}%`}}},
+      scales:{
+        x:{ticks:{color:TC,maxRotation:40},grid:{color:GC}},
+        y:{ticks:{color:TC,callback:v=>v+'%'},grid:{color:GC},min:0,max:100}
+      }
+    }
+  });
+})();
+
+// ── Scatter: tech vs fund ────────────────────────────────────
+(function() {
+  const pts = ALL.map(d=>({
+    x: d.tech_score||0,
+    y: d.fund_score||0,
+    r: Math.max(4,Math.min(22,Math.sqrt((d.vol_today||1000)/5000))),
+    label:d.symbol, decision:d.decision, score:d.total_score
+  }));
+  const chart = new Chart(document.getElementById('scatter'), {
+    type:'bubble',
+    data:{datasets:[{
+      data:pts,
+      backgroundColor:pts.map(p=>decColor(p.decision)),
+      borderColor:pts.map(p=>decColor(p.decision)),
+      borderWidth:1
+    }]},
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>{const p=c.raw;return `${p.label} | Tech:${p.x} Fund:${p.y} Score:${p.score}`;}}}
+      },
+      scales:{
+        x:{ticks:{color:TC},grid:{color:GC},title:{display:true,text:'Tech Score',color:TC},min:-55,max:45},
+        y:{ticks:{color:TC},grid:{color:GC},title:{display:true,text:'Fund Score',color:TC},min:-25,max:45}
+      }
+    },
+    plugins:[{
+      afterDraw(ch) {
+        const c=ch.ctx,xa=ch.scales.x,ya=ch.scales.y;
+        const x0=xa.getPixelForValue(0),y0=ya.getPixelForValue(0);
+        c.save();c.strokeStyle='rgba(78,122,153,0.35)';c.lineWidth=1;c.setLineDash([4,3]);
+        c.beginPath();c.moveTo(xa.left,y0);c.lineTo(xa.right,y0);c.stroke();
+        c.beginPath();c.moveTo(x0,ya.top);c.lineTo(x0,ya.bottom);c.stroke();
+        c.font='9px Space Mono';c.fillStyle='rgba(200,220,234,0.7)';
+        ch.data.datasets[0].data.forEach((p,i)=>{
+          const mx=ch.getDatasetMeta(0).data[i];
+          c.fillText(p.label,mx.x+6,mx.y-5);
+        });
+        c.restore();
+      }
+    }]
+  });
+})();
+
+// ── RSI bar ──────────────────────────────────────────────────
+(function() {
+  const s=[...ALL].sort((a,b)=>(a.rsi||50)-(b.rsi||50));
+  const rsis=s.map(d=>d.rsi||0);
+  new Chart(document.getElementById('rsiBar'),{
+    type:'bar',
+    data:{labels:s.map(d=>d.symbol),datasets:[{
+      data:rsis,
+      backgroundColor:rsis.map(v=>v>=70?'rgba(232,96,48,0.8)':v<=30?'rgba(52,194,110,0.8)':'rgba(245,194,64,0.6)'),
+      borderRadius:2
+    }]},
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`RSI: ${c.raw.toFixed(1)}`}}},
+      scales:{
+        x:{ticks:{color:TC,maxRotation:45},grid:{color:GC}},
+        y:{ticks:{color:TC},grid:{color:GC},min:0,max:100}
+      }
+    },
+    plugins:[{afterDraw(ch){
+      const c=ch.ctx,ya=ch.scales.y,xa=ch.scales.x;
+      c.save();c.lineWidth=1;c.setLineDash([3,3]);
+      c.strokeStyle='rgba(232,96,48,0.5)';c.beginPath();const y70=ya.getPixelForValue(70);c.moveTo(xa.left,y70);c.lineTo(xa.right,y70);c.stroke();
+      c.strokeStyle='rgba(52,194,110,0.5)';c.beginPath();const y30=ya.getPixelForValue(30);c.moveTo(xa.left,y30);c.lineTo(xa.right,y30);c.stroke();
+      c.restore();
+    }}]
+  });
+})();
+
+// ── Vol ratio bar ─────────────────────────────────────────────
+(function() {
+  const s=[...ALL].sort((a,b)=>(b.vol_ma_ratio||0)-(a.vol_ma_ratio||0));
+  const vols=s.map(d=>d.vol_ma_ratio||0);
+  new Chart(document.getElementById('volBar'),{
+    type:'bar',
+    data:{labels:s.map(d=>d.symbol),datasets:[{
+      data:vols,
+      backgroundColor:vols.map(v=>v>=3?'rgba(20,184,212,0.85)':v>=1.5?'rgba(20,184,212,0.5)':v<0.5?'rgba(78,122,153,0.3)':'rgba(78,122,153,0.55)'),
+      borderRadius:2
+    }]},
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Vol ratio: ${c.raw.toFixed(2)}x`}}},
+      scales:{
+        x:{ticks:{color:TC,maxRotation:45},grid:{color:GC}},
+        y:{ticks:{color:TC,callback:v=>v+'x'},grid:{color:GC}}
+      }
+    }
+  });
+})();
+
+// ── Detail table ──────────────────────────────────────────────
+(function() {
+  const s=[...ALL].sort((a,b)=>(b.total_score||0)-(a.total_score||0));
+  const dc=d=>d.replace(/ /g,'_');
+  document.getElementById('detail-tbody').innerHTML = s.map(d=>{
+    const br=brOf(d), sr=1-br, brP=Math.round(br*100), srP=Math.round(sr*100);
+    const rC=d.rsi>=70?'c-sell':d.rsi<=30?'c-buy':'c-neu';
+    const sC=(d.total_score||0)>=40?'c-buy':(d.total_score||0)<=-15?'c-sell':'c-neu';
+    const tC=(d.tech_score||0)>0?'var(--buy)':(d.tech_score||0)<0?'var(--sell)':'var(--muted)';
+    const fC=(d.fund_score||0)>0?'var(--buy)':(d.fund_score||0)<0?'var(--sell)':'var(--muted)';
+    return `<tr>
+      <td><span class="sym-badge">${d.symbol}</span></td>
+      <td style="font-family:var(--mono);font-size:9px;color:${d.group==='GAINER'?'var(--buy)':'var(--sell)'}">${d.group}</td>
+      <td class="r">${d.price}</td>
+      <td class="r" style="color:${brP>=60?'var(--buy)':brP<=40?'var(--sell)':'var(--neu)'}">${brP}%</td>
+      <td><div class="of-bar-wrap"><div class="of-bar-track"><div class="of-bar-buy" style="width:${brP}%"></div><div class="of-bar-sell" style="width:${srP}%"></div></div><span class="of-pct" style="color:var(--muted)">${brP}/${srP}</span></div></td>
+      <td class="r" style="color:${(d.vol_ma_ratio||0)>=2?'var(--acc)':(d.vol_ma_ratio||0)<0.5?'var(--muted)':'var(--text)'}">${(d.vol_ma_ratio||0).toFixed(2)}x</td>
+      <td class="r ${rC}">${d.rsi?d.rsi.toFixed(1):'—'}</td>
+      <td class="r" style="color:${tC}">${(d.tech_score||0)>0?'+':''}${d.tech_score||0}</td>
+      <td class="r" style="color:${fC}">${(d.fund_score||0)>0?'+':''}${d.fund_score||0}</td>
+      <td class="r ${sC}">${(d.total_score||0)>0?'+':''}${(d.total_score||0).toFixed(1)}</td>
+      <td><span class="dec-chip dc-${dc(d.decision||'NEUTRAL')}">${d.decision||'—'}</span></td>
+    </tr>`;
+  }).join('');
+})();
+</script>
+</body>
+</html>
