@@ -679,7 +679,6 @@ function clientEnrich(r) {
   var flagsVn={}; (r.flags||'').split(',').forEach(function(f){ var k=f.trim(); if(_FLAG_VN[k])flagsVn[k]=_FLAG_VN[k]; });
   return Object.assign({},r,{_verdict:verdict,_groups:groupsMap,_groups_arr:groupsArr,_flags_vn:flagsVn});
 }
-
 // ── Shared helpers ───────────────────────────────────────────
 const fs  = v => { const n = parseFloat(v)||0; return (n>0?'+':'')+n.toFixed(Math.abs(n)>=10||n%1===0?0:2); };
 const DC  = d => ({'STRONG BUY':'SB','STRONG_BUY':'SB','BUY':'BUY','NEUTRAL':'NEU','SELL':'SEL','STRONG SELL':'SS','STRONG_SELL':'SS'})[d]||'NEU';
