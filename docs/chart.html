@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title>Market Movers Chart</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
@@ -37,7 +37,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .chart-card-title{font-family:var(--mono);font-size:10px;color:var(--text);letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
 .chart-card-title span{color:var(--muted);font-size:9px}
 /* FIX: chart-wrap overflow:hidden để canvas không vỡ layout */
-.chart-wrap{position:relative;overflow:hidden}
+.chart-wrap{position:relative;overflow:hidden;width:100%}
 .chart-card-wide{background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:14px 16px 12px}
 
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
@@ -59,26 +59,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .filter-count{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--muted)}
 .c-buy{color:var(--buy)}.c-sell{color:var(--sell)}.c-neu{color:var(--neu)}.c-acc{color:var(--acc)}
 
-.table-card{background:var(--surf);border:1px solid var(--border);border-radius:4px;overflow:hidden}
-.tbl{width:100%;border-collapse:collapse;font-size:11px}
-.tbl th{background:#0a1624;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;white-space:nowrap}
-.tbl th.r{text-align:right}
-.tbl td{padding:7px 10px;border-bottom:1px solid #0d1b28;vertical-align:middle}
-.tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:rgba(20,184,212,.03)}
-.tbl td.r{text-align:right;font-family:var(--mono);font-size:10px}
-.sym-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:#dceefa}
-.dec-chip{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;border:1px solid;white-space:nowrap}
-.dc-BUY{background:var(--buy-bg);border-color:var(--buy);color:var(--buy)}
-.dc-STRONG_BUY{background:var(--buy-bg);border-color:#00e896;color:#00e896}
-.dc-NEUTRAL{background:#1a1400;border-color:var(--neu);color:var(--neu)}
-.dc-SELL{background:var(--sell-bg);border-color:var(--sell);color:var(--sell)}
-.dc-STRONG_SELL{background:#180308;border-color:#e02040;color:#e02040}
-.of-bar-wrap{display:flex;align-items:center;gap:5px}
-.of-bar-track{flex:1;height:4px;background:#0d1e2e;border-radius:2px;overflow:hidden;position:relative;min-width:60px}
-.of-bar-buy{position:absolute;left:0;top:0;height:100%;background:var(--buy);border-radius:2px}
-.of-bar-sell{position:absolute;right:0;top:0;height:100%;background:var(--sell);border-radius:2px}
-.of-pct{font-family:var(--mono);font-size:9px;white-space:nowrap}
+
 </style>
 </head>
 <body>
@@ -200,28 +181,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
     </div>
   </div>
 
-  <div>
-    <div class="section-label">📋 Bảng chi tiết</div>
-    <div class="table-card">
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th>Mã</th><th>Nhóm</th>
-            <th class="r">Giá</th>
-            <th class="r">Buy%</th>
-            <th style="min-width:110px">OF Bar</th>
-            <th class="r">Vol/Avg</th>
-            <th class="r">RSI</th>
-            <th class="r">Tech</th>
-            <th class="r">Fund</th>
-            <th class="r">Score</th>
-            <th>Decision</th>
-          </tr>
-        </thead>
-        <tbody id="detail-tbody"></tbody>
-      </table>
-    </div>
-  </div>
 
 </div>
 
@@ -239,7 +198,7 @@ Chart.defaults.color = '#4e7a99';
 Chart.defaults.font.family = "'Space Mono', monospace";
 Chart.defaults.font.size = 10;
 Chart.defaults.animation = false;          // tắt animation toàn cục
-Chart.defaults.responsive = false;         // tắt auto-resize toàn cục
+Chart.defaults.responsive = true;          // auto-scale theo container
 Chart.defaults.maintainAspectRatio = false;// không giữ tỷ lệ, dùng height của canvas
 
 const GC = 'rgba(28,50,72,0.7)';
@@ -248,9 +207,9 @@ const TC = '#4e7a99';
 // ── Shared static options (merge vào mỗi chart) ──────────────
 // responsive:false + animation:false đặt tại mỗi options để chắc chắn
 const STATIC = {
-  responsive: false,
-  animation: false,
-  maintainAspectRatio: false,
+  responsive: true,           // scale theo container, không zoom
+  animation: false,           // không có hiệu ứng
+  maintainAspectRatio: false, // dùng height CSS thay vì ratio cố định
 };
 
 // ── Context header ───────────────────────────────────────────
@@ -376,31 +335,6 @@ function updateCharts() {
     ]);
   })();
 
-  // Table
-  (function() {
-    const s = [...filtered].sort(function(a,b){ return (b.total_score||0)-(a.total_score||0); });
-    const dc = function(d){ return d.replace(/ /g,'_'); };
-    document.getElementById('detail-tbody').innerHTML = s.map(function(d){
-      const br=brOf(d), sr=1-br, brP=Math.round(br*100), srP=Math.round(sr*100);
-      const rC=d.rsi>=70?'c-sell':d.rsi<=30?'c-buy':'c-neu';
-      const sC=(d.total_score||0)>=40?'c-buy':(d.total_score||0)<=-15?'c-sell':'c-neu';
-      const tC=(d.tech_score||0)>0?'var(--buy)':(d.tech_score||0)<0?'var(--sell)':'var(--muted)';
-      const fC=(d.fund_score||0)>0?'var(--buy)':(d.fund_score||0)<0?'var(--sell)':'var(--muted)';
-      return '<tr>'+
-        '<td><span class="sym-badge">'+d.symbol+'</span></td>'+
-        '<td style="font-family:var(--mono);font-size:9px;color:'+(d.group==='GAINER'?'var(--buy)':'var(--sell)')+'">'+d.group+'</td>'+
-        '<td class="r">'+d.price+'</td>'+
-        '<td class="r" style="color:'+(brP>=60?'var(--buy)':brP<=40?'var(--sell)':'var(--neu)')+'">'+brP+'%</td>'+
-        '<td><div class="of-bar-wrap"><div class="of-bar-track"><div class="of-bar-buy" style="width:'+brP+'%"></div><div class="of-bar-sell" style="width:'+srP+'%"></div></div><span class="of-pct" style="color:var(--muted)">'+brP+'/'+srP+'</span></div></td>'+
-        '<td class="r" style="color:'+((d.vol_ma_ratio||0)>=2?'var(--acc)':(d.vol_ma_ratio||0)<0.5?'var(--muted)':'var(--text)')+'">'+((d.vol_ma_ratio||0).toFixed(2))+'x</td>'+
-        '<td class="r '+rC+'">'+(d.rsi?d.rsi.toFixed(1):'—')+'</td>'+
-        '<td class="r" style="color:'+tC+'">'+(((d.tech_score||0)>0?'+':'')+(d.tech_score||0))+'</td>'+
-        '<td class="r" style="color:'+fC+'">'+(((d.fund_score||0)>0?'+':'')+(d.fund_score||0))+'</td>'+
-        '<td class="r '+sC+'">'+(((d.total_score||0)>0?'+':'')+(d.total_score||0).toFixed(1))+'</td>'+
-        '<td><span class="dec-chip dc-'+dc(d.decision||'NEUTRAL')+'">'+(d.decision||'—')+'</span></td>'+
-        '</tr>';
-    }).join('');
-  })();
 }
 
 setupFB('fd',   function(v){ fDec=v; }, DEC_CLS, updateCharts);
