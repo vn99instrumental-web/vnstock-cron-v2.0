@@ -40,7 +40,7 @@ def run():
     log.info(f"=== PRICE LEVELS V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
 
     signals    = load_json("signals_v2.json")
-    order_flow = load_json("order_flow.json")  # dùng chung với v3
+    order_flow = load_json("order_flow_v2.json")
 
     if not signals:
         log.error("signals_v2.json not found — abort")
