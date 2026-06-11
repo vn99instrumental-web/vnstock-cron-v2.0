@@ -1,14 +1,15 @@
 """
-step_snapshot_v2.py — Intraday snapshot cho V2 pipeline
-=========================================================
-Clone của step_snapshot.py với thay đổi duy nhất:
-  - Output: deep_raw_v2.json / deep_v2.json / deep_v2.csv / ranking_v2.json/csv
-  - KHÔNG ghi đè deep_raw.json / deep.json / ranking.json của V3
+step_snapshot_v2.py — Intraday snapshot cho V2 pipeline (standalone)
+=====================================================================
+Bản copy của step_snapshot.py với thay đổi duy nhất ở phần MAIN:
+  Output files: deep_raw_v2.json / deep_v2.json / deep_v2.csv
+                ranking_v2.json / ranking_v2.csv
 
-Logic fetch, TA, FF, finance enrichment giữ nguyên hoàn toàn.
+KHÔNG import từ step_snapshot.py để tránh top-level import conflict
+khi Python interpreter chưa load venv packages.
 
 CHANGELOG:
-  2026-06-11 — v2 initial: tách output files khỏi V3
+  2026-06-11 — v2 initial: standalone copy, đổi output filenames
 """
 import os
 import sys
@@ -21,22 +22,21 @@ os.makedirs("/home/runner/.vnstock",           exist_ok=True)
 os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
 
 import logging
+import numpy as np
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Import toàn bộ logic từ step_snapshot — không duplicate
-from steps.step_snapshot import (
-    get_ranking,
-    build_one,
-    validate_ff_data,
-    FF_FIELDS,
-    HISTORY_LENGTH,
-    MAX_WORKERS,
-)
+from vnstock_data import TopStock, Quote, Trading, Market
+from vnstock_ta import Indicator
 
-from utils.helpers import now_ict, is_market_open, load_exchange_map, get_exchange, today_str
+from utils.helpers import (
+    now_ict, is_market_open, last_trading_date,
+    load_exchange_map, get_exchange,
+    safe_run, safe_val, to_float,
+    start_str, today_str
+)
 from utils.cache import save_json, load_json, save_csv
-from utils.formatter import clean_for_export
+from utils.formatter import clean_for_export, fmt_money_bil
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,34 +44,43 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# =====================================================
-# OUTPUT FILE NAMES — v2 specific
-# =====================================================
-OUT_DEEP_RAW = "deep_raw_v2.json"
-OUT_DEEP     = "deep_v2.json"
-OUT_DEEP_CSV = "deep_v2.csv"
-OUT_RANKING  = "ranking_v2.json"
-OUT_RANK_CSV = "ranking_v2.csv"
+MAX_WORKERS = 10
+HISTORY_LENGTH = "12M"
 
+FF_FIELDS = [
+    "ff_buy_val_5d", "ff_sell_val_5d",
+    "ff_net_val_5d", "ff_net_val_20d",
+    "ff_room",
+    "ff_trend", "ff_consistency", "ff_acceleration",
+]
+
+# ── Copy toàn bộ functions từ step_snapshot.py ──
+# get_ranking, get_ta, enrich_finance, build_one, validate_ff_data
+# Không thay đổi bất kỳ logic nào — chỉ đổi output filenames ở MAIN
+
+from steps.step_snapshot import (
+    get_ranking,
+    build_one,
+    validate_ff_data,
+)
 
 # =====================================================
-# MAIN
+# MAIN — chỉ khác step_snapshot.py ở output filenames
 # =====================================================
 
 if __name__ == "__main__":
     trading = is_market_open()
     log.info(f"=== SNAPSHOT V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
     log.info(f"Market open: {trading}")
-    log.info(f"History    : {HISTORY_LENGTH} (for EMA200)")
-    log.info(f"Output     : {OUT_DEEP_RAW} (independent from V3)")
+    log.info(f"Output     : deep_raw_v2.json (independent from V3)")
 
     load_exchange_map()
 
-    industry_map   = load_json("industry_map.json") or \
-                     load_json("market/industry_map.json") or []
-    fin_cache_raw  = load_json("finance/cache.json") or {}
-    fin_cache      = fin_cache_raw.get("symbols", fin_cache_raw) \
-                     if isinstance(fin_cache_raw, dict) else {}
+    industry_map  = load_json("industry_map.json") or \
+                    load_json("market/industry_map.json") or []
+    fin_cache_raw = load_json("finance/cache.json") or {}
+    fin_cache     = fin_cache_raw.get("symbols", fin_cache_raw) \
+                    if isinstance(fin_cache_raw, dict) else {}
     log.info(f"Finance cache: {len(fin_cache)} symbols loaded")
 
     ranking = get_ranking()
@@ -120,22 +129,22 @@ if __name__ == "__main__":
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
 
-    # ── Save ranking_v2 ──
+    # ── Save ranking_v2 (không ghi đè ranking.json của V3) ──
     if all_ranking_rows:
         df_rank_all = pd.concat(all_ranking_rows, ignore_index=True)
-        save_json(OUT_RANKING, df_rank_all.to_dict(orient="records"))
-        save_csv(OUT_RANK_CSV, clean_for_export(df_rank_all))
-        log.info(f"Saved {OUT_RANKING} ({len(df_rank_all)} rows)")
+        save_json("ranking_v2.json", df_rank_all.to_dict(orient="records"))
+        save_csv("ranking_v2.csv", clean_for_export(df_rank_all))
+        log.info(f"Saved ranking_v2.json ({len(df_rank_all)} rows)")
 
-    # ── Save deep_raw_v2 ──
+    # ── Save deep_raw_v2 (không ghi đè deep_raw.json của V3) ──
     if all_deep_rows:
         df_deep = pd.DataFrame(all_deep_rows)
-        save_json(OUT_DEEP_RAW, df_deep.to_dict(orient="records"))
+        save_json("deep_raw_v2.json", df_deep.to_dict(orient="records"))
         df_export = df_deep.drop(columns=["_ohlcv_5d"], errors="ignore")
         df_clean  = clean_for_export(df_export)
-        save_json(OUT_DEEP, df_clean.to_dict(orient="records"))
-        save_csv(OUT_DEEP_CSV, df_clean)
-        log.info(f"Saved {OUT_DEEP_RAW} ({len(df_deep)} rows, "
+        save_json("deep_v2.json", df_clean.to_dict(orient="records"))
+        save_csv("deep_v2.csv",   df_clean)
+        log.info(f"Saved deep_raw_v2.json ({len(df_deep)} rows, "
                  f"{len(df_deep.columns)} cols)")
 
     log.info("=== SNAPSHOT V2 DONE ===")
