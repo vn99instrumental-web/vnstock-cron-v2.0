@@ -154,14 +154,21 @@ def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
         else:                                   vnindex_ret =  0.0
 
     # RS = stock / market (tránh chia 0)
-    # NaN guard
     import math
     if math.isnan(stock_ret): return 0, ""
 
-    if abs(vnindex_ret) < 0.1:
-        rs = 1.0 + stock_ret / 10.0
-    else:
-        rs = (1 + stock_ret / 100) / (1 + vnindex_ret / 100)
+    # Nếu không có VNINDEX return thực → dùng absolute return làm tín hiệu
+    vnindex_real = vnindex_ret is not None and abs(vnindex_ret) >= 0.1
+    if not vnindex_real:
+        # Absolute mode: score dựa trên return tuyệt đối của cổ phiếu
+        if   stock_ret >  15: score = +8
+        elif stock_ret >   5: score = +4
+        elif stock_ret >  -5: score =  0
+        elif stock_ret > -15: score = -4
+        else:                 score = -8
+        return score, f"RS_abs={stock_ret:+.1f}%(no_VN) {score:+d}"
+
+    rs = (1 + stock_ret / 100) / (1 + vnindex_ret / 100)
 
     score = 0
     if   rs > 1.30: score = +8
