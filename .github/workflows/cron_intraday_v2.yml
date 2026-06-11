@@ -2,10 +2,13 @@ name: VNStock Intraday V2
 
 on:
   schedule:
-    # Chạy 2 lần/ngày, offset +5 phút sau V3 để đảm bảo V3 đã commit output
-    # V3 chạy lúc 10:30 và 14:30 ICT → V2 chạy 10:35 và 14:35 ICT
-    - cron: '35 3 * * 1-5'   # 10:35 ICT (= 3:35 UTC)
-    - cron: '35 7 * * 1-5'   # 14:35 ICT (= 7:35 UTC) ← run quan trọng, record predictions
+    # V2 pipeline độc lập — không phụ thuộc V3
+    # Chạy cùng giờ với V3 (hoặc lệch nhẹ nếu muốn tránh API rate limit)
+    - cron: '30 2 * * 1-5'   # 09:30 ICT
+    - cron: '30 3 * * 1-5'   # 10:30 ICT
+    - cron: '30 4 * * 1-5'   # 11:30 ICT
+    - cron: '30 6 * * 1-5'   # 13:30 ICT
+    - cron: '30 7 * * 1-5'   # 14:30 ICT ← record predictions
   workflow_dispatch:
     inputs:
       force_record:
@@ -16,7 +19,7 @@ on:
 permissions:
   contents: write
 
-# Group riêng — không block/bị block bởi vnstock-intraday (v3)
+# Group riêng — không block/bị block bởi vnstock-intraday (V3)
 concurrency:
   group: vnstock-intraday-v2
   cancel-in-progress: false
@@ -24,7 +27,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15   # V2 không gọi API → nhanh hơn V3 nhiều
+    timeout-minutes: 30   # V2 fetch data riêng → tương đương V3
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
@@ -45,7 +48,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Dùng cùng cache key với V3 — không cần install lại
+      # Dùng cùng cache key với V3 — venv đã có sẵn
       - name: Get week number
         id: date
         run: echo "week=$(date +'%Y-W%V')" >> $GITHUB_OUTPUT
@@ -65,40 +68,42 @@ jobs:
           pip install --upgrade pip
           pip install vnstock pandas numpy
 
-      # ──────────────────────────────────────────────────────────────────
-      # VERIFY V3 OUTPUT TỒN TẠI
-      # V2 phụ thuộc vào deep_raw.json + order_flow.json từ V3.
-      # Nếu V3 chưa chạy (ngày lễ, lỗi...) → abort sớm, không ghi rác.
-      # ──────────────────────────────────────────────────────────────────
-      - name: Verify V3 output exists
+      - name: Ensure latest vnstock packages
         run: |
-          for f in output/deep_raw.json output/order_flow.json; do
-            if [ ! -f "$f" ]; then
-              echo "❌ $f not found — V3 chưa chạy hoặc chưa commit"
-              exit 1
-            fi
-          done
-
-          # Kiểm tra deep_raw.json không quá cũ (>2 giờ = V3 có vấn đề)
-          FILE_AGE=$(( $(date +%s) - $(stat -c %Y output/deep_raw.json) ))
-          echo "deep_raw.json age: ${FILE_AGE}s"
-          if [ "$FILE_AGE" -gt 7200 ]; then
-            echo "⚠️ deep_raw.json quá cũ (${FILE_AGE}s > 7200s) — V3 có thể lỗi"
-            echo "Tiếp tục nhưng kết quả có thể stale"
+          VENV_PIP="/opt/vnstock/.venv/bin/pip"
+          if [ ! -x "$VENV_PIP" ]; then
+            echo "⚠️ Venv pip not found — skipping"
+            exit 0
           fi
-
-          echo "✅ V3 output OK"
+          $VENV_PIP install --upgrade vnstock 2>&1 | tail -3 || true
 
       # ──────────────────────────────────────────────────────────────────
-      # V2 PIPELINE
-      # Không gọi API — chỉ đọc files từ V3 + tính toán
+      # V2 PIPELINE — hoàn toàn độc lập với V3
+      # Fetch data riêng → output files riêng (_v2 suffix)
+      # Context + News dùng chung (daily, không intraday)
       # ──────────────────────────────────────────────────────────────────
-      - name: Step Scoring V2 (weighted normalized)
+      - name: Step Snapshot V2 — Ranking + Deep
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_snapshot_v2.py
+
+      - name: Step Order Flow V2
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_order_flow_v2.py
+
+      - name: Step Scoring V2 (weighted normalized)
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
           source /opt/vnstock/.venv/bin/activate
           python steps/step_scoring_v2.py
 
@@ -115,20 +120,26 @@ jobs:
           python steps/step_record_predictions_v2.py
 
       # ──────────────────────────────────────────────────────────────────
-      # COMMIT — chỉ commit output v2, không đụng v3 files
+      # COMMIT — chỉ add v2 files, không đụng v3
       # ──────────────────────────────────────────────────────────────────
       - name: Commit V2 output
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Chỉ add v2 files — không add lại v3 files tránh conflict
-          git add output/signals_v2.json \
-                  output/signals_v2.csv \
-                  output/trade_levels_v2.json \
-                  output/trade_levels_v2.csv \
-                  output/history/predictions_v2/ \
-                  2>/dev/null || true
+          git add \
+            output/deep_raw_v2.json \
+            output/deep_v2.json \
+            output/deep_v2.csv \
+            output/ranking_v2.json \
+            output/ranking_v2.csv \
+            output/order_flow_v2.json \
+            output/signals_v2.json \
+            output/signals_v2.csv \
+            output/trade_levels_v2.json \
+            output/trade_levels_v2.csv \
+            output/history/predictions_v2/ \
+            2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "No changes to commit — skipping."
