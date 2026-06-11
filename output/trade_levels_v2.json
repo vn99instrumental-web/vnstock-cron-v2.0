@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-06-11T16:31:10.057593+07:00",
+  "generated_at": "2026-06-11T23:49:37.193910+07:00",
   "scoring_version": "v2",
   "buy_count": 1,
-  "exit_count": 7,
+  "exit_count": 6,
   "buy_levels": [
     {
       "symbol": "VVS",
       "exchange": "HSX",
       "decision": "BUY",
-      "confidence": "MEDIUM",
+      "confidence": "HIGH",
       "entry_style": "PULLBACK",
       "price": 111.0,
       "entry": null,
@@ -24,7 +24,7 @@
       "nearest_support": 105.3,
       "nearest_resist": 114.9,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "SKIP_WIDE_STOP",
+      "flags": "CONSENSUS_BULL,SKIP_WIDE_STOP",
       "skip": "wide_stop"
     }
   ],
@@ -46,7 +46,17 @@
       "confidence": "LOW",
       "entry_style": "EXIT",
       "price": 3.27,
-      "exit_trigger": 3.15,
+      "exit_trigger": 3.0,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "KBC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 31.0,
+      "exit_trigger": 30.6,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -56,7 +66,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 4.7,
-      "exit_trigger": 4.4,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -70,33 +80,13 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "HRC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "LOW",
-      "entry_style": "EXIT",
-      "price": 40.2,
-      "exit_trigger": 39.7,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "PNJ",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 62.0,
-      "exit_trigger": 61.9,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "ITD",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 15.45,
-      "exit_trigger": 14.8,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
