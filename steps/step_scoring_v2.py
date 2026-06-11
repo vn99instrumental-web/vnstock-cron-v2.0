@@ -1,6 +1,6 @@
 """
-step_scoring_v2.py — Scoring engine v2 (Weighted Normalized, parallel với v3)
-==============================================================================
+step_scoring_v2.py — Scoring engine v2 (Weighted Normalized + Extended Indicators)
+====================================================================================
 Chạy SONG SONG với step_scoring.py (v3). KHÔNG thay thế v3.
 
 THAY ĐỔI SO VỚI V3:
@@ -10,28 +10,28 @@ THAY ĐỔI SO VỚI V3:
   4. Fundamental/CF/Growth vẫn có score 2 chiều đầy đủ — weight nhỏ hơn
   5. Threshold mới: ≥50 STRONG BUY | ≥25 BUY | ≥-10 NEUTRAL | ≥-25 SELL
   6. Output: signals_v2.json / signals_v2.csv
+  7. Bỏ news group — weight phân bổ lại
 
-KHÔNG THAY ĐỔI SO VỚI V3:
-  - Toàn bộ indicator logic (EMA, RSI, MACD, CMF, FF, Fundamental...)
-  - Sector-aware rules (CF skip, D/E skip)
-  - Order flow integration
-  - Depth scoring
-  - News scoring
-  - Confluence bonus (tính ngoài weighted sum, cộng thêm)
-  - Phase 2.11 sign calibration (mean-reversion VN)
+EXTENDED INDICATORS (không có trong V3):
+  Trend group:       + RS vs VNINDEX (20d relative strength)
+                     + 52W High proximity / breakout
+  Momentum group:    + ROC(10) — rate of change 10 ngày
+  Volatility group:  + NR7 setup — narrow range breakout setup
+  Depth group:       + Bid/Ask aggregate imbalance
+  FF group:          + Foreign room utilization
+  Fundamental group: + Dividend yield score
+  Growth group:      + EPS consistency (N quý liên tiếp tăng)
 
-WEIGHT RATIONALE (horizon ≤30 ngày):
-  Technical bucket (58%): IC cao nhất T+5→T+30
-  FF + Smart Money (20%): leading 5–15 ngày
-  Context + News   ( 8%): bối cảnh, decay nhưng vẫn valid
-  Fund + CF + Growth (14%): IC thấp T+30 nhưng không bằng 0 — vẫn tính
+WEIGHT RATIONALE (horizon ≤30 ngày, bỏ news):
+  trend=22%, momentum=15%, volume=11%, order_flow=9%, volatility=4%,
+  depth=4%, ff=13%, context=4%, fundamental=7%, cf=5%, growth=6%
+  Tổng = 100%
 
 SCORING_VERSION = "v2"
-  → Predictions ghi vào history/predictions/ với version riêng
-  → Backtest v3 và v2 phân tách hoàn toàn
 
 CHANGELOG:
-  2026-06-11 — v2 initial: normalized weighted scoring, parallel với v3
+  2026-06-11 — v2 initial: normalized weighted scoring
+  2026-06-11 — v2.1: thêm 9 extended indicators, bỏ news group
 """
 import os
 import sys
@@ -45,21 +45,17 @@ import logging
 import pandas as pd
 
 from utils.helpers import now_ict, today_str
-from utils.cache   import load_json, save_json, save_csv, save_display_csv
+from utils.cache   import load_json, save_json, save_csv
 from utils.formatter import clean_for_export
-from utils.indicators_meta import INDICATORS_META
 
-# Import toàn bộ logic từ v3 — không duplicate code
 from steps.step_scoring import (
     SECTOR_CF_SKIP_SIGN,
     SECTOR_SKIP_DE,
     _is_sector_match,
     build_news_scores,
     score_order_flow,
-    _ob_valid,
-    WALL_MIN_VOL,
     score_depth,
-    score_symbol as _score_symbol_v3,   # dùng để lấy raw group scores
+    score_symbol as _score_symbol_v3,
 )
 
 logging.basicConfig(
@@ -74,68 +70,381 @@ log = logging.getLogger(__name__)
 
 SCORING_VERSION = "v2"
 
-# Cap cho từng group (giữ nguyên v3)
+# Cap cho từng group — extended caps cho groups có chỉ số mới
 GROUP_CAPS = {
-    "trend":       30,
-    "momentum":    23,
+    "trend":       45,   # +15 từ RS(±8) + 52W(±7)
+    "momentum":    26,   # +3 từ ROC(±3)
     "volume":      20,
-    "volatility":  5,
+    "volatility":  8,    # +3 từ NR7(±3)
     "order_flow":  10,
-    "depth":       5,
-    "ff":          20,
-    "fundamental": 20,
+    "depth":       7,    # +2 từ bid/ask imbalance(±2)
+    "ff":          27,   # +7 từ room utilization(±7)
+    "fundamental": 23,   # +3 từ dividend yield(±3)
     "cf":          10,
-    "growth":      10,
+    "growth":      15,   # +5 từ EPS consistency(±5)
     "context":     5,
-    "news":        5,
+    # news: bỏ
 }
 
-# Weight phân bổ (tổng = 1.00)
-# Horizon ≤30 ngày — technical dominant, fundamental nhỏ nhưng không bỏ
+# Weight — bỏ news (4%), phân bổ lại
 SCORING_WEIGHTS = {
-    "trend":       0.20,   # nền tảng (+0.02 tạm từ smart_money placeholder)
-    "momentum":    0.14,   # driver chính T+5→T+15
-    "volume":      0.10,   # xác nhận momentum
-    "order_flow":  0.08,   # IC cao nhưng decay sau T+10
-    "volatility":  0.04,   # nhỏ nhưng independent
-    "depth":       0.04,   # intraday, decay nhanh
-    "ff":          0.18,   # consistent T+5→T+30 (+0.06 tạm từ smart_money placeholder)
-    # smart_money (prop+insider): Phase B — khi có: trend=0.18, ff=0.12, smart_money=0.08
-    "context":     0.04,   # macro background
-    "news":        0.04,   # decay nhanh nhưng có signal
-    "fundamental": 0.06,   # IC thấp T+30 nhưng không bằng 0
-    "cf":          0.04,   # quality signal nhẹ
-    "growth":      0.04,   # lag nhất nhưng vẫn đóng góp
+    "trend":       0.22,   # tăng từ 0.20: RS + 52W quan trọng
+    "momentum":    0.15,   # tăng từ 0.14: thêm ROC
+    "volume":      0.11,   # tăng từ 0.10
+    "order_flow":  0.09,   # tăng từ 0.08
+    "volatility":  0.04,
+    "depth":       0.04,
+    "ff":          0.13,   # giảm từ 0.18: nhường context + fundamental
+    "context":     0.04,
+    "fundamental": 0.07,   # tăng từ 0.06: fair value + dividend
+    "cf":          0.05,   # tăng từ 0.04
+    "growth":      0.06,   # tăng từ 0.04: EPS consistency
+    # news: bỏ
 }
-# Tổng = 1.00: 0.20+0.14+0.10+0.08+0.04+0.04+0.18+0.04+0.04+0.06+0.04+0.04
-# Kiểm tra tổng = 1.00
+# Tổng = 1.00
 assert abs(sum(SCORING_WEIGHTS.values()) - 1.0) < 1e-9, \
     f"Weights sum = {sum(SCORING_WEIGHTS.values()):.4f} ≠ 1.0"
 
-# Confluence bonus vẫn cộng ngoài weighted sum (±10)
-CONFLUENCE_THRESHOLD_PCT = 0.30   # ≥30% cap = meaningful signal
-
-# Thresholds mới cho scale ±100
+CONFLUENCE_THRESHOLD_PCT = 0.30
 THRESHOLD_STRONG_BUY  =  50
 THRESHOLD_BUY         =  25
 THRESHOLD_NEUTRAL     = -10
 THRESHOLD_SELL        = -25
-# STRONG SELL: < -25
+
+
+# =====================================================
+# EXTENDED INDICATORS — tính thêm, không có trong V3
+# =====================================================
+
+def _to_float(v, default=None):
+    try:
+        x = float(v)
+        return x if x == x else default  # NaN check
+    except (TypeError, ValueError):
+        return default
+
+
+def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
+    """
+    Relative Strength vs VNINDEX 20 ngày.
+    RS = return_stock_20d / return_vnindex_20d
+    Dùng price_vs_ema20_pct làm proxy return 20d nếu không có direct return field.
+    VNINDEX return từ context.json (vnindex_return_20d hoặc tính từ ema fields).
+    """
+    # Stock return proxy: dùng ema_cross_pct (EMA20 vs EMA50) hoặc price_vs_ema20
+    # Tốt hơn: dùng (price - ema20) / ema20 * 100 = price_vs_ema20_pct
+    stock_ret = _to_float(row.get("price_vs_ema20_pct"))
+    if stock_ret is None:
+        return 0, ""
+
+    # VNINDEX return từ context
+    # context.json có vnindex_ema20_pct hoặc tương tự
+    vnindex_ret = _to_float(
+        context.get("vnindex_price_vs_ema20_pct") or
+        context.get("market_return_20d") or
+        context.get("vnindex_return_20d")
+    )
+
+    if vnindex_ret is None:
+        # Fallback: dùng market_regime để ước tính
+        regime = context.get("market_regime", "SIDEWAYS")
+        if regime in ("UPTREND",): vnindex_ret = 3.0
+        elif regime in ("DOWNTREND", "DEEP_DOWN"): vnindex_ret = -3.0
+        else: vnindex_ret = 0.5
+
+    # RS = stock / market (tránh chia 0)
+    if abs(vnindex_ret) < 0.1:
+        # Market flat — RS = stock performance tuyệt đối
+        rs = 1.0 + stock_ret / 10.0
+    else:
+        rs = (1 + stock_ret / 100) / (1 + vnindex_ret / 100)
+
+    score = 0
+    if   rs > 1.30: score = +8
+    elif rs > 1.10: score = +4
+    elif rs > 0.90: score =  0
+    elif rs > 0.70: score = -4
+    else:           score = -8
+
+    label = f"RS={rs:.2f}({'▲' if score>0 else '▼' if score<0 else '─'}) {score:+d}"
+    return score, label
+
+
+def score_52w_high(row: dict) -> tuple[int, str]:
+    """
+    52-Week High proximity / breakout.
+    Tính từ OHLCV 12M đã có trong deep_raw (qua ema200 và atr làm proxy).
+    Nếu có high_52w field thì dùng trực tiếp.
+    """
+    price = _to_float(row.get("price"))
+    if price is None or price <= 0:
+        return 0, ""
+
+    # Dùng high_52w nếu có (chưa có trong deep_raw hiện tại → fallback)
+    high_52w = _to_float(row.get("high_52w"))
+    low_52w  = _to_float(row.get("low_52w"))
+
+    if high_52w is None:
+        # Fallback: ước tính từ ema200 + atr
+        ema200 = _to_float(row.get("ema200"))
+        atr    = _to_float(row.get("atr"))
+        if ema200 is None or atr is None:
+            return 0, ""
+        # Rough 52W high = ema200 + 3×ATR (heuristic)
+        high_52w = ema200 + 3.0 * atr
+        low_52w  = ema200 - 3.0 * atr if low_52w is None else low_52w
+
+    if high_52w <= 0:
+        return 0, ""
+
+    pct_from_high = (price - high_52w) / high_52w * 100
+
+    score = 0
+    if   pct_from_high > 0:      score = +7   # Phá đỉnh 52W
+    elif pct_from_high > -5:     score = +3   # Trong 5% dưới đỉnh
+    elif pct_from_high > -20:    score =  0   # Neutral
+    elif pct_from_high > -50:    score = -3   # Xa đỉnh
+    else:                        score = -5   # Gần đáy 52W
+
+    label = f"52W_hi={pct_from_high:+.1f}% {score:+d}"
+    return score, label
+
+
+def score_roc10(row: dict) -> tuple[int, str]:
+    """
+    Rate of Change 10 ngày.
+    Dùng price_vs_ema20_pct làm proxy nếu không có ROC field trực tiếp.
+    ROC thực tế cần close[today] / close[10d_ago] — chưa có trong deep_raw.
+    Fallback: dùng MACD histogram direction + magnitude.
+    """
+    # Nếu có roc_10 field (sau khi thêm vào step_snapshot_v2)
+    roc = _to_float(row.get("roc_10"))
+    if roc is not None:
+        if   roc >  5: score = +3
+        elif roc >  2: score = +1
+        elif roc > -2: score =  0
+        elif roc > -5: score = -1
+        else:          score = -3
+        return score, f"ROC10={roc:+.1f}% {score:+d}"
+
+    # Fallback: MACD histogram + direction
+    macd_hist = _to_float(row.get("macd_hist"))
+    if macd_hist is None:
+        return 0, ""
+
+    atr_pct = _to_float(row.get("atr_pct"), 1.0)
+    # Normalize MACD hist by ATR
+    if atr_pct and atr_pct > 0:
+        price = _to_float(row.get("price"), 1)
+        norm_hist = macd_hist / (price * atr_pct / 100) if price else 0
+    else:
+        norm_hist = 0
+
+    if   norm_hist >  0.3: score = +2
+    elif norm_hist >  0.1: score = +1
+    elif norm_hist > -0.1: score =  0
+    elif norm_hist > -0.3: score = -1
+    else:                  score = -2
+
+    return score, f"ROC10_proxy(MACD)={norm_hist:+.2f} {score:+d}"
+
+
+def score_nr7(row: dict) -> tuple[int, str]:
+    """
+    NR7: Today range < range of every day in last 7 days.
+    Dùng _ohlcv_5d (5 ngày) làm proxy cho NR7 check.
+    NR4 nếu range hôm nay nhỏ nhất trong 5 ngày.
+    """
+    ohlcv = row.get("_ohlcv_5d") or []
+    if len(ohlcv) < 4:
+        return 0, ""
+
+    # Tính range từng ngày
+    ranges = []
+    for d in ohlcv:
+        if not isinstance(d, dict):
+            continue
+        h = _to_float(d.get("high"))
+        l = _to_float(d.get("low"))
+        if h and l and h > l:
+            ranges.append(h - l)
+
+    if len(ranges) < 3:
+        return 0, ""
+
+    today_range = ranges[-1]
+    prev_ranges = ranges[:-1]
+
+    if today_range <= 0:
+        return 0, ""
+
+    # NR setup: today range là nhỏ nhất
+    is_nr = today_range <= min(prev_ranges)
+    # Compression ratio: today / avg prev
+    avg_prev = sum(prev_ranges) / len(prev_ranges)
+    compression = today_range / avg_prev if avg_prev > 0 else 1.0
+
+    score = 0
+    if is_nr and compression < 0.6:
+        score = +3   # Squeeze mạnh — sắp breakout
+    elif is_nr and compression < 0.8:
+        score = +2   # Squeeze vừa
+    elif compression < 0.7:
+        score = +1   # Range co lại
+    # Không có điểm âm — NR chỉ là neutral-to-bullish setup
+
+    label = f"NR={'Y' if is_nr else 'N'} compress={compression:.2f} {score:+d}"
+    return score, label
+
+
+def score_bid_ask_imbalance(row: dict) -> tuple[int, str]:
+    """
+    Aggregate bid vs ask volume imbalance (3 levels).
+    ratio = sum(bid_vol 1-3) / sum(ask_vol 1-3)
+    """
+    bid_total = sum(
+        _to_float(row.get(f"bid_vol_{i}"), 0) or 0
+        for i in (1, 2, 3)
+    )
+    ask_total = sum(
+        _to_float(row.get(f"ask_vol_{i}"), 0) or 0
+        for i in (1, 2, 3)
+    )
+
+    if ask_total <= 0 or bid_total <= 0:
+        return 0, ""
+
+    ratio = bid_total / ask_total
+
+    if   ratio > 1.5: score = +2
+    elif ratio > 1.2: score = +1
+    elif ratio > 0.8: score =  0
+    elif ratio > 0.5: score = -1
+    else:             score = -2
+
+    label = f"BidAsk={ratio:.2f} {score:+d}"
+    return score, label
+
+
+def score_ff_room(row: dict) -> tuple[int, str]:
+    """
+    Foreign room utilization.
+    ff_room = % room còn lại (0–100).
+    Room < 5% = ngoại không thể mua thêm → áp lực cung.
+    """
+    room = _to_float(row.get("ff_room"))
+    if room is None:
+        return 0, ""
+
+    # ff_room là % còn lại
+    if   room > 30: score = +3   # Thoải mái, ngoại có thể mua tự do
+    elif room > 10: score =  0   # Trung tính
+    elif room >  5: score = -3   # Bắt đầu bị hạn chế
+    else:           score = -7   # Gần đầy — ngoại không mua được
+
+    label = f"FFroom={room:.1f}% {score:+d}"
+    return score, label
+
+
+def score_dividend_yield(row: dict) -> tuple[int, str]:
+    """
+    Dividend yield score.
+    r_div_yield từ finance cache — % yield theo năm.
+    """
+    yield_pct = _to_float(row.get("r_div_yield"))
+    if yield_pct is None or yield_pct <= 0:
+        return 0, ""
+
+    # KBS trả về dạng decimal (0.05 = 5%) hoặc percent (5.0)?
+    # Guard: nếu > 1 thì đã là percent, nếu < 1 thì nhân 100
+    if yield_pct < 1.0:
+        yield_pct *= 100
+
+    if   yield_pct > 7: score = +3
+    elif yield_pct > 5: score = +2
+    elif yield_pct > 3: score = +1
+    else:               score =  0   # Không có cổ tức ≠ xấu
+
+    label = f"DivYield={yield_pct:.1f}% {score:+d}"
+    return score, label
+
+
+def score_eps_consistency(row: dict) -> tuple[int, str]:
+    """
+    EPS consistency: số quý liên tiếp EPS tăng YoY.
+    Cần: is_eps_q1..q4 fields hoặc tính từ is_profit_growth_yoy consistency.
+    Hiện tại dùng is_profit_growth_yoy (latest) + EPS growth pattern.
+    """
+    # Nếu có eps_consistency field (sau khi thêm vào step_finance_scan)
+    eps_cons = _to_float(row.get("eps_consistency"))
+    if eps_cons is not None:
+        n = int(eps_cons)
+        if   n >= 4: score = +5
+        elif n >= 2: score = +2
+        elif n == 1: score =  0
+        elif n == -2: score = -3
+        elif n <= -4: score = -5
+        else:         score = -1
+        return score, f"EPScons={n}qtrs {score:+d}"
+
+    # Fallback: dùng profit_growth_yoy hiện tại + QoQ pattern
+    profit_yoy = _to_float(row.get("is_profit_growth_yoy"))
+    profit_qoq = _to_float(row.get("is_profit_growth"))  # QoQ
+
+    if profit_yoy is None:
+        return 0, ""
+
+    score = 0
+    if profit_yoy > 0.30 and (profit_qoq is None or profit_qoq > 0):
+        score = +3   # Tăng trưởng tốt YoY + momentum QoQ
+    elif profit_yoy > 0.15:
+        score = +2
+    elif profit_yoy > 0:
+        score = +1
+    elif profit_yoy > -0.10:
+        score = -1
+    elif profit_yoy > -0.30:
+        score = -3
+    else:
+        score = -5   # Sụt giảm mạnh
+
+    label = f"EPSyoy={profit_yoy*100:+.0f}% {score:+d}"
+    return score, label
+
+
+def score_insider(row: dict) -> tuple[int, str]:
+    """
+    Insider buy/sell activity.
+    insider_count + insider_latest từ deep_raw (Trading.insider_deal).
+    """
+    count  = _to_float(row.get("insider_count"), 0)
+    latest = str(row.get("insider_latest") or "").lower()
+
+    if count == 0 or not latest:
+        return 0, ""
+
+    # Classify action
+    is_buy  = any(k in latest for k in ["mua", "buy", "purchase", "acquire"])
+    is_sell = any(k in latest for k in ["bán", "sell", "dispose"])
+
+    score = 0
+    if is_buy  and count >= 1: score = +4
+    elif is_sell and count >= 2: score = -4
+    elif is_buy:  score = +2
+    elif is_sell: score = -2
+
+    label = f"Insider={count:.0f}×{'BUY' if is_buy else 'SELL' if is_sell else '?'} {score:+d}"
+    return score, label
+
 
 # =====================================================
 # NORMALIZE + WEIGHT
 # =====================================================
 
 def _normalize_and_weight(raw_scores: dict) -> tuple[float, dict]:
-    """
-    Normalize từng group về [-1, +1], tính weighted sum.
-    Returns:
-        weighted_score: float ∈ [-100, +100] (trước confluence)
-        norm_scores:    dict group → float ∈ [-1, +1]
-    """
     norm = {}
     for g, cap in GROUP_CAPS.items():
-        raw = raw_scores.get(g, 0)
+        raw = raw_scores.get(g, 0) or 0
         norm[g] = max(-1.0, min(1.0, raw / cap))
 
     weighted_sum = sum(
@@ -146,39 +455,17 @@ def _normalize_and_weight(raw_scores: dict) -> tuple[float, dict]:
 
 
 def _confluence_bonus(norm_scores: dict) -> tuple[int, str]:
-    """
-    Tính confluence bonus dựa trên normalized scores.
-    Group "meaningful" khi |norm| >= CONFLUENCE_THRESHOLD_PCT.
-    Bỏ qua context (macro-only).
-    """
     check_groups = {k: v for k, v in norm_scores.items() if k != "context"}
 
-    positive = sum(
-        1 for g, n in check_groups.items()
-        if n >= CONFLUENCE_THRESHOLD_PCT
-    )
-    negative = sum(
-        1 for g, n in check_groups.items()
-        if n <= -CONFLUENCE_THRESHOLD_PCT
-    )
+    positive = sum(1 for n in check_groups.values() if n >=  CONFLUENCE_THRESHOLD_PCT)
+    negative = sum(1 for n in check_groups.values() if n <= -CONFLUENCE_THRESHOLD_PCT)
+    n_groups = len(check_groups)
 
-    n_groups = len(check_groups)  # 11 groups (không có context)
-
-    bonus = 0
-    label = ""
-    if positive >= 7:
-        bonus =  10
-        label = f"CONFLUENCE strong bull ({positive}/{n_groups} groups)"
-    elif positive >= 5:
-        bonus =  5
-        label = f"CONFLUENCE bull ({positive}/{n_groups} groups)"
-    elif negative >= 7:
-        bonus = -10
-        label = f"CONFLUENCE strong bear ({negative}/{n_groups} groups)"
-    elif negative >= 5:
-        bonus = -5
-        label = f"CONFLUENCE bear ({negative}/{n_groups} groups)"
-
+    bonus, label = 0, ""
+    if   positive >= 7: bonus, label = +10, f"CONFLUENCE strong bull ({positive}/{n_groups})"
+    elif positive >= 5: bonus, label =  +5, f"CONFLUENCE bull ({positive}/{n_groups})"
+    elif negative >= 7: bonus, label = -10, f"CONFLUENCE strong bear ({negative}/{n_groups})"
+    elif negative >= 5: bonus, label =  -5, f"CONFLUENCE bear ({negative}/{n_groups})"
     return bonus, label
 
 
@@ -191,120 +478,158 @@ def _decision(total: float) -> str:
 
 
 # =====================================================
-# SCORE SYMBOL V2
+# SCORE SYMBOL V2 — main scoring function
 # =====================================================
 
 def score_symbol_v2(row: dict, context: dict, news_scores: dict,
                     order_flow_map: dict) -> dict:
     """
-    Gọi v3 để lấy raw group scores, sau đó:
-    1. Normalize từng group về [-1, +1]
-    2. Weighted sum → base_score ∈ [-100, +100]
-    3. Cộng confluence bonus → final_score
-    4. Assign decision theo threshold v2
+    1. Lấy raw group scores từ V3 scorer
+    2. Tính thêm 9 extended indicators
+    3. Merge vào group scores tương ứng
+    4. Normalize → weighted sum → confluence → final score
     """
-    # ── Gọi v3 scorer để lấy toàn bộ raw scores + signals ──
-    v3_result = _score_symbol_v3(row, context, news_scores, order_flow_map)
+    sym = row.get("symbol", "?")
 
-    # ── Lấy raw group scores từ v3 result ──
-    raw_scores = {
-        "trend":       v3_result.get("trend_score",       0),
-        "momentum":    v3_result.get("momentum_score",    0),
-        "volume":      v3_result.get("volume_score",      0),
-        "volatility":  v3_result.get("volatility_score",  0),
-        "order_flow":  v3_result.get("order_flow_score",  0),
-        "depth":       v3_result.get("depth_score",       0),
-        "ff":          v3_result.get("ff_score",          0),
-        "fundamental": v3_result.get("fundamental_score", 0),
-        "cf":          v3_result.get("cf_score",          0),
-        "growth":      v3_result.get("growth_score",      0),
-        "context":     v3_result.get("context_score",     0),
-        "news":        v3_result.get("news_score",        0),
+    # ── Base: gọi V3 scorer ──
+    v3 = _score_symbol_v3(row, context, news_scores, order_flow_map)
+
+    # ── Raw group scores từ V3 ──
+    raw = {
+        "trend":       v3.get("trend_score",       0) or 0,
+        "momentum":    v3.get("momentum_score",    0) or 0,
+        "volume":      v3.get("volume_score",      0) or 0,
+        "volatility":  v3.get("volatility_score",  0) or 0,
+        "order_flow":  v3.get("order_flow_score",  0) or 0,
+        "depth":       v3.get("depth_score",       0) or 0,
+        "ff":          v3.get("ff_score",          0) or 0,
+        "fundamental": v3.get("fundamental_score", 0) or 0,
+        "cf":          v3.get("cf_score",          0) or 0,
+        "growth":      v3.get("growth_score",      0) or 0,
+        "context":     v3.get("context_score",     0) or 0,
+        # news: bỏ
     }
 
+    ext_sigs = []  # extended indicator signals log
+
+    # ── Extended: Trend group ──
+    rs_score,   rs_label   = score_rs_vnindex(row, context)
+    w52_score,  w52_label  = score_52w_high(row)
+    raw["trend"] += rs_score + w52_score
+    if rs_label:  ext_sigs.append(rs_label)
+    if w52_label: ext_sigs.append(w52_label)
+
+    # ── Extended: Momentum group ──
+    roc_score, roc_label = score_roc10(row)
+    raw["momentum"] += roc_score
+    if roc_label: ext_sigs.append(roc_label)
+
+    # ── Extended: Volatility group ──
+    nr7_score, nr7_label = score_nr7(row)
+    raw["volatility"] += nr7_score
+    if nr7_label: ext_sigs.append(nr7_label)
+
+    # ── Extended: Depth group ──
+    ba_score, ba_label = score_bid_ask_imbalance(row)
+    raw["depth"] += ba_score
+    if ba_label: ext_sigs.append(ba_label)
+
+    # ── Extended: FF group ──
+    room_score, room_label = score_ff_room(row)
+    raw["ff"] += room_score
+    if room_label: ext_sigs.append(room_label)
+
+    # ── Extended: Fundamental group ──
+    div_score, div_label = score_dividend_yield(row)
+    raw["fundamental"] += div_score
+    if div_label: ext_sigs.append(div_label)
+
+    # ── Extended: Growth group ──
+    eps_score,     eps_label     = score_eps_consistency(row)
+    insider_score, insider_label = score_insider(row)
+    raw["growth"] += eps_score
+    # Insider → cộng vào fundamental (smart money signal)
+    raw["fundamental"] += insider_score
+    if eps_label:     ext_sigs.append(eps_label)
+    if insider_label: ext_sigs.append(insider_label)
+
     # ── Normalize + weighted sum ──
-    base_score, norm_scores = _normalize_and_weight(raw_scores)
+    base_score, norm = _normalize_and_weight(raw)
 
-    # ── Confluence bonus (dùng normalized scores) ──
-    confluence_bonus, confluence_label = _confluence_bonus(norm_scores)
+    # ── Confluence ──
+    conf_bonus, conf_label = _confluence_bonus(norm)
+    if conf_bonus != 0:
+        sigs = v3.get("signals", "")
+        extra = f"{conf_label} {'+' if conf_bonus > 0 else ''}{conf_bonus}"
+        v3["signals"] = (sigs + " | " + extra) if sigs else extra
 
-    # Thêm confluence vào signals nếu có
-    if confluence_bonus != 0:
-        sigs = v3_result.get("signals", "")
-        extra = f"{confluence_label} {'+' if confluence_bonus > 0 else ''}{confluence_bonus}"
-        v3_result["signals"] = (sigs + " | " + extra) if sigs else extra
+    total_score = round(base_score + conf_bonus, 2)
+    decision    = _decision(total_score)
 
-    # ── Final score ──
-    total_score = round(base_score + confluence_bonus, 2)
+    # ── Tech/Fund scores ──
+    tech_score = (raw["trend"] + raw["momentum"] + raw["volume"] +
+                  raw["volatility"] + raw["order_flow"])
+    fund_score = raw["fundamental"] + raw["cf"] + raw["growth"]
 
-    # ── Decision v2 ──
-    decision_v2 = _decision(total_score)
-
-    # ── Tech/Fund scores (dùng raw, cùng logic v3) ──
-    tech_score = (raw_scores["trend"] + raw_scores["momentum"] +
-                  raw_scores["volume"] + raw_scores["volatility"] +
-                  raw_scores["order_flow"])
-    fund_score = (raw_scores["fundamental"] + raw_scores["cf"] +
-                  raw_scores["growth"])
-
-    # ── Pattern flags (giữ nguyên logic v3) ──
+    # ── Pattern flags ──
     pattern_flags = []
-    confidence = "MEDIUM"
-
-    if tech_score >= 40 and fund_score <= -15:
-        pattern_flags.append("BULL_TRAP_RISK")
-        confidence = "LOW"
+    confidence    = "MEDIUM"
+    if   tech_score >= 40 and fund_score <= -15:
+        pattern_flags.append("BULL_TRAP_RISK");   confidence = "LOW"
     elif tech_score <= -30 and fund_score >= 15:
         pattern_flags.append("VALUE_OPPORTUNITY")
-        confidence = "MEDIUM"
     elif tech_score >= 30 and fund_score >= 15:
-        pattern_flags.append("CONSENSUS_BULL")
-        confidence = "HIGH"
+        pattern_flags.append("CONSENSUS_BULL");   confidence = "HIGH"
     elif tech_score <= -30 and fund_score <= -15:
-        pattern_flags.append("CONSENSUS_BEAR")
-        confidence = "HIGH"
+        pattern_flags.append("CONSENSUS_BEAR");   confidence = "HIGH"
     elif abs(tech_score) < 20 and abs(fund_score) < 10:
-        pattern_flags.append("UNCLEAR")
-        confidence = "LOW"
+        pattern_flags.append("UNCLEAR");          confidence = "LOW"
 
-    # ── Build output — copy v3 result + override v2 fields ──
-    out = dict(v3_result)
-
-    # Override scoring fields
-    out["total_score"]      = total_score
-    out["base_score_v2"]    = base_score          # weighted sum trước confluence
-    out["confluence_bonus"] = confluence_bonus
-    out["decision"]         = decision_v2
-    out["confidence"]       = confidence
-    out["pattern_flags"]    = pattern_flags
-    out["scoring_version"]  = SCORING_VERSION
-    out["tech_score"]       = tech_score
-    out["fund_score"]       = fund_score
-
-    # Normalized scores (debug/audit)
-    out["norm_trend"]       = round(norm_scores.get("trend",       0), 4)
-    out["norm_momentum"]    = round(norm_scores.get("momentum",    0), 4)
-    out["norm_volume"]      = round(norm_scores.get("volume",      0), 4)
-    out["norm_volatility"]  = round(norm_scores.get("volatility",  0), 4)
-    out["norm_order_flow"]  = round(norm_scores.get("order_flow",  0), 4)
-    out["norm_depth"]       = round(norm_scores.get("depth",       0), 4)
-    out["norm_ff"]          = round(norm_scores.get("ff",          0), 4)
-    out["norm_fundamental"] = round(norm_scores.get("fundamental", 0), 4)
-    out["norm_cf"]          = round(norm_scores.get("cf",          0), 4)
-    out["norm_growth"]      = round(norm_scores.get("growth",      0), 4)
-    out["norm_context"]     = round(norm_scores.get("context",     0), 4)
-    out["norm_news"]        = round(norm_scores.get("news",        0), 4)
-
-    # Weight snapshot (để debug sau khi IC update)
-    out["w_trend"]       = SCORING_WEIGHTS["trend"]
-    out["w_momentum"]    = SCORING_WEIGHTS["momentum"]
-    out["w_volume"]      = SCORING_WEIGHTS["volume"]
-    out["w_order_flow"]  = SCORING_WEIGHTS["order_flow"]
-    out["w_ff"]          = SCORING_WEIGHTS["ff"]
-    out["w_fundamental"] = SCORING_WEIGHTS["fundamental"]
-    out["w_cf"]          = SCORING_WEIGHTS["cf"]
-    out["w_growth"]      = SCORING_WEIGHTS["growth"]
-
+    # ── Build output ──
+    out = dict(v3)
+    out.update({
+        "total_score"      : total_score,
+        "base_score_v2"    : base_score,
+        "confluence_bonus" : conf_bonus,
+        "decision"         : decision,
+        "confidence"       : confidence,
+        "pattern_flags"    : pattern_flags,
+        "scoring_version"  : SCORING_VERSION,
+        "tech_score"       : tech_score,
+        "fund_score"       : fund_score,
+        # Extended raw scores
+        "ext_rs_score"     : rs_score,
+        "ext_52w_score"    : w52_score,
+        "ext_roc_score"    : roc_score,
+        "ext_nr7_score"    : nr7_score,
+        "ext_ba_score"     : ba_score,
+        "ext_room_score"   : room_score,
+        "ext_div_score"    : div_score,
+        "ext_eps_score"    : eps_score,
+        "ext_insider_score": insider_score,
+        "ext_signals"      : " | ".join(ext_sigs) if ext_sigs else "",
+        # Normalized scores
+        "norm_trend"       : round(norm.get("trend",       0), 4),
+        "norm_momentum"    : round(norm.get("momentum",    0), 4),
+        "norm_volume"      : round(norm.get("volume",      0), 4),
+        "norm_volatility"  : round(norm.get("volatility",  0), 4),
+        "norm_order_flow"  : round(norm.get("order_flow",  0), 4),
+        "norm_depth"       : round(norm.get("depth",       0), 4),
+        "norm_ff"          : round(norm.get("ff",          0), 4),
+        "norm_fundamental" : round(norm.get("fundamental", 0), 4),
+        "norm_cf"          : round(norm.get("cf",          0), 4),
+        "norm_growth"      : round(norm.get("growth",      0), 4),
+        "norm_context"     : round(norm.get("context",     0), 4),
+        # Weight snapshot
+        "w_trend"          : SCORING_WEIGHTS["trend"],
+        "w_momentum"       : SCORING_WEIGHTS["momentum"],
+        "w_volume"         : SCORING_WEIGHTS["volume"],
+        "w_order_flow"     : SCORING_WEIGHTS["order_flow"],
+        "w_ff"             : SCORING_WEIGHTS["ff"],
+        "w_fundamental"    : SCORING_WEIGHTS["fundamental"],
+        "w_cf"             : SCORING_WEIGHTS["cf"],
+        "w_growth"         : SCORING_WEIGHTS["growth"],
+    })
     return out
 
 
@@ -315,16 +640,13 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
 def run():
     log.info(f"=== SCORING V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
     log.info(f"Scoring version: {SCORING_VERSION}")
-    log.info(f"Thresholds: SB≥{THRESHOLD_STRONG_BUY} | "
-             f"BUY≥{THRESHOLD_BUY} | "
-             f"NEU≥{THRESHOLD_NEUTRAL} | "
-             f"SELL≥{THRESHOLD_SELL} | SS<{THRESHOLD_SELL}")
+    log.info(f"Thresholds: SB≥{THRESHOLD_STRONG_BUY} | BUY≥{THRESHOLD_BUY} | "
+             f"NEU≥{THRESHOLD_NEUTRAL} | SELL≥{THRESHOLD_SELL}")
+    log.info(f"Extended: RS, 52W, ROC10, NR7, BidAsk, FFroom, DivYield, EPScons, Insider")
 
-    # ── Load inputs V2 (file riêng, không phụ thuộc V3) ──
-    deep_raw   = load_json("deep_raw_v2.json")
-    context_list = load_json("market/context.json") or load_json("context.json")   # dùng chung daily
-    today_index  = load_json("news/today_index.json") or \
-                   load_json("news_today_index.json")                               # dùng chung daily
+    deep_raw     = load_json("deep_raw_v2.json")
+    context_list = load_json("market/context.json") or load_json("context.json")
+    today_index  = load_json("news/today_index.json") or load_json("news_today_index.json")
     order_flow   = load_json("order_flow_v2.json")
 
     if not deep_raw:
@@ -333,108 +655,85 @@ def run():
 
     ctx = context_list[0] if context_list else {}
 
-    if today_index is None:
-        log.warning("news_today_index.json not found — news_score = 0")
-
-    missing = []
-    if not context_list:
-        missing.append("context (−4% weight, dùng chung daily)")
     if not order_flow:
-        missing.append("order_flow_v2 (−8% weight)")
-    if missing:
-        log.warning(f"Missing inputs: {', '.join(missing)}")
-
-    if order_flow is None:
         log.warning("order_flow_v2.json not found — order_flow_score = 0")
         order_flow = []
 
-    # Build order_flow map
-    order_flow_map = {}
-    if isinstance(order_flow, list):
-        for r in order_flow:
-            if isinstance(r, dict) and r.get("symbol"):
-                order_flow_map[r["symbol"]] = r
+    order_flow_map = {
+        r["symbol"]: r
+        for r in (order_flow or [])
+        if isinstance(r, dict) and r.get("symbol")
+    }
 
-    # Build news scores
     symbols_with_industry = [
         {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
         for r in deep_raw
     ]
     news_scores = build_news_scores(today_index or {}, symbols_with_industry)
 
-    log.info(f"Scoring {len(deep_raw)} symbols with v2 weights...")
+    log.info(f"Scoring {len(deep_raw)} symbols...")
 
     scored_rows = []
     for row in deep_raw:
         result = score_symbol_v2(row, ctx, news_scores, order_flow_map)
         scored_rows.append(result)
 
-        flags_str = ",".join(result.get("pattern_flags", [])) or "-"
+        flags_str = ",".join(result.get("pattern_flags") or []) or "-"
+        ext       = result.get("ext_signals", "")
         log.info(
-            f"  [{result['symbol']}] "
-            f"v2={result['total_score']:.1f} "
-            f"(base={result['base_score_v2']:.1f} "
-            f"conf={result['confluence_bonus']:+d}) "
-            f"→ {result['decision']} [{result['confidence']}] [{flags_str}]"
+            f"  [{result['symbol']:6s}] "
+            f"v2={result['total_score']:6.1f} "
+            f"(base={result['base_score_v2']:6.1f} conf={result['confluence_bonus']:+d}) "
+            f"→ {result['decision']:12s} [{result['confidence']}]"
+            + (f"\n    ext: {ext}" if ext else "")
         )
 
     df = pd.DataFrame(scored_rows)
-
-    # ── Save signals_v2.json ──
     save_json("signals_v2.json", df.to_dict(orient="records"))
 
-    # ── Save signals_v2.csv ──
-    news_evidence_col = df["news_evidence"].apply(
-        lambda evs: " | ".join(
-            f"{e.get('type','?')}·{e.get('source','?')}·"
-            f"{e.get('title','')[:40]}·"
-            f"{str(e.get('time',''))[5:16]}·"
-            f"{e.get('contribution', 0):+.2f}"
-            for e in (evs or [])
-        )
-    ) if "news_evidence" in df.columns else pd.Series([""] * len(df))
-
+    # CSV export
     pattern_flags_col = df["pattern_flags"].apply(
         lambda f: ",".join(f or [])
     ) if "pattern_flags" in df.columns else pd.Series([""] * len(df))
 
-    df_csv = df.drop(
-        columns=["news_evidence", "_ohlcv_5d", "pattern_flags"],
-        errors="ignore"
-    )
+    news_evidence_col = df["news_evidence"].apply(
+        lambda evs: " | ".join(
+            f"{e.get('type','?')}·{e.get('source','?')}·"
+            f"{e.get('title','')[:40]}·{str(e.get('time',''))[5:16]}"
+            for e in (evs or [])
+        )
+    ) if "news_evidence" in df.columns else pd.Series([""] * len(df))
+
+    df_csv = df.drop(columns=["news_evidence", "_ohlcv_5d", "pattern_flags"], errors="ignore")
     df_csv = clean_for_export(df_csv)
     df_csv["news_evidence"] = news_evidence_col.values
     df_csv["pattern_flags"] = pattern_flags_col.values
     save_csv("signals_v2.csv", df_csv)
 
-    # ── Decision distribution log ──
-    decision_counts   = df["decision"].value_counts().to_dict()
-    confidence_counts = df["confidence"].value_counts().to_dict()
+    # Summary log
+    decision_counts = df["decision"].value_counts().to_dict()
+    log.info(f"Decision distribution: {decision_counts}")
 
-    # So sánh với v3 nếu có
+    # Extended indicator coverage
+    for field in ["ext_rs_score","ext_52w_score","ext_roc_score","ext_nr7_score",
+                  "ext_ba_score","ext_room_score","ext_div_score","ext_eps_score","ext_insider_score"]:
+        nonzero = (df[field] != 0).sum() if field in df.columns else 0
+        log.info(f"  {field}: {nonzero}/{len(df)} symbols có signal")
+
+    # V3 comparison
     v3_signals = load_json("signals.json")
     if v3_signals:
-        v3_df = pd.DataFrame(v3_signals)[["symbol", "decision", "total_score"]]
-        v3_df.columns = ["symbol", "decision_v3", "score_v3"]
-        v2_df = df[["symbol", "decision", "total_score"]].copy()
-        v2_df.columns = ["symbol", "decision_v2", "score_v2"]
-        compare = pd.merge(v3_df, v2_df, on="symbol", how="inner")
-        agree = (compare["decision_v3"] == compare["decision_v2"]).sum()
-        total = len(compare)
-        log.info(f"V3 vs V2 agreement: {agree}/{total} = {agree/total*100:.1f}%")
+        v3_df  = pd.DataFrame(v3_signals)[["symbol","decision","total_score"]]
+        v2_df  = df[["symbol","decision","total_score"]].copy()
+        v3_df.columns = ["symbol","dec3","sc3"]
+        v2_df.columns = ["symbol","dec2","sc2"]
+        cmp   = pd.merge(v3_df, v2_df, on="symbol", how="inner")
+        agree = (cmp["dec3"] == cmp["dec2"]).sum()
+        log.info(f"V3 vs V2 agreement: {agree}/{len(cmp)} = {agree/len(cmp)*100:.1f}%")
+        diff = cmp[cmp["dec3"] != cmp["dec2"]]
+        for _, r in diff.iterrows():
+            log.info(f"  DIFF {r.symbol}: v3={r.dec3}({r.sc3:.0f}) → v2={r.dec2}({r.sc2:.1f})")
 
-        # Log mã có decision khác nhau
-        diff = compare[compare["decision_v3"] != compare["decision_v2"]]
-        if not diff.empty:
-            log.info(f"Decision diff ({len(diff)} symbols):")
-            for _, r in diff.iterrows():
-                log.info(
-                    f"  {r.symbol}: v3={r.decision_v3}({r.score_v3:.0f}) "
-                    f"→ v2={r.decision_v2}({r.score_v2:.1f})"
-                )
-
-    log.info(f"V2 Decision distribution: {decision_counts}")
-    log.info(f"V2 Confidence distribution: {confidence_counts}")
     log.info(f"Exported signals_v2.json + signals_v2.csv ({len(df)} rows)")
     log.info("=== SCORING V2 DONE ===")
 
