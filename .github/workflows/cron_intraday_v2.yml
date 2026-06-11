@@ -100,21 +100,7 @@ jobs:
           $VENV_PIP install --upgrade vnstock 2>&1 | tail -3 || true
 
       # ──────────────────────────────────────────────────────────────────
-      # PATCH V3 files → V2 runtime files (sed đổi output filenames only)
-      # Không maintain 2 file Python riêng
-      # ──────────────────────────────────────────────────────────────────
-      - name: Patch step_order_flow → step_order_flow_v2
-        run: |
-          sed \
-            -e 's|load_json("deep_raw.json")|load_json("deep_raw_v2.json")|g' \
-            -e 's|save_json("order_flow.json"|save_json("order_flow_v2.json"|g' \
-            -e 's|ORDER FLOW DONE|ORDER FLOW V2 DONE|g' \
-            steps/step_order_flow.py > steps/step_order_flow_v2_runtime.py
-          grep -c "v2" steps/step_order_flow_v2_runtime.py
-          echo "✅ Patched step_order_flow_v2_runtime.py"
-
-      # ──────────────────────────────────────────────────────────────────
-      # V2 PIPELINE
+      # V2 PIPELINE — tất cả dùng file standalone, không patch runtime
       # ──────────────────────────────────────────────────────────────────
       - name: Step Snapshot V2 — Ranking + Deep
         env:
@@ -129,7 +115,7 @@ jobs:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          /opt/vnstock/.venv/bin/python steps/step_order_flow_v2_runtime.py
+          /opt/vnstock/.venv/bin/python steps/step_order_flow_v2.py
 
       - name: Step Scoring V2 (weighted normalized)
         env:
