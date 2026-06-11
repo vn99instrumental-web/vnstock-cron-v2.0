@@ -261,9 +261,21 @@ def get_vnindex_return(history_length: str = "25D") -> dict:
     Fetch VNINDEX OHLCV → tính return_20d thực.
     Gọi 1 lần trong MAIN, pass vào context hoặc deep_rows.
     """
+    for attempt in range(3):
+        try:
+            df = Quote(source="VCI", symbol="VNINDEX").history(
+                length=history_length, interval="1D")
+            if df is not None and not df.empty and len(df) >= 5:
+                break
+            log.warning(f"VNINDEX history empty (attempt {attempt+1}/3)")
+        except Exception as e:
+            log.warning(f"VNINDEX fetch attempt {attempt+1}/3 failed: {e}")
+            df = None
+        import time; time.sleep(1)
+    else:
+        log.error("VNINDEX fetch failed after 3 attempts")
+        return {}
     try:
-        df = Quote(source="VCI", symbol="VNINDEX").history(
-            length=history_length, interval="1D")
         if df is None or df.empty or len(df) < 5:
             log.warning("VNINDEX history empty")
             return {}
@@ -510,19 +522,16 @@ def build_one(symbol: str, group: str, market_open: bool,
         bvps        = row.get("r_bvps")
         equity      = row.get("bs_equity")
         price_val   = row.get("price")
-        if ff_room_raw and bvps and bvps > 0:
-            total_shares = equity / bvps if equity else None
-            if total_shares and total_shares > 0:
+        if ff_room_raw and bvps and bvps > 0 and equity:
+            # bs_equity đơn vị triệu VND, bvps đơn vị VND/share
+            total_shares = equity * 1e6 / bvps
+            if total_shares > 0:
                 row["ff_room"] = round(ff_room_raw / total_shares * 100, 2)
-            elif price_val and price_val > 0 and equity:
-                # Fallback: market_cap estimate = equity (book value proxy)
-                total_shares_est = equity / price_val
-                if total_shares_est > 0:
-                    row["ff_room"] = round(ff_room_raw / total_shares_est * 100, 2)
+                log.debug(f"  {symbol}: ff_room={row['ff_room']:.1f}% "
+                          f"(raw={ff_room_raw:.0f}/shares={total_shares:.0f})")
         elif ff_room_raw:
-            # Không có bvps → giữ raw, đánh dấu chưa normalize
             row["ff_room"] = None
-            log.debug(f"  {symbol}: ff_room_raw={ff_room_raw} but no bvps → ff_room=None")
+            log.debug(f"  {symbol}: ff_room_raw={ff_room_raw} but missing bvps/equity")
         log.info(
             f"  ✅ {symbol} ({group}) "
             f"RSI={row.get('rsi')} PE={row.get('r_pe')} "
@@ -609,11 +618,11 @@ if __name__ == "__main__":
 
     # Fetch VNINDEX return để tính RS chính xác
     vnindex_info = get_vnindex_return()
-    if vnindex_info:
-        log.info(f"VNINDEX return_20d={vnindex_info.get('vnindex_return_20d')} "
+    if vnindex_info and vnindex_info.get('vnindex_return_20d') is not None:
+        log.info(f"✅ VNINDEX return_20d={vnindex_info.get('vnindex_return_20d'):.2f}% "
                  f"return_5d={vnindex_info.get('vnindex_return_5d')}")
     else:
-        log.warning("VNINDEX return not available — RS sẽ dùng fallback")
+        log.warning(f"⚠️ VNINDEX return not available: {vnindex_info} — RS sẽ dùng fallback")
 
     ranking = get_ranking()
 
