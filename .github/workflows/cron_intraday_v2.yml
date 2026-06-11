@@ -45,8 +45,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      # ── Cache config COPY Y CHANG từ cron_intraday.yml (V3) ──
-      # Dùng cùng key → share cache với V3, không install lại
+      # Restore cache do cron_daily.yml tạo — không install gì thêm
       - name: Compute cache key suffix (weekly)
         id: cache-suffix
         run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
@@ -62,71 +61,16 @@ jobs:
           restore-keys: |
             vnstock-stable-v4-
 
-      # Fallback install đầy đủ nếu cache miss
-      - name: Fallback install nếu cache miss hoặc venv broken
-        if: steps.cache-venv.outputs.cache-hit != 'true'
-        env:
-          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
-          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
-        run: |
-          pip install requests
-          mkdir -p /home/runner/.vnstock
-          wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
-            -O installer.run
-          chmod +x installer.run
-          ./installer.run -- \
-            --non-interactive \
-            --api-key "$VNSTOCK_API_KEY" \
-            --venv-path "$VNSTOCK_VENV_PATH" \
-            --language en
-          wget -q https://vnstocks.com/files/generate_user_info.min.py \
-            -O generate_user_info.min.py
-          /opt/vnstock/.venv/bin/python generate_user_info.min.py \
-            --api-key "$VNSTOCK_API_KEY"
-
-      # Venv health check — chạy kể cả khi cache hit
-      # Nếu venv broken (cache restore sai path) → reinstall ngay
-      - name: Verify venv hoặc reinstall
-        env:
-          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
-          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+      - name: Verify venv
         run: |
           VENV_PY="/opt/vnstock/.venv/bin/python"
-          VENV_PIP="/opt/vnstock/.venv/bin/pip"
-
           if [ ! -x "$VENV_PY" ]; then
-            echo "⚠️ Venv broken sau cache restore — reinstall..."
-            pip install requests
-            mkdir -p /home/runner/.vnstock
-            wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
-              -O installer.run
-            chmod +x installer.run
-            ./installer.run -- \
-              --non-interactive \
-              --api-key "$VNSTOCK_API_KEY" \
-              --venv-path "$VNSTOCK_VENV_PATH" \
-              --language en
-            wget -q https://vnstocks.com/files/generate_user_info.min.py \
-              -O generate_user_info.min.py
-            $VENV_PY generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
-          else
-            echo "✅ Venv OK: $($VENV_PY --version)"
-          fi
-
-      - name: Install extra dependencies
-        run: |
-          /opt/vnstock/.venv/bin/pip install -q gspread google-auth || true
-
-      - name: Ensure latest vnstock packages
-        run: |
-          VENV_PIP="/opt/vnstock/.venv/bin/pip"
-          if [ ! -x "$VENV_PIP" ]; then
-            echo "⚠️ Venv pip not found at $VENV_PIP"
+            echo "❌ Venv không tồn tại — cron_daily.yml chưa chạy hoặc cache miss"
+            echo "Chạy cron_daily.yml trước để warm cache"
             exit 1
           fi
-          echo "=== Venv OK ==="
-          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
-          $VENV_PIP install --upgrade vnstock 2>&1 | tail -3 || true
+          echo "✅ Venv OK: $($VENV_PY --version)"
+          $VENV_PY -m pip list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
 
       # ──────────────────────────────────────────────────────────────────
       # V2 PIPELINE — tất cả dùng file standalone, không patch runtime
