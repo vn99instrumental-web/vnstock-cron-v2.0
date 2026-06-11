@@ -45,18 +45,25 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Get week number
-        id: date
-        run: echo "week=$(date +'%Y-W%V')" >> $GITHUB_OUTPUT
+      # ── Cache config COPY Y CHANG từ cron_intraday.yml (V3) ──
+      # Dùng cùng key → share cache với V3, không install lại
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
 
-      - name: Cache vnstock venv
+      - name: Restore vnstock cache
         id: cache-venv
         uses: actions/cache@v4
         with:
-          path: /opt/vnstock/.venv
-          key: vnstock-stable-v4-${{ steps.date.outputs.week }}
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
 
-      - name: Fallback install if cache miss
+      # Fallback install đầy đủ nếu cache miss (copy từ V3)
+      - name: Fallback install nếu cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
@@ -78,20 +85,23 @@ jobs:
             --api-key "$VNSTOCK_API_KEY"
 
       - name: Install extra dependencies
-        run: /opt/vnstock/.venv/bin/pip install -q gspread google-auth
+        run: |
+          /opt/vnstock/.venv/bin/pip install -q gspread google-auth
 
       - name: Ensure latest vnstock packages
         run: |
           VENV_PIP="/opt/vnstock/.venv/bin/pip"
           if [ ! -x "$VENV_PIP" ]; then
-            echo "⚠️ Venv pip not found — skipping"
-            exit 0
+            echo "⚠️ Venv pip not found at $VENV_PIP"
+            exit 1
           fi
+          echo "=== Venv OK ==="
+          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
           $VENV_PIP install --upgrade vnstock 2>&1 | tail -3 || true
 
       # ──────────────────────────────────────────────────────────────────
-      # PATCH step_snapshot → step_snapshot_v2 tại runtime
-      # Không maintain 2 file Python riêng — patch output filenames only
+      # PATCH V3 files → V2 runtime files (sed đổi output filenames only)
+      # Không maintain 2 file Python riêng
       # ──────────────────────────────────────────────────────────────────
       - name: Patch step_snapshot → step_snapshot_v2
         run: |
@@ -101,24 +111,23 @@ jobs:
             -e 's|save_csv("deep.csv"|save_csv("deep_v2.csv"|g' \
             -e 's|save_json("ranking.json"|save_json("ranking_v2.json"|g' \
             -e 's|save_csv("ranking.csv"|save_csv("ranking_v2.csv"|g' \
-            -e 's|=== SNAPSHOT DONE ===|=== SNAPSHOT V2 DONE ===|g' \
+            -e 's|SNAPSHOT DONE|SNAPSHOT V2 DONE|g' \
             steps/step_snapshot.py > steps/step_snapshot_v2_runtime.py
+          grep -c "v2" steps/step_snapshot_v2_runtime.py
           echo "✅ Patched step_snapshot_v2_runtime.py"
-          # Verify patch applied
-          grep "deep_raw_v2\|ranking_v2" steps/step_snapshot_v2_runtime.py
 
       - name: Patch step_order_flow → step_order_flow_v2
         run: |
           sed \
             -e 's|load_json("deep_raw.json")|load_json("deep_raw_v2.json")|g' \
             -e 's|save_json("order_flow.json"|save_json("order_flow_v2.json"|g' \
-            -e 's|=== ORDER FLOW DONE ===|=== ORDER FLOW V2 DONE ===|g' \
+            -e 's|ORDER FLOW DONE|ORDER FLOW V2 DONE|g' \
             steps/step_order_flow.py > steps/step_order_flow_v2_runtime.py
+          grep -c "v2" steps/step_order_flow_v2_runtime.py
           echo "✅ Patched step_order_flow_v2_runtime.py"
-          grep "deep_raw_v2\|order_flow_v2" steps/step_order_flow_v2_runtime.py
 
       # ──────────────────────────────────────────────────────────────────
-      # V2 PIPELINE — dùng patched files
+      # V2 PIPELINE
       # ──────────────────────────────────────────────────────────────────
       - name: Step Snapshot V2 — Ranking + Deep
         env:
@@ -153,7 +162,7 @@ jobs:
           /opt/vnstock/.venv/bin/python steps/step_record_predictions_v2.py
 
       # ──────────────────────────────────────────────────────────────────
-      # COMMIT — chỉ add v2 output files
+      # COMMIT — chỉ add v2 output files, không đụng v3
       # ──────────────────────────────────────────────────────────────────
       - name: Commit V2 output
         run: |
