@@ -256,7 +256,7 @@ def score_nr7(row: dict) -> tuple[int, str]:
     NR4 nếu range hôm nay nhỏ nhất trong 5 ngày.
     """
     ohlcv = row.get("_ohlcv_5d") or []
-    if len(ohlcv) < 4:
+    if not isinstance(ohlcv, list) or len(ohlcv) < 4:
         return 0, ""
 
     # Tính range từng ngày
