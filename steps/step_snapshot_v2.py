@@ -126,12 +126,26 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
 # =====================================================
 
 def get_ta(symbol: str) -> dict:
-    df = safe_run(f"ohlcv {symbol}",
-         lambda: Quote(source="VCI", symbol=symbol).history(
-             length=HISTORY_LENGTH, interval="1D"))
+    # Retry 2 lần cho symbols hay fail (thanh khoản thấp, API throttle)
+    df = None
+    for attempt in range(2):
+        df = safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
+             lambda: Quote(source="VCI", symbol=symbol).history(
+                 length=HISTORY_LENGTH, interval="1D"))
+        if df is not None and not df.empty and len(df) >= 20:
+            break
+        if attempt == 0:
+            import time; time.sleep(2)
 
     if df is None or df.empty or len(df) < 20:
-        return {"symbol": symbol, "ta_error": "Không đủ data"}
+        # Final fallback: thử history ngắn hơn
+        df = safe_run(f"ohlcv_short {symbol}",
+             lambda: Quote(source="VCI", symbol=symbol).history(
+                 length="3M", interval="1D"))
+        if df is None or df.empty or len(df) < 10:
+            log.warning(f"  {symbol}: TA fetch failed sau retry — returning empty")
+            return {"symbol": symbol, "ta_error": "Không đủ data sau retry"}
+        log.info(f"  {symbol}: dùng 3M history ({len(df)} ngày) thay vì 12M")
 
     ta         = Indicator(data=df)
     res        = {"symbol": symbol}
@@ -523,12 +537,19 @@ def build_one(symbol: str, group: str, market_open: bool,
         equity      = row.get("bs_equity")
         price_val   = row.get("price")
         if ff_room_raw and bvps and bvps > 0 and equity:
-            # bs_equity đơn vị triệu VND, bvps đơn vị VND/share
-            total_shares = equity * 1e6 / bvps
+            # KBS: bs_equity đơn vị NGHÌN VND, bvps đơn vị VND/share
+            # total_shares = equity (nghìn VND) × 1000 / bvps (VND/share)
+            total_shares = equity * 1e3 / bvps
             if total_shares > 0:
-                row["ff_room"] = round(ff_room_raw / total_shares * 100, 2)
-                log.debug(f"  {symbol}: ff_room={row['ff_room']:.1f}% "
-                          f"(raw={ff_room_raw:.0f}/shares={total_shares:.0f})")
+                ff_room_pct = ff_room_raw / total_shares * 100
+                # Sanity check: room phải trong [0, 55%] — ngoại 49% + buffer
+                if 0 < ff_room_pct <= 60:
+                    row["ff_room"] = round(ff_room_pct, 2)
+                    log.debug(f"  {symbol}: ff_room={row['ff_room']:.1f}% "
+                              f"(raw={ff_room_raw:.0f}/shares={total_shares:.0f})")
+                else:
+                    log.warning(f"  {symbol}: ff_room_pct={ff_room_pct:.1f}% > 60% (KBS inconsistency?) → None")
+                    row["ff_room"] = None
         elif ff_room_raw:
             row["ff_room"] = None
             log.debug(f"  {symbol}: ff_room_raw={ff_room_raw} but missing bvps/equity")
