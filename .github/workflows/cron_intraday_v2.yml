@@ -2,13 +2,11 @@ name: VNStock Intraday V2
 
 on:
   schedule:
-    # V2 pipeline độc lập — không phụ thuộc V3
-    # Chạy cùng giờ với V3 (hoặc lệch nhẹ nếu muốn tránh API rate limit)
     - cron: '30 2 * * 1-5'   # 09:30 ICT
     - cron: '30 3 * * 1-5'   # 10:30 ICT
     - cron: '30 4 * * 1-5'   # 11:30 ICT
     - cron: '30 6 * * 1-5'   # 13:30 ICT
-    - cron: '30 7 * * 1-5'   # 14:30 ICT ← record predictions
+    - cron: '30 7 * * 1-5'   # 14:30 ICT
   workflow_dispatch:
     inputs:
       force_record:
@@ -19,7 +17,6 @@ on:
 permissions:
   contents: write
 
-# Group riêng — không block/bị block bởi vnstock-intraday (V3)
 concurrency:
   group: vnstock-intraday-v2
   cancel-in-progress: false
@@ -27,7 +24,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 30   # V2 fetch data riêng → tương đương V3
+    timeout-minutes: 30
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
@@ -48,7 +45,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Dùng cùng cache key với V3 — venv đã có sẵn
       - name: Get week number
         id: date
         run: echo "week=$(date +'%Y-W%V')" >> $GITHUB_OUTPUT
@@ -62,11 +58,27 @@ jobs:
 
       - name: Fallback install if cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          python -m venv /opt/vnstock/.venv
-          source /opt/vnstock/.venv/bin/activate
-          pip install --upgrade pip
-          pip install vnstock pandas numpy
+          pip install requests
+          mkdir -p /home/runner/.vnstock
+          wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
+            -O installer.run
+          chmod +x installer.run
+          ./installer.run -- \
+            --non-interactive \
+            --api-key "$VNSTOCK_API_KEY" \
+            --venv-path "$VNSTOCK_VENV_PATH" \
+            --language en
+          wget -q https://vnstocks.com/files/generate_user_info.min.py \
+            -O generate_user_info.min.py
+          /opt/vnstock/.venv/bin/python generate_user_info.min.py \
+            --api-key "$VNSTOCK_API_KEY"
+
+      - name: Install extra dependencies
+        run: /opt/vnstock/.venv/bin/pip install -q gspread google-auth
 
       - name: Ensure latest vnstock packages
         run: |
@@ -78,9 +90,35 @@ jobs:
           $VENV_PIP install --upgrade vnstock 2>&1 | tail -3 || true
 
       # ──────────────────────────────────────────────────────────────────
-      # V2 PIPELINE — hoàn toàn độc lập với V3
-      # Fetch data riêng → output files riêng (_v2 suffix)
-      # Context + News dùng chung (daily, không intraday)
+      # PATCH step_snapshot → step_snapshot_v2 tại runtime
+      # Không maintain 2 file Python riêng — patch output filenames only
+      # ──────────────────────────────────────────────────────────────────
+      - name: Patch step_snapshot → step_snapshot_v2
+        run: |
+          sed \
+            -e 's|save_json("deep_raw.json"|save_json("deep_raw_v2.json"|g' \
+            -e 's|save_json("deep.json"|save_json("deep_v2.json"|g' \
+            -e 's|save_csv("deep.csv"|save_csv("deep_v2.csv"|g' \
+            -e 's|save_json("ranking.json"|save_json("ranking_v2.json"|g' \
+            -e 's|save_csv("ranking.csv"|save_csv("ranking_v2.csv"|g' \
+            -e 's|=== SNAPSHOT DONE ===|=== SNAPSHOT V2 DONE ===|g' \
+            steps/step_snapshot.py > steps/step_snapshot_v2_runtime.py
+          echo "✅ Patched step_snapshot_v2_runtime.py"
+          # Verify patch applied
+          grep "deep_raw_v2\|ranking_v2" steps/step_snapshot_v2_runtime.py
+
+      - name: Patch step_order_flow → step_order_flow_v2
+        run: |
+          sed \
+            -e 's|load_json("deep_raw.json")|load_json("deep_raw_v2.json")|g' \
+            -e 's|save_json("order_flow.json"|save_json("order_flow_v2.json"|g' \
+            -e 's|=== ORDER FLOW DONE ===|=== ORDER FLOW V2 DONE ===|g' \
+            steps/step_order_flow.py > steps/step_order_flow_v2_runtime.py
+          echo "✅ Patched step_order_flow_v2_runtime.py"
+          grep "deep_raw_v2\|order_flow_v2" steps/step_order_flow_v2_runtime.py
+
+      # ──────────────────────────────────────────────────────────────────
+      # V2 PIPELINE — dùng patched files
       # ──────────────────────────────────────────────────────────────────
       - name: Step Snapshot V2 — Ranking + Deep
         env:
@@ -88,14 +126,14 @@ jobs:
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
-          /opt/vnstock/.venv/bin/python steps/step_snapshot_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_snapshot_v2_runtime.py
 
       - name: Step Order Flow V2
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          /opt/vnstock/.venv/bin/python steps/step_order_flow_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_order_flow_v2_runtime.py
 
       - name: Step Scoring V2 (weighted normalized)
         env:
@@ -115,7 +153,7 @@ jobs:
           /opt/vnstock/.venv/bin/python steps/step_record_predictions_v2.py
 
       # ──────────────────────────────────────────────────────────────────
-      # COMMIT — chỉ add v2 files, không đụng v3
+      # COMMIT — chỉ add v2 output files
       # ──────────────────────────────────────────────────────────────────
       - name: Commit V2 output
         run: |
