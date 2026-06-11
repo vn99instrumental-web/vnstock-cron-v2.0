@@ -128,12 +128,14 @@ def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
     """
     Relative Strength vs VNINDEX 20 ngày.
     RS = return_stock_20d / return_vnindex_20d
-    Dùng price_vs_ema20_pct làm proxy return 20d nếu không có direct return field.
-    VNINDEX return từ context.json (vnindex_return_20d hoặc tính từ ema fields).
+    Ưu tiên return_20d thực (tính từ OHLCV trong get_ta).
+    Fallback: price_vs_ema20_pct nếu chưa có.
     """
-    # Stock return proxy: dùng ema_cross_pct (EMA20 vs EMA50) hoặc price_vs_ema20
-    # Tốt hơn: dùng (price - ema20) / ema20 * 100 = price_vs_ema20_pct
-    stock_ret = _to_float(row.get("price_vs_ema20_pct"))
+    # Ưu tiên return thực 20 ngày
+    stock_ret = _to_float(row.get("return_20d"))
+    # Fallback: price vs ema20
+    if stock_ret is None:
+        stock_ret = _to_float(row.get("price_vs_ema20_pct"))
     if stock_ret is None:
         return 0, ""
 
@@ -173,28 +175,14 @@ def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
 def score_52w_high(row: dict) -> tuple[int, str]:
     """
     52-Week High proximity / breakout.
-    Tính từ OHLCV 12M đã có trong deep_raw (qua ema200 và atr làm proxy).
-    Nếu có high_52w field thì dùng trực tiếp.
+    Dùng high_52w thực từ OHLCV 12M (tính trong get_ta của step_snapshot_v2).
+    Không dùng proxy ema200+atr — không chính xác với cổ phiếu biến động cao.
     """
-    price = _to_float(row.get("price"))
-    if price is None or price <= 0:
-        return 0, ""
-
-    # Dùng high_52w nếu có (chưa có trong deep_raw hiện tại → fallback)
+    price    = _to_float(row.get("price"))
     high_52w = _to_float(row.get("high_52w"))
     low_52w  = _to_float(row.get("low_52w"))
 
-    if high_52w is None:
-        # Fallback: ước tính từ ema200 + atr
-        ema200 = _to_float(row.get("ema200"))
-        atr    = _to_float(row.get("atr"))
-        if ema200 is None or atr is None:
-            return 0, ""
-        # Rough 52W high = ema200 + 3×ATR (heuristic)
-        high_52w = ema200 + 3.0 * atr
-        low_52w  = ema200 - 3.0 * atr if low_52w is None else low_52w
-
-    if high_52w <= 0:
+    if price is None or price <= 0 or high_52w is None or high_52w <= 0:
         return 0, ""
 
     pct_from_high = (price - high_52w) / high_52w * 100
@@ -212,41 +200,19 @@ def score_52w_high(row: dict) -> tuple[int, str]:
 
 def score_roc10(row: dict) -> tuple[int, str]:
     """
-    Rate of Change 10 ngày.
-    Dùng price_vs_ema20_pct làm proxy nếu không có ROC field trực tiếp.
-    ROC thực tế cần close[today] / close[10d_ago] — chưa có trong deep_raw.
-    Fallback: dùng MACD histogram direction + magnitude.
+    Rate of Change 10 ngày — tính thực từ OHLCV trong step_snapshot_v2.
+    roc_10 = (close_today / close_10d_ago - 1) × 100
     """
-    # Nếu có roc_10 field (sau khi thêm vào step_snapshot_v2)
     roc = _to_float(row.get("roc_10"))
-    if roc is not None:
-        if   roc >  5: score = +3
-        elif roc >  2: score = +1
-        elif roc > -2: score =  0
-        elif roc > -5: score = -1
-        else:          score = -3
-        return score, f"ROC10={roc:+.1f}% {score:+d}"
-
-    # Fallback: MACD histogram + direction
-    macd_hist = _to_float(row.get("macd_hist"))
-    if macd_hist is None:
+    if roc is None:
         return 0, ""
 
-    atr_pct = _to_float(row.get("atr_pct"), 1.0)
-    # Normalize MACD hist by ATR
-    if atr_pct and atr_pct > 0:
-        price = _to_float(row.get("price"), 1)
-        norm_hist = macd_hist / (price * atr_pct / 100) if price else 0
-    else:
-        norm_hist = 0
-
-    if   norm_hist >  0.3: score = +2
-    elif norm_hist >  0.1: score = +1
-    elif norm_hist > -0.1: score =  0
-    elif norm_hist > -0.3: score = -1
-    else:                  score = -2
-
-    return score, f"ROC10_proxy(MACD)={norm_hist:+.2f} {score:+d}"
+    if   roc >  5: score = +3
+    elif roc >  2: score = +1
+    elif roc > -2: score =  0
+    elif roc > -5: score = -1
+    else:          score = -3
+    return score, f"ROC10={roc:+.1f}% {score:+d}"
 
 
 def score_nr7(row: dict) -> tuple[int, str]:
@@ -336,7 +302,8 @@ def score_ff_room(row: dict) -> tuple[int, str]:
     if room is None:
         return 0, ""
 
-    # ff_room là % còn lại
+    # ff_room là % room còn lại (0-100)
+    # Không bị wipe bởi validate_ff_data (đã remove khỏi FF_FIELDS)
     if   room > 30: score = +3   # Thoải mái, ngoại có thể mua tự do
     elif room > 10: score =  0   # Trung tính
     elif room >  5: score = -3   # Bắt đầu bị hạn chế
@@ -355,14 +322,18 @@ def score_dividend_yield(row: dict) -> tuple[int, str]:
     if yield_pct is None or yield_pct <= 0:
         return 0, ""
 
-    # KBS trả về dạng decimal (0.05 = 5%) hoặc percent (5.0)?
-    # Guard: nếu > 1 thì đã là percent, nếu < 1 thì nhân 100
+    # KBS trả về decimal: 0.02 = 2%, 0.05 = 5%
+    # Normalize về percent
     if yield_pct < 1.0:
-        yield_pct *= 100
+        yield_pct_pct = yield_pct * 100
+    else:
+        yield_pct_pct = yield_pct  # đã là percent
+    yield_pct = yield_pct_pct
 
-    if   yield_pct > 7: score = +3
-    elif yield_pct > 5: score = +2
-    elif yield_pct > 3: score = +1
+    # Threshold phù hợp thị trường VN (yield thường 1-8%)
+    if   yield_pct > 6: score = +3
+    elif yield_pct > 4: score = +2
+    elif yield_pct > 2: score = +1
     else:               score =  0   # Không có cổ tức ≠ xấu
 
     label = f"DivYield={yield_pct:.1f}% {score:+d}"
@@ -417,23 +388,31 @@ def score_insider(row: dict) -> tuple[int, str]:
     Insider buy/sell activity.
     insider_count + insider_latest từ deep_raw (Trading.insider_deal).
     """
-    count  = _to_float(row.get("insider_count"), 0)
-    latest = str(row.get("insider_latest") or "").lower()
+    # Ưu tiên buy_count/sell_count (phân tách 90 ngày, limit=20)
+    buy_cnt  = int(_to_float(row.get("insider_buy_count"),  0) or 0)
+    sell_cnt = int(_to_float(row.get("insider_sell_count"), 0) or 0)
+    total    = buy_cnt + sell_cnt
 
-    if count == 0 or not latest:
+    # Fallback: dùng latest action nếu chưa có count phân tách
+    if total == 0:
+        latest = str(row.get("insider_latest") or "").lower()
+        if not latest:
+            return 0, ""
+        is_buy  = any(k in latest for k in ["mua", "buy", "purchase", "acqui"])
+        is_sell = any(k in latest for k in ["bán", "sell", "dispos"])
+        if   is_buy:  return +3, f"Insider=BUY(latest) +3"
+        elif is_sell: return -3, f"Insider=SELL(latest) -3"
         return 0, ""
 
-    # Classify action
-    is_buy  = any(k in latest for k in ["mua", "buy", "purchase", "acquire"])
-    is_sell = any(k in latest for k in ["bán", "sell", "dispose"])
+    # Scoring dựa trên số lượng giao dịch 90 ngày
+    net = buy_cnt - sell_cnt
+    if   net >= 3:  score = +5   # Nhiều giao dịch mua
+    elif net >= 1:  score = +3
+    elif net == 0:  score =  0   # Cân bằng
+    elif net >= -2: score = -3
+    else:           score = -5   # Nhiều giao dịch bán
 
-    score = 0
-    if is_buy  and count >= 1: score = +4
-    elif is_sell and count >= 2: score = -4
-    elif is_buy:  score = +2
-    elif is_sell: score = -2
-
-    label = f"Insider={count:.0f}×{'BUY' if is_buy else 'SELL' if is_sell else '?'} {score:+d}"
+    label = f"Insider=B{buy_cnt}/S{sell_cnt}(90d) net={net:+d} {score:+d}"
     return score, label
 
 
