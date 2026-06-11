@@ -93,20 +93,21 @@ GROUP_CAPS = {
 # Weight phân bổ (tổng = 1.00)
 # Horizon ≤30 ngày — technical dominant, fundamental nhỏ nhưng không bỏ
 SCORING_WEIGHTS = {
-    "trend":       0.18,   # nền tảng, IC ổn định T+5→T+30
+    "trend":       0.20,   # nền tảng (+0.02 tạm từ smart_money placeholder)
     "momentum":    0.14,   # driver chính T+5→T+15
     "volume":      0.10,   # xác nhận momentum
     "order_flow":  0.08,   # IC cao nhưng decay sau T+10
     "volatility":  0.04,   # nhỏ nhưng independent
     "depth":       0.04,   # intraday, decay nhanh
-    "ff":          0.12,   # consistent T+5→T+30
-    # smart_money: chưa có data, sẽ thêm Phase B
+    "ff":          0.18,   # consistent T+5→T+30 (+0.06 tạm từ smart_money placeholder)
+    # smart_money (prop+insider): Phase B — khi có: trend=0.18, ff=0.12, smart_money=0.08
     "context":     0.04,   # macro background
     "news":        0.04,   # decay nhanh nhưng có signal
     "fundamental": 0.06,   # IC thấp T+30 nhưng không bằng 0
     "cf":          0.04,   # quality signal nhẹ
     "growth":      0.04,   # lag nhất nhưng vẫn đóng góp
 }
+# Tổng = 1.00: 0.20+0.14+0.10+0.08+0.04+0.04+0.18+0.04+0.04+0.06+0.04+0.04
 # Kiểm tra tổng = 1.00
 assert abs(sum(SCORING_WEIGHTS.values()) - 1.0) < 1e-9, \
     f"Weights sum = {sum(SCORING_WEIGHTS.values()):.4f} ≠ 1.0"
