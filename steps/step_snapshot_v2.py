@@ -321,6 +321,29 @@ def get_vnindex_return(history_length: str = "25D") -> dict:
 def get_flow(symbol: str) -> dict:
     res = {"symbol": symbol}
 
+    # ── FF room từ VCI trực tiếp — Primary source, chính xác nhất ──
+    # fr_available_percentage = % room ngoại còn có thể mua (0.0–1.0)
+    # fr_room_percentage = tổng room cho phép (thường 0.49 hoặc 0.3)
+    df_vci = safe_run(f"ff_vci {symbol}",
+              lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
+                  start=start_str(5), end=today_str()))
+    if df_vci is not None and not df_vci.empty:
+        row_vci = df_vci.iloc[-1]
+        avail = row_vci.get("fr_available_percentage")
+        total = row_vci.get("fr_room_percentage")
+        if avail is not None and not (isinstance(avail, float) and avail != avail):
+            res["ff_room"] = round(float(avail) * 100, 2)   # 0.0102 → 1.02%
+        if total is not None and not (isinstance(total, float) and total != total):
+            res["ff_room_max_pct"] = round(float(total) * 100, 2)  # 0.49 → 49%
+        fr_cur  = row_vci.get("fr_current_room")
+        fr_tot  = row_vci.get("fr_total_room")
+        if fr_cur is not None:
+            res["ff_room_raw"]     = float(fr_cur)   # số CP còn có thể mua
+        if fr_tot is not None:
+            res["ff_total_room_raw"] = float(fr_tot)  # tổng room CP
+        log.info(f"  FF room VCI {symbol}: available={res.get('ff_room')}% "
+                 f"total_room={res.get('ff_room_max_pct')}%")
+
     df_ft = safe_run(f"foreign_trade {symbol}",
              lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
                  start=start_str(25), end=today_str()))
@@ -367,20 +390,7 @@ def get_flow(symbol: str) -> dict:
         log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
                  f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
 
-    # ── FF room: fetch riêng từ VCI nếu CafeF bị wipe ──
-    # ff_room không phụ thuộc vào net value → có thể lấy từ nguồn khác
-    if res.get("ff_room_raw") is None:
-        df_vci_ff = safe_run(f"ff_room_vci {symbol}",
-                    lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
-                        start=start_str(5), end=today_str()))
-        if df_vci_ff is not None and not df_vci_ff.empty:
-            room_col = next((c for c in df_vci_ff.columns
-                             if "room" in c.lower()), None)
-            if room_col:
-                room_val = df_vci_ff[room_col].dropna()
-                if not room_val.empty:
-                    res["ff_room_raw"] = float(room_val.iloc[-1])
-                    log.info(f"  ff_room_raw {symbol} from VCI: {res['ff_room_raw']:.0f}")
+    # (VCI room đã được fetch ở đầu get_flow — không cần fallback thêm)
 
     # ── Insider: limit=20 để phân biệt được số lượng giao dịch ──
     df_id = safe_run(f"insider_deal_vci {symbol}",
@@ -530,29 +540,8 @@ def build_one(symbol: str, group: str, market_open: bool,
             "icb_code": ind_row.get("icb_code", ""),
         }
 
-        # ── Tính ff_room_pct từ ff_room_raw + total_shares ──
-        # total_shares = equity / bvps (book value per share)
-        ff_room_raw = row.get("ff_room_raw")
-        bvps        = row.get("r_bvps")
-        equity      = row.get("bs_equity")
-        price_val   = row.get("price")
-        if ff_room_raw and bvps and bvps > 0 and equity:
-            # KBS: bs_equity đơn vị NGHÌN VND, bvps đơn vị VND/share
-            # total_shares = equity (nghìn VND) × 1000 / bvps (VND/share)
-            total_shares = equity * 1e3 / bvps
-            if total_shares > 0:
-                ff_room_pct = ff_room_raw / total_shares * 100
-                # Sanity check: room phải trong [0, 55%] — ngoại 49% + buffer
-                if 0 < ff_room_pct <= 60:
-                    row["ff_room"] = round(ff_room_pct, 2)
-                    log.debug(f"  {symbol}: ff_room={row['ff_room']:.1f}% "
-                              f"(raw={ff_room_raw:.0f}/shares={total_shares:.0f})")
-                else:
-                    log.warning(f"  {symbol}: ff_room_pct={ff_room_pct:.1f}% > 60% (KBS inconsistency?) → None")
-                    row["ff_room"] = None
-        elif ff_room_raw:
-            row["ff_room"] = None
-            log.debug(f"  {symbol}: ff_room_raw={ff_room_raw} but missing bvps/equity")
+        # ff_room đã được tính từ VCI (fr_available_percentage × 100) trong get_flow
+        # Không cần tính từ KBS — VCI fr_available_percentage chính xác hơn
         log.info(
             f"  ✅ {symbol} ({group}) "
             f"RSI={row.get('rsi')} PE={row.get('r_pe')} "
