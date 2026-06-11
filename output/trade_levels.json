@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-11T22:07:36.283853+07:00",
+  "generated_at": "2026-06-11T23:34:33.226483+07:00",
   "buy_count": 0,
-  "exit_count": 7,
+  "exit_count": 6,
   "buy_levels": [],
   "exit_levels": [
     {
@@ -12,16 +12,6 @@
       "entry_style": "EXIT",
       "price": 13.05,
       "exit_trigger": 12.8,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "KBC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "LOW",
-      "entry_style": "EXIT",
-      "price": 31.0,
-      "exit_trigger": 30.6,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -45,23 +35,23 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "SVD",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 4.87,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "HRC",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 40.2,
-      "exit_trigger": 39.7,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TEG",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 6.09,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
