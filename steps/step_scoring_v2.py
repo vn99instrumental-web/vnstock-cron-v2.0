@@ -127,36 +127,38 @@ def _to_float(v, default=None):
 def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
     """
     Relative Strength vs VNINDEX 20 ngày.
-    RS = return_stock_20d / return_vnindex_20d
-    Ưu tiên return_20d thực (tính từ OHLCV trong get_ta).
-    Fallback: price_vs_ema20_pct nếu chưa có.
+    RS = (1 + return_stock_20d%) / (1 + return_vnindex_20d%)
+    Ưu tiên return_20d thực từ OHLCV; vnindex từ row hoặc context.
     """
-    # Ưu tiên return thực 20 ngày
     stock_ret = _to_float(row.get("return_20d"))
-    # Fallback: price vs ema20
     if stock_ret is None:
         stock_ret = _to_float(row.get("price_vs_ema20_pct"))
     if stock_ret is None:
         return 0, ""
 
-    # VNINDEX return từ context
-    # context.json có vnindex_ema20_pct hoặc tương tự
-    vnindex_ret = _to_float(
-        context.get("vnindex_price_vs_ema20_pct") or
-        context.get("market_return_20d") or
-        context.get("vnindex_return_20d")
-    )
+    # VNINDEX return từ row (được enrich bởi step_snapshot_v2)
+    # Ưu tiên: vnindex_return_20d trong row → context → regime fallback
+    vnindex_ret = _to_float(row.get("vnindex_return_20d"))
 
     if vnindex_ret is None:
-        # Fallback: dùng market_regime để ước tính
+        vnindex_ret = _to_float(
+            context.get("vnindex_return_20d") or
+            context.get("market_return_20d")
+        )
+
+    if vnindex_ret is None:
+        # Fallback cuối: market_regime
         regime = context.get("market_regime", "SIDEWAYS")
-        if regime in ("UPTREND",): vnindex_ret = 3.0
-        elif regime in ("DOWNTREND", "DEEP_DOWN"): vnindex_ret = -3.0
-        else: vnindex_ret = 0.5
+        if   regime == "UPTREND":               vnindex_ret =  3.0
+        elif regime in ("DOWNTREND","DEEP_DOWN"): vnindex_ret = -3.0
+        else:                                   vnindex_ret =  0.0
 
     # RS = stock / market (tránh chia 0)
+    # NaN guard
+    import math
+    if math.isnan(stock_ret): return 0, ""
+
     if abs(vnindex_ret) < 0.1:
-        # Market flat — RS = stock performance tuyệt đối
         rs = 1.0 + stock_ret / 10.0
     else:
         rs = (1 + stock_ret / 100) / (1 + vnindex_ret / 100)
@@ -302,12 +304,14 @@ def score_ff_room(row: dict) -> tuple[int, str]:
     if room is None:
         return 0, ""
 
-    # ff_room là % room còn lại (0-100)
-    # Không bị wipe bởi validate_ff_data (đã remove khỏi FF_FIELDS)
-    if   room > 30: score = +3   # Thoải mái, ngoại có thể mua tự do
-    elif room > 10: score =  0   # Trung tính
-    elif room >  5: score = -3   # Bắt đầu bị hạn chế
-    else:           score = -7   # Gần đầy — ngoại không mua được
+    # ff_room đã được normalize về % trong step_snapshot_v2 (ff_room_raw / total_shares × 100)
+    # Range: 0-100%. >30% thoải mái, <5% gần đầy
+    if not (0 <= room <= 100):
+        return 0, f"FFroom={room:.0f}(invalid) +0"
+    if   room > 30: score = +3
+    elif room > 10: score =  0
+    elif room >  5: score = -3
+    else:           score = -7
 
     label = f"FFroom={room:.1f}% {score:+d}"
     return score, label
