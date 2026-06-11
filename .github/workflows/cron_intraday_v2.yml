@@ -88,36 +88,31 @@ jobs:
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_snapshot_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_snapshot_v2.py
 
       - name: Step Order Flow V2
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_order_flow_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_order_flow_v2.py
 
       - name: Step Scoring V2 (weighted normalized)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_scoring_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_scoring_v2.py
 
       - name: Step Price Levels V2
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_price_levels_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_price_levels_v2.py
 
       - name: Step Record Predictions V2 (forward log)
         env:
           FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_record_predictions_v2.py
+          /opt/vnstock/.venv/bin/python steps/step_record_predictions_v2.py
 
       # ──────────────────────────────────────────────────────────────────
       # COMMIT — chỉ add v2 files, không đụng v3
