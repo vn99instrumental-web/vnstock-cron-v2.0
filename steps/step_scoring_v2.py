@@ -136,30 +136,29 @@ def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
     if stock_ret is None:
         return 0, ""
 
-    # VNINDEX return từ row (được enrich bởi step_snapshot_v2)
-    # Ưu tiên: vnindex_return_20d trong row → context → regime fallback
-    vnindex_ret = _to_float(row.get("vnindex_return_20d"))
+    # VNINDEX return: chỉ dùng relative mode khi có data thực từ row/context
+    # Nếu chỉ có regime fallback → dùng absolute mode (tránh RS ≈ 1.0 cho mọi symbol)
+    vnindex_ret  = _to_float(row.get("vnindex_return_20d"))
+    vnindex_real = vnindex_ret is not None  # True = có data thực, False = phải fallback
 
-    if vnindex_ret is None:
+    if not vnindex_real:
         vnindex_ret = _to_float(
             context.get("vnindex_return_20d") or
             context.get("market_return_20d")
         )
+        if vnindex_ret is not None:
+            vnindex_real = True  # context có data
 
-    if vnindex_ret is None:
-        # Fallback cuối: market_regime
-        regime = context.get("market_regime", "SIDEWAYS")
-        if   regime == "UPTREND":               vnindex_ret =  3.0
-        elif regime in ("DOWNTREND","DEEP_DOWN"): vnindex_ret = -3.0
-        else:                                   vnindex_ret =  0.0
+    if not vnindex_real:
+        # Không có VNINDEX data thực → absolute mode
+        vnindex_ret = None
 
     # RS = stock / market (tránh chia 0)
     import math
     if math.isnan(stock_ret): return 0, ""
 
-    # Nếu không có VNINDEX return thực → dùng absolute return làm tín hiệu
-    vnindex_real = vnindex_ret is not None and abs(vnindex_ret) >= 0.1
-    if not vnindex_real:
+    # Không có VNINDEX data thực → absolute mode
+    if not vnindex_real or vnindex_ret is None:
         # Absolute mode: score dựa trên return tuyệt đối của cổ phiếu
         if   stock_ret >  15: score = +8
         elif stock_ret >   5: score = +4
