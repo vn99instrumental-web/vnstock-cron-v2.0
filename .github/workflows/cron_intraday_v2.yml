@@ -62,8 +62,8 @@ jobs:
           restore-keys: |
             vnstock-stable-v4-
 
-      # Fallback install đầy đủ nếu cache miss (copy từ V3)
-      - name: Fallback install nếu cache miss
+      # Fallback install đầy đủ nếu cache miss
+      - name: Fallback install nếu cache miss hoặc venv broken
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
@@ -84,9 +84,38 @@ jobs:
           /opt/vnstock/.venv/bin/python generate_user_info.min.py \
             --api-key "$VNSTOCK_API_KEY"
 
+      # Venv health check — chạy kể cả khi cache hit
+      # Nếu venv broken (cache restore sai path) → reinstall ngay
+      - name: Verify venv hoặc reinstall
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          VENV_PY="/opt/vnstock/.venv/bin/python"
+          VENV_PIP="/opt/vnstock/.venv/bin/pip"
+
+          if [ ! -x "$VENV_PY" ]; then
+            echo "⚠️ Venv broken sau cache restore — reinstall..."
+            pip install requests
+            mkdir -p /home/runner/.vnstock
+            wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
+              -O installer.run
+            chmod +x installer.run
+            ./installer.run -- \
+              --non-interactive \
+              --api-key "$VNSTOCK_API_KEY" \
+              --venv-path "$VNSTOCK_VENV_PATH" \
+              --language en
+            wget -q https://vnstocks.com/files/generate_user_info.min.py \
+              -O generate_user_info.min.py
+            $VENV_PY generate_user_info.min.py --api-key "$VNSTOCK_API_KEY"
+          else
+            echo "✅ Venv OK: $($VENV_PY --version)"
+          fi
+
       - name: Install extra dependencies
         run: |
-          /opt/vnstock/.venv/bin/pip install -q gspread google-auth
+          /opt/vnstock/.venv/bin/pip install -q gspread google-auth || true
 
       - name: Ensure latest vnstock packages
         run: |
