@@ -50,7 +50,7 @@ HISTORY_LENGTH = "12M"
 FF_FIELDS = [
     "ff_buy_val_5d", "ff_sell_val_5d",
     "ff_net_val_5d", "ff_net_val_20d",
-    "ff_room",
+    # ff_room KHÔNG wipe — là field độc lập, không liên quan CafeF net value bug
     "ff_trend", "ff_consistency", "ff_acceleration",
 ]
 
@@ -225,6 +225,31 @@ def get_ta(symbol: str) -> dict:
                             if avg_vol_5d > 0 else None,
         })
     res["_ohlcv_5d"] = ohlcv_5d
+
+    # ── 52W High / Low (thực tế từ OHLCV 12M) ──
+    if not df.empty:
+        df["high"]  = pd.to_numeric(df["high"],  errors="coerce")
+        df["low"]   = pd.to_numeric(df["low"],   errors="coerce")
+        df["close"] = pd.to_numeric(df["close"], errors="coerce")
+        h52 = df["high"].max()
+        l52 = df["low"].min()
+        res["high_52w"] = round(float(h52), 2) if pd.notna(h52) else None
+        res["low_52w"]  = round(float(l52), 2) if pd.notna(l52) else None
+
+    # ── ROC(10): Rate of Change 10 ngày ──
+    if len(df) >= 11:
+        close_now = float(df["close"].iloc[-1])
+        close_10d = float(df["close"].iloc[-11])
+        if close_10d > 0 and pd.notna(close_now) and pd.notna(close_10d):
+            res["roc_10"] = round((close_now / close_10d - 1) * 100, 2)
+
+    # ── RS vs VNINDEX proxy: return 20d ──
+    if len(df) >= 21:
+        close_now = float(df["close"].iloc[-1])
+        close_20d = float(df["close"].iloc[-21])
+        if close_20d > 0 and pd.notna(close_now) and pd.notna(close_20d):
+            res["return_20d"] = round((close_now / close_20d - 1) * 100, 2)
+
     return res
 
 # =====================================================
@@ -278,11 +303,27 @@ def get_flow(symbol: str) -> dict:
         log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
                  f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
 
+    # ── FF room: fetch riêng từ VCI nếu CafeF bị wipe ──
+    # ff_room không phụ thuộc vào net value → có thể lấy từ nguồn khác
+    if res.get("ff_room") is None:
+        df_vci_ff = safe_run(f"ff_room_vci {symbol}",
+                    lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
+                        start=start_str(5), end=today_str()))
+        if df_vci_ff is not None and not df_vci_ff.empty:
+            room_col = next((c for c in df_vci_ff.columns
+                             if "room" in c.lower()), None)
+            if room_col:
+                room_val = df_vci_ff[room_col].dropna()
+                if not room_val.empty:
+                    res["ff_room"] = float(room_val.iloc[-1])
+                    log.info(f"  ff_room {symbol} from VCI: {res['ff_room']:.1f}%")
+
+    # ── Insider: limit=20 để phân biệt được số lượng giao dịch ──
     df_id = safe_run(f"insider_deal_vci {symbol}",
-             lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=5))
+             lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=20))
     if df_id is None:
         df_id = safe_run(f"insider_deal_cafef {symbol}",
-                 lambda: Trading(symbol=symbol, source="CafeF").insider_deal(limit=5))
+                 lambda: Trading(symbol=symbol, source="CafeF").insider_deal(limit=20))
         if df_id is not None and not df_id.empty:
             df_id = df_id.rename(columns={
                 "transaction_man"         : "trader_name",
@@ -291,11 +332,33 @@ def get_flow(symbol: str) -> dict:
             })
 
     if df_id is not None and not df_id.empty:
-        res["insider_count"]  = len(df_id)
-        res["insider_latest"] = str(df_id["action_type"].iloc[0]) \
-                                if "action_type" in df_id.columns else None
-        res["insider_name"]   = str(df_id["trader_name"].iloc[0]) \
-                                if "trader_name" in df_id.columns else None
+        # Phân tích 90 ngày gần nhất nếu có cột ngày
+        date_col = next((c for c in df_id.columns
+                         if "date" in c.lower() or "time" in c.lower()), None)
+        if date_col:
+            try:
+                df_id[date_col] = pd.to_datetime(df_id[date_col], errors="coerce")
+                cutoff = pd.Timestamp.now() - pd.Timedelta(days=90)
+                df_90d = df_id[df_id[date_col] >= cutoff]
+                df_id  = df_90d if not df_90d.empty else df_id
+            except Exception:
+                pass
+
+        action_col = "action_type" if "action_type" in df_id.columns else None
+        if action_col:
+            buy_kw  = ["mua", "buy", "purchase", "acqui"]
+            sell_kw = ["bán", "sell", "dispos", "transfer"]
+            actions = df_id[action_col].astype(str).str.lower()
+            buy_cnt  = actions.apply(lambda x: any(k in x for k in buy_kw)).sum()
+            sell_cnt = actions.apply(lambda x: any(k in x for k in sell_kw)).sum()
+            res["insider_buy_count"]  = int(buy_cnt)
+            res["insider_sell_count"] = int(sell_cnt)
+            res["insider_count"]      = len(df_id)
+            res["insider_latest"]     = str(df_id[action_col].iloc[0])
+        else:
+            res["insider_count"]  = len(df_id)
+        res["insider_name"] = str(df_id["trader_name"].iloc[0]) \
+                              if "trader_name" in df_id.columns else None
 
     return res
 
