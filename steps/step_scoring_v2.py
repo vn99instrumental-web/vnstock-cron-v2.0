@@ -320,15 +320,15 @@ def run():
              f"NEU≥{THRESHOLD_NEUTRAL} | "
              f"SELL≥{THRESHOLD_SELL} | SS<{THRESHOLD_SELL}")
 
-    # ── Load inputs (cùng file với v3) ──
-    deep_raw   = load_json("deep_raw.json")
-    context_list = load_json("market/context.json") or load_json("context.json")
+    # ── Load inputs V2 (file riêng, không phụ thuộc V3) ──
+    deep_raw   = load_json("deep_raw_v2.json")
+    context_list = load_json("market/context.json") or load_json("context.json")   # dùng chung daily
     today_index  = load_json("news/today_index.json") or \
-                   load_json("news_today_index.json")
-    order_flow   = load_json("order_flow.json")
+                   load_json("news_today_index.json")                               # dùng chung daily
+    order_flow   = load_json("order_flow_v2.json")
 
     if not deep_raw:
-        log.error("deep_raw.json not found — abort")
+        log.error("deep_raw_v2.json not found — chạy step_snapshot_v2.py trước")
         return
 
     ctx = context_list[0] if context_list else {}
@@ -336,8 +336,16 @@ def run():
     if today_index is None:
         log.warning("news_today_index.json not found — news_score = 0")
 
+    missing = []
+    if not context_list:
+        missing.append("context (−4% weight, dùng chung daily)")
+    if not order_flow:
+        missing.append("order_flow_v2 (−8% weight)")
+    if missing:
+        log.warning(f"Missing inputs: {', '.join(missing)}")
+
     if order_flow is None:
-        log.warning("order_flow.json not found — order_flow_score = 0")
+        log.warning("order_flow_v2.json not found — order_flow_score = 0")
         order_flow = []
 
     # Build order_flow map
