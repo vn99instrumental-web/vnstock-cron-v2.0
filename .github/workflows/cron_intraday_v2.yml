@@ -103,19 +103,6 @@ jobs:
       # PATCH V3 files → V2 runtime files (sed đổi output filenames only)
       # Không maintain 2 file Python riêng
       # ──────────────────────────────────────────────────────────────────
-      - name: Patch step_snapshot → step_snapshot_v2
-        run: |
-          sed \
-            -e 's|save_json("deep_raw.json"|save_json("deep_raw_v2.json"|g' \
-            -e 's|save_json("deep.json"|save_json("deep_v2.json"|g' \
-            -e 's|save_csv("deep.csv"|save_csv("deep_v2.csv"|g' \
-            -e 's|save_json("ranking.json"|save_json("ranking_v2.json"|g' \
-            -e 's|save_csv("ranking.csv"|save_csv("ranking_v2.csv"|g' \
-            -e 's|SNAPSHOT DONE|SNAPSHOT V2 DONE|g' \
-            steps/step_snapshot.py > steps/step_snapshot_v2_runtime.py
-          grep -c "v2" steps/step_snapshot_v2_runtime.py
-          echo "✅ Patched step_snapshot_v2_runtime.py"
-
       - name: Patch step_order_flow → step_order_flow_v2
         run: |
           sed \
@@ -135,7 +122,7 @@ jobs:
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
-          /opt/vnstock/.venv/bin/python steps/step_snapshot_v2_runtime.py
+          /opt/vnstock/.venv/bin/python steps/step_snapshot_v2.py
 
       - name: Step Order Flow V2
         env:
