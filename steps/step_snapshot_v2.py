@@ -253,6 +253,42 @@ def get_ta(symbol: str) -> dict:
     return res
 
 # =====================================================
+# VNINDEX RETURN — để tính RS chính xác
+# =====================================================
+
+def get_vnindex_return(history_length: str = "25D") -> dict:
+    """
+    Fetch VNINDEX OHLCV → tính return_20d thực.
+    Gọi 1 lần trong MAIN, pass vào context hoặc deep_rows.
+    """
+    try:
+        df = Quote(source="VCI", symbol="VNINDEX").history(
+            length=history_length, interval="1D")
+        if df is None or df.empty or len(df) < 5:
+            log.warning("VNINDEX history empty")
+            return {}
+        df["close"] = pd.to_numeric(df["close"], errors="coerce")
+        close_now = float(df["close"].iloc[-1])
+        res = {"vnindex_close": close_now}
+        if len(df) >= 21:
+            close_20d = float(df["close"].iloc[-21])
+            if close_20d > 0 and pd.notna(close_20d):
+                res["vnindex_return_20d"] = round(
+                    (close_now / close_20d - 1) * 100, 2)
+        if len(df) >= 6:
+            close_5d = float(df["close"].iloc[-6])
+            if close_5d > 0 and pd.notna(close_5d):
+                res["vnindex_return_5d"] = round(
+                    (close_now / close_5d - 1) * 100, 2)
+        log.info(f"VNINDEX return_20d={res.get('vnindex_return_20d')} "
+                 f"return_5d={res.get('vnindex_return_5d')}")
+        return res
+    except Exception as e:
+        log.warning(f"get_vnindex_return error: {e}")
+        return {}
+
+
+# =====================================================
 # FLOW — CafeF foreign_trade
 # =====================================================
 
@@ -286,7 +322,9 @@ def get_flow(symbol: str) -> dict:
         res["ff_net_val_20d"] = float(net.sum())
 
         if "ff_room" in df_ft.columns:
-            res["ff_room"] = float(df_ft["ff_room"].iloc[-1])
+            # ff_room từ CafeF = số CP nước ngoài còn có thể mua (raw shares)
+            res["ff_room_raw"] = float(df_ft["ff_room"].iloc[-1])
+            # Tính % sẽ làm trong build_one khi có total_shares từ finance
 
         if len(net) >= 5:
             x     = np.arange(len(net))
@@ -305,7 +343,7 @@ def get_flow(symbol: str) -> dict:
 
     # ── FF room: fetch riêng từ VCI nếu CafeF bị wipe ──
     # ff_room không phụ thuộc vào net value → có thể lấy từ nguồn khác
-    if res.get("ff_room") is None:
+    if res.get("ff_room_raw") is None:
         df_vci_ff = safe_run(f"ff_room_vci {symbol}",
                     lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
                         start=start_str(5), end=today_str()))
@@ -315,8 +353,8 @@ def get_flow(symbol: str) -> dict:
             if room_col:
                 room_val = df_vci_ff[room_col].dropna()
                 if not room_val.empty:
-                    res["ff_room"] = float(room_val.iloc[-1])
-                    log.info(f"  ff_room {symbol} from VCI: {res['ff_room']:.1f}%")
+                    res["ff_room_raw"] = float(room_val.iloc[-1])
+                    log.info(f"  ff_room_raw {symbol} from VCI: {res['ff_room_raw']:.0f}")
 
     # ── Insider: limit=20 để phân biệt được số lượng giao dịch ──
     df_id = safe_run(f"insider_deal_vci {symbol}",
@@ -465,6 +503,26 @@ def build_one(symbol: str, group: str, market_open: bool,
             "industry": ind_row.get("icb_name", ""),
             "icb_code": ind_row.get("icb_code", ""),
         }
+
+        # ── Tính ff_room_pct từ ff_room_raw + total_shares ──
+        # total_shares = equity / bvps (book value per share)
+        ff_room_raw = row.get("ff_room_raw")
+        bvps        = row.get("r_bvps")
+        equity      = row.get("bs_equity")
+        price_val   = row.get("price")
+        if ff_room_raw and bvps and bvps > 0:
+            total_shares = equity / bvps if equity else None
+            if total_shares and total_shares > 0:
+                row["ff_room"] = round(ff_room_raw / total_shares * 100, 2)
+            elif price_val and price_val > 0 and equity:
+                # Fallback: market_cap estimate = equity (book value proxy)
+                total_shares_est = equity / price_val
+                if total_shares_est > 0:
+                    row["ff_room"] = round(ff_room_raw / total_shares_est * 100, 2)
+        elif ff_room_raw:
+            # Không có bvps → giữ raw, đánh dấu chưa normalize
+            row["ff_room"] = None
+            log.debug(f"  {symbol}: ff_room_raw={ff_room_raw} but no bvps → ff_room=None")
         log.info(
             f"  ✅ {symbol} ({group}) "
             f"RSI={row.get('rsi')} PE={row.get('r_pe')} "
@@ -549,6 +607,14 @@ if __name__ == "__main__":
                     if isinstance(fin_cache_raw, dict) else {}
     log.info(f"Finance cache: {len(fin_cache)} symbols loaded")
 
+    # Fetch VNINDEX return để tính RS chính xác
+    vnindex_info = get_vnindex_return()
+    if vnindex_info:
+        log.info(f"VNINDEX return_20d={vnindex_info.get('vnindex_return_20d')} "
+                 f"return_5d={vnindex_info.get('vnindex_return_5d')}")
+    else:
+        log.warning("VNINDEX return not available — RS sẽ dùng fallback")
+
     ranking = get_ranking()
 
     all_ranking_rows = []
@@ -590,7 +656,12 @@ if __name__ == "__main__":
 
     for sym, grp in symbol_jobs:
         if sym in results:
-            all_deep_rows.append(results[sym])
+            row = results[sym]
+            # Enrich vnindex return vào từng row để scoring dùng
+            if vnindex_info:
+                row["vnindex_return_20d"] = vnindex_info.get("vnindex_return_20d")
+                row["vnindex_return_5d"]  = vnindex_info.get("vnindex_return_5d")
+            all_deep_rows.append(row)
 
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
