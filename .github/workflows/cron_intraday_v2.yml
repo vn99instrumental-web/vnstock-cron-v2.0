@@ -1,0 +1,154 @@
+name: VNStock Intraday V4
+
+on:
+  schedule:
+    # Chạy 2 lần/ngày, offset +5 phút sau V3 để đảm bảo V3 đã commit output
+    # V3 chạy lúc 10:30 và 14:30 ICT → V4 chạy 10:35 và 14:35 ICT
+    - cron: '35 3 * * 1-5'   # 10:35 ICT (= 3:35 UTC)
+    - cron: '35 7 * * 1-5'   # 14:35 ICT (= 7:35 UTC) ← run quan trọng, record predictions
+  workflow_dispatch:
+    inputs:
+      force_record:
+        description: 'Ep ghi predictions ke ca ngoai gio (de test)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Group riêng — không block/bị block bởi vnstock-intraday (v3)
+concurrency:
+  group: vnstock-intraday-v4
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15   # V4 không gọi API → nhanh hơn V3 nhiều
+
+    env:
+      VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:   ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Dùng cùng cache key với V3 — không cần install lại
+      - name: Get week number
+        id: date
+        run: echo "week=$(date +'%Y-W%V')" >> $GITHUB_OUTPUT
+
+      - name: Cache vnstock venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: /opt/vnstock/.venv
+          key: vnstock-stable-v4-${{ steps.date.outputs.week }}
+
+      - name: Fallback install if cache miss
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv /opt/vnstock/.venv
+          source /opt/vnstock/.venv/bin/activate
+          pip install --upgrade pip
+          pip install vnstock pandas numpy
+
+      # ──────────────────────────────────────────────────────────────────
+      # VERIFY V3 OUTPUT TỒN TẠI
+      # V4 phụ thuộc vào deep_raw.json + order_flow.json từ V3.
+      # Nếu V3 chưa chạy (ngày lễ, lỗi...) → abort sớm, không ghi rác.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Verify V3 output exists
+        run: |
+          for f in output/deep_raw.json output/order_flow.json; do
+            if [ ! -f "$f" ]; then
+              echo "❌ $f not found — V3 chưa chạy hoặc chưa commit"
+              exit 1
+            fi
+          done
+
+          # Kiểm tra deep_raw.json không quá cũ (>2 giờ = V3 có vấn đề)
+          FILE_AGE=$(( $(date +%s) - $(stat -c %Y output/deep_raw.json) ))
+          echo "deep_raw.json age: ${FILE_AGE}s"
+          if [ "$FILE_AGE" -gt 7200 ]; then
+            echo "⚠️ deep_raw.json quá cũ (${FILE_AGE}s > 7200s) — V3 có thể lỗi"
+            echo "Tiếp tục nhưng kết quả có thể stale"
+          fi
+
+          echo "✅ V3 output OK"
+
+      # ──────────────────────────────────────────────────────────────────
+      # V4 PIPELINE
+      # Không gọi API — chỉ đọc files từ V3 + tính toán
+      # ──────────────────────────────────────────────────────────────────
+      - name: Step Scoring V4 (weighted normalized)
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_scoring_v4.py
+
+      - name: Step Price Levels V4
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_price_levels_v4.py
+
+      - name: Step Record Predictions V4 (forward log)
+        env:
+          FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/step_record_predictions_v4.py
+
+      # ──────────────────────────────────────────────────────────────────
+      # COMMIT — chỉ commit output v4, không đụng v3 files
+      # ──────────────────────────────────────────────────────────────────
+      - name: Commit V4 output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Chỉ add v4 files — không add lại v3 files tránh conflict
+          git add output/signals_v4.json \
+                  output/signals_v4.csv \
+                  output/trade_levels_v4.json \
+                  output/trade_levels_v4.csv \
+                  output/history/predictions_v4/ \
+                  2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit — skipping."
+            exit 0
+          fi
+
+          git commit -m "data[v4]: $(date +'%Y-%m-%d %H:%M') ICT"
+
+          pushed=0
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "✅ pushed (attempt $i)"
+              pushed=1
+              break
+            fi
+            echo "⚠️ push attempt $i failed — retrying..."
+            sleep $((RANDOM % 5 + 3))
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "❌ push failed after 5 attempts"
+            exit 1
+          fi
