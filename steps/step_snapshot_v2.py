@@ -406,9 +406,11 @@ def get_flow(symbol: str) -> dict:
                   start=start_str(25), end=today_str()))
     if df_pt is not None and not df_pt.empty:
         try:
-            # Cột có thể là: net_value / net_val / proprietary_net
-            net_col = next((c for c in df_pt.columns
-                            if "net" in c.lower() and "val" in c.lower()), None)
+            # VCI prop_trade() trả cột 'total_trade_net_value' (đã confirm từ debug)
+            # Fallback: tìm cột chứa 'net_value' nếu API đổi tên
+            PREFERRED = "total_trade_net_value"
+            net_col = PREFERRED if PREFERRED in df_pt.columns else                       next((c for c in df_pt.columns
+                            if "net" in c.lower() and "value" in c.lower()), None)
             if net_col:
                 net_pt = pd.to_numeric(df_pt[net_col], errors="coerce").dropna()
                 if not net_pt.empty:
@@ -418,8 +420,11 @@ def get_flow(symbol: str) -> dict:
                         x = np.arange(len(net_pt))
                         slope = np.polyfit(x, net_pt.fillna(0).values, 1)[0]
                         res["pt_trend"] = round(float(slope) / 1e9, 2)
-                    log.info(f"  PropTrade {symbol}: net5d={res.get('pt_net_val_5d'):.0f} "
-                             f"net20d={res.get('pt_net_val_20d'):.0f}")
+                    log.info(f"  PropTrade {symbol}: "
+                             f"net5d={res['pt_net_val_5d']:.0f} "
+                             f"net20d={res['pt_net_val_20d']:.0f}")
+            else:
+                log.debug(f"  PropTrade {symbol}: no net_value column in {df_pt.columns.tolist()}")
         except Exception as e:
             log.warning(f"  PropTrade {symbol} parse error: {e}")
 
