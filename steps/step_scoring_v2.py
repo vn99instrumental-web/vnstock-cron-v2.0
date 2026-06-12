@@ -310,14 +310,16 @@ def score_ff_room(row: dict) -> tuple[int, str]:
     if room is None:
         return 0, ""
 
-    # ff_room đã được normalize về % trong step_snapshot_v2 (ff_room_raw / total_shares × 100)
-    # Range: 0-100%. >30% thoải mái, <5% gần đầy
-    if not (0 <= room <= 100):
-        return 0, f"FFroom={room:.0f}(invalid) +0"
+    # ff_room = fr_available_percentage × 100 từ VCI (% room ngoại còn có thể mua)
+    # PNJ ~1%, KBC ~41%, GVR ~12%, LDG ~50%
+    # room âm hoặc = 0: mã không có room ngoại (total_room=0%)
+    # VD: SGT=-5.48%, HRC=-0.56% → ngoại không được mua → -7
+    if room > 100:
+        return 0, f"FFroom={room:.1f}(invalid>100) +0"
     if   room > 30: score = +3
     elif room > 10: score =  0
     elif room >  5: score = -3
-    else:           score = -7
+    else:           score = -7   # bao gồm âm và 0-5%
 
     label = f"FFroom={room:.1f}% {score:+d}"
     return score, label
