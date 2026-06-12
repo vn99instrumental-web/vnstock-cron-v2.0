@@ -1,33 +1,9 @@
 {
-  "generated_at": "2026-06-12T09:56:44.753688+07:00",
+  "generated_at": "2026-06-12T10:56:08.577471+07:00",
   "scoring_version": "v2",
-  "buy_count": 1,
-  "exit_count": 6,
-  "buy_levels": [
-    {
-      "symbol": "HII",
-      "exchange": "HSX",
-      "decision": "BUY",
-      "confidence": "MEDIUM",
-      "entry_style": "PULLBACK",
-      "price": 6.05,
-      "entry": 5.92,
-      "entry_low": 5.92,
-      "entry_high": 6.05,
-      "stop_loss": 5.65,
-      "risk_pct": 4.56,
-      "tp1": 6.32,
-      "tp2": null,
-      "rr_tp1": 1.48,
-      "rr_headroom": 0.59,
-      "size_hint": "HALF",
-      "nearest_support": 5.92,
-      "nearest_resist": 6.08,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "SINGLE_TP_ONLY,TIGHT_HEADROOM",
-      "skip": ""
-    }
-  ],
+  "buy_count": 0,
+  "exit_count": 5,
+  "buy_levels": [],
   "exit_levels": [
     {
       "symbol": "HRC",
@@ -40,14 +16,24 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "ACC",
+      "symbol": "CIG",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 12.2,
+      "price": 6.25,
+      "exit_trigger": 6.23,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "VRC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 12.5,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "TCO",
@@ -55,37 +41,17 @@
       "decision": "STRONG SELL",
       "confidence": "HIGH",
       "entry_style": "EXIT",
-      "price": 11.65,
-      "exit_trigger": null,
+      "price": 11.7,
+      "exit_trigger": 11.65,
       "note": "Thoát ngay (market)"
     },
     {
-      "symbol": "TTA",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 10.3,
-      "exit_trigger": 10.25,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TV2",
+      "symbol": "SHI",
       "exchange": "HSX",
       "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
+      "confidence": "HIGH",
       "entry_style": "EXIT",
-      "price": 28.85,
-      "exit_trigger": null,
-      "note": "Thoát ngay (market)"
-    },
-    {
-      "symbol": "DCL",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 37.75,
+      "price": 13.65,
       "exit_trigger": null,
       "note": "Thoát ngay (market)"
     }
