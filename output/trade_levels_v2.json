@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-12T07:48:09.443390+07:00",
+  "generated_at": "2026-06-12T08:01:01.573140+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
-  "exit_count": 8,
+  "exit_count": 7,
   "buy_levels": [],
   "exit_levels": [
     {
@@ -53,16 +53,6 @@
       "entry_style": "EXIT",
       "price": 15.1,
       "exit_trigger": 15.1,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "SVD",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 4.87,
-      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
