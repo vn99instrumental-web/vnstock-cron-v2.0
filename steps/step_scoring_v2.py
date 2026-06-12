@@ -516,8 +516,12 @@ def score_prop_trade(row: dict) -> tuple[int, str]:
     net_20d = _to_float(row.get("pt_net_val_20d"))
     trend   = _to_float(row.get("pt_trend"))
 
-    if net_5d is None and net_20d is None:
+    import math
+    # Guard: None hoặc NaN
+    if net_5d is None or (isinstance(net_5d, float) and math.isnan(net_5d)):
         return 0, ""
+    if net_20d is None or (isinstance(net_20d, float) and math.isnan(net_20d)):
+        net_20d = 0.0
 
     # Normalize về tỷ VND
     n5  = (net_5d  or 0) / 1e9
