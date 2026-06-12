@@ -270,7 +270,7 @@ def get_ta(symbol: str) -> dict:
 # VNINDEX RETURN — để tính RS chính xác
 # =====================================================
 
-def get_vnindex_return(history_length: str = "25D") -> dict:
+def get_vnindex_return(history_length: str = "2M") -> dict:
     """
     Fetch VNINDEX OHLCV → tính return_20d thực.
     Gọi 1 lần trong MAIN, pass vào context hoặc deep_rows.
