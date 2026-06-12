@@ -31,6 +31,20 @@ CHANGELOG:
     GIỮ NGUYÊN: RSI, BB (đã đúng mean-rev), EMA cross, Supertrend, ADX,
                 MACD, Stoch, và tất cả group khác. Caps không đổi.
 
+  2026-06-12 — Phase 3: DEPTH SCORE revised
+    FIX: bid/ask_price lưu theo VND nguyên (x1000 so với price) → normalize /1000
+    NEW logic:
+      ASK side — nhiều tường bán = rủi ro xả hàng, giá khó vượt TP
+        ≥2 ask wall (vol ≥ 5K cp) → -3
+         1 ask wall, gần (≤2%)    → -2
+         1 ask wall, xa  (2–5%)   → -1
+         0 ask wall               → +1 (đường trống)
+      BID side — tường mua = hỗ trợ thực tế
+        ≥2 bid wall (vol ≥ 5K cp) → +2
+         1 bid wall               → +1
+         0 bid wall               → -1 (không có đỡ)
+      WALL_MIN_VOL = 5000 cổ phiếu (số lượng, không phải giá trị)
+
   New thresholds: ≥80 SB | ≥40 BUY | ≥-15 NEUTRAL | ≥-40 SELL | <-40 SS
 
   New output fields:
@@ -250,12 +264,34 @@ def score_order_flow(of_data: dict) -> tuple[int, list[str]]:
 
 
 # ═════════════════════════════════════════════════════════════════
-# DEPTH SCORE (max ±5) — Phase 3: Order book bid/ask
-# Đọc bid_price_1..3 / ask_price_1..3 từ deep_raw (Market.equity)
+# DEPTH SCORE (max ±5) — Phase 3 revised (2026-06-12)
+#
+# Nguồn: bid_price_1..3 / bid_vol_1..3 / ask_price_1..3 / ask_vol_1..3
+#   từ deep_raw.json (step_snapshot → Market().equity().order_book())
+#
+# ĐƠN VỊ:
+#   - bid/ask_price: lưu theo VND nguyên (e.g. 15050.0)
+#   - price (cur_price): lưu theo nghìn đồng (e.g. 15.05)
+#   → Normalize: bid/ask_price / 1000 trước khi so sánh với price
+#   - bid/ask_vol: số cổ phiếu thực tế (e.g. 829100.0)
+#
+# WALL hợp lệ: vol >= WALL_MIN_VOL = 5000 cổ phiếu
 # Chỉ có data khi market_open; ngoài giờ GD → tất cả None → return 0
-# Wall hợp lệ: vol >= WALL_MIN_VOL = 5000
+#
+# LOGIC:
+#   ASK side — nhiều tường bán = rủi ro xả hàng, giá khó vượt TP:
+#     ≥2 ask wall  → -3
+#      1 ask wall, gần (≤2%)  → -2
+#      1 ask wall, xa  (2–5%) → -1
+#      0 ask wall             → +1 (đường trống, thuận lợi)
+#   BID side — tường mua = hỗ trợ thực tế bên dưới:
+#     ≥2 bid wall  → +2
+#      1 bid wall  → +1
+#      0 bid wall  → -1 (không có đỡ)
+#   Clamp: [-5, +5]
 # ═════════════════════════════════════════════════════════════════
-WALL_MIN_VOL = 5_000
+WALL_MIN_VOL = 5_000   # số cổ phiếu (không phải giá trị VND)
+
 
 def _ob_valid(v) -> bool:
     """Kiểm tra giá trị bid/ask hợp lệ (không None, không NaN, > 0)."""
@@ -270,11 +306,12 @@ def _ob_valid(v) -> bool:
 
 def score_depth(row: dict) -> tuple[int, list[str]]:
     cur_price = row.get("price")
-    if not cur_price or cur_price <= 0:
+    if not cur_price or float(cur_price) <= 0:
         return 0, []
+    cur = float(cur_price)
 
-    # Thu thập bid/ask từ row (3 mức) — lưu tất cả, WALL_MIN_VOL chỉ dùng khi tính điểm
-    bids_all = []   # (price, vol) — tất cả mức hợp lệ
+    # Normalize: bid/ask_price lưu theo VND nguyên → chia 1000 về cùng đơn vị với price
+    bids_all = []
     asks_all = []
     for i in (1, 2, 3):
         bp = row.get(f"bid_price_{i}")
@@ -282,57 +319,51 @@ def score_depth(row: dict) -> tuple[int, list[str]]:
         ap = row.get(f"ask_price_{i}")
         av = row.get(f"ask_vol_{i}")
         if _ob_valid(bp) and _ob_valid(bv):
-            bids_all.append((float(bp), float(bv)))
+            bids_all.append((float(bp) / 1000, float(bv)))
         if _ob_valid(ap) and _ob_valid(av):
-            asks_all.append((float(ap), float(av)))
+            asks_all.append((float(ap) / 1000, float(av)))
 
     if not bids_all and not asks_all:
         return 0, []   # ngoài giờ GD hoặc không có data
 
-    # Chỉ tính điểm với wall hợp lệ (vol >= WALL_MIN_VOL)
-    bids = [(p, v) for p, v in bids_all if v >= WALL_MIN_VOL]
-    asks = [(p, v) for p, v in asks_all if v >= WALL_MIN_VOL]
+    # Chỉ tính điểm với wall hợp lệ: vol >= WALL_MIN_VOL cổ phiếu
+    bid_walls = [(p, v) for p, v in bids_all if v >= WALL_MIN_VOL]
+    ask_walls = [(p, v) for p, v in asks_all if v >= WALL_MIN_VOL]
 
     depth_score = 0
     sigs = []
 
-    # ── Ask walls (tường bán phía trên) ──
-    ask_walls_near  = [(p, v) for p, v in asks if 0 < (p - cur_price) / cur_price <= 0.02]
-    ask_walls_mid   = [(p, v) for p, v in asks if 0.02 < (p - cur_price) / cur_price <= 0.05]
-    ask_walls_clear = not ask_walls_near and not ask_walls_mid
-
-    if ask_walls_near:
-        best = max(ask_walls_near, key=lambda x: x[1])
-        pct  = (best[0] - cur_price) / cur_price * 100
-        depth_score -= 2
-        sigs.append(f"AskWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, +{pct:.1f}%) -2")
-    elif ask_walls_mid:
-        best = max(ask_walls_mid, key=lambda x: x[1])
-        pct  = (best[0] - cur_price) / cur_price * 100
-        depth_score -= 1
-        sigs.append(f"AskWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, +{pct:.1f}%) -1")
-    elif ask_walls_clear:
+    # ── ASK side: rủi ro xả hàng tại kháng cự / TP ──
+    ask_count = len(ask_walls)
+    if ask_count >= 2:
+        depth_score -= 3
+        sigs.append(f"AskWall x{ask_count} mức ≥5K cp -3")
+    elif ask_count == 1:
+        p, v = ask_walls[0]
+        pct = (p - cur) / cur * 100
+        if pct <= 2.0:
+            depth_score -= 2
+            sigs.append(f"AskWall {p:.2f} ({v/1000:.0f}K cp, +{pct:.1f}%) -2")
+        else:
+            depth_score -= 1
+            sigs.append(f"AskWall {p:.2f} ({v/1000:.0f}K cp, +{pct:.1f}%) -1")
+    else:
         depth_score += 1
-        sigs.append("AskClear (no wall ≤5%) +1")
+        sigs.append("AskClear (no wall) +1")
 
-    # ── Bid walls (tường mua phía dưới) ──
-    bid_walls_near = [(p, v) for p, v in bids if 0 < (cur_price - p) / cur_price <= 0.02]
-    bid_walls_mid  = [(p, v) for p, v in bids if 0.02 < (cur_price - p) / cur_price <= 0.05]
-    no_bid_wall    = not bid_walls_near and not bid_walls_mid
-
-    if bid_walls_near:
-        best = max(bid_walls_near, key=lambda x: x[1])
-        pct  = (cur_price - best[0]) / cur_price * 100
+    # ── BID side: hỗ trợ bên dưới ──
+    bid_count = len(bid_walls)
+    if bid_count >= 2:
         depth_score += 2
-        sigs.append(f"BidWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, -{pct:.1f}%) +2")
-    elif bid_walls_mid:
-        best = max(bid_walls_mid, key=lambda x: x[1])
-        pct  = (cur_price - best[0]) / cur_price * 100
+        sigs.append(f"BidWall x{bid_count} mức ≥5K cp +2")
+    elif bid_count == 1:
+        p, v = bid_walls[0]
+        pct = (cur - p) / cur * 100
         depth_score += 1
-        sigs.append(f"BidWall {best[0]:,.0f} ({best[1]/1000:.0f}K cp, -{pct:.1f}%) +1")
-    elif no_bid_wall:
+        sigs.append(f"BidWall {p:.2f} ({v/1000:.0f}K cp, -{pct:.1f}%) +1")
+    else:
         depth_score -= 1
-        sigs.append("NoBidWall (no support ≤5%) -1")
+        sigs.append("NoBidWall -1")
 
     depth_score = max(-5, min(5, depth_score))
     return depth_score, sigs
@@ -341,19 +372,20 @@ def score_depth(row: dict) -> tuple[int, list[str]]:
 def score_symbol(row: dict, context: dict, news_scores: dict,
                  order_flow_map: dict) -> dict:
     """
-    Scoring groups & caps (v3 — Phase 1+2):
-      Trend         ±30  (EMA20/50 cross, ADX, Supertrend, Price>EMA200)
+    Scoring groups & caps (v3 — Phase 1+2+3):
+      Trend         ±30  (EMA20/50 cross, ADX, Supertrend, Price vs EMA200 mean-rev)
       Momentum      ±23  (RSI, MACD hist, Stoch K/D)
       Volume        ±20  (CMF, MFI, OBV, Volume MA ratio)
-      Volatility    ±5   NEW (BB position)
-      Order Flow    ±10  NEW (pattern from step_order_flow)
+      Volatility    ±5   (BB position)
+      Order Flow    ±10  (pattern from step_order_flow)
+      Depth         ±5   (bid/ask order book — Phase 3 revised)
       Foreign Flow  ±20  (FF metrics)
-      Fundamental   ±20  (PE, PB, ROE, D/E NEW)
+      Fundamental   ±20  (PE, PB, ROE, D/E)
       Cash Flow     ±10  (CFO sign — sector-aware skip, CF quality)
       Growth        ±10  (YoY preferred, QoQ fallback)
-      Market Ctx    ±5
-      News          ±5   (symmetric, was 0-10)
-      Confluence    ±10  NEW (multi-group agreement bonus)
+      Market Ctx    ±5   (valuation + regime)
+      News          ±5   (symmetric)
+      Confluence    ±10  (multi-group agreement bonus)
 
     Total realistic range: ~-100 to +110 (max ±168 theoretical)
     Thresholds: ≥80 SB | ≥40 BUY | ≥-15 NEUTRAL | ≥-40 SELL | <-40 SS
@@ -361,7 +393,7 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     Output fields added:
       confidence (HIGH/MEDIUM/LOW)
       pattern_flags (list of: CONSENSUS_BULL, CONSENSUS_BEAR,
-                              BULL_TRAP_RISK, VALUE_OPPORTUNITY, MIXED)
+                              BULL_TRAP_RISK, VALUE_OPPORTUNITY, UNCLEAR)
     """
     s    = {}
     sigs = []
@@ -510,7 +542,9 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     sigs.extend(of_sigs)
 
     # ═════════════════════════════════════════════
-    # DEPTH (max ±5) — Phase 3: bid/ask order book
+    # DEPTH (max ±5) — Phase 3 revised (2026-06-12)
+    # Tường bán nhiều mức = rủi ro xả hàng, khó vượt TP
+    # Tường mua nhiều mức = hỗ trợ thực tế bên dưới
     # ═════════════════════════════════════════════
     d_score, d_sigs = score_depth(row)
     s["depth"] = d_score
@@ -750,16 +784,16 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
     confluence_label = ""
     if positive_groups >= 7:
         confluence_bonus = 10
-        confluence_label = f"CONFLUENCE strong bull ({positive_groups}/10 groups)"
+        confluence_label = f"CONFLUENCE strong bull ({positive_groups}/11 groups)"
     elif positive_groups >= 5:
         confluence_bonus = 5
-        confluence_label = f"CONFLUENCE bull ({positive_groups}/10 groups)"
+        confluence_label = f"CONFLUENCE bull ({positive_groups}/11 groups)"
     elif negative_groups >= 7:
         confluence_bonus = -10
-        confluence_label = f"CONFLUENCE strong bear ({negative_groups}/10 groups)"
+        confluence_label = f"CONFLUENCE strong bear ({negative_groups}/11 groups)"
     elif negative_groups >= 5:
         confluence_bonus = -5
-        confluence_label = f"CONFLUENCE bear ({negative_groups}/10 groups)"
+        confluence_label = f"CONFLUENCE bear ({negative_groups}/11 groups)"
 
     if confluence_bonus != 0:
         sigs.append(f"{confluence_label} {'+' if confluence_bonus > 0 else ''}{confluence_bonus}")
@@ -821,26 +855,26 @@ def score_symbol(row: dict, context: dict, news_scores: dict,
         "trend_score"         : trend_score,
         "momentum_score"      : momentum_score,
         "volume_score"        : volume_score,
-        "volatility_score"    : volatility_score,    # NEW
-        "order_flow_score"    : order_flow_score,    # NEW
-        "depth_score"         : depth_score,          # Phase 3
+        "volatility_score"    : volatility_score,
+        "order_flow_score"    : order_flow_score,
+        "depth_score"         : depth_score,
         "ff_score"            : ff_score,
         "fundamental_score"   : fundamental_score,
         "cf_score"            : cf_score,
         "growth_score"        : growth_score,
         "context_score"       : context_score,
         "news_score"          : news_score_final,
-        "confluence_bonus"    : confluence_bonus,    # NEW
-        "tech_score"          : tech_score,          # NEW (computed)
-        "fund_score"          : fund_score,          # NEW (computed)
+        "confluence_bonus"    : confluence_bonus,
+        "tech_score"          : tech_score,
+        "fund_score"          : fund_score,
         "news_industry"       : ns.get("industry", 0.0),
         "news_mention"        : ns.get("mention",  0.0),
         "news_macro"          : ns.get("macro",    0.0),
         "news_evidence"       : evidence,
         "total_score"         : total,
         "decision"            : decision,
-        "confidence"          : confidence,           # NEW
-        "pattern_flags"       : pattern_flags,        # NEW
+        "confidence"          : confidence,
+        "pattern_flags"       : pattern_flags,
         "signals"             : " | ".join(sigs),
     })
     return out
