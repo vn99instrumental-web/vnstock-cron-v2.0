@@ -72,33 +72,35 @@ SCORING_VERSION = "v2"
 
 # Cap cho từng group — extended caps cho groups có chỉ số mới
 GROUP_CAPS = {
-    "trend":       45,   # +15 từ RS(±8) + 52W(±7)
-    "momentum":    26,   # +3 từ ROC(±3)
-    "volume":      20,
-    "volatility":  8,    # +3 từ NR7(±3)
-    "order_flow":  10,
-    "depth":       7,    # +2 từ bid/ask imbalance(±2)
-    "ff":          27,   # +7 từ room utilization(±7)
-    "fundamental": 23,   # +3 từ dividend yield(±3)
-    "cf":          10,
-    "growth":      15,   # +5 từ EPS consistency(±5)
-    "context":     5,
+    "trend":        45,   # +15 từ RS(±8) + 52W(±7)
+    "momentum":     26,   # +3 từ ROC(±3)
+    "volume":       20,
+    "volatility":    8,   # +3 từ NR7(±3)
+    "order_flow":   10,
+    "depth":         7,   # +2 từ bid/ask imbalance(±2)
+    "ff":           27,   # +7 từ room utilization(±7)
+    "fundamental":  29,   # +6 từ fair value(±6) + div yield(±3)
+    "cf":           10,
+    "growth":       15,   # +5 từ EPS consistency(±5)
+    "context":       9,   # +2 từ market breadth(±2)
+    "smart_money":  20,   # NEW: prop trade ±10 + insider ±5 (moved từ fundamental)
     # news: bỏ
 }
 
 # Weight — bỏ news (4%), phân bổ lại
 SCORING_WEIGHTS = {
-    "trend":       0.22,   # tăng từ 0.20: RS + 52W quan trọng
-    "momentum":    0.15,   # tăng từ 0.14: thêm ROC
-    "volume":      0.11,   # tăng từ 0.10
-    "order_flow":  0.09,   # tăng từ 0.08
-    "volatility":  0.04,
-    "depth":       0.04,
-    "ff":          0.13,   # giảm từ 0.18: nhường context + fundamental
-    "context":     0.04,
-    "fundamental": 0.07,   # tăng từ 0.06: fair value + dividend
-    "cf":          0.05,   # tăng từ 0.04
-    "growth":      0.06,   # tăng từ 0.04: EPS consistency
+    "trend":        0.20,   # RS + 52W + EMA
+    "momentum":     0.13,   # RSI + MACD + ROC
+    "volume":       0.10,
+    "order_flow":   0.08,
+    "volatility":   0.04,
+    "depth":        0.04,
+    "ff":           0.11,   # giảm: nhường smart_money
+    "context":      0.04,
+    "fundamental":  0.08,   # tăng: fair value + div yield
+    "cf":           0.05,
+    "growth":       0.06,   # EPS consistency
+    "smart_money":  0.07,   # NEW: prop trade + insider
     # news: bỏ
 }
 # Tổng = 1.00
@@ -122,6 +124,29 @@ def _to_float(v, default=None):
         return x if x == x else default  # NaN check
     except (TypeError, ValueError):
         return default
+
+
+def score_market_breadth(row: dict, context: dict) -> tuple[int, str]:
+    """
+    Market breadth: % symbols trên EMA20 trong universe.
+    Lưu trong context["market_breadth_pct"] từ step_snapshot_v2.
+    Score cộng vào context group.
+    >70% = thị trường rộng, uptrend broad-based → +2
+    50-70% = bình thường → 0
+    30-50% = hẹp dần → -1
+    <30% = breadth yếu, chỉ vài mã dẫn dắt → -2
+    """
+    breadth = _to_float(context.get("market_breadth_pct"))
+    if breadth is None:
+        return 0, ""
+
+    if   breadth >= 70: score = +2
+    elif breadth >= 50: score =  0
+    elif breadth >= 30: score = -1
+    else:               score = -2
+
+    label = f"Breadth={breadth:.0f}% {score:+d}"
+    return score, label
 
 
 def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
@@ -398,6 +423,55 @@ def score_ff_room(row: dict) -> tuple[int, str]:
     return score, label
 
 
+def score_fair_value(row: dict, context: dict) -> tuple[int, str]:
+    """
+    Fair value so sánh giá với PE ngành × EPS.
+    fair_value = EPS × PE_sector_median
+    discount = (fair_value - price) / fair_value × 100
+    >30% dưới fair value → rất rẻ → +6
+    10-30% dưới → rẻ → +3
+    ±10% = hợp lý → 0
+    10-30% trên → đắt → -3
+    >30% trên → rất đắt → -6
+
+    PE ngành median: lấy từ context["sector_pe"] nếu có,
+    fallback dùng PE thị trường từ context (VNINDEX PE).
+    """
+    price = _to_float(row.get("price"))
+    eps   = _to_float(row.get("r_eps"))
+    pe    = _to_float(row.get("r_pe"))
+    if not price or not eps or price <= 0 or eps <= 0:
+        return 0, ""
+
+    # PE ngành: từ context nếu có, fallback PE thị trường
+    icb = row.get("icb_code", "")
+    sector_pe = _to_float(context.get(f"sector_pe_{icb}"))
+    if sector_pe is None:
+        # Fallback: PE thị trường (từ context.json _ctx_pe)
+        sector_pe = _to_float(context.get("_ctx_pe"))
+    if sector_pe is None or sector_pe <= 0:
+        # Fallback cuối: dùng PE TB thị trường VN ~13x
+        sector_pe = 13.0
+
+    # price từ VCI là nghìn VND, eps từ KBS là VND
+    # Normalize: price → VND thực
+    price_vnd = price * 1000
+    fair_value = eps * sector_pe
+    if fair_value <= 0:
+        return 0, ""
+
+    discount_pct = (fair_value - price_vnd) / fair_value * 100
+
+    if   discount_pct > 30:  score = +6   # rất rẻ so fair value
+    elif discount_pct > 10:  score = +3
+    elif discount_pct > -10: score =  0   # hợp lý
+    elif discount_pct > -30: score = -3
+    else:                    score = -6   # rất đắt
+
+    label = f"FairVal={discount_pct:+.0f}%(PE×EPS={fair_value:.0f}) {score:+d}"
+    return score, label
+
+
 def score_dividend_yield(row: dict) -> tuple[int, str]:
     """
     Dividend yield score.
@@ -422,6 +496,50 @@ def score_dividend_yield(row: dict) -> tuple[int, str]:
     else:               score =  0   # Không có cổ tức ≠ xấu
 
     label = f"DivYield={yield_pct:.1f}% {score:+d}"
+    return score, label
+
+
+def score_prop_trade(row: dict) -> tuple[int, str]:
+    """
+    Tự doanh CTCK (Proprietary Trading) — Smart Money signal.
+    pt_net_val_5d / pt_net_val_20d từ VCI prop_trade().
+    Tự doanh chiếm ~15-20% volume HOSE, leading signal 2-5 ngày.
+
+    Scoring:
+    +10: mua ròng mạnh 5d + 20d đều dương và tăng tốc
+    +5 : mua ròng 5d
+    0  : trung tính
+    -5 : bán ròng 5d
+    -10: bán ròng mạnh + tăng tốc
+    """
+    net_5d  = _to_float(row.get("pt_net_val_5d"))
+    net_20d = _to_float(row.get("pt_net_val_20d"))
+    trend   = _to_float(row.get("pt_trend"))
+
+    if net_5d is None and net_20d is None:
+        return 0, ""
+
+    # Normalize về tỷ VND
+    n5  = (net_5d  or 0) / 1e9
+    n20 = (net_20d or 0) / 1e9
+
+    score = 0
+    if n5 > 5 and n20 > 0 and (trend or 0) > 0:
+        score = +10   # mua ròng mạnh + tăng tốc
+    elif n5 > 2:
+        score = +5
+    elif n5 > 0.5:
+        score = +2
+    elif n5 > -0.5:
+        score = 0
+    elif n5 > -2:
+        score = -2
+    elif n5 > -5:
+        score = -5
+    else:
+        score = -10   # bán ròng mạnh
+
+    label = f"PropTrade={n5:+.1f}tỷ(5d) {score:+d}"
     return score, label
 
 
@@ -594,6 +712,11 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
     if rs_label:  ext_sigs.append(rs_label)
     if w52_label: ext_sigs.append(w52_label)
 
+    # ── Extended: Context group — market breadth ──
+    breadth_score, breadth_label = score_market_breadth(row, context)
+    raw["context"] += breadth_score
+    if breadth_label: ext_sigs.append(breadth_label)
+
     # ── Extended: Momentum group ──
     roc_score, roc_label = score_roc10(row)
     raw["momentum"] += roc_score
@@ -614,18 +737,24 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
     raw["ff"] += room_score
     if room_label: ext_sigs.append(room_label)
 
-    # ── Extended: Fundamental group ──
+    # ── Extended: Fundamental group — fair value + dividend ──
+    fv_score,  fv_label  = score_fair_value(row, context)
     div_score, div_label = score_dividend_yield(row)
-    raw["fundamental"] += div_score
+    raw["fundamental"] += fv_score + div_score
+    if fv_label:  ext_sigs.append(fv_label)
     if div_label: ext_sigs.append(div_label)
 
     # ── Extended: Growth group ──
-    eps_score,     eps_label     = score_eps_consistency(row)
-    insider_score, insider_label = score_insider(row)
+    eps_score, eps_label = score_eps_consistency(row)
     raw["growth"] += eps_score
-    # Insider → cộng vào fundamental (smart money signal)
-    raw["fundamental"] += insider_score
-    if eps_label:     ext_sigs.append(eps_label)
+    if eps_label: ext_sigs.append(eps_label)
+
+    # ── Smart Money group: prop trade + insider ──
+    # Group mới — không cộng vào group cũ
+    prop_score,    prop_label    = score_prop_trade(row)
+    insider_score, insider_label = score_insider(row)
+    raw["smart_money"] = prop_score + insider_score
+    if prop_label:    ext_sigs.append(prop_label)
     if insider_label: ext_sigs.append(insider_label)
 
     # ── Normalize + weighted sum ──
@@ -673,16 +802,23 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         "tech_score"       : tech_score,
         "fund_score"       : fund_score,
         # Extended raw scores
-        "ext_rs_score"     : rs_score,
-        "ext_52w_score"    : w52_score,
-        "ext_roc_score"    : roc_score,
-        "ext_nr7_score"    : nr7_score,
-        "ext_ba_score"     : ba_score,
-        "ext_room_score"   : room_score,
-        "ext_div_score"    : div_score,
-        "ext_eps_score"    : eps_score,
-        "ext_insider_score": insider_score,
-        "ext_signals"      : " | ".join(ext_sigs) if ext_sigs else "",
+        "ext_rs_score"      : rs_score,
+        "ext_52w_score"     : w52_score,
+        "ext_roc_score"     : roc_score,
+        "ext_nr7_score"     : nr7_score,
+        "ext_ba_score"      : ba_score,
+        "ext_room_score"    : room_score,
+        "ext_fv_score"      : fv_score,
+        "ext_div_score"     : div_score,
+        "ext_eps_score"     : eps_score,
+        "ext_prop_score"    : prop_score,
+        "ext_insider_score" : insider_score,
+        "ext_breadth_score" : breadth_score,
+        "ext_signals"       : " | ".join(ext_sigs) if ext_sigs else "",
+        # Smart money group
+        "smart_money_score" : raw.get("smart_money", 0),
+        "norm_smart_money"  : round(min(1.0, max(-1.0,
+            raw.get("smart_money", 0) / GROUP_CAPS.get("smart_money", 20))), 4),
         # Normalized scores
         "norm_trend"       : round(norm.get("trend",       0), 4),
         "norm_momentum"    : round(norm.get("momentum",    0), 4),
