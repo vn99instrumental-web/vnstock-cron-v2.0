@@ -273,30 +273,91 @@ def score_nr7(row: dict) -> tuple[int, str]:
 
 def score_bid_ask_imbalance(row: dict) -> tuple[int, str]:
     """
-    Aggregate bid vs ask volume imbalance (3 levels).
-    ratio = sum(bid_vol 1-3) / sum(ask_vol 1-3)
-    """
-    bid_total = sum(
-        _to_float(row.get(f"bid_vol_{i}"), 0) or 0
-        for i in (1, 2, 3)
-    )
-    ask_total = sum(
-        _to_float(row.get(f"ask_vol_{i}"), 0) or 0
-        for i in (1, 2, 3)
-    )
+    Depth scoring dựa trên wall position + volume.
 
-    if ask_total <= 0 or bid_total <= 0:
+    Logic:
+    - ASK wall (lệnh chờ BÁN) gần giá → rào cản tăng lên →
+      giá khó vượt TP, rủi ro xả hàng → điểm âm
+    - BID wall (lệnh chờ MUA) gần giá → sàn đỡ vững →
+      stop loss được bảo vệ → điểm dương
+
+    Baseline vol: 5000 cp — dưới ngưỡng này không tính là wall.
+    Proximity: ≤2% từ giá hiện tại = "gần" (tác động trực tiếp)
+               2–5% = "vừa" (tác động gián tiếp)
+
+    Scale: -2 → +2, cap vào GROUP_CAPS["depth"] = ±7
+    """
+    WALL_MIN_VOL = 5_000
+    NEAR_PCT     = 0.02   # ≤2% từ giá
+    MID_PCT      = 0.05   # 2–5%
+
+    price = _to_float(row.get("price"))
+    if price is None or price <= 0:
         return 0, ""
 
-    ratio = bid_total / ask_total
+    # Parse bid/ask 3 levels
+    bids, asks = [], []
+    for i in (1, 2, 3):
+        bp = _to_float(row.get(f"bid_price_{i}"))
+        bv = _to_float(row.get(f"bid_vol_{i}"), 0) or 0
+        ap = _to_float(row.get(f"ask_price_{i}"))
+        av = _to_float(row.get(f"ask_vol_{i}"), 0) or 0
+        if bp and bp > 0 and bv >= WALL_MIN_VOL:
+            bids.append((bp, bv))
+        if ap and ap > 0 and av >= WALL_MIN_VOL:
+            asks.append((ap, av))
 
-    if   ratio > 1.5: score = +2
-    elif ratio > 1.2: score = +1
-    elif ratio > 0.8: score =  0
-    elif ratio > 0.5: score = -1
-    else:             score = -2
+    if not bids and not asks:
+        return 0, ""
 
-    label = f"BidAsk={ratio:.2f} {score:+d}"
+    score = 0
+    parts = []
+
+    # ── ASK side: tường bán phía trên → rào cản tăng ──
+    ask_near = [(p, v) for p, v in asks
+                if 0 < (p - price) / price <= NEAR_PCT]
+    ask_mid  = [(p, v) for p, v in asks
+                if NEAR_PCT < (p - price) / price <= MID_PCT]
+
+    if ask_near:
+        # Wall sát giá: khó vượt ngay, TP bị chặn → penalty nặng
+        best = max(ask_near, key=lambda x: x[1])
+        pct  = (best[0] - price) / price * 100
+        wall_score = -2
+        score += wall_score
+        parts.append(f"AskWall≤2%@{best[0]:.1f}({best[1]/1000:.0f}K) {wall_score:+d}")
+    elif ask_mid:
+        # Wall xa hơn: giá còn dư địa nhỏ
+        best = max(ask_mid, key=lambda x: x[1])
+        pct  = (best[0] - price) / price * 100
+        wall_score = -1
+        score += wall_score
+        parts.append(f"AskWall2-5%@{best[0]:.1f}({best[1]/1000:.0f}K) {wall_score:+d}")
+    else:
+        # Không có ask wall đáng kể → đường lên thông thoáng
+        score += 1
+        parts.append("AskClear +1")
+
+    # ── BID side: tường mua phía dưới → sàn đỡ ──
+    bid_near = [(p, v) for p, v in bids
+                if 0 < (price - p) / price <= NEAR_PCT]
+    bid_mid  = [(p, v) for p, v in bids
+                if NEAR_PCT < (price - p) / price <= MID_PCT]
+
+    if bid_near:
+        best = max(bid_near, key=lambda x: x[1])
+        score += 2
+        parts.append(f"BidWall≤2%@{best[0]:.1f}({best[1]/1000:.0f}K) +2")
+    elif bid_mid:
+        best = max(bid_mid, key=lambda x: x[1])
+        score += 1
+        parts.append(f"BidWall2-5%@{best[0]:.1f}({best[1]/1000:.0f}K) +1")
+    else:
+        score -= 1
+        parts.append("NoBidWall -1")
+
+    score = max(-3, min(3, score))   # cap ±3 per function; GROUP_CAPS["depth"]=7 handles total
+    label = " | ".join(parts) + f" → {score:+d}"
     return score, label
 
 
