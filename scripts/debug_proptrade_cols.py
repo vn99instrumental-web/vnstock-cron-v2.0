@@ -1,8 +1,15 @@
 """Debug VCI prop_trade column names"""
-import sys
+import sys, os
 sys.path.insert(0, '/opt/vnstock/.venv/lib/python3.12/site-packages')
+# Thêm repo root vào path để import utils
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from vnstock_data import Trading
-from utils.helpers import start_str, today_str
+from datetime import datetime, timedelta
+
+def start_str(days):
+    return (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+def today_str():
+    return datetime.now().strftime("%Y-%m-%d")
 
 # Test với symbol thành công và thất bại
 for sym in ["VHM", "DBD", "C32"]:
