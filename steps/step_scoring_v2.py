@@ -370,28 +370,39 @@ def score_eps_consistency(row: dict) -> tuple[int, str]:
         else:         score = -1
         return score, f"EPScons={n}qtrs {score:+d}"
 
-    # Fallback: dùng profit_growth_yoy hiện tại + QoQ pattern
+    # Fallback: dùng profit_growth_yoy hiện tại
     profit_yoy = _to_float(row.get("is_profit_growth_yoy"))
     profit_qoq = _to_float(row.get("is_profit_growth"))  # QoQ
 
+    # Guard: None hoặc NaN → skip
     if profit_yoy is None:
         return 0, ""
 
+    import math
+    if math.isnan(profit_yoy):
+        return 0, ""
+
     score = 0
-    if profit_yoy > 0.30 and (profit_qoq is None or profit_qoq > 0):
-        score = +3   # Tăng trưởng tốt YoY + momentum QoQ
-    elif profit_yoy > 0.15:
+    pct = profit_yoy * 100  # convert sang %
+
+    if pct > 30:
+        # QoQ phải có và dương để confirm momentum — nếu không có QoQ data thì chỉ +2
+        if profit_qoq is not None and not math.isnan(profit_qoq) and profit_qoq > 0:
+            score = +3
+        else:
+            score = +2   # YoY tốt nhưng không confirm QoQ
+    elif pct > 15:
         score = +2
-    elif profit_yoy > 0:
+    elif pct > 0:
         score = +1
-    elif profit_yoy > -0.10:
+    elif pct > -10:
         score = -1
-    elif profit_yoy > -0.30:
+    elif pct > -30:
         score = -3
     else:
-        score = -5   # Sụt giảm mạnh
+        score = -5
 
-    label = f"EPSyoy={profit_yoy*100:+.0f}% {score:+d}"
+    label = f"EPSyoy={pct:+.0f}% {score:+d}"
     return score, label
 
 
