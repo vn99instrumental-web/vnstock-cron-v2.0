@@ -1,37 +1,15 @@
 """
-step_scoring_v2.py — Scoring engine v2 (Weighted Normalized + Extended Indicators)
-====================================================================================
-Chạy SONG SONG với step_scoring.py (v3). KHÔNG thay thế v3.
+step_snapshot_v2.py — Intraday snapshot cho V2 pipeline (fully standalone)
+===========================================================================
+Copy đầy đủ của step_snapshot.py. KHÔNG import từ step_snapshot.
+Thay đổi duy nhất so với step_snapshot.py: output filenames có suffix _v2.
 
-THAY ĐỔI SO VỚI V3:
-  1. Normalize từng group về [-1, +1]: score_norm = raw_score / cap
-  2. Weighted sum → total_score ∈ [-100, +100]
-  3. Weight phản ánh IC thực tế T+30 thị trường VN (technical dominant)
-  4. Fundamental/CF/Growth vẫn có score 2 chiều đầy đủ — weight nhỏ hơn
-  5. Threshold mới: ≥50 STRONG BUY | ≥25 BUY | ≥-10 NEUTRAL | ≥-25 SELL
-  6. Output: signals_v2.json / signals_v2.csv
-  7. Bỏ news group — weight phân bổ lại
+Sync từ step_snapshot.py:
+  2026-06-02 — FIX bb_position (Bug #11)
+  2026-06-11 — v2 fork: output deep_raw_v2.json / ranking_v2.json
 
-EXTENDED INDICATORS (không có trong V3):
-  Trend group:       + RS vs VNINDEX (20d relative strength)
-                     + 52W High proximity / breakout
-  Momentum group:    + ROC(10) — rate of change 10 ngày
-  Volatility group:  + NR7 setup — narrow range breakout setup
-  Depth group:       + Bid/Ask aggregate imbalance
-  FF group:          + Foreign room utilization
-  Fundamental group: + Dividend yield score
-  Growth group:      + EPS consistency (N quý liên tiếp tăng)
-
-WEIGHT RATIONALE (horizon ≤30 ngày, bỏ news):
-  trend=22%, momentum=15%, volume=11%, order_flow=9%, volatility=4%,
-  depth=4%, ff=13%, context=4%, fundamental=7%, cf=5%, growth=6%
-  Tổng = 100%
-
-SCORING_VERSION = "v2"
-
-CHANGELOG:
-  2026-06-11 — v2 initial: normalized weighted scoring
-  2026-06-11 — v2.1: thêm 9 extended indicators, bỏ news group
+MAINTAINER: Khi step_snapshot.py cập nhật logic → copy lại toàn bộ
+body vào đây, giữ nguyên MAIN block cuối với filenames _v2.
 """
 import os
 import sys
@@ -40,23 +18,25 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 os.environ["VNSTOCK_INTERACTIVE"] = "0"
 os.environ["VNSTOCK_LANGUAGE"]    = "en"
 os.environ["MPLCONFIGDIR"]        = "/home/runner/.config/matplotlib"
+os.makedirs("/home/runner/.vnstock",           exist_ok=True)
+os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
 
 import logging
+import numpy as np
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from utils.helpers import now_ict, today_str
-from utils.cache   import load_json, save_json, save_csv
-from utils.formatter import clean_for_export
+from vnstock_data import TopStock, Quote, Trading, Market
+from vnstock_ta import Indicator
 
-from steps.step_scoring import (
-    SECTOR_CF_SKIP_SIGN,
-    SECTOR_SKIP_DE,
-    _is_sector_match,
-    build_news_scores,
-    score_order_flow,
-    score_depth,
-    score_symbol as _score_symbol_v3,
+from utils.helpers import (
+    now_ict, is_market_open, last_trading_date,
+    load_exchange_map, get_exchange,
+    safe_run, safe_val, to_float,
+    start_str, today_str
 )
+from utils.cache import save_json, load_json, save_csv
+from utils.formatter import clean_for_export, fmt_money_bil
 
 logging.basicConfig(
     level=logging.INFO,
@@ -64,668 +44,662 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# =====================================================
-# V2 CONFIG
-# =====================================================
+MAX_WORKERS    = 10
+HISTORY_LENGTH = "12M"
 
-SCORING_VERSION = "v2"
-
-# Cap cho từng group — extended caps cho groups có chỉ số mới
-GROUP_CAPS = {
-    "trend":       45,   # +15 từ RS(±8) + 52W(±7)
-    "momentum":    26,   # +3 từ ROC(±3)
-    "volume":      20,
-    "volatility":  8,    # +3 từ NR7(±3)
-    "order_flow":  10,
-    "depth":       7,    # +2 từ bid/ask imbalance(±2)
-    "ff":          27,   # +7 từ room utilization(±7)
-    "fundamental": 23,   # +3 từ dividend yield(±3)
-    "cf":          10,
-    "growth":      15,   # +5 từ EPS consistency(±5)
-    "context":     5,
-    # news: bỏ
-}
-
-# Weight — bỏ news (4%), phân bổ lại
-SCORING_WEIGHTS = {
-    "trend":       0.22,   # tăng từ 0.20: RS + 52W quan trọng
-    "momentum":    0.15,   # tăng từ 0.14: thêm ROC
-    "volume":      0.11,   # tăng từ 0.10
-    "order_flow":  0.09,   # tăng từ 0.08
-    "volatility":  0.04,
-    "depth":       0.04,
-    "ff":          0.13,   # giảm từ 0.18: nhường context + fundamental
-    "context":     0.04,
-    "fundamental": 0.07,   # tăng từ 0.06: fair value + dividend
-    "cf":          0.05,   # tăng từ 0.04
-    "growth":      0.06,   # tăng từ 0.04: EPS consistency
-    # news: bỏ
-}
-# Tổng = 1.00
-assert abs(sum(SCORING_WEIGHTS.values()) - 1.0) < 1e-9, \
-    f"Weights sum = {sum(SCORING_WEIGHTS.values()):.4f} ≠ 1.0"
-
-CONFLUENCE_THRESHOLD_PCT = 0.30
-THRESHOLD_STRONG_BUY  =  50
-THRESHOLD_BUY         =  25
-THRESHOLD_NEUTRAL     = -10
-THRESHOLD_SELL        = -25
-
+FF_FIELDS = [
+    "ff_buy_val_5d", "ff_sell_val_5d",
+    "ff_net_val_5d", "ff_net_val_20d",
+    # ff_room KHÔNG wipe — là field độc lập, không liên quan CafeF net value bug
+    "ff_trend", "ff_consistency", "ff_acceleration",
+]
 
 # =====================================================
-# EXTENDED INDICATORS — tính thêm, không có trong V3
+# RANKING
 # =====================================================
 
-def _to_float(v, default=None):
+def get_ranking() -> dict:
+    log.info("=== RANKING ===")
+    ins = TopStock()
+    return {
+        "gainers": safe_run("gainer",
+            lambda: ins.gainer(index="VNINDEX", limit=10)),
+        "losers":  safe_run("loser",
+            lambda: ins.loser(index="VNINDEX",  limit=10)),
+    }
+
+# =====================================================
+# SNAPSHOT — Quote(VCI)
+# =====================================================
+
+def get_snapshot(symbol: str, market_open: bool) -> dict:
+    row = {
+        "symbol"   : symbol,
+        "exchange" : get_exchange(symbol),
+        "snap_time": now_ict().strftime("%H:%M"),
+    }
+
+    if market_open:
+        df_intra = safe_run(f"intraday {symbol}",
+            lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=200))
+        if df_intra is not None and not df_intra.empty:
+            df_intra["price"]  = pd.to_numeric(df_intra["price"],  errors="coerce")
+            df_intra["volume"] = pd.to_numeric(df_intra["volume"], errors="coerce")
+            row["price"]      = float(df_intra["price"].iloc[-1])
+            row["price_type"] = "realtime"
+            buy_mask  = df_intra["match_type"].str.contains("Buy",  case=False, na=False)
+            sell_mask = df_intra["match_type"].str.contains("Sell", case=False, na=False)
+            buy_vol   = float(df_intra.loc[buy_mask,  "volume"].sum())
+            sell_vol  = float(df_intra.loc[sell_mask, "volume"].sum())
+            total     = buy_vol + sell_vol
+            row["intra_buy_vol"]   = buy_vol
+            row["intra_sell_vol"]  = sell_vol
+            row["intra_delta"]     = buy_vol - sell_vol
+            row["intra_buy_ratio"] = round(buy_vol / total, 2) if total > 0 else None
+    else:
+        df_hist = safe_run(f"history {symbol}",
+            lambda: Quote(source="VCI", symbol=symbol).history(length="5D", interval="1D"))
+        if df_hist is not None and not df_hist.empty:
+            df_hist["close"] = pd.to_numeric(df_hist["close"], errors="coerce")
+            row["price"]      = float(df_hist["close"].iloc[-1])
+            row["price_type"] = "last_close"
+            row["price_date"] = str(df_hist["time"].iloc[-1])[:10]
+
+    if market_open:
+        df_ob = safe_run(f"order_book {symbol}",
+            lambda: Market().equity(symbol).order_book())
+        if df_ob is not None and not df_ob.empty:
+            try:
+                ob = df_ob.iloc[0]
+                for i in (1, 2, 3):
+                    row[f"bid_price_{i}"] = to_float(ob.get(f"bid_price_{i}"))
+                    row[f"bid_vol_{i}"]   = to_float(ob.get(f"bid_vol_{i}"))
+                    row[f"ask_price_{i}"] = to_float(ob.get(f"ask_price_{i}"))
+                    row[f"ask_vol_{i}"]   = to_float(ob.get(f"ask_vol_{i}"))
+            except Exception as e:
+                log.error(f"order_book error {symbol}: {e}")
+
+    return row
+
+# =====================================================
+# TA INDICATORS + OHLCV
+# =====================================================
+
+def get_ta(symbol: str) -> dict:
+    # Retry 2 lần cho symbols hay fail (thanh khoản thấp, API throttle)
+    df = None
+    for attempt in range(2):
+        df = safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
+             lambda: Quote(source="VCI", symbol=symbol).history(
+                 length=HISTORY_LENGTH, interval="1D"))
+        if df is not None and not df.empty and len(df) >= 20:
+            break
+        if attempt == 0:
+            import time; time.sleep(2)
+
+    if df is None or df.empty or len(df) < 20:
+        # Final fallback: thử history ngắn hơn
+        df = safe_run(f"ohlcv_short {symbol}",
+             lambda: Quote(source="VCI", symbol=symbol).history(
+                 length="3M", interval="1D"))
+        if df is None or df.empty or len(df) < 10:
+            log.warning(f"  {symbol}: TA fetch failed sau retry — returning empty")
+            return {"symbol": symbol, "ta_error": "Không đủ data sau retry"}
+        log.info(f"  {symbol}: dùng 3M history ({len(df)} ngày) thay vì 12M")
+
+    ta         = Indicator(data=df)
+    res        = {"symbol": symbol}
+    last_close = float(df["close"].iloc[-1])
+
+    ema20 = ta.trend.ema(length=20)
+    ema50 = ta.trend.ema(length=50)
+    res["ema20"]      = safe_val(ema20)
+    res["ema50"]      = safe_val(ema50)
+    res["adx"]        = safe_val(ta.trend.adx(length=14))
+    res["supertrend"] = safe_val(ta.trend.supertrend(length=10, multiplier=3.0))
+
+    if len(df) >= 200:
+        ema200 = ta.trend.ema(length=200)
+        res["ema200"] = safe_val(ema200)
+    else:
+        res["ema200"] = None
+
+    if res["ema20"] and res["ema50"] and res["ema50"] != 0:
+        res["ema_cross_pct"] = round(
+            (res["ema20"] - res["ema50"]) / res["ema50"] * 100, 2)
+    if res.get("ema20") and res["ema20"] != 0:
+        res["price_vs_ema20_pct"] = round(
+            (last_close - res["ema20"]) / res["ema20"] * 100, 2)
+    if res.get("ema200") and res["ema200"] != 0:
+        res["price_vs_ema200_pct"] = round(
+            (last_close - res["ema200"]) / res["ema200"] * 100, 2)
+
+    res["rsi"]       = safe_val(ta.momentum.rsi(length=14))
+    macd = ta.momentum.macd(fast=12, slow=26, signal=9)
+    res["macd"]      = safe_val(macd, 0)
+    res["macd_sig"]  = safe_val(macd, 1)
+    res["macd_hist"] = safe_val(macd, 2)
+    stoch = ta.momentum.stoch(k=14, d=3, smooth_k=3)
+    res["stoch_k"]   = safe_val(stoch, 0)
+    res["stoch_d"]   = safe_val(stoch, 1)
+
+    bb = ta.volatility.bbands(length=20, std=2.0)
+
+    def _bb_col(prefix):
+        if bb is None or not hasattr(bb, "columns"):
+            return None
+        cols = [c for c in bb.columns if c.startswith(prefix)]
+        if not cols:
+            return None
+        val = bb[cols[0]].iloc[-1]
+        return round(float(val), 2) if pd.notna(val) else None
+
+    res["bb_lower"] = _bb_col("BBL")
+    res["bb_mid"]   = _bb_col("BBM")
+    res["bb_upper"] = _bb_col("BBU")
+    res["atr"]      = safe_val(ta.volatility.atr(length=14))
+
+    bbp = _bb_col("BBP")
+    if bbp is not None:
+        res["bb_position"] = round(max(0.0, min(1.0, bbp)), 2)
+    elif res["bb_upper"] and res["bb_lower"] and \
+         (res["bb_upper"] - res["bb_lower"]) != 0:
+        raw = (last_close - res["bb_lower"]) / (res["bb_upper"] - res["bb_lower"])
+        res["bb_position"] = round(max(0.0, min(1.0, raw)), 2)
+
+    if res.get("atr") and last_close:
+        res["atr_pct"] = round(res["atr"] / last_close * 100, 2)
+
+    res["obv"] = safe_val(ta.volume.obv())
+    res["cmf"] = safe_val(ta.volume.cmf(length=20))
+    res["mfi"] = safe_val(ta.volume.mfi(length=14))
+
+    df["volume"] = pd.to_numeric(df["volume"], errors="coerce")
+    if len(df) >= 21:
+        vol_today  = float(df["volume"].iloc[-1])
+        vol_avg_20 = float(df["volume"].iloc[-21:-1].mean())
+        if vol_avg_20 > 0:
+            res["vol_ma_ratio"] = round(vol_today / vol_avg_20, 2)
+            res["vol_today"]    = vol_today
+            res["vol_avg_20d"]  = round(vol_avg_20, 0)
+
+    df_5d = df.tail(5)
+    ohlcv_5d = []
+    avg_vol_5d = float(df_5d["volume"].mean()) if not df_5d.empty else 0
+    for _, row in df_5d.iterrows():
+        vol = float(row["volume"]) if pd.notna(row["volume"]) else 0
+        ohlcv_5d.append({
+            "date"  : str(row["time"])[:10],
+            "open"  : round(float(row["open"]),  2),
+            "high"  : round(float(row["high"]),  2),
+            "low"   : round(float(row["low"]),   2),
+            "close" : round(float(row["close"]), 2),
+            "volume": int(vol),
+            "vs_avg5d_pct": round(vol / avg_vol_5d * 100 - 100, 1)
+                            if avg_vol_5d > 0 else None,
+        })
+    res["_ohlcv_5d"] = ohlcv_5d
+
+    # ── 52W High / Low (thực tế từ OHLCV 12M) ──
+    if not df.empty:
+        df["high"]  = pd.to_numeric(df["high"],  errors="coerce")
+        df["low"]   = pd.to_numeric(df["low"],   errors="coerce")
+        df["close"] = pd.to_numeric(df["close"], errors="coerce")
+        h52 = df["high"].max()
+        l52 = df["low"].min()
+        res["high_52w"] = round(float(h52), 2) if pd.notna(h52) else None
+        res["low_52w"]  = round(float(l52), 2) if pd.notna(l52) else None
+
+    # ── ROC(10): Rate of Change 10 ngày ──
+    if len(df) >= 11:
+        close_now = float(df["close"].iloc[-1])
+        close_10d = float(df["close"].iloc[-11])
+        if close_10d > 0 and pd.notna(close_now) and pd.notna(close_10d):
+            res["roc_10"] = round((close_now / close_10d - 1) * 100, 2)
+
+    # ── RS vs VNINDEX proxy: return 20d ──
+    if len(df) >= 21:
+        close_now = float(df["close"].iloc[-1])
+        close_20d = float(df["close"].iloc[-21])
+        if close_20d > 0 and pd.notna(close_now) and pd.notna(close_20d):
+            res["return_20d"] = round((close_now / close_20d - 1) * 100, 2)
+
+    return res
+
+# =====================================================
+# VNINDEX RETURN — để tính RS chính xác
+# =====================================================
+
+def get_vnindex_return(history_length: str = "25D") -> dict:
+    """
+    Fetch VNINDEX OHLCV → tính return_20d thực.
+    Gọi 1 lần trong MAIN, pass vào context hoặc deep_rows.
+    """
+    for attempt in range(3):
+        try:
+            df = Quote(source="VCI", symbol="VNINDEX").history(
+                length=history_length, interval="1D")
+            if df is not None and not df.empty and len(df) >= 5:
+                break
+            log.warning(f"VNINDEX history empty (attempt {attempt+1}/3)")
+        except Exception as e:
+            log.warning(f"VNINDEX fetch attempt {attempt+1}/3 failed: {e}")
+            df = None
+        import time; time.sleep(1)
+    else:
+        log.error("VNINDEX fetch failed after 3 attempts")
+        return {}
     try:
-        x = float(v)
-        return x if x == x else default  # NaN check
-    except (TypeError, ValueError):
-        return default
+        if df is None or df.empty or len(df) < 5:
+            log.warning("VNINDEX history empty")
+            return {}
+        df["close"] = pd.to_numeric(df["close"], errors="coerce")
+        close_now = float(df["close"].iloc[-1])
+        res = {"vnindex_close": close_now}
+        if len(df) >= 21:
+            close_20d = float(df["close"].iloc[-21])
+            if close_20d > 0 and pd.notna(close_20d):
+                res["vnindex_return_20d"] = round(
+                    (close_now / close_20d - 1) * 100, 2)
+        if len(df) >= 6:
+            close_5d = float(df["close"].iloc[-6])
+            if close_5d > 0 and pd.notna(close_5d):
+                res["vnindex_return_5d"] = round(
+                    (close_now / close_5d - 1) * 100, 2)
+        log.info(f"VNINDEX return_20d={res.get('vnindex_return_20d')} "
+                 f"return_5d={res.get('vnindex_return_5d')}")
+        return res
+    except Exception as e:
+        log.warning(f"get_vnindex_return error: {e}")
+        return {}
 
 
-def score_rs_vnindex(row: dict, context: dict) -> tuple[int, str]:
-    """
-    Relative Strength vs VNINDEX 20 ngày.
-    RS = (1 + return_stock_20d%) / (1 + return_vnindex_20d%)
-    Ưu tiên return_20d thực từ OHLCV; vnindex từ row hoặc context.
-    """
-    stock_ret = _to_float(row.get("return_20d"))
-    if stock_ret is None:
-        stock_ret = _to_float(row.get("price_vs_ema20_pct"))
-    if stock_ret is None:
-        return 0, ""
+# =====================================================
+# FLOW — CafeF foreign_trade
+# =====================================================
 
-    # VNINDEX return: chỉ dùng relative mode khi có data thực từ row/context
-    # Nếu chỉ có regime fallback → dùng absolute mode (tránh RS ≈ 1.0 cho mọi symbol)
-    vnindex_ret  = _to_float(row.get("vnindex_return_20d"))
-    vnindex_real = vnindex_ret is not None  # True = có data thực, False = phải fallback
+def get_flow(symbol: str) -> dict:
+    res = {"symbol": symbol}
 
-    if not vnindex_real:
-        vnindex_ret = _to_float(
-            context.get("vnindex_return_20d") or
-            context.get("market_return_20d")
+    # ── FF room từ VCI trực tiếp — Primary source, chính xác nhất ──
+    # fr_available_percentage = % room ngoại còn có thể mua (0.0–1.0)
+    # fr_room_percentage = tổng room cho phép (thường 0.49 hoặc 0.3)
+    df_vci = safe_run(f"ff_vci {symbol}",
+              lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
+                  start=start_str(5), end=today_str()))
+    if df_vci is not None and not df_vci.empty:
+        row_vci = df_vci.iloc[-1]
+        avail = row_vci.get("fr_available_percentage")
+        total = row_vci.get("fr_room_percentage")
+        if avail is not None and not (isinstance(avail, float) and avail != avail):
+            res["ff_room"] = round(float(avail) * 100, 2)   # 0.0102 → 1.02%
+        if total is not None and not (isinstance(total, float) and total != total):
+            res["ff_room_max_pct"] = round(float(total) * 100, 2)  # 0.49 → 49%
+        fr_cur  = row_vci.get("fr_current_room")
+        fr_tot  = row_vci.get("fr_total_room")
+        if fr_cur is not None:
+            res["ff_room_raw"]     = float(fr_cur)   # số CP còn có thể mua
+        if fr_tot is not None:
+            res["ff_total_room_raw"] = float(fr_tot)  # tổng room CP
+        log.info(f"  FF room VCI {symbol}: available={res.get('ff_room')}% "
+                 f"total_room={res.get('ff_room_max_pct')}%")
+
+    df_ft = safe_run(f"foreign_trade {symbol}",
+             lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
+                 start=start_str(25), end=today_str()))
+
+    if df_ft is not None and not df_ft.empty:
+        rename = {
+            "fr_buy_value_matched" : "buy_val",
+            "fr_sell_value_matched": "sell_val",
+            "fr_net_value_total"   : "net_val",
+        }
+        for old, new in rename.items():
+            if old in df_ft.columns:
+                df_ft = df_ft.rename(columns={old: new})
+
+        buy  = pd.to_numeric(df_ft.get("buy_val"),  errors="coerce").dropna() \
+               if "buy_val"  in df_ft.columns else pd.Series(dtype=float)
+        sell = pd.to_numeric(df_ft.get("sell_val"), errors="coerce").dropna() \
+               if "sell_val" in df_ft.columns else pd.Series(dtype=float)
+        net  = pd.to_numeric(df_ft.get("net_val"),  errors="coerce").dropna() \
+               if "net_val"  in df_ft.columns else pd.Series(dtype=float)
+
+        res["ff_buy_val_5d"]  = float(buy.tail(5).sum())  if not buy.empty  else 0.0
+        res["ff_sell_val_5d"] = float(sell.tail(5).sum()) if not sell.empty else 0.0
+        res["ff_net_val_5d"]  = float(net.tail(5).sum())
+        res["ff_net_val_20d"] = float(net.sum())
+
+        if "ff_room" in df_ft.columns:
+            # ff_room từ CafeF = số CP nước ngoài còn có thể mua (raw shares)
+            res["ff_room_raw"] = float(df_ft["ff_room"].iloc[-1])
+            # Tính % sẽ làm trong build_one khi có total_shares từ finance
+
+        if len(net) >= 5:
+            x     = np.arange(len(net))
+            y     = net.fillna(0).values
+            slope = np.polyfit(x, y, 1)[0]
+            res["ff_trend"]       = round(float(slope) / 1e9, 2)
+            res["ff_consistency"] = round((net > 0).sum() / len(net), 2)
+            ff_5d_avg  = net.tail(5).mean()
+            ff_20d_avg = net.mean()
+            res["ff_acceleration"] = round(
+                float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
+                if ff_20d_avg != 0 else 0.0
+
+        log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
+                 f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
+
+    # (VCI room đã được fetch ở đầu get_flow — không cần fallback thêm)
+
+    # ── Insider: limit=20 để phân biệt được số lượng giao dịch ──
+    df_id = safe_run(f"insider_deal_vci {symbol}",
+             lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=20))
+    if df_id is None:
+        df_id = safe_run(f"insider_deal_cafef {symbol}",
+                 lambda: Trading(symbol=symbol, source="CafeF").insider_deal(limit=20))
+        if df_id is not None and not df_id.empty:
+            df_id = df_id.rename(columns={
+                "transaction_man"         : "trader_name",
+                "transaction_man_position": "trader_position",
+                "transaction_note"        : "action_type",
+            })
+
+    if df_id is not None and not df_id.empty:
+        # Phân tích 90 ngày gần nhất nếu có cột ngày
+        date_col = next((c for c in df_id.columns
+                         if "date" in c.lower() or "time" in c.lower()), None)
+        if date_col:
+            try:
+                df_id[date_col] = pd.to_datetime(df_id[date_col], errors="coerce")
+                cutoff = pd.Timestamp.now() - pd.Timedelta(days=90)
+                df_90d = df_id[df_id[date_col] >= cutoff]
+                df_id  = df_90d if not df_90d.empty else df_id
+            except Exception:
+                pass
+
+        action_col = "action_type" if "action_type" in df_id.columns else None
+        if action_col:
+            buy_kw  = ["mua", "buy", "purchase", "acqui"]
+            sell_kw = ["bán", "sell", "dispos", "transfer"]
+            actions = df_id[action_col].astype(str).str.lower()
+            buy_cnt  = actions.apply(lambda x: any(k in x for k in buy_kw)).sum()
+            sell_cnt = actions.apply(lambda x: any(k in x for k in sell_kw)).sum()
+            res["insider_buy_count"]  = int(buy_cnt)
+            res["insider_sell_count"] = int(sell_cnt)
+            res["insider_count"]      = len(df_id)
+            res["insider_latest"]     = str(df_id[action_col].iloc[0])
+        else:
+            res["insider_count"]  = len(df_id)
+        res["insider_name"] = str(df_id["trader_name"].iloc[0]) \
+                              if "trader_name" in df_id.columns else None
+
+    return res
+
+# =====================================================
+# ENRICH FINANCE
+# =====================================================
+
+def enrich_finance(symbol: str, fin_cache: dict) -> dict:
+    entry = fin_cache.get(symbol)
+
+    if not entry:
+        log.info(f"  Finance cache miss: {symbol} — lazy fetch")
+        try:
+            from steps.step_finance_scan import fetch_one
+            entry = fetch_one(symbol)
+            if entry:
+                fin_cache[symbol] = entry
+                try:
+                    from steps.step_finance_scan import load_cache, save_cache
+                    cache = load_cache()
+                    cache[symbol] = entry
+                    save_cache(cache)
+                except Exception:
+                    pass
+        except Exception as e:
+            log.warning(f"  Lazy finance fetch failed {symbol}: {e}")
+
+    if not entry:
+        return {}
+
+    r = entry.get("ratio", {})
+    i = entry.get("income", {})
+    b = entry.get("balance", {})
+    c = entry.get("cashflow", {})
+
+    return {
+        "r_period"          : entry.get("period", ""),
+        "r_pe"              : r.get("pe"),
+        "r_pb"              : r.get("pb"),
+        "r_roe"             : r.get("roe"),
+        "r_roa"             : r.get("roa"),
+        "r_eps"             : r.get("eps"),
+        "r_bvps"            : r.get("bvps"),
+        "r_beta"            : r.get("beta"),
+        "r_div_yield"       : r.get("div_yield"),
+        "r_gross_margin"    : r.get("gross_margin"),
+        "r_net_margin"      : r.get("net_margin"),
+        "r_quick_ratio"     : r.get("quick_ratio"),
+        "r_interest_cov"    : r.get("interest_cov"),
+        "r_ev_ebitda"       : r.get("ev_ebitda"),
+        "is_revenue"           : i.get("revenue"),
+        "is_gross_profit"      : i.get("gross_profit"),
+        "is_net_profit"        : i.get("net_profit"),
+        "is_operating_profit"  : i.get("operating_profit"),
+        "is_eps"               : i.get("eps"),
+        "is_rev_growth"        : i.get("rev_growth_qoq"),
+        "is_profit_growth"     : i.get("profit_growth_qoq"),
+        "is_rev_growth_yoy"    : i.get("rev_growth_yoy"),
+        "is_profit_growth_yoy" : i.get("profit_growth_yoy"),
+        "bs_total_assets"   : b.get("total_assets"),
+        "bs_equity"         : b.get("equity"),
+        "bs_total_liab"     : b.get("total_liab"),
+        "bs_short_debt"     : b.get("short_debt"),
+        "bs_long_debt"      : b.get("long_debt"),
+        "bs_debt_to_equity" : b.get("debt_to_equity"),
+        "cf_operating"      : c.get("cf_operating"),
+        "cf_investing"      : c.get("cf_investing"),
+        "cf_financing"      : c.get("cf_financing"),
+        "cf_free"           : c.get("cf_free"),
+        "cf_quality_ratio"  : c.get("cf_quality"),
+        "finance_score"       : entry.get("finance_score", {}).get("total"),
+        "finance_score_fund"  : entry.get("finance_score", {}).get("fundamental"),
+        "finance_score_cf"    : entry.get("finance_score", {}).get("cashflow"),
+        "finance_score_growth": entry.get("finance_score", {}).get("growth"),
+    }
+
+# =====================================================
+# BUILD ONE SYMBOL
+# =====================================================
+
+def build_one(symbol: str, group: str, market_open: bool,
+              industry_map: list, fin_cache: dict) -> dict:
+    try:
+        snap    = get_snapshot(symbol, market_open)
+        ta      = get_ta(symbol)
+        flow    = get_flow(symbol)
+        finance = enrich_finance(symbol, fin_cache)
+
+        ind_row  = next(
+            (r for r in industry_map
+             if r.get("symbol") == symbol or r.get("ticker") == symbol),
+            {}
         )
-        if vnindex_ret is not None:
-            vnindex_real = True  # context có data
-
-    if not vnindex_real:
-        # Không có VNINDEX data thực → absolute mode
-        vnindex_ret = None
-
-    # RS = stock / market (tránh chia 0)
-    import math
-    if math.isnan(stock_ret): return 0, ""
-
-    # Không có VNINDEX data thực → absolute mode
-    if not vnindex_real or vnindex_ret is None:
-        # Absolute mode: score dựa trên return tuyệt đối của cổ phiếu
-        if   stock_ret >  15: score = +8
-        elif stock_ret >   5: score = +4
-        elif stock_ret >  -5: score =  0
-        elif stock_ret > -15: score = -4
-        else:                 score = -8
-        return score, f"RS_abs={stock_ret:+.1f}%(no_VN) {score:+d}"
-
-    rs = (1 + stock_ret / 100) / (1 + vnindex_ret / 100)
-
-    score = 0
-    if   rs > 1.30: score = +8
-    elif rs > 1.10: score = +4
-    elif rs > 0.90: score =  0
-    elif rs > 0.70: score = -4
-    else:           score = -8
-
-    label = f"RS={rs:.2f}({'▲' if score>0 else '▼' if score<0 else '─'}) {score:+d}"
-    return score, label
-
-
-def score_52w_high(row: dict) -> tuple[int, str]:
-    """
-    52-Week High proximity / breakout.
-    Dùng high_52w thực từ OHLCV 12M (tính trong get_ta của step_snapshot_v2).
-    Không dùng proxy ema200+atr — không chính xác với cổ phiếu biến động cao.
-    """
-    price    = _to_float(row.get("price"))
-    high_52w = _to_float(row.get("high_52w"))
-    low_52w  = _to_float(row.get("low_52w"))
-
-    if price is None or price <= 0 or high_52w is None or high_52w <= 0:
-        return 0, ""
-
-    pct_from_high = (price - high_52w) / high_52w * 100
-
-    score = 0
-    if   pct_from_high > 0:      score = +7   # Phá đỉnh 52W
-    elif pct_from_high > -5:     score = +3   # Trong 5% dưới đỉnh
-    elif pct_from_high > -20:    score =  0   # Neutral
-    elif pct_from_high > -50:    score = -3   # Xa đỉnh
-    else:                        score = -5   # Gần đáy 52W
-
-    label = f"52W_hi={pct_from_high:+.1f}% {score:+d}"
-    return score, label
-
-
-def score_roc10(row: dict) -> tuple[int, str]:
-    """
-    Rate of Change 10 ngày — tính thực từ OHLCV trong step_snapshot_v2.
-    roc_10 = (close_today / close_10d_ago - 1) × 100
-    """
-    roc = _to_float(row.get("roc_10"))
-    if roc is None:
-        return 0, ""
-
-    if   roc >  5: score = +3
-    elif roc >  2: score = +1
-    elif roc > -2: score =  0
-    elif roc > -5: score = -1
-    else:          score = -3
-    return score, f"ROC10={roc:+.1f}% {score:+d}"
-
-
-def score_nr7(row: dict) -> tuple[int, str]:
-    """
-    NR7: Today range < range of every day in last 7 days.
-    Dùng _ohlcv_5d (5 ngày) làm proxy cho NR7 check.
-    NR4 nếu range hôm nay nhỏ nhất trong 5 ngày.
-    """
-    ohlcv = row.get("_ohlcv_5d") or []
-    if not isinstance(ohlcv, list) or len(ohlcv) < 4:
-        return 0, ""
-
-    # Tính range từng ngày
-    ranges = []
-    for d in ohlcv:
-        if not isinstance(d, dict):
-            continue
-        h = _to_float(d.get("high"))
-        l = _to_float(d.get("low"))
-        if h and l and h > l:
-            ranges.append(h - l)
-
-    if len(ranges) < 3:
-        return 0, ""
-
-    today_range = ranges[-1]
-    prev_ranges = ranges[:-1]
-
-    if today_range <= 0:
-        return 0, ""
-
-    # NR setup: today range là nhỏ nhất
-    is_nr = today_range <= min(prev_ranges)
-    # Compression ratio: today / avg prev
-    avg_prev = sum(prev_ranges) / len(prev_ranges)
-    compression = today_range / avg_prev if avg_prev > 0 else 1.0
-
-    score = 0
-    if is_nr and compression < 0.6:
-        score = +3   # Squeeze mạnh — sắp breakout
-    elif is_nr and compression < 0.8:
-        score = +2   # Squeeze vừa
-    elif compression < 0.7:
-        score = +1   # Range co lại
-    # Không có điểm âm — NR chỉ là neutral-to-bullish setup
-
-    label = f"NR={'Y' if is_nr else 'N'} compress={compression:.2f} {score:+d}"
-    return score, label
-
-
-def score_bid_ask_imbalance(row: dict) -> tuple[int, str]:
-    """
-    Aggregate bid vs ask volume imbalance (3 levels).
-    ratio = sum(bid_vol 1-3) / sum(ask_vol 1-3)
-    """
-    bid_total = sum(
-        _to_float(row.get(f"bid_vol_{i}"), 0) or 0
-        for i in (1, 2, 3)
-    )
-    ask_total = sum(
-        _to_float(row.get(f"ask_vol_{i}"), 0) or 0
-        for i in (1, 2, 3)
-    )
-
-    if ask_total <= 0 or bid_total <= 0:
-        return 0, ""
-
-    ratio = bid_total / ask_total
-
-    if   ratio > 1.5: score = +2
-    elif ratio > 1.2: score = +1
-    elif ratio > 0.8: score =  0
-    elif ratio > 0.5: score = -1
-    else:             score = -2
-
-    label = f"BidAsk={ratio:.2f} {score:+d}"
-    return score, label
-
-
-def score_ff_room(row: dict) -> tuple[int, str]:
-    """
-    Foreign room utilization.
-    ff_room = % room còn lại (0–100).
-    Room < 5% = ngoại không thể mua thêm → áp lực cung.
-    """
-    room = _to_float(row.get("ff_room"))
-    if room is None:
-        return 0, ""
-
-    # ff_room = fr_available_percentage × 100 từ VCI (% room ngoại còn có thể mua)
-    # PNJ ~1%, KBC ~41%, GVR ~12%, LDG ~50%
-    if not (0 <= room <= 100):
-        return 0, f"FFroom={room:.2f}(invalid) +0"
-    if   room > 30: score = +3
-    elif room > 10: score =  0
-    elif room >  5: score = -3
-    else:           score = -7
-
-    label = f"FFroom={room:.1f}% {score:+d}"
-    return score, label
-
-
-def score_dividend_yield(row: dict) -> tuple[int, str]:
-    """
-    Dividend yield score.
-    r_div_yield từ finance cache — % yield theo năm.
-    """
-    yield_pct = _to_float(row.get("r_div_yield"))
-    if yield_pct is None or yield_pct <= 0:
-        return 0, ""
-
-    # KBS trả về decimal: 0.02 = 2%, 0.05 = 5%
-    # Normalize về percent
-    if yield_pct < 1.0:
-        yield_pct_pct = yield_pct * 100
-    else:
-        yield_pct_pct = yield_pct  # đã là percent
-    yield_pct = yield_pct_pct
-
-    # Threshold phù hợp thị trường VN (yield thường 1-8%)
-    if   yield_pct > 6: score = +3
-    elif yield_pct > 4: score = +2
-    elif yield_pct > 2: score = +1
-    else:               score =  0   # Không có cổ tức ≠ xấu
-
-    label = f"DivYield={yield_pct:.1f}% {score:+d}"
-    return score, label
-
-
-def score_eps_consistency(row: dict) -> tuple[int, str]:
-    """
-    EPS consistency: số quý liên tiếp EPS tăng YoY.
-    Cần: is_eps_q1..q4 fields hoặc tính từ is_profit_growth_yoy consistency.
-    Hiện tại dùng is_profit_growth_yoy (latest) + EPS growth pattern.
-    """
-    # Nếu có eps_consistency field (sau khi thêm vào step_finance_scan)
-    eps_cons = _to_float(row.get("eps_consistency"))
-    if eps_cons is not None:
-        n = int(eps_cons)
-        if   n >= 4: score = +5
-        elif n >= 2: score = +2
-        elif n == 1: score =  0
-        elif n == -2: score = -3
-        elif n <= -4: score = -5
-        else:         score = -1
-        return score, f"EPScons={n}qtrs {score:+d}"
-
-    # Fallback: dùng profit_growth_yoy hiện tại + QoQ pattern
-    profit_yoy = _to_float(row.get("is_profit_growth_yoy"))
-    profit_qoq = _to_float(row.get("is_profit_growth"))  # QoQ
-
-    if profit_yoy is None:
-        return 0, ""
-
-    score = 0
-    if profit_yoy > 0.30 and (profit_qoq is None or profit_qoq > 0):
-        score = +3   # Tăng trưởng tốt YoY + momentum QoQ
-    elif profit_yoy > 0.15:
-        score = +2
-    elif profit_yoy > 0:
-        score = +1
-    elif profit_yoy > -0.10:
-        score = -1
-    elif profit_yoy > -0.30:
-        score = -3
-    else:
-        score = -5   # Sụt giảm mạnh
-
-    label = f"EPSyoy={profit_yoy*100:+.0f}% {score:+d}"
-    return score, label
-
-
-def score_insider(row: dict) -> tuple[int, str]:
-    """
-    Insider buy/sell activity.
-    insider_count + insider_latest từ deep_raw (Trading.insider_deal).
-    """
-    # Ưu tiên buy_count/sell_count (phân tách 90 ngày, limit=20)
-    buy_cnt  = int(_to_float(row.get("insider_buy_count"),  0) or 0)
-    sell_cnt = int(_to_float(row.get("insider_sell_count"), 0) or 0)
-    total    = buy_cnt + sell_cnt
-
-    # Fallback: dùng latest action nếu chưa có count phân tách
-    if total == 0:
-        latest = str(row.get("insider_latest") or "").lower()
-        if not latest:
-            return 0, ""
-        is_buy  = any(k in latest for k in ["mua", "buy", "purchase", "acqui"])
-        is_sell = any(k in latest for k in ["bán", "sell", "dispos"])
-        if   is_buy:  return +3, f"Insider=BUY(latest) +3"
-        elif is_sell: return -3, f"Insider=SELL(latest) -3"
-        return 0, ""
-
-    # Scoring dựa trên số lượng giao dịch 90 ngày
-    net = buy_cnt - sell_cnt
-    if   net >= 3:  score = +5   # Nhiều giao dịch mua
-    elif net >= 1:  score = +3
-    elif net == 0:  score =  0   # Cân bằng
-    elif net >= -2: score = -3
-    else:           score = -5   # Nhiều giao dịch bán
-
-    label = f"Insider=B{buy_cnt}/S{sell_cnt}(90d) net={net:+d} {score:+d}"
-    return score, label
-
-
-# =====================================================
-# NORMALIZE + WEIGHT
-# =====================================================
-
-def _normalize_and_weight(raw_scores: dict) -> tuple[float, dict]:
-    norm = {}
-    for g, cap in GROUP_CAPS.items():
-        raw = raw_scores.get(g, 0) or 0
-        norm[g] = max(-1.0, min(1.0, raw / cap))
-
-    weighted_sum = sum(
-        SCORING_WEIGHTS.get(g, 0) * norm[g]
-        for g in SCORING_WEIGHTS
-    )
-    return round(weighted_sum * 100, 2), norm
-
-
-def _confluence_bonus(norm_scores: dict) -> tuple[int, str]:
-    check_groups = {k: v for k, v in norm_scores.items() if k != "context"}
-
-    positive = sum(1 for n in check_groups.values() if n >=  CONFLUENCE_THRESHOLD_PCT)
-    negative = sum(1 for n in check_groups.values() if n <= -CONFLUENCE_THRESHOLD_PCT)
-    n_groups = len(check_groups)
-
-    bonus, label = 0, ""
-    if   positive >= 7: bonus, label = +10, f"CONFLUENCE strong bull ({positive}/{n_groups})"
-    elif positive >= 5: bonus, label =  +5, f"CONFLUENCE bull ({positive}/{n_groups})"
-    elif negative >= 7: bonus, label = -10, f"CONFLUENCE strong bear ({negative}/{n_groups})"
-    elif negative >= 5: bonus, label =  -5, f"CONFLUENCE bear ({negative}/{n_groups})"
-    return bonus, label
-
-
-def _decision(total: float) -> str:
-    if   total >= THRESHOLD_STRONG_BUY: return "STRONG BUY"
-    elif total >= THRESHOLD_BUY:        return "BUY"
-    elif total >= THRESHOLD_NEUTRAL:    return "NEUTRAL"
-    elif total >= THRESHOLD_SELL:       return "SELL"
-    else:                               return "STRONG SELL"
-
-
-# =====================================================
-# SCORE SYMBOL V2 — main scoring function
-# =====================================================
-
-def score_symbol_v2(row: dict, context: dict, news_scores: dict,
-                    order_flow_map: dict) -> dict:
-    """
-    1. Lấy raw group scores từ V3 scorer
-    2. Tính thêm 9 extended indicators
-    3. Merge vào group scores tương ứng
-    4. Normalize → weighted sum → confluence → final score
-    """
-    sym = row.get("symbol", "?")
-
-    # ── Base: gọi V3 scorer ──
-    v3 = _score_symbol_v3(row, context, news_scores, order_flow_map)
-
-    # ── Raw group scores từ V3 ──
-    raw = {
-        "trend":       v3.get("trend_score",       0) or 0,
-        "momentum":    v3.get("momentum_score",    0) or 0,
-        "volume":      v3.get("volume_score",      0) or 0,
-        "volatility":  v3.get("volatility_score",  0) or 0,
-        "order_flow":  v3.get("order_flow_score",  0) or 0,
-        "depth":       v3.get("depth_score",       0) or 0,
-        "ff":          v3.get("ff_score",          0) or 0,
-        "fundamental": v3.get("fundamental_score", 0) or 0,
-        "cf":          v3.get("cf_score",          0) or 0,
-        "growth":      v3.get("growth_score",      0) or 0,
-        "context":     v3.get("context_score",     0) or 0,
-        # news: bỏ
-    }
-
-    ext_sigs = []  # extended indicator signals log
-
-    # ── Extended: Trend group ──
-    rs_score,   rs_label   = score_rs_vnindex(row, context)
-    w52_score,  w52_label  = score_52w_high(row)
-    raw["trend"] += rs_score + w52_score
-    if rs_label:  ext_sigs.append(rs_label)
-    if w52_label: ext_sigs.append(w52_label)
-
-    # ── Extended: Momentum group ──
-    roc_score, roc_label = score_roc10(row)
-    raw["momentum"] += roc_score
-    if roc_label: ext_sigs.append(roc_label)
-
-    # ── Extended: Volatility group ──
-    nr7_score, nr7_label = score_nr7(row)
-    raw["volatility"] += nr7_score
-    if nr7_label: ext_sigs.append(nr7_label)
-
-    # ── Extended: Depth group ──
-    ba_score, ba_label = score_bid_ask_imbalance(row)
-    raw["depth"] += ba_score
-    if ba_label: ext_sigs.append(ba_label)
-
-    # ── Extended: FF group ──
-    room_score, room_label = score_ff_room(row)
-    raw["ff"] += room_score
-    if room_label: ext_sigs.append(room_label)
-
-    # ── Extended: Fundamental group ──
-    div_score, div_label = score_dividend_yield(row)
-    raw["fundamental"] += div_score
-    if div_label: ext_sigs.append(div_label)
-
-    # ── Extended: Growth group ──
-    eps_score,     eps_label     = score_eps_consistency(row)
-    insider_score, insider_label = score_insider(row)
-    raw["growth"] += eps_score
-    # Insider → cộng vào fundamental (smart money signal)
-    raw["fundamental"] += insider_score
-    if eps_label:     ext_sigs.append(eps_label)
-    if insider_label: ext_sigs.append(insider_label)
-
-    # ── Normalize + weighted sum ──
-    base_score, norm = _normalize_and_weight(raw)
-
-    # ── Confluence ──
-    conf_bonus, conf_label = _confluence_bonus(norm)
-    if conf_bonus != 0:
-        sigs = v3.get("signals", "")
-        extra = f"{conf_label} {'+' if conf_bonus > 0 else ''}{conf_bonus}"
-        v3["signals"] = (sigs + " | " + extra) if sigs else extra
-
-    total_score = round(base_score + conf_bonus, 2)
-    decision    = _decision(total_score)
-
-    # ── Tech/Fund scores ──
-    tech_score = (raw["trend"] + raw["momentum"] + raw["volume"] +
-                  raw["volatility"] + raw["order_flow"])
-    fund_score = raw["fundamental"] + raw["cf"] + raw["growth"]
-
-    # ── Pattern flags ──
-    pattern_flags = []
-    confidence    = "MEDIUM"
-    if   tech_score >= 40 and fund_score <= -15:
-        pattern_flags.append("BULL_TRAP_RISK");   confidence = "LOW"
-    elif tech_score <= -30 and fund_score >= 15:
-        pattern_flags.append("VALUE_OPPORTUNITY")
-    elif tech_score >= 30 and fund_score >= 15:
-        pattern_flags.append("CONSENSUS_BULL");   confidence = "HIGH"
-    elif tech_score <= -30 and fund_score <= -15:
-        pattern_flags.append("CONSENSUS_BEAR");   confidence = "HIGH"
-    elif abs(tech_score) < 20 and abs(fund_score) < 10:
-        pattern_flags.append("UNCLEAR");          confidence = "LOW"
-
-    # ── Build output ──
-    out = dict(v3)
-    out.update({
-        "total_score"      : total_score,
-        "base_score_v2"    : base_score,
-        "confluence_bonus" : conf_bonus,
-        "decision"         : decision,
-        "confidence"       : confidence,
-        "pattern_flags"    : pattern_flags,
-        "scoring_version"  : SCORING_VERSION,
-        "tech_score"       : tech_score,
-        "fund_score"       : fund_score,
-        # Extended raw scores
-        "ext_rs_score"     : rs_score,
-        "ext_52w_score"    : w52_score,
-        "ext_roc_score"    : roc_score,
-        "ext_nr7_score"    : nr7_score,
-        "ext_ba_score"     : ba_score,
-        "ext_room_score"   : room_score,
-        "ext_div_score"    : div_score,
-        "ext_eps_score"    : eps_score,
-        "ext_insider_score": insider_score,
-        "ext_signals"      : " | ".join(ext_sigs) if ext_sigs else "",
-        # Normalized scores
-        "norm_trend"       : round(norm.get("trend",       0), 4),
-        "norm_momentum"    : round(norm.get("momentum",    0), 4),
-        "norm_volume"      : round(norm.get("volume",      0), 4),
-        "norm_volatility"  : round(norm.get("volatility",  0), 4),
-        "norm_order_flow"  : round(norm.get("order_flow",  0), 4),
-        "norm_depth"       : round(norm.get("depth",       0), 4),
-        "norm_ff"          : round(norm.get("ff",          0), 4),
-        "norm_fundamental" : round(norm.get("fundamental", 0), 4),
-        "norm_cf"          : round(norm.get("cf",          0), 4),
-        "norm_growth"      : round(norm.get("growth",      0), 4),
-        "norm_context"     : round(norm.get("context",     0), 4),
-        # Weight snapshot
-        "w_trend"          : SCORING_WEIGHTS["trend"],
-        "w_momentum"       : SCORING_WEIGHTS["momentum"],
-        "w_volume"         : SCORING_WEIGHTS["volume"],
-        "w_order_flow"     : SCORING_WEIGHTS["order_flow"],
-        "w_ff"             : SCORING_WEIGHTS["ff"],
-        "w_fundamental"    : SCORING_WEIGHTS["fundamental"],
-        "w_cf"             : SCORING_WEIGHTS["cf"],
-        "w_growth"         : SCORING_WEIGHTS["growth"],
-    })
-    return out
-
-
-# =====================================================
-# MAIN
-# =====================================================
-
-def run():
-    log.info(f"=== SCORING V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
-    log.info(f"Scoring version: {SCORING_VERSION}")
-    log.info(f"Thresholds: SB≥{THRESHOLD_STRONG_BUY} | BUY≥{THRESHOLD_BUY} | "
-             f"NEU≥{THRESHOLD_NEUTRAL} | SELL≥{THRESHOLD_SELL}")
-    log.info(f"Extended: RS, 52W, ROC10, NR7, BidAsk, FFroom, DivYield, EPScons, Insider")
-
-    deep_raw     = load_json("deep_raw_v2.json")
-    context_list = load_json("market/context.json") or load_json("context.json")
-    today_index  = load_json("news/today_index.json") or load_json("news_today_index.json")
-    order_flow   = load_json("order_flow_v2.json")
-
-    if not deep_raw:
-        log.error("deep_raw_v2.json not found — chạy step_snapshot_v2.py trước")
-        return
-
-    ctx = context_list[0] if context_list else {}
-
-    if not order_flow:
-        log.warning("order_flow_v2.json not found — order_flow_score = 0")
-        order_flow = []
-
-    order_flow_map = {
-        r["symbol"]: r
-        for r in (order_flow or [])
-        if isinstance(r, dict) and r.get("symbol")
-    }
-
-    symbols_with_industry = [
-        {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
-        for r in deep_raw
-    ]
-    news_scores = build_news_scores(today_index or {}, symbols_with_industry)
-
-    log.info(f"Scoring {len(deep_raw)} symbols...")
-
-    scored_rows = []
-    for row in deep_raw:
-        result = score_symbol_v2(row, ctx, news_scores, order_flow_map)
-        scored_rows.append(result)
-
-        flags_str = ",".join(result.get("pattern_flags") or []) or "-"
-        ext       = result.get("ext_signals", "")
+        row = {
+            "symbol"  : symbol,
+            "group"   : group,
+            "exchange": get_exchange(symbol),
+            "time"    : now_ict().strftime("%Y-%m-%d %H:%M"),
+            "date"    : today_str(),
+            **{k: v for k, v in snap.items()    if k != "symbol"},
+            **{k: v for k, v in ta.items()      if k != "symbol"},
+            **{k: v for k, v in flow.items()    if k != "symbol"},
+            **{k: v for k, v in finance.items() if k != "symbol"},
+            "industry": ind_row.get("icb_name", ""),
+            "icb_code": ind_row.get("icb_code", ""),
+        }
+
+        # ff_room đã được tính từ VCI (fr_available_percentage × 100) trong get_flow
+        # Không cần tính từ KBS — VCI fr_available_percentage chính xác hơn
         log.info(
-            f"  [{result['symbol']:6s}] "
-            f"v2={result['total_score']:6.1f} "
-            f"(base={result['base_score_v2']:6.1f} conf={result['confluence_bonus']:+d}) "
-            f"→ {result['decision']:12s} [{result['confidence']}]"
-            + (f"\n    ext: {ext}" if ext else "")
+            f"  ✅ {symbol} ({group}) "
+            f"RSI={row.get('rsi')} PE={row.get('r_pe')} "
+            f"FF5d={fmt_money_bil(row.get('ff_net_val_5d'))}tỷ "
+            f"VolRatio={row.get('vol_ma_ratio')} "
+            f"D/E={row.get('bs_debt_to_equity')}"
         )
+        return row
 
-    df = pd.DataFrame(scored_rows)
-    save_json("signals_v2.json", df.to_dict(orient="records"))
+    except Exception as e:
+        log.error(f"  ❌ {symbol}: {e}")
+        import traceback; traceback.print_exc()
+        return {
+            "symbol"  : symbol,
+            "group"   : group,
+            "exchange": get_exchange(symbol),
+            "time"    : now_ict().strftime("%Y-%m-%d %H:%M"),
+            "date"    : today_str(),
+            "error"   : str(e),
+        }
 
-    # CSV export
-    pattern_flags_col = df["pattern_flags"].apply(
-        lambda f: ",".join(f or [])
-    ) if "pattern_flags" in df.columns else pd.Series([""] * len(df))
+# =====================================================
+# FF identical validation gate
+# =====================================================
 
-    news_evidence_col = df["news_evidence"].apply(
-        lambda evs: " | ".join(
-            f"{e.get('type','?')}·{e.get('source','?')}·"
-            f"{e.get('title','')[:40]}·{str(e.get('time',''))[5:16]}"
-            for e in (evs or [])
-        )
-    ) if "news_evidence" in df.columns else pd.Series([""] * len(df))
+def validate_ff_data(deep_rows: list[dict]) -> list[dict]:
+    if not deep_rows:
+        return deep_rows
 
-    df_csv = df.drop(columns=["news_evidence", "_ohlcv_5d", "pattern_flags"], errors="ignore")
-    df_csv = clean_for_export(df_csv)
-    df_csv["news_evidence"] = news_evidence_col.values
-    df_csv["pattern_flags"] = pattern_flags_col.values
-    save_csv("signals_v2.csv", df_csv)
+    nets_5d  = [r.get("ff_net_val_5d")  for r in deep_rows
+                if r.get("ff_net_val_5d")  is not None]
+    nets_20d = [r.get("ff_net_val_20d") for r in deep_rows
+                if r.get("ff_net_val_20d") is not None]
 
-    # Summary log
-    decision_counts = df["decision"].value_counts().to_dict()
-    log.info(f"Decision distribution: {decision_counts}")
+    suspicious = False
+    reason     = ""
 
-    # Extended indicator coverage
-    for field in ["ext_rs_score","ext_52w_score","ext_roc_score","ext_nr7_score",
-                  "ext_ba_score","ext_room_score","ext_div_score","ext_eps_score","ext_insider_score"]:
-        nonzero = (df[field] != 0).sum() if field in df.columns else 0
-        log.info(f"  {field}: {nonzero}/{len(df)} symbols có signal")
+    if len(nets_5d) >= 3 and len(set(nets_5d)) == 1:
+        suspicious = True
+        reason     = (f"identical ff_net_val_5d={nets_5d[0]:.0f} "
+                      f"across {len(nets_5d)} symbols")
+    elif len(nets_20d) >= 3 and len(set(nets_20d)) == 1:
+        suspicious = True
+        reason     = (f"identical ff_net_val_20d={nets_20d[0]:.0f} "
+                      f"across {len(nets_20d)} symbols")
 
-    # V3 comparison
-    v3_signals = load_json("signals.json")
-    if v3_signals:
-        v3_df  = pd.DataFrame(v3_signals)[["symbol","decision","total_score"]]
-        v2_df  = df[["symbol","decision","total_score"]].copy()
-        v3_df.columns = ["symbol","dec3","sc3"]
-        v2_df.columns = ["symbol","dec2","sc2"]
-        cmp   = pd.merge(v3_df, v2_df, on="symbol", how="inner")
-        agree = (cmp["dec3"] == cmp["dec2"]).sum()
-        log.info(f"V3 vs V2 agreement: {agree}/{len(cmp)} = {agree/len(cmp)*100:.1f}%")
-        diff = cmp[cmp["dec3"] != cmp["dec2"]]
-        for _, r in diff.iterrows():
-            log.info(f"  DIFF {r.symbol}: v3={r.dec3}({r.sc3:.0f}) → v2={r.dec2}({r.sc2:.1f})")
+    if not suspicious:
+        log.info(f"  ✅ FF data quality OK: "
+                 f"{len(nets_5d)} symbols, "
+                 f"{len(set(nets_5d))} unique net_5d values")
+        return deep_rows
 
-    log.info(f"Exported signals_v2.json + signals_v2.csv ({len(df)} rows)")
-    log.info("=== SCORING V2 DONE ===")
+    log.error(f"🚨 FF DATA BUG DETECTED: {reason}")
+    affected = 0
+    for r in deep_rows:
+        had_data = any(r.get(k) is not None for k in FF_FIELDS)
+        for k in FF_FIELDS:
+            r[k] = None
+        r["ff_data_invalid"] = True
+        if had_data:
+            affected += 1
+    log.error(f"   {affected}/{len(deep_rows)} symbols had FF data wiped.")
+    return deep_rows
 
+
+# =====================================================
+# MAIN — chỉ khác step_snapshot.py ở output filenames (_v2)
+# =====================================================
 
 if __name__ == "__main__":
-    run()
+    trading = is_market_open()
+    log.info(f"=== SNAPSHOT V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
+    log.info(f"Market open: {trading}")
+    log.info(f"History    : {HISTORY_LENGTH} (for EMA200)")
+
+    load_exchange_map()
+
+    industry_map  = load_json("industry_map.json") or \
+                    load_json("market/industry_map.json") or []
+    fin_cache_raw = load_json("finance/cache.json") or {}
+    fin_cache     = fin_cache_raw.get("symbols", fin_cache_raw) \
+                    if isinstance(fin_cache_raw, dict) else {}
+    log.info(f"Finance cache: {len(fin_cache)} symbols loaded")
+
+    # Fetch VNINDEX return để tính RS chính xác
+    vnindex_info = get_vnindex_return()
+    if vnindex_info and vnindex_info.get('vnindex_return_20d') is not None:
+        log.info(f"✅ VNINDEX return_20d={vnindex_info.get('vnindex_return_20d'):.2f}% "
+                 f"return_5d={vnindex_info.get('vnindex_return_5d')}")
+    else:
+        log.warning(f"⚠️ VNINDEX return not available: {vnindex_info} — RS sẽ dùng fallback")
+
+    ranking = get_ranking()
+
+    all_ranking_rows = []
+    all_deep_rows    = []
+    symbol_jobs: list[tuple[str, str]] = []
+
+    for group, df_rank in [
+        ("GAINER", ranking["gainers"]),
+        ("LOSER",  ranking["losers"]),
+    ]:
+        if df_rank is None or df_rank.empty:
+            log.warning(f"No data: {group}")
+            continue
+        symbols = df_rank["symbol"].tolist()
+        df_rank["exchange"] = df_rank["symbol"].map(get_exchange)
+        df_rank["group"]    = group
+        df_rank["date"]     = today_str()
+        all_ranking_rows.append(df_rank)
+        for sym in symbols:
+            symbol_jobs.append((sym, group))
+
+    log.info(f"Fetching {len(symbol_jobs)} symbols concurrently "
+             f"(workers={MAX_WORKERS})...")
+
+    results: dict[str, dict] = {}
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        future_map = {
+            executor.submit(
+                build_one, sym, grp, trading, industry_map, fin_cache
+            ): (sym, grp)
+            for sym, grp in symbol_jobs
+        }
+        for future in as_completed(future_map):
+            sym, grp = future_map[future]
+            try:
+                results[sym] = future.result()
+            except Exception as e:
+                log.error(f"Future error {sym}: {e}")
+
+    for sym, grp in symbol_jobs:
+        if sym in results:
+            row = results[sym]
+            # Enrich vnindex return vào từng row để scoring dùng
+            if vnindex_info:
+                row["vnindex_return_20d"] = vnindex_info.get("vnindex_return_20d")
+                row["vnindex_return_5d"]  = vnindex_info.get("vnindex_return_5d")
+            all_deep_rows.append(row)
+
+    log.info("=== DATA QUALITY: FF validation ===")
+    all_deep_rows = validate_ff_data(all_deep_rows)
+
+    # ── V2: output filenames có suffix _v2 ──
+    if all_ranking_rows:
+        df_rank_all = pd.concat(all_ranking_rows, ignore_index=True)
+        save_json("ranking_v2.json", df_rank_all.to_dict(orient="records"))
+        save_csv("ranking_v2.csv",   clean_for_export(df_rank_all))
+        log.info(f"Saved ranking_v2.json ({len(df_rank_all)} rows)")
+
+    if all_deep_rows:
+        df_deep = pd.DataFrame(all_deep_rows)
+        save_json("deep_raw_v2.json", df_deep.to_dict(orient="records"))
+        df_export = df_deep.drop(columns=["_ohlcv_5d"], errors="ignore")
+        df_clean  = clean_for_export(df_export)
+        save_json("deep_v2.json", df_clean.to_dict(orient="records"))
+        save_csv("deep_v2.csv",   df_clean)
+        log.info(f"Saved deep_raw_v2.json ({len(df_deep)} rows, "
+                 f"{len(df_deep.columns)} cols)")
+
+    log.info("=== SNAPSHOT V2 DONE ===")
