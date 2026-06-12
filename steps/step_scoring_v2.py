@@ -287,24 +287,35 @@ def score_bid_ask_imbalance(row: dict) -> tuple[int, str]:
 
     Scale: -2 → +2, cap vào GROUP_CAPS["depth"] = ±7
     """
-    WALL_MIN_VOL = 5_000
-    NEAR_PCT     = 0.02   # ≤2% từ giá
-    MID_PCT      = 0.05   # 2–5%
+    WALL_MIN_VOL = 5_000   # cp tối thiểu để tính là wall
+    NEAR_PCT     = 0.01   # ≤1% từ giá — block ngay
+    MID_PCT      = 0.03   # 1–3% — có kháng cự nhưng có thể vượt
 
     price = _to_float(row.get("price"))
     if price is None or price <= 0:
         return 0, ""
 
     # Parse bid/ask 3 levels
+    # KBS order_book() trả bid/ask price bằng VND thực (vd: 15050)
+    # trong khi price từ VCI intraday là nghìn VND (vd: 15.0)
+    # → Normalize: nếu bid/ask price >> price thì chia 1000
     bids, asks = [], []
     for i in (1, 2, 3):
         bp = _to_float(row.get(f"bid_price_{i}"))
         bv = _to_float(row.get(f"bid_vol_{i}"), 0) or 0
         ap = _to_float(row.get(f"ask_price_{i}"))
         av = _to_float(row.get(f"ask_vol_{i}"), 0) or 0
-        if bp and bp > 0 and bv >= WALL_MIN_VOL:
+        # Normalize đơn vị price: KBS trả VND thực, price là nghìn VND
+        # vd: bid_price=5170 VND, price=5.17 nghìn VND → chia 1000
+        import math
+        if bp and not math.isnan(bp) and bp > price * 10:
+            bp = bp / 1000
+        if ap and not math.isnan(ap) and ap > price * 10:
+            ap = ap / 1000
+        # NaN guard + vol threshold
+        if bp and not math.isnan(bp) and bp > 0 and bv >= WALL_MIN_VOL:
             bids.append((bp, bv))
-        if ap and ap > 0 and av >= WALL_MIN_VOL:
+        if ap and not math.isnan(ap) and ap > 0 and av >= WALL_MIN_VOL:
             asks.append((ap, av))
 
     if not bids and not asks:
@@ -339,8 +350,9 @@ def score_bid_ask_imbalance(row: dict) -> tuple[int, str]:
         parts.append("AskClear +1")
 
     # ── BID side: tường mua phía dưới → sàn đỡ ──
+    # Bid AT price (pct=0) = tường mua ngay tại giá → sàn đỡ mạnh nhất
     bid_near = [(p, v) for p, v in bids
-                if 0 < (price - p) / price <= NEAR_PCT]
+                if 0 <= (price - p) / price <= NEAR_PCT]
     bid_mid  = [(p, v) for p, v in bids
                 if NEAR_PCT < (price - p) / price <= MID_PCT]
 
