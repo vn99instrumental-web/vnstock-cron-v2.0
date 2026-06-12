@@ -45,6 +45,13 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 MAX_WORKERS    = 10
+
+def _to_float_safe(v, default=0.0):
+    try:
+        x = float(v)
+        return x if x == x else default
+    except (TypeError, ValueError):
+        return default
 HISTORY_LENGTH = "12M"
 
 FF_FIELDS = [
@@ -392,6 +399,30 @@ def get_flow(symbol: str) -> dict:
 
     # (VCI room đã được fetch ở đầu get_flow — không cần fallback thêm)
 
+    # ── Prop Trade (Tự doanh CTCK) — Smart Money signal ──
+    # VCI prop_trade(): tự doanh mua/bán ròng 25 ngày
+    df_pt = safe_run(f"prop_trade {symbol}",
+              lambda: Trading(symbol=symbol, source="VCI").prop_trade(
+                  start=start_str(25), end=today_str()))
+    if df_pt is not None and not df_pt.empty:
+        try:
+            # Cột có thể là: net_value / net_val / proprietary_net
+            net_col = next((c for c in df_pt.columns
+                            if "net" in c.lower() and "val" in c.lower()), None)
+            if net_col:
+                net_pt = pd.to_numeric(df_pt[net_col], errors="coerce").dropna()
+                if not net_pt.empty:
+                    res["pt_net_val_5d"]  = float(net_pt.tail(5).sum())
+                    res["pt_net_val_20d"] = float(net_pt.sum())
+                    if len(net_pt) >= 5:
+                        x = np.arange(len(net_pt))
+                        slope = np.polyfit(x, net_pt.fillna(0).values, 1)[0]
+                        res["pt_trend"] = round(float(slope) / 1e9, 2)
+                    log.info(f"  PropTrade {symbol}: net5d={res.get('pt_net_val_5d'):.0f} "
+                             f"net20d={res.get('pt_net_val_20d'):.0f}")
+        except Exception as e:
+            log.warning(f"  PropTrade {symbol} parse error: {e}")
+
     # ── Insider: limit=20 để phân biệt được số lượng giao dịch ──
     df_id = safe_run(f"insider_deal_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=20))
@@ -439,6 +470,39 @@ def get_flow(symbol: str) -> dict:
 # =====================================================
 # ENRICH FINANCE
 # =====================================================
+
+def _calc_eps_consistency(entry: dict) -> int | None:
+    """
+    Tính số quý liên tiếp lợi nhuận tăng YoY (dương) hoặc giảm (âm).
+    Đọc từ entry["income"]["quarters"] nếu finance_scan lưu nhiều kỳ.
+    Fallback: dùng is_profit_growth_yoy (1 quý) → trả 1 hoặc -1.
+    """
+    if not entry:
+        return None
+    quarters = entry.get("income", {}).get("quarters", [])
+    if quarters and len(quarters) >= 2:
+        # quarters sorted newest first — đếm streak
+        streak = 0
+        for q in quarters:
+            yoy = q.get("profit_growth_yoy")
+            if yoy is None:
+                break
+            if streak == 0:
+                streak = 1 if yoy > 0 else -1
+            elif streak > 0 and yoy > 0:
+                streak += 1
+            elif streak < 0 and yoy <= 0:
+                streak -= 1
+            else:
+                break
+        return streak
+
+    # Fallback: 1 quý
+    yoy = entry.get("income", {}).get("profit_growth_yoy")
+    if yoy is None:
+        return None
+    return 1 if yoy > 0 else -1
+
 
 def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     entry = fin_cache.get(symbol)
@@ -492,6 +556,10 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
         "is_profit_growth"     : i.get("profit_growth_qoq"),
         "is_rev_growth_yoy"    : i.get("rev_growth_yoy"),
         "is_profit_growth_yoy" : i.get("profit_growth_yoy"),
+        # EPS consistency: số quý liên tiếp lợi nhuận tăng YoY
+        # income.quarters = list of {"period", "net_profit", "profit_growth_yoy"}
+        # nếu finance cache lưu nhiều kỳ
+        "eps_consistency"      : _calc_eps_consistency(entry),
         "bs_total_assets"   : b.get("total_assets"),
         "bs_equity"         : b.get("equity"),
         "bs_total_liab"     : b.get("total_liab"),
@@ -626,13 +694,17 @@ if __name__ == "__main__":
                     if isinstance(fin_cache_raw, dict) else {}
     log.info(f"Finance cache: {len(fin_cache)} symbols loaded")
 
-    # Fetch VNINDEX return để tính RS chính xác
+    # Fetch VNINDEX return + Market breadth (% VN100 trên EMA20)
     vnindex_info = get_vnindex_return()
     if vnindex_info and vnindex_info.get('vnindex_return_20d') is not None:
         log.info(f"✅ VNINDEX return_20d={vnindex_info.get('vnindex_return_20d'):.2f}% "
                  f"return_5d={vnindex_info.get('vnindex_return_5d')}")
     else:
         log.warning(f"⚠️ VNINDEX return not available: {vnindex_info} — RS sẽ dùng fallback")
+
+    # Market breadth: tính từ ranking universe (20 symbols có sẵn)
+    # Full breadth cần 100 symbols — dùng 20 symbols hiện tại làm proxy
+    # Kết quả lưu vào vnindex_info để pass sang scoring
 
     ranking = get_ranking()
 
@@ -681,6 +753,17 @@ if __name__ == "__main__":
                 row["vnindex_return_20d"] = vnindex_info.get("vnindex_return_20d")
                 row["vnindex_return_5d"]  = vnindex_info.get("vnindex_return_5d")
             all_deep_rows.append(row)
+
+    # ── Market breadth từ deep_rows (proxy: 20 symbols universe) ──
+    if all_deep_rows and vnindex_info is not None:
+        n_above_ema20 = sum(
+            1 for r in all_deep_rows
+            if r.get("ema20") and r.get("price") and
+               _to_float_safe(r.get("price")) >= _to_float_safe(r.get("ema20"))
+        )
+        breadth_pct = round(n_above_ema20 / len(all_deep_rows) * 100, 1)
+        vnindex_info["market_breadth_pct"] = breadth_pct
+        log.info(f"Market breadth (20 sym proxy): {n_above_ema20}/{len(all_deep_rows)} = {breadth_pct}%")
 
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
