@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-11T11:51:06.720250+07:00",
+  "generated_at": "2026-06-12T09:51:13.404992+07:00",
   "schema_version": 7,
   "ttl_days": 30,
-  "count": 386,
+  "count": 387,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -22765,6 +22765,69 @@
         "cf_period": "annual",
         "cf_free": -6934510.0,
         "cf_quality": 1.33,
+        "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
+      "period": "2026-Q1",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": 10,
+        "growth": 2,
+        "total": 24,
+        "max": 38
+      }
+    },
+    "AAA": {
+      "symbol": "AAA",
+      "fetched_at": "2026-06-12T09:51:00.253700+07:00",
+      "schema_version": 7,
+      "ratio": {
+        "pe": 8.38,
+        "pb": 0.51,
+        "roe": 1.3,
+        "roa": 2.93,
+        "eps": 940.19,
+        "bvps": 15440.0,
+        "beta": 0.95,
+        "div_yield": 0.04,
+        "gross_margin": 14.93,
+        "net_margin": 2.83,
+        "quick_ratio": 1.09,
+        "interest_cov": 3.89,
+        "ev_ebitda": 36.98
+      },
+      "income": {
+        "revenue": 2309974268.0,
+        "gross_profit": 354139506.0,
+        "net_profit": 121348934.0,
+        "operating_profit": 204931964.0,
+        "eps": null,
+        "rev_growth_qoq": -0.401,
+        "profit_growth_qoq": 1.6823,
+        "rev_growth_yoy": -0.401,
+        "profit_growth_yoy": 1.6823,
+        "net_profit_year": 372912597.0
+      },
+      "balance": {
+        "total_assets": 12891604733.0,
+        "equity": 6079230360.0,
+        "total_liab": 6812374374.0,
+        "short_debt": 1901174752.0,
+        "long_debt": 1129878561.0,
+        "debt_to_equity": 1.121
+      },
+      "cashflow": {
+        "cf_operating": 977801726.0,
+        "cf_investing": -1505116831.0,
+        "cf_financing": -286982872.0,
+        "cf_period": "annual",
+        "cf_free": -527315105.0,
+        "cf_quality": 2.62,
         "cf_quality_period": "annual"
       },
       "data_status": {
