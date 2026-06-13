@@ -251,7 +251,6 @@ const SC = s => s>=50?'c-sb':s>=25?'c-buy':s>=-10?'c-neu':s>=-25?'c-sell':'c-ss'
 const fmtK = n => n==null?'—': n>=1e6?(n/1e6).toFixed(2)+'M': n>=1000?Math.round(n/1000)+'K': String(Math.round(n)||0);
 
 // V2 GROUP_CAPS (no news)
-const KEYS = ['trend','momentum','volume','volatility','order_flow','depth','ff','fundamental','cf','growth','context'];
 const KEYS = ['trend','momentum','volume','volatility','order_flow','depth','ff','fundamental','cf','growth','context','smart_money'];
 const CAPS = {trend:45,momentum:26,volume:20,volatility:8,order_flow:10,depth:7,ff:27,fundamental:29,cf:10,growth:15,context:9,smart_money:20};
 const WEIGHTS = {trend:0.20,momentum:0.13,volume:0.10,order_flow:0.08,volatility:0.04,depth:0.04,ff:0.11,context:0.04,fundamental:0.08,cf:0.05,growth:0.06,smart_money:0.07};
