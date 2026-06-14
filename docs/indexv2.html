@@ -203,6 +203,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .qcell .el{font-size:10.5px;color:var(--text);line-height:1.45}
 .chart-note{font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.5;border-top:1px solid var(--border);padding-top:8px}
 .chart-note b{color:var(--text)}
+.cards-hint{padding:22px 16px;text-align:center;color:var(--muted);font-size:12.5px;border:1px dashed var(--border);border-radius:6px;background:var(--surf)}
+.single-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.single-bar b{color:var(--text);font-size:13px}
+.single-close{margin-left:auto;cursor:pointer;border:1px solid var(--border);border-radius:3px;padding:3px 9px;color:var(--muted)}
+.single-close:hover{border-color:var(--acc);color:var(--acc)}
 </style>
 </head>
 <body>
@@ -536,7 +541,7 @@ function setupFilter(id,setter,map){
 setupFilter('fd',v=>fDec=v,{'ALL':'on','STRONG BUY':'on-sb','BUY':'on-buy','NEUTRAL':'on-neu','SELL':'on-sell','STRONG SELL':'on-ss'});
 setupFilter('fg',v=>fGrp=v,null);
 document.getElementById('srt').addEventListener('change',e=>{srt=e.target.value;applyAll();});
-applyAll();
+document.getElementById('cards').innerHTML='<div class="cards-hint">👆 Bấm 1 mã trên biểu đồ phía trên để xem diễn giải chi tiết của mã đó · hoặc dùng bộ lọc bên trái.</div>';
 </script>
 <script>/* ===== Charts overlay v2 — đọc ALL_DATA toàn cục từ script chính =====
    Click bong bóng / thanh → mở đúng card đã render (openSymbol). */
@@ -548,19 +553,23 @@ applyAll();
   var clamp = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };
   var fsn = function (v) { var n = +v || 0; return (n > 0 ? '+' : '') + n.toFixed(Math.abs(n) >= 10 || n % 1 === 0 ? 0 : 1); };
 
-  // mở card tương ứng (reset filter để chắc chắn hiển thị)
+  // gợi ý mặc định khi chưa chọn mã (lưới thẻ trống, chỉ có chart)
+  function showHint() {
+    var c = document.getElementById('cards');
+    if (c) c.innerHTML = '<div class="cards-hint">👆 Bấm 1 mã trên biểu đồ phía trên để xem diễn giải chi tiết của mã đó · hoặc dùng bộ lọc bên trái.</div>';
+  }
+  window.showHint = showHint;
+
+  // click 1 mã → CHỈ render đúng card mã đó (mở sẵn diễn giải), không render cả danh sách
   function openSymbol(sym) {
     var idx = ALL_DATA.findIndex(function (d) { return d.symbol === sym; });
-    if (idx < 0) return;
-    try {
-      if (typeof fDec !== 'undefined') fDec = 'ALL';
-      if (typeof fGrp !== 'undefined') fGrp = 'ALL';
-      document.querySelectorAll('#fd .fb').forEach(function (b) { b.className = 'fb' + (b.dataset.v === 'ALL' ? ' on' : ''); });
-      document.querySelectorAll('#fg .fb').forEach(function (b) { b.className = 'fb' + (b.dataset.v === 'ALL' ? ' on' : ''); });
-      if (typeof applyAll === 'function') applyAll();
-    } catch (e) {}
+    if (idx < 0 || typeof renderCard !== 'function') return;
+    var cards = document.getElementById('cards'); if (!cards) return;
+    var bar = '<div class="single-bar">Đang xem <b>' + sym + '</b><span class="single-close" id="single-close">✕ ẩn diễn giải</span></div>';
+    cards.innerHTML = bar + renderCard(ALL_DATA[idx], idx);
+    var cl = document.getElementById('single-close'); if (cl) cl.onclick = function () { showHint(); };
     var el = document.getElementById('c' + idx);
-    if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   }
   window.openSymbol = openSymbol;
 
