@@ -32,6 +32,8 @@ SCORING_VERSION = "v2"
 CHANGELOG:
   2026-06-11 — v2 initial: normalized weighted scoring
   2026-06-11 — v2.1: thêm 9 extended indicators, bỏ news group
+  2026-06-14 — v2.2: gắn daily change từ ranking.json (chg_pct_1d, chg_abs_vnd,
+                     accumulated_value) vào mỗi signal row cho dashboard
 """
 import os
 import sys
@@ -849,6 +851,33 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
 
 
 # =====================================================
+# DAILY CHANGE — gắn từ ranking.json (v2.2)
+# =====================================================
+
+def _attach_daily_change(result: dict, ranking_map: dict) -> None:
+    """
+    Gắn % và giá trị tuyệt đối thay đổi trong ngày vào signal row.
+    Nguồn: ranking.json (TopStock gainer/loser).
+      price_change_percent_1d → chg_pct_1d  (%)
+      price_change_1d (nghìn VND) × 1000 → chg_abs_vnd  (VND thực)
+      accumulated_value → giá trị giao dịch ngày (VND) — dùng cho bubble/thanh khoản
+    Mã không có trong ranking → các field = None (dashboard hiển thị '—').
+    """
+    rk = ranking_map.get(result.get("symbol"))
+    if not rk:
+        result["chg_pct_1d"]        = None
+        result["chg_abs_vnd"]       = None
+        result["accumulated_value"] = None
+        return
+
+    pct = _to_float(rk.get("price_change_percent_1d"))
+    chg = _to_float(rk.get("price_change_1d"))
+    result["chg_pct_1d"]        = round(pct, 2) if pct is not None else None
+    result["chg_abs_vnd"]       = round(chg * 1000) if chg is not None else None
+    result["accumulated_value"] = _to_float(rk.get("accumulated_value"))
+
+
+# =====================================================
 # MAIN
 # =====================================================
 
@@ -880,6 +909,18 @@ def run():
         if isinstance(r, dict) and r.get("symbol")
     }
 
+    # ── Daily change từ ranking.json (v2.2) ──
+    ranking = load_json("ranking.json") or load_json("market/ranking.json") or []
+    ranking_map = {
+        r["symbol"]: r
+        for r in ranking
+        if isinstance(r, dict) and r.get("symbol")
+    }
+    if ranking_map:
+        log.info(f"Ranking loaded: {len(ranking_map)} symbols (daily change → chg_pct_1d/chg_abs_vnd)")
+    else:
+        log.warning("ranking.json not found — chg_pct_1d/chg_abs_vnd sẽ = None")
+
     symbols_with_industry = [
         {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
         for r in deep_raw
@@ -891,15 +932,18 @@ def run():
     scored_rows = []
     for row in deep_raw:
         result = score_symbol_v2(row, ctx, news_scores, order_flow_map)
+        _attach_daily_change(result, ranking_map)   # v2.2: gắn chg ngày
         scored_rows.append(result)
 
         flags_str = ",".join(result.get("pattern_flags") or []) or "-"
         ext       = result.get("ext_signals", "")
+        chg_pct   = result.get("chg_pct_1d")
+        chg_str   = f" chg={chg_pct:+.2f}%" if chg_pct is not None else ""
         log.info(
             f"  [{result['symbol']:6s}] "
             f"v2={result['total_score']:6.1f} "
             f"(base={result['base_score_v2']:6.1f} conf={result['confluence_bonus']:+d}) "
-            f"→ {result['decision']:12s} [{result['confidence']}]"
+            f"→ {result['decision']:12s} [{result['confidence']}]{chg_str}"
             + (f"\n    ext: {ext}" if ext else "")
         )
 
@@ -928,6 +972,11 @@ def run():
     # Summary log
     decision_counts = df["decision"].value_counts().to_dict()
     log.info(f"Decision distribution: {decision_counts}")
+
+    # Daily-change coverage (v2.2)
+    if "chg_pct_1d" in df.columns:
+        chg_cov = df["chg_pct_1d"].notna().sum()
+        log.info(f"  daily change: {chg_cov}/{len(df)} symbols có chg_pct_1d từ ranking")
 
     # Extended indicator coverage
     for field in ["ext_rs_score","ext_52w_score","ext_roc_score","ext_nr7_score",
