@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T09:43:03.296952+07:00",
+  "generated_at": "2026-06-15T05:02:39.318544+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
   "exit_count": 3,
@@ -8,12 +8,12 @@
     {
       "symbol": "HRC",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 42.9,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "CIG",
@@ -21,8 +21,8 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": null,
-      "exit_trigger": null,
+      "price": 6.27,
+      "exit_trigger": 6.24,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -31,8 +31,8 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": null,
-      "exit_trigger": null,
+      "price": 2.31,
+      "exit_trigger": 2.26,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
