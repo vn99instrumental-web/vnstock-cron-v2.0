@@ -181,6 +181,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .bsc-n{color:var(--sell);border-color:var(--sell);background:var(--sell-bg)}
 .bsc-z{color:var(--muted);border-color:var(--dim);background:transparent}
 .ss-total{font-size:12px}
+/* ===== charts overlay v2 ===== */
+.charts-wrap{margin-bottom:14px}
+.charts-toggle{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--acc);background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:6px 12px;cursor:pointer;margin-bottom:10px}
+.charts-toggle:hover{border-color:var(--acc)}
+.charts-body{display:flex;flex-direction:column;gap:12px}
+.chart-card{background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
+.chart-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--acc);text-transform:uppercase;margin-bottom:8px}
+.chart-card svg{width:100%;height:auto;display:block}
+#quad{max-width:620px;margin:0 auto}
+.chart-card text{font-family:var(--mono)}
+.bub{cursor:pointer;transition:opacity .12s}.bub:hover{opacity:.78}
+.barG{cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:7px 13px;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.lg{display:flex;align-items:center;gap:5px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}.sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.qcell{border:1px solid var(--border);border-radius:4px;padding:7px 9px}
+.qcell b{font-family:var(--mono);font-size:10px}
+.qcell .cond{font-family:var(--mono);font-size:9px;color:var(--muted);margin:2px 0 4px}
+.qcell .el{font-size:10.5px;color:var(--text);line-height:1.45}
+.chart-note{font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.5;border-top:1px solid var(--border);padding-top:8px}
+.chart-note b{color:var(--text)}
 </style>
 </head>
 <body>
@@ -234,6 +256,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   </aside>
 
   <main class="main">
+    <div class="charts-wrap">
+      <div class="charts-toggle" id="charts-toggle">📊 Biểu đồ tổng quan ▾</div>
+      <div class="charts-body" id="charts-body">
+        <div class="chart-card">
+          <div class="chart-ttl">Tech × Fund — bong bóng = Vol/TB20 · màu = decision</div>
+          <svg id="quad" viewBox="0 0 640 470"></svg>
+          <div class="legend" id="quadLegend"></div>
+          <div class="qgrid" id="qgrid"></div>
+          <div class="chart-note" id="quadNote"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-ttl">Gainer / Loser — total_score · %± ngày · ±VND</div>
+          <svg id="gl" viewBox="0 0 900 380"></svg>
+          <div class="legend" id="glLegend"></div>
+          <div class="chart-note" id="glNote"></div>
+        </div>
+      </div>
+    </div>
     <div class="grid" id="cards"></div>
   </main>
 </div>
@@ -497,6 +537,138 @@ setupFilter('fd',v=>fDec=v,{'ALL':'on','STRONG BUY':'on-sb','BUY':'on-buy','NEUT
 setupFilter('fg',v=>fGrp=v,null);
 document.getElementById('srt').addEventListener('change',e=>{srt=e.target.value;applyAll();});
 applyAll();
+</script>
+<script>/* ===== Charts overlay v2 — đọc ALL_DATA toàn cục từ script chính =====
+   Click bong bóng / thanh → mở đúng card đã render (openSymbol). */
+(function () {
+  if (typeof ALL_DATA === 'undefined' || !ALL_DATA.length) return;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function E(tag, a, txt) { var e = document.createElementNS(SVGNS, tag); for (var k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; }
+  var DECCOL = { 'STRONG BUY': '#00e896', 'BUY': '#34c26e', 'NEUTRAL': '#f5c240', 'SELL': '#e86030', 'STRONG SELL': '#e02040' };
+  var clamp = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };
+  var fsn = function (v) { var n = +v || 0; return (n > 0 ? '+' : '') + n.toFixed(Math.abs(n) >= 10 || n % 1 === 0 ? 0 : 1); };
+
+  // mở card tương ứng (reset filter để chắc chắn hiển thị)
+  function openSymbol(sym) {
+    var idx = ALL_DATA.findIndex(function (d) { return d.symbol === sym; });
+    if (idx < 0) return;
+    try {
+      if (typeof fDec !== 'undefined') fDec = 'ALL';
+      if (typeof fGrp !== 'undefined') fGrp = 'ALL';
+      document.querySelectorAll('#fd .fb').forEach(function (b) { b.className = 'fb' + (b.dataset.v === 'ALL' ? ' on' : ''); });
+      document.querySelectorAll('#fg .fb').forEach(function (b) { b.className = 'fb' + (b.dataset.v === 'ALL' ? ' on' : ''); });
+      if (typeof applyAll === 'function') applyAll();
+    } catch (e) {}
+    var el = document.getElementById('c' + idx);
+    if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+  window.openSymbol = openSymbol;
+
+  // toggle ẩn/hiện cụm chart
+  var tgl = document.getElementById('charts-toggle');
+  if (tgl) tgl.onclick = function () {
+    var w = document.getElementById('charts-body');
+    var hidden = w.style.display === 'none';
+    w.style.display = hidden ? '' : 'none';
+    tgl.textContent = hidden ? '📊 Biểu đồ tổng quan ▾' : '📊 Biểu đồ tổng quan ▸';
+  };
+
+  // ===== CHART 1: QUADRANT tech × fund (bubble = vol_ma_ratio) =====
+  (function () {
+    var svg = document.getElementById('quad'); if (!svg) return;
+    var W = 640, H = 470, m = { l: 48, r: 18, t: 20, b: 38 };
+    var x0 = m.l, x1 = W - m.r, y0 = H - m.b, y1 = m.t, xmin = -50, xmax = 50, ymin = -20, ymax = 35;
+    var sx = function (v) { return x0 + (clamp(v, xmin, xmax) - xmin) / (xmax - xmin) * (x1 - x0); };
+    var sy = function (v) { return y0 - (clamp(v, ymin, ymax) - ymin) / (ymax - ymin) * (y0 - y1); };
+    var zx = sx(0), zy = sy(0);
+    [[zx, y1, x1 - zx, zy - y1, '#001f1240'], [zx, zy, x1 - zx, y0 - zy, '#1a140028'], [x0, y1, zx - x0, zy - y1, '#0c203522'], [x0, zy, zx - x0, y0 - zy, '#18030828']].forEach(function (z) { svg.appendChild(E('rect', { x: z[0], y: z[1], width: z[2], height: z[3], fill: z[4] })); });
+    [-30, 30].forEach(function (v) { svg.appendChild(E('line', { x1: sx(v), y1: y1, x2: sx(v), y2: y0, stroke: '#244060', 'stroke-dasharray': '3 3' })); });
+    [-15, 15].forEach(function (v) { svg.appendChild(E('line', { x1: x0, y1: sy(v), x2: x1, y2: sy(v), stroke: '#244060', 'stroke-dasharray': '3 3' })); });
+    svg.appendChild(E('line', { x1: zx, y1: y1, x2: zx, y2: y0, stroke: '#4e7a99', 'stroke-width': 1.2 }));
+    svg.appendChild(E('line', { x1: x0, y1: zy, x2: x1, y2: zy, stroke: '#4e7a99', 'stroke-width': 1.2 }));
+    for (var vx = xmin; vx <= xmax; vx += 25) svg.appendChild(E('text', { x: sx(vx), y: y0 + 15, fill: '#4e7a99', 'font-size': 8, 'text-anchor': 'middle' }, vx));
+    for (var vy = ymin; vy <= ymax; vy += 10) svg.appendChild(E('text', { x: x0 - 6, y: sy(vy) + 3, fill: '#4e7a99', 'font-size': 8, 'text-anchor': 'end' }, vy));
+    svg.appendChild(E('text', { x: (x0 + x1) / 2, y: H - 4, fill: '#c8dcea', 'font-size': 10, 'text-anchor': 'middle', 'font-weight': 700 }, 'tech_score →'));
+    svg.appendChild(E('text', { x: 13, y: (y0 + y1) / 2, fill: '#c8dcea', 'font-size': 10, 'text-anchor': 'middle', 'font-weight': 700, transform: 'rotate(-90 13 ' + ((y0 + y1) / 2) + ')' }, 'fund_score →'));
+    ALL_DATA.forEach(function (d) {
+      var vmr = +d.vol_ma_ratio || 0;
+      var r = Math.max(7, Math.min(24, 7 + Math.sqrt(vmr) * 4.5));
+      var c = DECCOL[d.decision] || '#f5c240';
+      var cx = sx(+d.tech_score || 0), cy = sy(+d.fund_score || 0);
+      var g = E('g', { class: 'bub' });
+      g.appendChild(E('title', {}, d.symbol + ' · ' + d.decision + ' · total ' + d.total_score + '\ntech ' + d.tech_score + ' · fund ' + d.fund_score + ' · vol ' + vmr + 'x'));
+      g.appendChild(E('circle', { cx: cx, cy: cy, r: r, fill: c, 'fill-opacity': .62, stroke: '#07111b', 'stroke-width': 1.4 }));
+      g.appendChild(E('circle', { cx: cx, cy: cy, r: r, fill: 'none', stroke: c, 'stroke-width': 1.6, 'stroke-opacity': .9 }));
+      var tc = (d.decision === 'NEUTRAL') ? '#1a1400' : '#07111b';
+      g.appendChild(E('text', { x: cx, y: cy + 3.2, fill: tc, 'font-size': 9.5, 'font-weight': 700, 'text-anchor': 'middle', 'pointer-events': 'none' }, d.symbol));
+      g.onclick = function () { openSymbol(d.symbol); };
+      svg.appendChild(g);
+    });
+    var Lg = document.getElementById('quadLegend');
+    if (Lg) { Object.keys(DECCOL).forEach(function (k) { Lg.insertAdjacentHTML('beforeend', '<span class="lg"><span class="dot" style="background:' + DECCOL[k] + '"></span>' + k + '</span>'); }); Lg.insertAdjacentHTML('beforeend', '<span class="lg" style="color:#4e7a99">◯ to = vol_ma_ratio cao</span>'); }
+    var corners = [
+      ['VALUE_OPPORTUNITY', '#14b8d4', 'tech −  /  fund +', 'Kỹ thuật yếu nhưng cơ bản tốt → vùng tích lũy giá trị.'],
+      ['CONSENSUS_BULL', '#00e896', 'tech +  /  fund +', 'Kỹ thuật + cơ bản cùng ủng hộ → tin cậy cao, ưu tiên mua.'],
+      ['CONSENSUS_BEAR', '#e02040', 'tech −  /  fund −', 'Cả hai cùng xấu → tránh.'],
+      ['BULL_TRAP_RISK', '#f5c240', 'tech +  /  fund −', 'Kỹ thuật mạnh nhưng nền tảng yếu → coi chừng bẫy tăng giá.']
+    ];
+    var qg = document.getElementById('qgrid');
+    if (qg) corners.forEach(function (c) { qg.insertAdjacentHTML('beforeend', '<div class="qcell"><b style="color:' + c[1] + '">' + c[0] + '</b><div class="cond">' + c[2] + '</div><div class="el">' + c[3] + '</div></div>'); });
+    var an = document.getElementById('quadNote');
+    if (an) an.innerHTML = '<b>X · tech_score</b> = trend+momentum+volume+volatility+order_flow (ngưỡng ±30). <b>Y · fund_score</b> = fundamental+cf+growth (±15). <b>Bong bóng</b> = vol_ma_ratio · <b>màu</b> = decision.';
+  })();
+
+  // ===== CHART 2: GAINER / LOSER total_score + fund line + %± ngày + ±VND =====
+  (function () {
+    var svg = document.getElementById('gl'); if (!svg) return;
+    var W = 900, H = 380, m = { l: 40, r: 14, t: 18, b: 84 };
+    var x0 = m.l, x1 = W - m.r, y0 = H - m.b, y1 = m.t;
+    var byScore = function (a, b) { return b.total_score - a.total_score; };
+    var G = ALL_DATA.filter(function (d) { return d.group === 'GAINER'; }).sort(byScore);
+    var L = ALL_DATA.filter(function (d) { return d.group === 'LOSER'; }).sort(byScore);
+    if (!G.length && !L.length) { G = ALL_DATA.slice().sort(byScore); }
+    var ord = G.concat([null]).concat(L), n = ord.length;
+    var bw = (x1 - x0) / n * 0.62, step = (x1 - x0) / n;
+    var vals = ALL_DATA.reduce(function (a, d) { a.push(+d.total_score || 0, +d.fund_score || 0); return a; }, []);
+    var vmax = Math.max.apply(null, [35].concat(vals)), vmin = Math.min.apply(null, [-30].concat(vals));
+    var sy = function (v) { return y0 - (v - vmin) / (vmax - vmin) * (y0 - y1); };
+    [[50, '#00e896'], [25, '#34c26e'], [-10, '#f5c240'], [-25, '#e86030']].forEach(function (t) {
+      var v = t[0], c = t[1]; if (v <= vmax && v >= vmin) { svg.appendChild(E('line', { x1: x0, y1: sy(v), x2: x1, y2: sy(v), stroke: c, 'stroke-opacity': .22, 'stroke-dasharray': '2 4' })); svg.appendChild(E('text', { x: x1, y: sy(v) - 2, fill: c, 'font-size': 7, 'text-anchor': 'end', 'opacity': .6 }, v)); }
+    });
+    svg.appendChild(E('line', { x1: x0, y1: sy(0), x2: x1, y2: sy(0), stroke: '#4e7a99', 'stroke-width': 1 }));
+    for (var gv = Math.ceil(vmin / 10) * 10; gv <= vmax; gv += 10) svg.appendChild(E('text', { x: x0 - 5, y: sy(gv) + 3, fill: '#4e7a99', 'font-size': 7.5, 'text-anchor': 'end' }, gv));
+    ord.forEach(function (d, i) {
+      if (!d) return;
+      var cx = x0 + step * (i + 0.5), c = DECCOL[d.decision] || '#f5c240';
+      var yv = sy(+d.total_score || 0), y0l = sy(0);
+      var cp = (d.chg_pct_1d == null ? null : d.chg_pct_1d);
+      var ca = (d.chg_abs_vnd == null ? null : d.chg_abs_vnd);
+      var absVnd = ca == null ? '' : (ca > 0 ? '+' : '') + ca.toLocaleString('vi-VN') + 'đ';
+      var pctStr = cp == null ? '' : (cp > 0 ? '+' : '') + cp + '%';
+      var g = E('g', { class: 'barG' });
+      g.appendChild(E('title', {}, d.symbol + ' · total ' + d.total_score + ' · fund ' + d.fund_score + ' · ' + d.decision + (cp == null ? '' : '\nNgày: ' + pctStr + ' (' + absVnd + ')')));
+      g.appendChild(E('rect', { x: cx - bw / 2, y: Math.min(yv, y0l), width: bw, height: Math.abs(yv - y0l), fill: c, 'fill-opacity': .85, rx: 1 }));
+      g.appendChild(E('text', { x: cx, y: y0 + 11, fill: '#c8dcea', 'font-size': 8, 'text-anchor': 'middle', 'font-weight': 700 }, d.symbol));
+      var cc = (cp == null ? '#4e7a99' : cp >= 0 ? '#34c26e' : '#e86030');
+      if (cp != null) {
+        g.appendChild(E('text', { x: cx, y: y0 + 22, fill: cc, 'font-size': 7.5, 'text-anchor': 'middle', 'font-weight': 700 }, pctStr));
+        g.appendChild(E('text', { x: cx, y: y0 + 31, fill: cc, 'font-size': 6.5, 'text-anchor': 'middle', 'opacity': .85 }, absVnd));
+      }
+      g.onclick = function () { openSymbol(d.symbol); };
+      svg.appendChild(g);
+    });
+    function meanLine(arr, i0, i1, label) { if (!arr.length) return; var mean = arr.reduce(function (s, d) { return s + (+d.total_score || 0); }, 0) / arr.length; var xA = x0 + step * i0, xB = x0 + step * i1; svg.appendChild(E('line', { x1: xA, y1: sy(mean), x2: xB, y2: sy(mean), stroke: '#c8dcea', 'stroke-dasharray': '5 3', 'stroke-width': 1.3, 'stroke-opacity': .7 })); svg.appendChild(E('text', { x: (xA + xB) / 2, y: sy(mean) - 4, fill: '#c8dcea', 'font-size': 8, 'text-anchor': 'middle', 'font-weight': 700 }, label + ' TB ' + mean.toFixed(1))); }
+    meanLine(G, 0, G.length, 'GAINER');
+    meanLine(L, G.length + 1, n, 'LOSER');
+    if (G.length && L.length) { var divx = x0 + step * (G.length + 0.5); svg.appendChild(E('line', { x1: divx, y1: y1, x2: divx, y2: y0, stroke: '#244060', 'stroke-dasharray': '2 4' })); }
+    function fundLine(arr, i0) { if (!arr.length) return; var pts = arr.map(function (d, k) { return [x0 + step * (i0 + k + 0.5), sy(+d.fund_score || 0)]; }); var path = ''; pts.forEach(function (p, k) { path += (k ? 'L' : 'M') + p[0] + ' ' + p[1] + ' '; }); svg.appendChild(E('path', { d: path, fill: 'none', stroke: '#14b8d4', 'stroke-width': 1.8, 'stroke-opacity': .9 })); pts.forEach(function (p) { svg.appendChild(E('circle', { cx: p[0], cy: p[1], r: 2.5, fill: '#14b8d4' })); }); }
+    fundLine(G, 0); fundLine(L, G.length + 1);
+    var LG = document.getElementById('glLegend');
+    if (LG) { Object.keys(DECCOL).forEach(function (k) { LG.insertAdjacentHTML('beforeend', '<span class="lg"><span class="sq" style="background:' + DECCOL[k] + '"></span>' + k + '</span>'); }); LG.insertAdjacentHTML('beforeend', '<span class="lg"><span class="sq" style="background:#14b8d4"></span>fund_score (đường)</span><span class="lg" style="color:#c8dcea">- - TB total nhóm</span>'); }
+    var note = document.getElementById('glNote');
+    if (note) { var gm = G.length ? G.reduce(function (s, d) { return s + (+d.total_score || 0); }, 0) / G.length : 0; var lm = L.length ? L.reduce(function (s, d) { return s + (+d.total_score || 0); }, 0) / L.length : 0; note.innerHTML = '<b>Cột</b> = total_score (màu theo decision) · dưới mỗi cột là <b>%± ngày</b> và <b>±VND</b>. <b>Đường xanh</b> = fund_score · <b>nét đứt</b> = TB total nhóm. GAINER TB ' + gm.toFixed(1) + ' vs LOSER TB ' + lm.toFixed(1) + ' → chiều giá ≠ điểm mô hình.'; }
+  })();
+})();
 </script>
 </body>
 </html>
