@@ -709,6 +709,15 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         # news: bỏ
     }
 
+    # ── TA_MISSING (v2.3): mã fetch TA thất bại (ta_error) ──
+    # Khi TA null, V3 scorer áp điểm phạt mặc định (trend/mom/vol âm) →
+    # "không có data" bị hiểu nhầm là "xấu". Bỏ phạt: để 4 nhóm tech trung tính = 0.
+    _ta_err = row.get("ta_error")
+    ta_missing = bool(_ta_err) and not (isinstance(_ta_err, float) and _ta_err != _ta_err)
+    if ta_missing:
+        for _g in ("trend", "momentum", "volume", "volatility"):
+            raw[_g] = 0
+
     ext_sigs = []  # extended indicator signals log
 
     # ── Extended: Trend group ──
@@ -794,6 +803,12 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         pattern_flags.append("CONSENSUS_BEAR");   confidence = "HIGH"
     elif abs(tech_score) < 20 and abs(fund_score) < 10:
         pattern_flags.append("UNCLEAR");          confidence = "LOW"
+
+    # TA_MISSING: ưu tiên cảnh báo — không tin decision khi thiếu TA
+    if ta_missing:
+        if "TA_MISSING" not in pattern_flags:
+            pattern_flags.insert(0, "TA_MISSING")
+        confidence = "LOW"
 
     # ── Build output ──
     out = dict(v3)
