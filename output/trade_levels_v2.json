@@ -1,9 +1,14 @@
 {
-  "generated_at": "2026-06-15T05:02:39.318544+07:00",
+  "generated_at": "2026-06-15T07:21:55.566000+07:00",
   "scoring_version": "v2",
-  "buy_count": 0,
+  "buy_count": 1,
   "exit_count": 3,
-  "buy_levels": [],
+  "buy_levels": [
+    {
+      "symbol": "VHM",
+      "skip": "no_price"
+    }
+  ],
   "exit_levels": [
     {
       "symbol": "HRC",
@@ -21,8 +26,8 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 6.27,
-      "exit_trigger": 6.24,
+      "price": null,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -31,8 +36,8 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 2.31,
-      "exit_trigger": 2.26,
+      "price": null,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
