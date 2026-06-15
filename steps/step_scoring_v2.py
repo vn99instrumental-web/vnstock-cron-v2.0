@@ -892,6 +892,31 @@ def _attach_daily_change(result: dict, ranking_map: dict) -> None:
     result["accumulated_value"] = _to_float(rk.get("accumulated_value"))
 
 
+def _ctx_passthrough(ctx: dict) -> dict:
+    """
+    v2.4: map context.json → các field _ctx_* để dashboard tự đủ
+    (market strip + bullet "Thị trường") khi đọc thẳng signals_v2.json,
+    không phụ thuộc node Ctx Merge trong n8n.
+    """
+    if not ctx:
+        return {}
+    g = ctx.get
+    return {
+        "_ctx_close":     g("vnindex_close"),
+        "_ctx_ema50":     g("vnindex_ema50"),
+        "_ctx_ema200":    g("vnindex_ema200"),
+        "_ctx_chg_1d":    g("vnindex_chg_1d"),
+        "_ctx_chg_5d":    g("vnindex_chg_5d"),
+        "_ctx_chg_20d":   g("vnindex_chg_20d"),
+        "_ctx_regime":    g("market_regime"),
+        "_ctx_pe":        g("vnindex_pe"),
+        "_ctx_pb":        g("vnindex_pb"),
+        "_ctx_pe_pct":    g("pe_percentile_5y"),
+        "_ctx_pb_pct":    g("pb_percentile_5y"),
+        "_ctx_valuation": g("market_valuation"),
+    }
+
+
 # =====================================================
 # MAIN
 # =====================================================
@@ -944,10 +969,19 @@ def run():
 
     log.info(f"Scoring {len(deep_raw)} symbols...")
 
+    ctx_fields = _ctx_passthrough(ctx)   # v2.4: _ctx_* cho dashboard
+    if ctx_fields.get("_ctx_close") is not None:
+        log.info(f"Context passthrough: VNINDEX {ctx_fields['_ctx_close']} "
+                 f"regime={ctx_fields.get('_ctx_regime')} PE={ctx_fields.get('_ctx_pe')}")
+    else:
+        log.warning("Context rỗng — _ctx_* sẽ = None (market strip dashboard sẽ trống)")
+
     scored_rows = []
     for row in deep_raw:
         result = score_symbol_v2(row, ctx, news_scores, order_flow_map)
         _attach_daily_change(result, ranking_map)   # v2.2: gắn chg ngày
+        if ctx_fields:
+            result.update(ctx_fields)               # v2.4: gắn _ctx_*
         scored_rows.append(result)
 
         flags_str = ",".join(result.get("pattern_flags") or []) or "-"
