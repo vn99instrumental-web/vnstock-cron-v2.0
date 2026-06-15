@@ -1,5 +1,4 @@
 ﻿symbol,exchange,decision,confidence,entry_style,price,entry_low,entry,entry_high,stop_loss,risk_pct,tp1,tp2,rr_tp1,rr_headroom,size_hint,nearest_support,nearest_resist,levels_used,flags,skip
-VND,HSX,BUY,MEDIUM,PULLBACK,17.8,17.6,17.65,17.8,16.45,6.8,18.45,19.0,0.67,0.29,HALF,17.65,18.0,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","TP1_PULLED_BACK,TP_NEAR_CEILING,TIGHT_HEADROOM,STOP_BELOW_FLOOR",
+VND,HSX,BUY,MEDIUM,PULLBACK,17.8,,,,,7.06,,,,,NO_TRADE,17.7,18.0,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",SKIP_WIDE_STOP,wide_stop
 DBT,HSX,BUY,MEDIUM,PULLBACK,10.6,10.45,10.45,10.6,10.0,4.31,11.1,,1.44,0.56,HALF,10.46,10.7,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","SINGLE_TP_ONLY,TIGHT_HEADROOM",
-BSR,HSX,BUY,HIGH,PULLBACK,26.7,,,,,7.53,,,,,NO_TRADE,26.55,27.15,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,SKIP_WIDE_STOP",wide_stop
-VHM,HSX,BUY,HIGH,PULLBACK,134.6,132.0,132.0,134.6,126.8,3.94,139.8,143.9,1.5,1.92,FULL,132.0,142.0,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,TP2_FORCED_GAP",
+BSR,HSX,BUY,HIGH,PULLBACK,26.55,26.35,26.4,26.55,25.7,2.65,27.4,28.25,1.43,1.07,FULL,26.4,27.15,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,TP2_FORCED_GAP,TIGHT_HEADROOM",
