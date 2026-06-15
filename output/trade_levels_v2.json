@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-15T19:51:44.630212+07:00",
+  "generated_at": "2026-06-15T20:32:11.741734+07:00",
   "scoring_version": "v2",
   "buy_count": 1,
-  "exit_count": 4,
+  "exit_count": 3,
   "buy_levels": [
     {
       "symbol": "BSR",
@@ -56,16 +56,6 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 65.0,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TCO",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 11.45,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
