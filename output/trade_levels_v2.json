@@ -1,33 +1,9 @@
 {
-  "generated_at": "2026-06-15T13:56:20.916123+07:00",
+  "generated_at": "2026-06-15T14:56:31.934328+07:00",
   "scoring_version": "v2",
-  "buy_count": 1,
-  "exit_count": 4,
-  "buy_levels": [
-    {
-      "symbol": "VND",
-      "exchange": "HSX",
-      "decision": "BUY",
-      "confidence": "MEDIUM",
-      "entry_style": "PULLBACK",
-      "price": 17.85,
-      "entry": 17.8,
-      "entry_low": 17.8,
-      "entry_high": 17.85,
-      "stop_loss": 17.45,
-      "risk_pct": 1.97,
-      "tp1": 18.3,
-      "tp2": 18.85,
-      "rr_tp1": 1.43,
-      "rr_headroom": 0.57,
-      "size_hint": "HALF",
-      "nearest_support": 17.8,
-      "nearest_resist": 18.0,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "TP2_FORCED_GAP,TIGHT_HEADROOM",
-      "skip": ""
-    }
-  ],
+  "buy_count": 0,
+  "exit_count": 5,
+  "buy_levels": [],
   "exit_levels": [
     {
       "symbol": "LDG",
@@ -40,33 +16,43 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "BSI",
+      "symbol": "CIG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 31.6,
-      "exit_trigger": 31.25,
+      "price": 6.7,
+      "exit_trigger": 6.4,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "FTS",
+      "symbol": "PNJ",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 23.95,
-      "exit_trigger": 23.6,
+      "price": 65.0,
+      "exit_trigger": 63.2,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "HRC",
+      "symbol": "TCO",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 40.75,
-      "exit_trigger": 40.6,
+      "price": 11.45,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "PTL",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 2.52,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
