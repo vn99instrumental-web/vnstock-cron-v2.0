@@ -5,10 +5,12 @@ Thay đổi từ bản cũ:
   - save_json/load_json tự tạo subdirectory nếu cần
   - Hỗ trợ paths như "finance/cache.json", "news/today_index.json"
   - API không thay đổi — không break code hiện tại
+  - save_json: sanitize NaN/Inf → null trước khi dump (JSON hợp lệ)
 """
 import csv
 import json
 import logging
+import math
 import os
 
 import pandas as pd
@@ -38,6 +40,28 @@ def _get_lock(path: str) -> threading.Lock:
         return _file_locks[path]
 
 
+def _json_safe(o):
+    """
+    Đệ quy thay NaN/Inf (kể cả numpy float) → None để JSON hợp lệ.
+    json.dump(default=str) KHÔNG xử lý NaN — sẽ ghi literal `NaN` (invalid JSON).
+    """
+    if isinstance(o, dict):
+        return {k: _json_safe(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_json_safe(v) for v in o]
+    try:
+        if o != o:            # NaN (đúng cho cả float lẫn numpy float)
+            return None
+    except Exception:
+        pass
+    try:
+        if math.isinf(o):     # ±Inf
+            return None
+    except (TypeError, ValueError):
+        pass
+    return o
+
+
 def save_json(filename: str, data) -> None:
     path = _resolve(filename)
     lock = _get_lock(path)
@@ -46,7 +70,7 @@ def save_json(filename: str, data) -> None:
         tmp_path = path + ".tmp"
         try:
             with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+                json.dump(_json_safe(data), f, ensure_ascii=False, indent=2, default=str)
             os.replace(tmp_path, path)  # atomic on same filesystem
         except Exception:
             if os.path.exists(tmp_path):
