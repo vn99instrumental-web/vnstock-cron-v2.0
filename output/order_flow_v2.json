@@ -1,380 +1,486 @@
 [
   {
-    "symbol": "APG",
+    "symbol": "GEL",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
       {
-        "date": "2026-06-08",
-        "open": 4.39,
-        "high": 4.39,
-        "low": 4.25,
-        "close": 4.25,
-        "volume": 296400,
-        "vs_avg5d_pct": 18.3
-      },
-      {
         "date": "2026-06-09",
-        "open": 4.25,
-        "high": 4.29,
-        "low": 4.11,
-        "close": 4.24,
-        "volume": 118800,
-        "vs_avg5d_pct": -52.6
+        "open": 31.3,
+        "high": 31.6,
+        "low": 30.9,
+        "close": 31.6,
+        "volume": 2020100,
+        "vs_avg5d_pct": -7.3
       },
       {
         "date": "2026-06-10",
-        "open": 4.24,
-        "high": 4.53,
-        "low": 4.24,
-        "close": 4.53,
-        "volume": 186300,
-        "vs_avg5d_pct": -25.7
+        "open": 31.8,
+        "high": 31.8,
+        "low": 31.4,
+        "close": 31.55,
+        "volume": 1287800,
+        "vs_avg5d_pct": -40.9
       },
       {
         "date": "2026-06-11",
-        "open": 4.84,
-        "high": 4.84,
-        "low": 4.84,
-        "close": 4.84,
-        "volume": 270000,
-        "vs_avg5d_pct": 7.7
+        "open": 31.5,
+        "high": 31.5,
+        "low": 30.9,
+        "close": 30.9,
+        "volume": 1861300,
+        "vs_avg5d_pct": -14.6
       },
       {
         "date": "2026-06-12",
-        "open": 5.17,
-        "high": 5.17,
-        "low": 5.17,
-        "close": 5.17,
-        "volume": 381700,
-        "vs_avg5d_pct": 52.3
+        "open": 31.3,
+        "high": 31.4,
+        "low": 30.5,
+        "close": 30.5,
+        "volume": 1496100,
+        "vs_avg5d_pct": -31.3
+      },
+      {
+        "date": "2026-06-15",
+        "open": 31.0,
+        "high": 32.6,
+        "low": 30.9,
+        "close": 32.6,
+        "volume": 4226100,
+        "vs_avg5d_pct": 94.0
       }
     ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "APG",
-      "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "AGG",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
+    "volume_profile": [
       {
-        "date": "2026-06-08",
-        "open": 11.8,
-        "high": 11.8,
-        "low": 11.5,
-        "close": 11.8,
-        "volume": 193500,
-        "vs_avg5d_pct": -55.5
+        "price": 32.6,
+        "trade_count": 676,
+        "volume": 2131900,
+        "buy_count": 518,
+        "sell_count": 158,
+        "buy_volume": 1803500,
+        "sell_volume": 328400,
+        "count_pct": 46.8,
+        "volume_pct": 50.3,
+        "buy_ratio": 0.77
       },
       {
-        "date": "2026-06-09",
-        "open": 11.7,
-        "high": 11.8,
-        "low": 11.55,
-        "close": 11.8,
-        "volume": 195200,
-        "vs_avg5d_pct": -55.1
+        "price": 32.55,
+        "trade_count": 183,
+        "volume": 435600,
+        "buy_count": 78,
+        "sell_count": 105,
+        "buy_volume": 212500,
+        "sell_volume": 223100,
+        "count_pct": 12.7,
+        "volume_pct": 10.3,
+        "buy_ratio": 0.43
       },
       {
-        "date": "2026-06-10",
-        "open": 11.6,
-        "high": 11.8,
-        "low": 11.55,
-        "close": 11.8,
-        "volume": 226400,
-        "vs_avg5d_pct": -47.9
+        "price": 32.5,
+        "trade_count": 68,
+        "volume": 291600,
+        "buy_count": 45,
+        "sell_count": 23,
+        "buy_volume": 199700,
+        "sell_volume": 91900,
+        "count_pct": 4.7,
+        "volume_pct": 6.9,
+        "buy_ratio": 0.66
       },
       {
-        "date": "2026-06-11",
-        "open": 11.75,
-        "high": 11.8,
-        "low": 11.6,
-        "close": 11.8,
-        "volume": 202000,
-        "vs_avg5d_pct": -53.5
+        "price": 32.45,
+        "trade_count": 22,
+        "volume": 51800,
+        "buy_count": 15,
+        "sell_count": 7,
+        "buy_volume": 46600,
+        "sell_volume": 5200,
+        "count_pct": 1.5,
+        "volume_pct": 1.2,
+        "buy_ratio": 0.68
       },
       {
-        "date": "2026-06-12",
-        "open": 11.7,
-        "high": 12.6,
-        "low": 11.65,
-        "close": 12.6,
-        "volume": 1356200,
-        "vs_avg5d_pct": 212.0
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "AGG",
-      "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "HRC",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 46.0,
-        "high": 47.3,
-        "low": 41.35,
-        "close": 47.3,
-        "volume": 11200,
-        "vs_avg5d_pct": 56.0
+        "price": 32.4,
+        "trade_count": 17,
+        "volume": 18300,
+        "buy_count": 12,
+        "sell_count": 5,
+        "buy_volume": 14500,
+        "sell_volume": 3800,
+        "count_pct": 1.2,
+        "volume_pct": 0.4,
+        "buy_ratio": 0.71
       },
       {
-        "date": "2026-06-09",
-        "open": 44.1,
-        "high": 47.25,
-        "low": 44.0,
-        "close": 44.95,
-        "volume": 8700,
-        "vs_avg5d_pct": 21.2
+        "price": 32.35,
+        "trade_count": 10,
+        "volume": 25700,
+        "buy_count": 8,
+        "sell_count": 2,
+        "buy_volume": 24500,
+        "sell_volume": 1200,
+        "count_pct": 0.7,
+        "volume_pct": 0.6,
+        "buy_ratio": 0.8
       },
       {
-        "date": "2026-06-10",
-        "open": 47.6,
-        "high": 47.6,
-        "low": 41.9,
-        "close": 42.55,
-        "volume": 5700,
-        "vs_avg5d_pct": -20.6
+        "price": 32.3,
+        "trade_count": 28,
+        "volume": 83500,
+        "buy_count": 28,
+        "sell_count": 0,
+        "buy_volume": 83500,
+        "sell_volume": 0,
+        "count_pct": 1.9,
+        "volume_pct": 2.0,
+        "buy_ratio": 1.0
       },
       {
-        "date": "2026-06-11",
-        "open": 42.55,
-        "high": 42.55,
-        "low": 39.7,
-        "close": 40.2,
-        "volume": 6300,
-        "vs_avg5d_pct": -12.3
+        "price": 32.25,
+        "trade_count": 19,
+        "volume": 13100,
+        "buy_count": 6,
+        "sell_count": 13,
+        "buy_volume": 4800,
+        "sell_volume": 8300,
+        "count_pct": 1.3,
+        "volume_pct": 0.3,
+        "buy_ratio": 0.32
       },
       {
-        "date": "2026-06-12",
-        "open": 42.5,
-        "high": 42.95,
-        "low": 42.5,
-        "close": 42.9,
+        "price": 32.2,
+        "trade_count": 25,
+        "volume": 44200,
+        "buy_count": 24,
+        "sell_count": 1,
+        "buy_volume": 37700,
+        "sell_volume": 6500,
+        "count_pct": 1.7,
+        "volume_pct": 1.0,
+        "buy_ratio": 0.96
+      },
+      {
+        "price": 32.15,
+        "trade_count": 12,
+        "volume": 8000,
+        "buy_count": 9,
+        "sell_count": 3,
+        "buy_volume": 6100,
+        "sell_volume": 1900,
+        "count_pct": 0.8,
+        "volume_pct": 0.2,
+        "buy_ratio": 0.75
+      },
+      {
+        "price": 32.1,
+        "trade_count": 13,
+        "volume": 22100,
+        "buy_count": 13,
+        "sell_count": 0,
+        "buy_volume": 22100,
+        "sell_volume": 0,
+        "count_pct": 0.9,
+        "volume_pct": 0.5,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 32.05,
+        "trade_count": 10,
+        "volume": 5300,
+        "buy_count": 10,
+        "sell_count": 0,
+        "buy_volume": 5300,
+        "sell_volume": 0,
+        "count_pct": 0.7,
+        "volume_pct": 0.1,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 32.0,
+        "trade_count": 56,
+        "volume": 163500,
+        "buy_count": 44,
+        "sell_count": 12,
+        "buy_volume": 155800,
+        "sell_volume": 7700,
+        "count_pct": 3.9,
+        "volume_pct": 3.9,
+        "buy_ratio": 0.79
+      },
+      {
+        "price": 31.95,
+        "trade_count": 28,
+        "volume": 61500,
+        "buy_count": 24,
+        "sell_count": 4,
+        "buy_volume": 41200,
+        "sell_volume": 20300,
+        "count_pct": 1.9,
+        "volume_pct": 1.5,
+        "buy_ratio": 0.86
+      },
+      {
+        "price": 31.9,
+        "trade_count": 21,
+        "volume": 34000,
+        "buy_count": 16,
+        "sell_count": 5,
+        "buy_volume": 23500,
+        "sell_volume": 10500,
+        "count_pct": 1.5,
+        "volume_pct": 0.8,
+        "buy_ratio": 0.76
+      },
+      {
+        "price": 31.8,
+        "trade_count": 28,
+        "volume": 110600,
+        "buy_count": 22,
+        "sell_count": 6,
+        "buy_volume": 100400,
+        "sell_volume": 10200,
+        "count_pct": 1.9,
+        "volume_pct": 2.6,
+        "buy_ratio": 0.79
+      },
+      {
+        "price": 31.75,
+        "trade_count": 39,
+        "volume": 130900,
+        "buy_count": 14,
+        "sell_count": 25,
+        "buy_volume": 40400,
+        "sell_volume": 90500,
+        "count_pct": 2.7,
+        "volume_pct": 3.1,
+        "buy_ratio": 0.36
+      },
+      {
+        "price": 31.7,
+        "trade_count": 6,
         "volume": 4000,
-        "vs_avg5d_pct": -44.3
+        "buy_count": 5,
+        "sell_count": 1,
+        "buy_volume": 3400,
+        "sell_volume": 600,
+        "count_pct": 0.4,
+        "volume_pct": 0.1,
+        "buy_ratio": 0.83
+      },
+      {
+        "price": 31.65,
+        "trade_count": 5,
+        "volume": 19900,
+        "buy_count": 2,
+        "sell_count": 3,
+        "buy_volume": 300,
+        "sell_volume": 19600,
+        "count_pct": 0.3,
+        "volume_pct": 0.5,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 31.6,
+        "trade_count": 4,
+        "volume": 1700,
+        "buy_count": 4,
+        "sell_count": 0,
+        "buy_volume": 1700,
+        "sell_volume": 0,
+        "count_pct": 0.3,
+        "volume_pct": 0.0,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.55,
+        "trade_count": 4,
+        "volume": 1300,
+        "buy_count": 4,
+        "sell_count": 0,
+        "buy_volume": 1300,
+        "sell_volume": 0,
+        "count_pct": 0.3,
+        "volume_pct": 0.0,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.5,
+        "trade_count": 27,
+        "volume": 119700,
+        "buy_count": 26,
+        "sell_count": 1,
+        "buy_volume": 117700,
+        "sell_volume": 2000,
+        "count_pct": 1.9,
+        "volume_pct": 2.8,
+        "buy_ratio": 0.96
+      },
+      {
+        "price": 31.45,
+        "trade_count": 29,
+        "volume": 69200,
+        "buy_count": 21,
+        "sell_count": 8,
+        "buy_volume": 25100,
+        "sell_volume": 44100,
+        "count_pct": 2.0,
+        "volume_pct": 1.6,
+        "buy_ratio": 0.72
+      },
+      {
+        "price": 31.4,
+        "trade_count": 12,
+        "volume": 8000,
+        "buy_count": 12,
+        "sell_count": 0,
+        "buy_volume": 8000,
+        "sell_volume": 0,
+        "count_pct": 0.8,
+        "volume_pct": 0.2,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.3,
+        "trade_count": 17,
+        "volume": 64000,
+        "buy_count": 17,
+        "sell_count": 0,
+        "buy_volume": 64000,
+        "sell_volume": 0,
+        "count_pct": 1.2,
+        "volume_pct": 1.5,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.25,
+        "trade_count": 12,
+        "volume": 30700,
+        "buy_count": 8,
+        "sell_count": 4,
+        "buy_volume": 12600,
+        "sell_volume": 18100,
+        "count_pct": 0.8,
+        "volume_pct": 0.7,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 31.2,
+        "trade_count": 16,
+        "volume": 52900,
+        "buy_count": 12,
+        "sell_count": 4,
+        "buy_volume": 49800,
+        "sell_volume": 3100,
+        "count_pct": 1.1,
+        "volume_pct": 1.2,
+        "buy_ratio": 0.75
+      },
+      {
+        "price": 31.15,
+        "trade_count": 3,
+        "volume": 9500,
+        "buy_count": 2,
+        "sell_count": 1,
+        "buy_volume": 4600,
+        "sell_volume": 4900,
+        "count_pct": 0.2,
+        "volume_pct": 0.2,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 31.1,
+        "trade_count": 8,
+        "volume": 41400,
+        "buy_count": 8,
+        "sell_count": 0,
+        "buy_volume": 41400,
+        "sell_volume": 0,
+        "count_pct": 0.6,
+        "volume_pct": 1.0,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.05,
+        "trade_count": 17,
+        "volume": 46800,
+        "buy_count": 5,
+        "sell_count": 12,
+        "buy_volume": 6000,
+        "sell_volume": 40800,
+        "count_pct": 1.2,
+        "volume_pct": 1.1,
+        "buy_ratio": 0.29
+      },
+      {
+        "price": 31.0,
+        "trade_count": 10,
+        "volume": 115000,
+        "buy_count": 8,
+        "sell_count": 1,
+        "buy_volume": 44800,
+        "sell_volume": 300,
+        "count_pct": 0.7,
+        "volume_pct": 2.7,
+        "buy_ratio": 0.8
+      },
+      {
+        "price": 30.95,
+        "trade_count": 7,
+        "volume": 4500,
+        "buy_count": 7,
+        "sell_count": 0,
+        "buy_volume": 4500,
+        "sell_volume": 0,
+        "count_pct": 0.5,
+        "volume_pct": 0.1,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 30.9,
+        "trade_count": 11,
+        "volume": 18100,
+        "buy_count": 0,
+        "sell_count": 11,
+        "buy_volume": 0,
+        "sell_volume": 18100,
+        "count_pct": 0.8,
+        "volume_pct": 0.4,
+        "buy_ratio": 0.0
       }
     ],
-    "volume_profile": [],
     "summary": {
-      "symbol": "HRC",
+      "symbol": "GEL",
       "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "TPB",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 16.05,
-        "high": 16.1,
-        "low": 15.8,
-        "close": 15.8,
-        "volume": 10799200,
-        "vs_avg5d_pct": -26.4
-      },
-      {
-        "date": "2026-06-09",
-        "open": 15.85,
-        "high": 16.0,
-        "low": 15.75,
-        "close": 16.0,
-        "volume": 5911300,
-        "vs_avg5d_pct": -59.7
-      },
-      {
-        "date": "2026-06-10",
-        "open": 15.95,
-        "high": 16.15,
-        "low": 15.9,
-        "close": 15.95,
-        "volume": 6641500,
-        "vs_avg5d_pct": -54.7
-      },
-      {
-        "date": "2026-06-11",
-        "open": 15.85,
-        "high": 16.05,
-        "low": 15.8,
-        "close": 15.85,
-        "volume": 5464100,
-        "vs_avg5d_pct": -62.7
-      },
-      {
-        "date": "2026-06-12",
-        "open": 16.05,
-        "high": 16.6,
-        "low": 16.0,
-        "close": 16.35,
-        "volume": 44500500,
-        "vs_avg5d_pct": 203.5
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "TPB",
-      "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "GAS",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 83.6,
-        "high": 85.7,
-        "low": 83.3,
-        "close": 83.9,
-        "volume": 1058600,
-        "vs_avg5d_pct": 6.2
-      },
-      {
-        "date": "2026-06-09",
-        "open": 84.5,
-        "high": 84.5,
-        "low": 81.9,
-        "close": 82.4,
-        "volume": 906800,
-        "vs_avg5d_pct": -9.0
-      },
-      {
-        "date": "2026-06-10",
-        "open": 82.1,
-        "high": 83.9,
-        "low": 81.9,
-        "close": 82.5,
-        "volume": 509100,
-        "vs_avg5d_pct": -48.9
-      },
-      {
-        "date": "2026-06-11",
-        "open": 83.3,
-        "high": 84.5,
-        "low": 82.5,
-        "close": 82.5,
-        "volume": 530400,
-        "vs_avg5d_pct": -46.8
-      },
-      {
-        "date": "2026-06-12",
-        "open": 82.5,
-        "high": 87.1,
-        "low": 82.0,
-        "close": 85.1,
-        "volume": 1976800,
-        "vs_avg5d_pct": 98.4
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "GAS",
-      "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "MSB",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 14.7,
-        "high": 14.7,
-        "low": 14.15,
-        "close": 14.2,
-        "volume": 9853600,
-        "vs_avg5d_pct": -3.1
-      },
-      {
-        "date": "2026-06-09",
-        "open": 14.2,
-        "high": 14.6,
-        "low": 14.2,
-        "close": 14.5,
-        "volume": 5825500,
-        "vs_avg5d_pct": -42.7
-      },
-      {
-        "date": "2026-06-10",
-        "open": 14.5,
-        "high": 14.7,
-        "low": 14.5,
-        "close": 14.6,
-        "volume": 4148600,
-        "vs_avg5d_pct": -59.2
-      },
-      {
-        "date": "2026-06-11",
-        "open": 14.55,
-        "high": 14.8,
-        "low": 14.4,
-        "close": 14.6,
-        "volume": 5893300,
-        "vs_avg5d_pct": -42.0
-      },
-      {
-        "date": "2026-06-12",
-        "open": 14.75,
-        "high": 15.15,
-        "low": 14.65,
-        "close": 15.0,
-        "volume": 25116600,
-        "vs_avg5d_pct": 147.0
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "MSB",
-      "group": "GAINER",
-      "error": "Không đủ data"
+      "poc_by_count": 32.6,
+      "poc_by_volume": 32.6,
+      "poc_diverge": false,
+      "value_area_high": 32.6,
+      "value_area_low": 31.75,
+      "value_area_pct": 70.8,
+      "total_trades": 1443,
+      "total_volume": 4238300,
+      "avg_trade_size": 2937.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.77,
+      "sell_ratio_today": 0.23,
+      "current_price": 32.6,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 1666325.0,
+      "vol_today": 4226100.0,
+      "vol_spike_pct": 153.6,
+      "distribution_type": "BIMODAL",
+      "pattern": "SPIKE_BUY"
     }
   },
   {
     "symbol": "LDG",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 2.72,
-        "high": 2.74,
-        "low": 2.65,
-        "close": 2.68,
-        "volume": 864500,
-        "vs_avg5d_pct": -58.6
-      },
       {
         "date": "2026-06-09",
         "open": 2.68,
@@ -382,7 +488,7 @@
         "low": 2.68,
         "close": 2.86,
         "volume": 506700,
-        "vs_avg5d_pct": -75.7
+        "vs_avg5d_pct": -79.0
       },
       {
         "date": "2026-06-10",
@@ -391,7 +497,7 @@
         "low": 3.06,
         "close": 3.06,
         "volume": 407200,
-        "vs_avg5d_pct": -80.5
+        "vs_avg5d_pct": -83.2
       },
       {
         "date": "2026-06-11",
@@ -400,7 +506,7 @@
         "low": 3.08,
         "close": 3.27,
         "volume": 5937900,
-        "vs_avg5d_pct": 184.4
+        "vs_avg5d_pct": 145.7
       },
       {
         "date": "2026-06-12",
@@ -409,272 +515,238 @@
         "low": 3.27,
         "close": 3.35,
         "volume": 2723300,
-        "vs_avg5d_pct": 30.4
+        "vs_avg5d_pct": 12.7
+      },
+      {
+        "date": "2026-06-15",
+        "open": 3.5,
+        "high": 3.58,
+        "low": 3.5,
+        "close": 3.58,
+        "volume": 2508200,
+        "vs_avg5d_pct": 3.8
       }
     ],
-    "volume_profile": [],
+    "volume_profile": [
+      {
+        "price": 3.58,
+        "trade_count": 376,
+        "volume": 1883800,
+        "buy_count": 187,
+        "sell_count": 189,
+        "buy_volume": 740700,
+        "sell_volume": 1143100,
+        "count_pct": 73.2,
+        "volume_pct": 75.1,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 3.57,
+        "trade_count": 66,
+        "volume": 248300,
+        "buy_count": 47,
+        "sell_count": 19,
+        "buy_volume": 188600,
+        "sell_volume": 59700,
+        "count_pct": 12.8,
+        "volume_pct": 9.9,
+        "buy_ratio": 0.71
+      },
+      {
+        "price": 3.56,
+        "trade_count": 19,
+        "volume": 46200,
+        "buy_count": 19,
+        "sell_count": 0,
+        "buy_volume": 46200,
+        "sell_volume": 0,
+        "count_pct": 3.7,
+        "volume_pct": 1.8,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 3.55,
+        "trade_count": 25,
+        "volume": 73900,
+        "buy_count": 14,
+        "sell_count": 11,
+        "buy_volume": 12700,
+        "sell_volume": 61200,
+        "count_pct": 4.9,
+        "volume_pct": 2.9,
+        "buy_ratio": 0.56
+      },
+      {
+        "price": 3.54,
+        "trade_count": 5,
+        "volume": 10600,
+        "buy_count": 5,
+        "sell_count": 0,
+        "buy_volume": 10600,
+        "sell_volume": 0,
+        "count_pct": 1.0,
+        "volume_pct": 0.4,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 3.53,
+        "trade_count": 5,
+        "volume": 9200,
+        "buy_count": 5,
+        "sell_count": 0,
+        "buy_volume": 9200,
+        "sell_volume": 0,
+        "count_pct": 1.0,
+        "volume_pct": 0.4,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 3.52,
+        "trade_count": 3,
+        "volume": 6100,
+        "buy_count": 3,
+        "sell_count": 0,
+        "buy_volume": 6100,
+        "sell_volume": 0,
+        "count_pct": 0.6,
+        "volume_pct": 0.2,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 3.5,
+        "trade_count": 15,
+        "volume": 230100,
+        "buy_count": 0,
+        "sell_count": 14,
+        "buy_volume": 0,
+        "sell_volume": 41500,
+        "count_pct": 2.9,
+        "volume_pct": 9.2,
+        "buy_ratio": 0.0
+      }
+    ],
     "summary": {
       "symbol": "LDG",
       "group": "GAINER",
-      "error": "Không đủ data"
+      "poc_by_count": 3.58,
+      "poc_by_volume": 3.58,
+      "poc_diverge": false,
+      "value_area_high": 3.58,
+      "value_area_low": 3.58,
+      "value_area_pct": 73.2,
+      "total_trades": 514,
+      "total_volume": 2508200,
+      "avg_trade_size": 4880.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.44,
+      "sell_ratio_today": 0.56,
+      "current_price": 3.58,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 2393775.0,
+      "vol_today": 2508200.0,
+      "vol_spike_pct": 4.8,
+      "distribution_type": "NORMAL",
+      "pattern": "NORMAL"
     }
   },
   {
-    "symbol": "DBD",
+    "symbol": "HVN",
     "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
       {
-        "date": "2026-06-08",
-        "open": 50.5,
-        "high": 50.5,
-        "low": 49.05,
-        "close": 49.05,
-        "volume": 14800,
-        "vs_avg5d_pct": -14.2
-      },
-      {
         "date": "2026-06-09",
-        "open": 49.15,
-        "high": 50.4,
-        "low": 49.15,
-        "close": 50.3,
-        "volume": 2400,
-        "vs_avg5d_pct": -86.1
+        "open": 21.2,
+        "high": 21.25,
+        "low": 21.0,
+        "close": 21.15,
+        "volume": 251900,
+        "vs_avg5d_pct": -30.3
       },
       {
         "date": "2026-06-10",
-        "open": 50.3,
-        "high": 50.5,
-        "low": 49.9,
-        "close": 50.5,
-        "volume": 7600,
-        "vs_avg5d_pct": -55.9
+        "open": 21.15,
+        "high": 21.2,
+        "low": 21.1,
+        "close": 21.1,
+        "volume": 177500,
+        "vs_avg5d_pct": -50.9
       },
       {
         "date": "2026-06-11",
-        "open": 49.8,
-        "high": 50.4,
-        "low": 49.2,
-        "close": 49.35,
-        "volume": 8100,
-        "vs_avg5d_pct": -53.0
+        "open": 21.05,
+        "high": 21.05,
+        "low": 21.0,
+        "close": 21.0,
+        "volume": 286600,
+        "vs_avg5d_pct": -20.7
       },
       {
         "date": "2026-06-12",
-        "open": 49.35,
-        "high": 50.5,
-        "low": 49.25,
-        "close": 50.5,
-        "volume": 53300,
-        "vs_avg5d_pct": 209.2
+        "open": 21.3,
+        "high": 21.3,
+        "low": 21.15,
+        "close": 21.15,
+        "volume": 187400,
+        "vs_avg5d_pct": -48.1
+      },
+      {
+        "date": "2026-06-15",
+        "open": 22.6,
+        "high": 22.6,
+        "low": 22.6,
+        "close": 22.6,
+        "volume": 903400,
+        "vs_avg5d_pct": 150.0
       }
     ],
-    "volume_profile": [],
+    "volume_profile": [
+      {
+        "price": 22.6,
+        "trade_count": 270,
+        "volume": 903400,
+        "buy_count": 0,
+        "sell_count": 269,
+        "buy_volume": 0,
+        "sell_volume": 410900,
+        "count_pct": 100.0,
+        "volume_pct": 100.0,
+        "buy_ratio": 0.0
+      }
+    ],
     "summary": {
-      "symbol": "DBD",
+      "symbol": "HVN",
       "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "AAA",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 6.93,
-        "high": 6.94,
-        "low": 6.82,
-        "close": 6.83,
-        "volume": 1001900,
-        "vs_avg5d_pct": -9.6
-      },
-      {
-        "date": "2026-06-09",
-        "open": 7.0,
-        "high": 7.01,
-        "low": 6.89,
-        "close": 6.92,
-        "volume": 462800,
-        "vs_avg5d_pct": -58.3
-      },
-      {
-        "date": "2026-06-10",
-        "open": 6.93,
-        "high": 7.06,
-        "low": 6.9,
-        "close": 7.04,
-        "volume": 850200,
-        "vs_avg5d_pct": -23.3
-      },
-      {
-        "date": "2026-06-11",
-        "open": 7.04,
-        "high": 7.12,
-        "low": 7.0,
-        "close": 7.1,
-        "volume": 827700,
-        "vs_avg5d_pct": -25.3
-      },
-      {
-        "date": "2026-06-12",
-        "open": 7.11,
-        "high": 7.44,
-        "low": 7.11,
-        "close": 7.26,
-        "volume": 2401200,
-        "vs_avg5d_pct": 116.6
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "AAA",
-      "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "NHT",
-    "group": "GAINER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 10.55,
-        "high": 10.75,
-        "low": 10.5,
-        "close": 10.5,
-        "volume": 7600,
-        "vs_avg5d_pct": 12.8
-      },
-      {
-        "date": "2026-06-09",
-        "open": 10.7,
-        "high": 10.85,
-        "low": 10.7,
-        "close": 10.85,
-        "volume": 4900,
-        "vs_avg5d_pct": -27.3
-      },
-      {
-        "date": "2026-06-10",
-        "open": 11.0,
-        "high": 11.0,
-        "low": 10.9,
-        "close": 10.9,
-        "volume": 3000,
-        "vs_avg5d_pct": -55.5
-      },
-      {
-        "date": "2026-06-11",
-        "open": 10.9,
-        "high": 11.2,
-        "low": 10.85,
-        "close": 11.15,
-        "volume": 2200,
-        "vs_avg5d_pct": -67.4
-      },
-      {
-        "date": "2026-06-12",
-        "open": 11.3,
-        "high": 11.45,
-        "low": 11.3,
-        "close": 11.4,
-        "volume": 16000,
-        "vs_avg5d_pct": 137.4
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "NHT",
-      "group": "GAINER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "HAP",
-    "group": "LOSER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 6.78,
-        "high": 6.79,
-        "low": 6.48,
-        "close": 6.79,
-        "volume": 8000,
-        "vs_avg5d_pct": -60.9
-      },
-      {
-        "date": "2026-06-09",
-        "open": 6.78,
-        "high": 6.78,
-        "low": 6.32,
-        "close": 6.41,
-        "volume": 22900,
-        "vs_avg5d_pct": 12.0
-      },
-      {
-        "date": "2026-06-10",
-        "open": 6.1,
-        "high": 6.54,
-        "low": 6.07,
-        "close": 6.53,
-        "volume": 11100,
-        "vs_avg5d_pct": -45.7
-      },
-      {
-        "date": "2026-06-11",
-        "open": 6.4,
-        "high": 6.65,
-        "low": 6.4,
-        "close": 6.53,
-        "volume": 6500,
-        "vs_avg5d_pct": -68.2
-      },
-      {
-        "date": "2026-06-12",
-        "open": 6.49,
-        "high": 6.5,
-        "low": 6.08,
-        "close": 6.08,
-        "volume": 53700,
-        "vs_avg5d_pct": 162.7
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "HAP",
-      "group": "LOSER",
-      "error": "Không đủ data"
+      "poc_by_count": 22.6,
+      "poc_by_volume": 22.6,
+      "poc_diverge": false,
+      "value_area_high": 22.6,
+      "value_area_low": 22.6,
+      "value_area_pct": 100.0,
+      "total_trades": 270,
+      "total_volume": 903400,
+      "avg_trade_size": 3346.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.0,
+      "sell_ratio_today": 1.0,
+      "current_price": 22.6,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 225850.0,
+      "vol_today": 903400.0,
+      "vol_spike_pct": 300.0,
+      "distribution_type": "INSUFFICIENT_DATA",
+      "pattern": "SPIKE_NEUTRAL"
     }
   },
   {
     "symbol": "C32",
-    "group": "LOSER",
+    "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 16.85,
-        "high": 16.85,
-        "low": 15.75,
-        "close": 16.85,
-        "volume": 445500,
-        "vs_avg5d_pct": 49.2
-      },
       {
         "date": "2026-06-09",
         "open": 18.0,
@@ -682,7 +754,7 @@
         "low": 18.0,
         "close": 18.0,
         "volume": 227500,
-        "vs_avg5d_pct": -23.8
+        "vs_avg5d_pct": 8.2
       },
       {
         "date": "2026-06-10",
@@ -691,7 +763,7 @@
         "low": 19.25,
         "close": 19.25,
         "volume": 89300,
-        "vs_avg5d_pct": -70.1
+        "vs_avg5d_pct": -57.5
       },
       {
         "date": "2026-06-11",
@@ -700,7 +772,7 @@
         "low": 19.3,
         "close": 20.3,
         "volume": 633300,
-        "vs_avg5d_pct": 112.0
+        "vs_avg5d_pct": 201.2
       },
       {
         "date": "2026-06-12",
@@ -709,356 +781,3370 @@
         "low": 18.9,
         "close": 19.0,
         "volume": 97700,
-        "vs_avg5d_pct": -67.3
+        "vs_avg5d_pct": -53.5
+      },
+      {
+        "date": "2026-06-15",
+        "open": 20.2,
+        "high": 20.2,
+        "low": 20.2,
+        "close": 20.2,
+        "volume": 3400,
+        "vs_avg5d_pct": -98.4
       }
     ],
-    "volume_profile": [],
+    "volume_profile": [
+      {
+        "price": 20.2,
+        "trade_count": 1,
+        "volume": 3400,
+        "buy_count": 0,
+        "sell_count": 0,
+        "buy_volume": 0,
+        "sell_volume": 0,
+        "count_pct": 100.0,
+        "volume_pct": 100.0,
+        "buy_ratio": 0.0
+      }
+    ],
     "summary": {
       "symbol": "C32",
-      "group": "LOSER",
-      "error": "Không đủ data"
+      "group": "GAINER",
+      "poc_by_count": 20.2,
+      "poc_by_volume": 20.2,
+      "poc_diverge": false,
+      "value_area_high": 20.2,
+      "value_area_low": 20.2,
+      "value_area_pct": 100.0,
+      "total_trades": 1,
+      "total_volume": 3400,
+      "avg_trade_size": 3400.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": null,
+      "sell_ratio_today": null,
+      "current_price": 20.2,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 261950.0,
+      "vol_today": 3400.0,
+      "vol_spike_pct": -98.7,
+      "distribution_type": "INSUFFICIENT_DATA",
+      "pattern": "WEAK"
     }
   },
   {
-    "symbol": "LGL",
-    "group": "LOSER",
+    "symbol": "DRH",
+    "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
       {
-        "date": "2026-06-08",
-        "open": 5.44,
-        "high": 5.45,
-        "low": 5.3,
-        "close": 5.41,
-        "volume": 7600,
-        "vs_avg5d_pct": -79.0
-      },
-      {
         "date": "2026-06-09",
-        "open": 5.39,
-        "high": 5.4,
-        "low": 5.15,
-        "close": 5.29,
-        "volume": 50100,
-        "vs_avg5d_pct": 38.7
+        "open": 2.05,
+        "high": 2.07,
+        "low": 2.03,
+        "close": 2.04,
+        "volume": 125000,
+        "vs_avg5d_pct": -23.5
       },
       {
         "date": "2026-06-10",
-        "open": 5.57,
-        "high": 5.57,
-        "low": 5.1,
-        "close": 5.29,
-        "volume": 22800,
-        "vs_avg5d_pct": -36.9
+        "open": 2.09,
+        "high": 2.14,
+        "low": 2.05,
+        "close": 2.13,
+        "volume": 371300,
+        "vs_avg5d_pct": 127.3
       },
       {
         "date": "2026-06-11",
-        "open": 5.49,
-        "high": 5.49,
-        "low": 4.92,
-        "close": 5.2,
-        "volume": 62100,
-        "vs_avg5d_pct": 71.9
+        "open": 2.19,
+        "high": 2.19,
+        "low": 2.08,
+        "close": 2.08,
+        "volume": 124100,
+        "vs_avg5d_pct": -24.0
       },
       {
         "date": "2026-06-12",
-        "open": 5.28,
-        "high": 5.28,
-        "low": 4.94,
-        "close": 4.96,
-        "volume": 38000,
-        "vs_avg5d_pct": 5.2
+        "open": 2.13,
+        "high": 2.13,
+        "low": 2.04,
+        "close": 2.04,
+        "volume": 155900,
+        "vs_avg5d_pct": -4.6
+      },
+      {
+        "date": "2026-06-15",
+        "open": 2.06,
+        "high": 2.14,
+        "low": 2.06,
+        "close": 2.14,
+        "volume": 40500,
+        "vs_avg5d_pct": -75.2
       }
     ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "LGL",
-      "group": "LOSER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "VPG",
-    "group": "LOSER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
+    "volume_profile": [
       {
-        "date": "2026-06-08",
-        "open": 2.85,
-        "high": 2.93,
-        "low": 2.82,
-        "close": 2.87,
-        "volume": 132700,
-        "vs_avg5d_pct": -60.9
+        "price": 2.14,
+        "trade_count": 5,
+        "volume": 9100,
+        "buy_count": 5,
+        "sell_count": 0,
+        "buy_volume": 9100,
+        "sell_volume": 0,
+        "count_pct": 31.2,
+        "volume_pct": 22.5,
+        "buy_ratio": 1.0
       },
       {
-        "date": "2026-06-09",
-        "open": 2.86,
-        "high": 2.9,
-        "low": 2.82,
-        "close": 2.86,
-        "volume": 176500,
-        "vs_avg5d_pct": -48.0
+        "price": 2.08,
+        "trade_count": 10,
+        "volume": 13400,
+        "buy_count": 0,
+        "sell_count": 10,
+        "buy_volume": 0,
+        "sell_volume": 13400,
+        "count_pct": 62.5,
+        "volume_pct": 33.1,
+        "buy_ratio": 0.0
       },
       {
-        "date": "2026-06-10",
-        "open": 2.9,
-        "high": 3.06,
-        "low": 2.88,
-        "close": 3.06,
-        "volume": 758000,
-        "vs_avg5d_pct": 123.5
-      },
-      {
-        "date": "2026-06-11",
-        "open": 3.07,
-        "high": 3.21,
-        "low": 3.05,
-        "close": 3.05,
-        "volume": 307800,
-        "vs_avg5d_pct": -9.3
-      },
-      {
-        "date": "2026-06-12",
-        "open": 2.91,
-        "high": 3.06,
-        "low": 2.88,
-        "close": 2.91,
-        "volume": 321000,
-        "vs_avg5d_pct": -5.4
+        "price": 2.06,
+        "trade_count": 1,
+        "volume": 18000,
+        "buy_count": 0,
+        "sell_count": 0,
+        "buy_volume": 0,
+        "sell_volume": 0,
+        "count_pct": 6.2,
+        "volume_pct": 44.4,
+        "buy_ratio": 0.0
       }
     ],
-    "volume_profile": [],
     "summary": {
-      "symbol": "VPG",
-      "group": "LOSER",
-      "error": "Không đủ data"
+      "symbol": "DRH",
+      "group": "GAINER",
+      "poc_by_count": 2.08,
+      "poc_by_volume": 2.06,
+      "poc_diverge": true,
+      "value_area_high": 2.14,
+      "value_area_low": 2.08,
+      "value_area_pct": 93.8,
+      "total_trades": 16,
+      "total_volume": 40500,
+      "avg_trade_size": 2531.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.4,
+      "sell_ratio_today": 0.6,
+      "current_price": 2.14,
+      "price_vs_poc_pct": 2.88,
+      "vol_5d_avg": 194075.0,
+      "vol_today": 40500.0,
+      "vol_spike_pct": -79.1,
+      "distribution_type": "SKEWED_UP",
+      "pattern": "WEAK"
     }
   },
   {
-    "symbol": "VHM",
-    "group": "LOSER",
+    "symbol": "BCE",
+    "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
       {
-        "date": "2026-06-08",
-        "open": 149.0,
-        "high": 150.5,
-        "low": 145.2,
-        "close": 146.7,
-        "volume": 4226300,
-        "vs_avg5d_pct": 50.2
-      },
-      {
         "date": "2026-06-09",
-        "open": 147.2,
-        "high": 147.7,
-        "low": 143.9,
-        "close": 146.0,
-        "volume": 2221500,
-        "vs_avg5d_pct": -21.0
+        "open": 8.58,
+        "high": 8.61,
+        "low": 8.46,
+        "close": 8.6,
+        "volume": 14600,
+        "vs_avg5d_pct": 145.8
       },
       {
         "date": "2026-06-10",
-        "open": 146.2,
-        "high": 147.5,
-        "low": 144.3,
-        "close": 146.8,
-        "volume": 1569400,
-        "vs_avg5d_pct": -44.2
+        "open": 8.59,
+        "high": 8.6,
+        "low": 8.59,
+        "close": 8.6,
+        "volume": 5200,
+        "vs_avg5d_pct": -12.5
       },
       {
         "date": "2026-06-11",
-        "open": 145.6,
-        "high": 146.7,
-        "low": 144.0,
-        "close": 144.5,
-        "volume": 1708400,
-        "vs_avg5d_pct": -39.3
+        "open": 8.48,
+        "high": 8.59,
+        "low": 8.46,
+        "close": 8.59,
+        "volume": 3000,
+        "vs_avg5d_pct": -49.5
       },
       {
         "date": "2026-06-12",
-        "open": 146.5,
-        "high": 147.2,
-        "low": 138.7,
-        "close": 138.7,
-        "volume": 4342000,
-        "vs_avg5d_pct": 54.3
+        "open": 8.6,
+        "high": 8.6,
+        "low": 8.5,
+        "close": 8.59,
+        "volume": 6500,
+        "vs_avg5d_pct": 9.4
+      },
+      {
+        "date": "2026-06-15",
+        "open": 9.18,
+        "high": 9.18,
+        "low": 9.0,
+        "close": 9.0,
+        "volume": 400,
+        "vs_avg5d_pct": -93.3
       }
     ],
-    "volume_profile": [],
+    "volume_profile": [
+      {
+        "price": 9.18,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 100,
+        "sell_volume": 0,
+        "count_pct": 50.0,
+        "volume_pct": 25.0,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 9.0,
+        "trade_count": 1,
+        "volume": 300,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 300,
+        "sell_volume": 0,
+        "count_pct": 50.0,
+        "volume_pct": 75.0,
+        "buy_ratio": 1.0
+      }
+    ],
     "summary": {
-      "symbol": "VHM",
-      "group": "LOSER",
-      "error": "Không đủ data"
+      "symbol": "BCE",
+      "group": "GAINER",
+      "poc_by_count": 9.18,
+      "poc_by_volume": 9.0,
+      "poc_diverge": true,
+      "value_area_high": 9.18,
+      "value_area_low": 9.0,
+      "value_area_pct": 100.0,
+      "total_trades": 2,
+      "total_volume": 400,
+      "avg_trade_size": 200.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 1.0,
+      "sell_ratio_today": 0.0,
+      "current_price": 9.0,
+      "price_vs_poc_pct": -1.96,
+      "vol_5d_avg": 7325.0,
+      "vol_today": 400.0,
+      "vol_spike_pct": -94.5,
+      "distribution_type": "INSUFFICIENT_DATA",
+      "pattern": "WEAK"
     }
   },
   {
-    "symbol": "BKG",
-    "group": "LOSER",
+    "symbol": "GEX",
+    "group": "GAINER",
     "exchange": "HSX",
-    "time": "2026-06-15 07:21",
+    "time": "2026-06-15 09:56",
     "date": "2026-06-15",
     "history_5d": [
       {
-        "date": "2026-06-08",
-        "open": 2.35,
-        "high": 2.4,
-        "low": 2.29,
-        "close": 2.36,
-        "volume": 152000,
-        "vs_avg5d_pct": -50.7
-      },
-      {
         "date": "2026-06-09",
-        "open": 2.4,
-        "high": 2.52,
-        "low": 2.37,
-        "close": 2.52,
-        "volume": 603500,
-        "vs_avg5d_pct": 95.8
+        "open": 30.9,
+        "high": 30.95,
+        "low": 29.9,
+        "close": 30.8,
+        "volume": 8793000,
+        "vs_avg5d_pct": 11.1
       },
       {
         "date": "2026-06-10",
-        "open": 2.67,
-        "high": 2.69,
-        "low": 2.58,
-        "close": 2.69,
-        "volume": 541000,
-        "vs_avg5d_pct": 75.5
+        "open": 30.7,
+        "high": 31.5,
+        "low": 30.1,
+        "close": 31.25,
+        "volume": 10930700,
+        "vs_avg5d_pct": 38.1
       },
       {
         "date": "2026-06-11",
-        "open": 2.76,
-        "high": 2.76,
-        "low": 2.56,
-        "close": 2.7,
-        "volume": 165800,
-        "vs_avg5d_pct": -46.2
+        "open": 31.05,
+        "high": 31.1,
+        "low": 30.5,
+        "close": 30.5,
+        "volume": 5368400,
+        "vs_avg5d_pct": -32.2
       },
       {
         "date": "2026-06-12",
-        "open": 2.7,
-        "high": 2.7,
+        "open": 30.95,
+        "high": 31.1,
+        "low": 29.5,
+        "close": 29.5,
+        "volume": 10297600,
+        "vs_avg5d_pct": 30.1
+      },
+      {
+        "date": "2026-06-15",
+        "open": 30.0,
+        "high": 31.25,
+        "low": 30.0,
+        "close": 30.7,
+        "volume": 4183500,
+        "vs_avg5d_pct": -47.1
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 31.25,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 100,
+        "sell_volume": 0,
+        "count_pct": 0.0,
+        "volume_pct": 0.0,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.2,
+        "trade_count": 103,
+        "volume": 223100,
+        "buy_count": 103,
+        "sell_count": 0,
+        "buy_volume": 223100,
+        "sell_volume": 0,
+        "count_pct": 4.2,
+        "volume_pct": 5.3,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 31.15,
+        "trade_count": 78,
+        "volume": 145400,
+        "buy_count": 35,
+        "sell_count": 43,
+        "buy_volume": 69700,
+        "sell_volume": 75700,
+        "count_pct": 3.2,
+        "volume_pct": 3.5,
+        "buy_ratio": 0.45
+      },
+      {
+        "price": 31.1,
+        "trade_count": 58,
+        "volume": 80000,
+        "buy_count": 26,
+        "sell_count": 32,
+        "buy_volume": 25200,
+        "sell_volume": 54800,
+        "count_pct": 2.3,
+        "volume_pct": 1.9,
+        "buy_ratio": 0.45
+      },
+      {
+        "price": 31.05,
+        "trade_count": 47,
+        "volume": 149100,
+        "buy_count": 19,
+        "sell_count": 28,
+        "buy_volume": 106600,
+        "sell_volume": 42500,
+        "count_pct": 1.9,
+        "volume_pct": 3.6,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 31.0,
+        "trade_count": 150,
+        "volume": 349000,
+        "buy_count": 123,
+        "sell_count": 27,
+        "buy_volume": 231300,
+        "sell_volume": 117700,
+        "count_pct": 6.1,
+        "volume_pct": 8.3,
+        "buy_ratio": 0.82
+      },
+      {
+        "price": 30.95,
+        "trade_count": 132,
+        "volume": 192700,
+        "buy_count": 89,
+        "sell_count": 43,
+        "buy_volume": 162200,
+        "sell_volume": 30500,
+        "count_pct": 5.3,
+        "volume_pct": 4.6,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 30.9,
+        "trade_count": 287,
+        "volume": 444800,
+        "buy_count": 184,
+        "sell_count": 103,
+        "buy_volume": 262900,
+        "sell_volume": 181900,
+        "count_pct": 11.6,
+        "volume_pct": 10.6,
+        "buy_ratio": 0.64
+      },
+      {
+        "price": 30.85,
+        "trade_count": 160,
+        "volume": 263300,
+        "buy_count": 29,
+        "sell_count": 131,
+        "buy_volume": 74500,
+        "sell_volume": 188800,
+        "count_pct": 6.5,
+        "volume_pct": 6.3,
+        "buy_ratio": 0.18
+      },
+      {
+        "price": 30.8,
+        "trade_count": 123,
+        "volume": 209400,
+        "buy_count": 75,
+        "sell_count": 48,
+        "buy_volume": 112200,
+        "sell_volume": 97200,
+        "count_pct": 5.0,
+        "volume_pct": 5.0,
+        "buy_ratio": 0.61
+      },
+      {
+        "price": 30.75,
+        "trade_count": 141,
+        "volume": 190300,
+        "buy_count": 30,
+        "sell_count": 111,
+        "buy_volume": 99600,
+        "sell_volume": 90700,
+        "count_pct": 5.7,
+        "volume_pct": 4.5,
+        "buy_ratio": 0.21
+      },
+      {
+        "price": 30.7,
+        "trade_count": 78,
+        "volume": 149500,
+        "buy_count": 42,
+        "sell_count": 36,
+        "buy_volume": 114400,
+        "sell_volume": 35100,
+        "count_pct": 3.2,
+        "volume_pct": 3.6,
+        "buy_ratio": 0.54
+      },
+      {
+        "price": 30.65,
+        "trade_count": 48,
+        "volume": 82000,
+        "buy_count": 34,
+        "sell_count": 14,
+        "buy_volume": 68200,
+        "sell_volume": 13800,
+        "count_pct": 1.9,
+        "volume_pct": 2.0,
+        "buy_ratio": 0.71
+      },
+      {
+        "price": 30.6,
+        "trade_count": 42,
+        "volume": 85000,
+        "buy_count": 35,
+        "sell_count": 7,
+        "buy_volume": 79500,
+        "sell_volume": 5500,
+        "count_pct": 1.7,
+        "volume_pct": 2.0,
+        "buy_ratio": 0.83
+      },
+      {
+        "price": 30.55,
+        "trade_count": 35,
+        "volume": 65100,
+        "buy_count": 23,
+        "sell_count": 12,
+        "buy_volume": 57200,
+        "sell_volume": 7900,
+        "count_pct": 1.4,
+        "volume_pct": 1.6,
+        "buy_ratio": 0.66
+      },
+      {
+        "price": 30.5,
+        "trade_count": 60,
+        "volume": 125700,
+        "buy_count": 55,
+        "sell_count": 5,
+        "buy_volume": 124600,
+        "sell_volume": 1100,
+        "count_pct": 2.4,
+        "volume_pct": 3.0,
+        "buy_ratio": 0.92
+      },
+      {
+        "price": 30.45,
+        "trade_count": 28,
+        "volume": 35300,
+        "buy_count": 28,
+        "sell_count": 0,
+        "buy_volume": 35300,
+        "sell_volume": 0,
+        "count_pct": 1.1,
+        "volume_pct": 0.8,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 30.4,
+        "trade_count": 91,
+        "volume": 184900,
+        "buy_count": 89,
+        "sell_count": 2,
+        "buy_volume": 159600,
+        "sell_volume": 25300,
+        "count_pct": 3.7,
+        "volume_pct": 4.4,
+        "buy_ratio": 0.98
+      },
+      {
+        "price": 30.35,
+        "trade_count": 120,
+        "volume": 200100,
+        "buy_count": 71,
+        "sell_count": 49,
+        "buy_volume": 126500,
+        "sell_volume": 73600,
+        "count_pct": 4.9,
+        "volume_pct": 4.8,
+        "buy_ratio": 0.59
+      },
+      {
+        "price": 30.3,
+        "trade_count": 255,
+        "volume": 344500,
+        "buy_count": 135,
+        "sell_count": 120,
+        "buy_volume": 177200,
+        "sell_volume": 167300,
+        "count_pct": 10.3,
+        "volume_pct": 8.2,
+        "buy_ratio": 0.53
+      },
+      {
+        "price": 30.25,
+        "trade_count": 97,
+        "volume": 112300,
+        "buy_count": 53,
+        "sell_count": 44,
+        "buy_volume": 55400,
+        "sell_volume": 56900,
+        "count_pct": 3.9,
+        "volume_pct": 2.7,
+        "buy_ratio": 0.55
+      },
+      {
+        "price": 30.2,
+        "trade_count": 64,
+        "volume": 60300,
+        "buy_count": 49,
+        "sell_count": 15,
+        "buy_volume": 42200,
+        "sell_volume": 18100,
+        "count_pct": 2.6,
+        "volume_pct": 1.4,
+        "buy_ratio": 0.77
+      },
+      {
+        "price": 30.15,
+        "trade_count": 81,
+        "volume": 108200,
+        "buy_count": 58,
+        "sell_count": 23,
+        "buy_volume": 53200,
+        "sell_volume": 55000,
+        "count_pct": 3.3,
+        "volume_pct": 2.6,
+        "buy_ratio": 0.72
+      },
+      {
+        "price": 30.1,
+        "trade_count": 171,
+        "volume": 216600,
+        "buy_count": 101,
+        "sell_count": 70,
+        "buy_volume": 97800,
+        "sell_volume": 118800,
+        "count_pct": 6.9,
+        "volume_pct": 5.2,
+        "buy_ratio": 0.59
+      },
+      {
+        "price": 30.05,
+        "trade_count": 5,
+        "volume": 1600,
+        "buy_count": 2,
+        "sell_count": 3,
+        "buy_volume": 1000,
+        "sell_volume": 600,
+        "count_pct": 0.2,
+        "volume_pct": 0.0,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 30.0,
+        "trade_count": 19,
+        "volume": 170500,
+        "buy_count": 0,
+        "sell_count": 18,
+        "buy_volume": 0,
+        "sell_volume": 8900,
+        "count_pct": 0.8,
+        "volume_pct": 4.1,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "GEX",
+      "group": "GAINER",
+      "poc_by_count": 30.9,
+      "poc_by_volume": 30.9,
+      "poc_diverge": false,
+      "value_area_high": 31.2,
+      "value_area_low": 30.1,
+      "value_area_pct": 70.3,
+      "total_trades": 2474,
+      "total_volume": 4188800,
+      "avg_trade_size": 1693.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.64,
+      "sell_ratio_today": 0.36,
+      "current_price": 30.7,
+      "price_vs_poc_pct": -0.65,
+      "vol_5d_avg": 8847425.0,
+      "vol_today": 4183500.0,
+      "vol_spike_pct": -52.7,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "VND",
+    "group": "GAINER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 16.95,
+        "high": 17.5,
+        "low": 16.65,
+        "close": 17.3,
+        "volume": 16903314,
+        "vs_avg5d_pct": 38.5
+      },
+      {
+        "date": "2026-06-10",
+        "open": 17.25,
+        "high": 17.7,
+        "low": 17.15,
+        "close": 17.35,
+        "volume": 10715019,
+        "vs_avg5d_pct": -12.2
+      },
+      {
+        "date": "2026-06-11",
+        "open": 17.1,
+        "high": 17.45,
+        "low": 17.05,
+        "close": 17.2,
+        "volume": 11655200,
+        "vs_avg5d_pct": -4.5
+      },
+      {
+        "date": "2026-06-12",
+        "open": 17.6,
+        "high": 17.6,
+        "low": 17.05,
+        "close": 17.1,
+        "volume": 11877500,
+        "vs_avg5d_pct": -2.7
+      },
+      {
+        "date": "2026-06-15",
+        "open": 17.5,
+        "high": 18.05,
+        "low": 17.45,
+        "close": 17.8,
+        "volume": 9857300,
+        "vs_avg5d_pct": -19.2
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 18.05,
+        "trade_count": 72,
+        "volume": 64500,
+        "buy_count": 72,
+        "sell_count": 0,
+        "buy_volume": 64500,
+        "sell_volume": 0,
+        "count_pct": 1.9,
+        "volume_pct": 0.7,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 18.0,
+        "trade_count": 555,
+        "volume": 1217800,
+        "buy_count": 475,
+        "sell_count": 80,
+        "buy_volume": 1041500,
+        "sell_volume": 176300,
+        "count_pct": 14.5,
+        "volume_pct": 12.3,
+        "buy_ratio": 0.86
+      },
+      {
+        "price": 17.95,
+        "trade_count": 235,
+        "volume": 655100,
+        "buy_count": 168,
+        "sell_count": 67,
+        "buy_volume": 492400,
+        "sell_volume": 162700,
+        "count_pct": 6.1,
+        "volume_pct": 6.6,
+        "buy_ratio": 0.71
+      },
+      {
+        "price": 17.9,
+        "trade_count": 197,
+        "volume": 423200,
+        "buy_count": 165,
+        "sell_count": 32,
+        "buy_volume": 364600,
+        "sell_volume": 58600,
+        "count_pct": 5.1,
+        "volume_pct": 4.3,
+        "buy_ratio": 0.84
+      },
+      {
+        "price": 17.85,
+        "trade_count": 243,
+        "volume": 390700,
+        "buy_count": 151,
+        "sell_count": 92,
+        "buy_volume": 286000,
+        "sell_volume": 104700,
+        "count_pct": 6.3,
+        "volume_pct": 4.0,
+        "buy_ratio": 0.62
+      },
+      {
+        "price": 17.8,
+        "trade_count": 549,
+        "volume": 1021000,
+        "buy_count": 434,
+        "sell_count": 115,
+        "buy_volume": 883800,
+        "sell_volume": 137200,
+        "count_pct": 14.3,
+        "volume_pct": 10.3,
+        "buy_ratio": 0.79
+      },
+      {
+        "price": 17.75,
+        "trade_count": 400,
+        "volume": 1267700,
+        "buy_count": 269,
+        "sell_count": 131,
+        "buy_volume": 854000,
+        "sell_volume": 413700,
+        "count_pct": 10.4,
+        "volume_pct": 12.8,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 17.7,
+        "trade_count": 544,
+        "volume": 1469300,
+        "buy_count": 416,
+        "sell_count": 128,
+        "buy_volume": 1053900,
+        "sell_volume": 415400,
+        "count_pct": 14.2,
+        "volume_pct": 14.9,
+        "buy_ratio": 0.76
+      },
+      {
+        "price": 17.65,
+        "trade_count": 385,
+        "volume": 1019300,
+        "buy_count": 211,
+        "sell_count": 174,
+        "buy_volume": 559400,
+        "sell_volume": 459900,
+        "count_pct": 10.0,
+        "volume_pct": 10.3,
+        "buy_ratio": 0.55
+      },
+      {
+        "price": 17.6,
+        "trade_count": 380,
+        "volume": 872300,
+        "buy_count": 200,
+        "sell_count": 180,
+        "buy_volume": 421700,
+        "sell_volume": 450600,
+        "count_pct": 9.9,
+        "volume_pct": 8.8,
+        "buy_ratio": 0.53
+      },
+      {
+        "price": 17.55,
+        "trade_count": 146,
+        "volume": 647300,
+        "buy_count": 99,
+        "sell_count": 47,
+        "buy_volume": 362100,
+        "sell_volume": 285200,
+        "count_pct": 3.8,
+        "volume_pct": 6.5,
+        "buy_ratio": 0.68
+      },
+      {
+        "price": 17.5,
+        "trade_count": 117,
+        "volume": 768400,
+        "buy_count": 76,
+        "sell_count": 40,
+        "buy_volume": 136600,
+        "sell_volume": 241700,
+        "count_pct": 3.1,
+        "volume_pct": 7.8,
+        "buy_ratio": 0.65
+      },
+      {
+        "price": 17.45,
+        "trade_count": 13,
+        "volume": 72200,
+        "buy_count": 0,
+        "sell_count": 13,
+        "buy_volume": 0,
+        "sell_volume": 72200,
+        "count_pct": 0.3,
+        "volume_pct": 0.7,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "VND",
+      "group": "GAINER",
+      "poc_by_count": 18.0,
+      "poc_by_volume": 17.7,
+      "poc_diverge": true,
+      "value_area_high": 18.0,
+      "value_area_low": 17.6,
+      "value_area_pct": 73.3,
+      "total_trades": 3836,
+      "total_volume": 9888800,
+      "avg_trade_size": 2578.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.69,
+      "sell_ratio_today": 0.31,
+      "current_price": 17.8,
+      "price_vs_poc_pct": -1.11,
+      "vol_5d_avg": 12787758.0,
+      "vol_today": 9857300.0,
+      "vol_spike_pct": -22.9,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "CTS",
+    "group": "GAINER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 20.94,
+        "high": 21.13,
+        "low": 20.86,
+        "close": 20.9,
+        "volume": 244278,
+        "vs_avg5d_pct": -62.1
+      },
+      {
+        "date": "2026-06-10",
+        "open": 20.82,
+        "high": 21.33,
+        "low": 20.82,
+        "close": 21.29,
+        "volume": 606480,
+        "vs_avg5d_pct": -5.9
+      },
+      {
+        "date": "2026-06-11",
+        "open": 21.25,
+        "high": 21.64,
+        "low": 21.25,
+        "close": 21.33,
+        "volume": 1257840,
+        "vs_avg5d_pct": 95.1
+      },
+      {
+        "date": "2026-06-12",
+        "open": 22.0,
+        "high": 22.0,
+        "low": 21.4,
+        "close": 21.45,
+        "volume": 607953,
+        "vs_avg5d_pct": -5.7
+      },
+      {
+        "date": "2026-06-15",
+        "open": 21.8,
+        "high": 22.6,
+        "low": 21.75,
+        "close": 22.35,
+        "volume": 506900,
+        "vs_avg5d_pct": -21.4
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 22.6,
+        "trade_count": 19,
+        "volume": 13800,
+        "buy_count": 16,
+        "sell_count": 3,
+        "buy_volume": 12100,
+        "sell_volume": 1700,
+        "count_pct": 4.2,
+        "volume_pct": 2.7,
+        "buy_ratio": 0.84
+      },
+      {
+        "price": 22.55,
+        "trade_count": 13,
+        "volume": 3400,
+        "buy_count": 7,
+        "sell_count": 6,
+        "buy_volume": 1700,
+        "sell_volume": 1700,
+        "count_pct": 2.9,
+        "volume_pct": 0.7,
+        "buy_ratio": 0.54
+      },
+      {
+        "price": 22.5,
+        "trade_count": 47,
+        "volume": 61800,
+        "buy_count": 40,
+        "sell_count": 7,
+        "buy_volume": 49900,
+        "sell_volume": 11900,
+        "count_pct": 10.3,
+        "volume_pct": 12.2,
+        "buy_ratio": 0.85
+      },
+      {
+        "price": 22.45,
+        "trade_count": 20,
+        "volume": 25900,
+        "buy_count": 11,
+        "sell_count": 9,
+        "buy_volume": 14100,
+        "sell_volume": 11800,
+        "count_pct": 4.4,
+        "volume_pct": 5.1,
+        "buy_ratio": 0.55
+      },
+      {
+        "price": 22.4,
+        "trade_count": 28,
+        "volume": 21400,
+        "buy_count": 18,
+        "sell_count": 10,
+        "buy_volume": 14200,
+        "sell_volume": 7200,
+        "count_pct": 6.2,
+        "volume_pct": 4.2,
+        "buy_ratio": 0.64
+      },
+      {
+        "price": 22.35,
+        "trade_count": 22,
+        "volume": 7200,
+        "buy_count": 14,
+        "sell_count": 8,
+        "buy_volume": 5400,
+        "sell_volume": 1800,
+        "count_pct": 4.8,
+        "volume_pct": 1.4,
+        "buy_ratio": 0.64
+      },
+      {
+        "price": 22.3,
+        "trade_count": 35,
+        "volume": 30400,
+        "buy_count": 24,
+        "sell_count": 11,
+        "buy_volume": 17900,
+        "sell_volume": 12500,
+        "count_pct": 7.7,
+        "volume_pct": 6.0,
+        "buy_ratio": 0.69
+      },
+      {
+        "price": 22.25,
+        "trade_count": 10,
+        "volume": 12800,
+        "buy_count": 7,
+        "sell_count": 3,
+        "buy_volume": 11400,
+        "sell_volume": 1400,
+        "count_pct": 2.2,
+        "volume_pct": 2.5,
+        "buy_ratio": 0.7
+      },
+      {
+        "price": 22.2,
+        "trade_count": 29,
+        "volume": 28900,
+        "buy_count": 29,
+        "sell_count": 0,
+        "buy_volume": 28900,
+        "sell_volume": 0,
+        "count_pct": 6.4,
+        "volume_pct": 5.7,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 22.15,
+        "trade_count": 41,
+        "volume": 58100,
+        "buy_count": 29,
+        "sell_count": 12,
+        "buy_volume": 24800,
+        "sell_volume": 33300,
+        "count_pct": 9.0,
+        "volume_pct": 11.5,
+        "buy_ratio": 0.71
+      },
+      {
+        "price": 22.1,
+        "trade_count": 68,
+        "volume": 84500,
+        "buy_count": 58,
+        "sell_count": 10,
+        "buy_volume": 70500,
+        "sell_volume": 14000,
+        "count_pct": 14.9,
+        "volume_pct": 16.7,
+        "buy_ratio": 0.85
+      },
+      {
+        "price": 22.05,
+        "trade_count": 34,
+        "volume": 22700,
+        "buy_count": 8,
+        "sell_count": 26,
+        "buy_volume": 7600,
+        "sell_volume": 15100,
+        "count_pct": 7.5,
+        "volume_pct": 4.5,
+        "buy_ratio": 0.24
+      },
+      {
+        "price": 22.0,
+        "trade_count": 28,
+        "volume": 35300,
+        "buy_count": 23,
+        "sell_count": 5,
+        "buy_volume": 28500,
+        "sell_volume": 6800,
+        "count_pct": 6.2,
+        "volume_pct": 7.0,
+        "buy_ratio": 0.82
+      },
+      {
+        "price": 21.95,
+        "trade_count": 20,
+        "volume": 20300,
+        "buy_count": 17,
+        "sell_count": 3,
+        "buy_volume": 17700,
+        "sell_volume": 2600,
+        "count_pct": 4.4,
+        "volume_pct": 4.0,
+        "buy_ratio": 0.85
+      },
+      {
+        "price": 21.9,
+        "trade_count": 33,
+        "volume": 46600,
+        "buy_count": 21,
+        "sell_count": 12,
+        "buy_volume": 33500,
+        "sell_volume": 13100,
+        "count_pct": 7.3,
+        "volume_pct": 9.2,
+        "buy_ratio": 0.64
+      },
+      {
+        "price": 21.85,
+        "trade_count": 1,
+        "volume": 400,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 400,
+        "count_pct": 0.2,
+        "volume_pct": 0.1,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 21.8,
+        "trade_count": 6,
+        "volume": 28900,
+        "buy_count": 4,
+        "sell_count": 1,
+        "buy_volume": 3000,
+        "sell_volume": 3200,
+        "count_pct": 1.3,
+        "volume_pct": 5.7,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 21.75,
+        "trade_count": 1,
+        "volume": 5000,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 5000,
+        "count_pct": 0.2,
+        "volume_pct": 1.0,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "CTS",
+      "group": "GAINER",
+      "poc_by_count": 22.1,
+      "poc_by_volume": 22.1,
+      "poc_diverge": false,
+      "value_area_high": 22.5,
+      "value_area_low": 21.9,
+      "value_area_pct": 75.4,
+      "total_trades": 455,
+      "total_volume": 507400,
+      "avg_trade_size": 1115.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.7,
+      "sell_ratio_today": 0.3,
+      "current_price": 22.35,
+      "price_vs_poc_pct": 1.13,
+      "vol_5d_avg": 679138.0,
+      "vol_today": 506900.0,
+      "vol_spike_pct": -25.4,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "HAP",
+    "group": "GAINER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 6.78,
+        "high": 6.78,
+        "low": 6.32,
+        "close": 6.41,
+        "volume": 22900,
+        "vs_avg5d_pct": 20.9
+      },
+      {
+        "date": "2026-06-10",
+        "open": 6.1,
+        "high": 6.54,
+        "low": 6.07,
+        "close": 6.53,
+        "volume": 11100,
+        "vs_avg5d_pct": -41.4
+      },
+      {
+        "date": "2026-06-11",
+        "open": 6.4,
+        "high": 6.65,
+        "low": 6.4,
+        "close": 6.53,
+        "volume": 6500,
+        "vs_avg5d_pct": -65.7
+      },
+      {
+        "date": "2026-06-12",
+        "open": 6.49,
+        "high": 6.5,
+        "low": 6.08,
+        "close": 6.08,
+        "volume": 53700,
+        "vs_avg5d_pct": 183.5
+      },
+      {
+        "date": "2026-06-15",
+        "open": 6.5,
+        "high": 6.5,
+        "low": 6.2,
+        "close": 6.3,
+        "volume": 500,
+        "vs_avg5d_pct": -97.4
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 6.5,
+        "trade_count": 2,
+        "volume": 200,
+        "buy_count": 2,
+        "sell_count": 0,
+        "buy_volume": 200,
+        "sell_volume": 0,
+        "count_pct": 50.0,
+        "volume_pct": 40.0,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 6.3,
+        "trade_count": 1,
+        "volume": 200,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 200,
+        "count_pct": 25.0,
+        "volume_pct": 40.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 6.2,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 100,
+        "count_pct": 25.0,
+        "volume_pct": 20.0,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "HAP",
+      "group": "GAINER",
+      "poc_by_count": 6.5,
+      "poc_by_volume": 6.5,
+      "poc_diverge": false,
+      "value_area_high": 6.5,
+      "value_area_low": 6.3,
+      "value_area_pct": 75.0,
+      "total_trades": 4,
+      "total_volume": 500,
+      "avg_trade_size": 125.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.4,
+      "sell_ratio_today": 0.6,
+      "current_price": 6.3,
+      "price_vs_poc_pct": -3.08,
+      "vol_5d_avg": 23550.0,
+      "vol_today": 500.0,
+      "vol_spike_pct": -97.9,
+      "distribution_type": "FLAT",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "TVB",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 7.16,
+        "high": 7.32,
+        "low": 7.16,
+        "close": 7.32,
+        "volume": 15000,
+        "vs_avg5d_pct": 197.6
+      },
+      {
+        "date": "2026-06-10",
+        "open": 7.35,
+        "high": 7.39,
+        "low": 7.3,
+        "close": 7.32,
+        "volume": 5700,
+        "vs_avg5d_pct": 13.1
+      },
+      {
+        "date": "2026-06-11",
+        "open": 7.39,
+        "high": 7.5,
+        "low": 7.37,
+        "close": 7.5,
+        "volume": 2700,
+        "vs_avg5d_pct": -46.4
+      },
+      {
+        "date": "2026-06-12",
+        "open": 7.49,
+        "high": 7.49,
+        "low": 7.49,
+        "close": 7.49,
+        "volume": 1000,
+        "vs_avg5d_pct": -80.2
+      },
+      {
+        "date": "2026-06-15",
+        "open": 7.5,
+        "high": 7.5,
+        "low": 7.11,
+        "close": 7.11,
+        "volume": 800,
+        "vs_avg5d_pct": -84.1
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 7.5,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 100,
+        "sell_volume": 0,
+        "count_pct": 25.0,
+        "volume_pct": 12.5,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 7.25,
+        "trade_count": 1,
+        "volume": 200,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 200,
+        "count_pct": 25.0,
+        "volume_pct": 25.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 7.21,
+        "trade_count": 1,
+        "volume": 300,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 300,
+        "count_pct": 25.0,
+        "volume_pct": 37.5,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 7.11,
+        "trade_count": 1,
+        "volume": 200,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 200,
+        "count_pct": 25.0,
+        "volume_pct": 25.0,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "TVB",
+      "group": "LOSER",
+      "poc_by_count": 7.5,
+      "poc_by_volume": 7.21,
+      "poc_diverge": true,
+      "value_area_high": 7.5,
+      "value_area_low": 7.21,
+      "value_area_pct": 75.0,
+      "total_trades": 4,
+      "total_volume": 800,
+      "avg_trade_size": 200.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.12,
+      "sell_ratio_today": 0.88,
+      "current_price": 7.11,
+      "price_vs_poc_pct": -5.2,
+      "vol_5d_avg": 6100.0,
+      "vol_today": 800.0,
+      "vol_spike_pct": -86.9,
+      "distribution_type": "FLAT",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "ITD",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 15.35,
+        "high": 15.75,
+        "low": 15.35,
+        "close": 15.75,
+        "volume": 700,
+        "vs_avg5d_pct": -99.1
+      },
+      {
+        "date": "2026-06-10",
+        "open": 15.9,
+        "high": 15.9,
+        "low": 15.45,
+        "close": 15.9,
+        "volume": 700,
+        "vs_avg5d_pct": -99.1
+      },
+      {
+        "date": "2026-06-11",
+        "open": 15.8,
+        "high": 15.8,
+        "low": 14.8,
+        "close": 15.45,
+        "volume": 145600,
+        "vs_avg5d_pct": 87.2
+      },
+      {
+        "date": "2026-06-12",
+        "open": 15.45,
+        "high": 15.6,
+        "low": 14.4,
+        "close": 15.6,
+        "volume": 241600,
+        "vs_avg5d_pct": 210.7
+      },
+      {
+        "date": "2026-06-15",
+        "open": 14.85,
+        "high": 14.85,
+        "low": 14.85,
+        "close": 14.85,
+        "volume": 200,
+        "vs_avg5d_pct": -99.7
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 14.85,
+        "trade_count": 1,
+        "volume": 200,
+        "buy_count": 0,
+        "sell_count": 0,
+        "buy_volume": 0,
+        "sell_volume": 0,
+        "count_pct": 100.0,
+        "volume_pct": 100.0,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "ITD",
+      "group": "LOSER",
+      "poc_by_count": 14.85,
+      "poc_by_volume": 14.85,
+      "poc_diverge": false,
+      "value_area_high": 14.85,
+      "value_area_low": 14.85,
+      "value_area_pct": 100.0,
+      "total_trades": 1,
+      "total_volume": 200,
+      "avg_trade_size": 200.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": null,
+      "sell_ratio_today": null,
+      "current_price": 14.85,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 97150.0,
+      "vol_today": 200.0,
+      "vol_spike_pct": -99.8,
+      "distribution_type": "INSUFFICIENT_DATA",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "PTL",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 2.58,
+        "high": 2.61,
+        "low": 2.4,
+        "close": 2.57,
+        "volume": 27700,
+        "vs_avg5d_pct": 108.6
+      },
+      {
+        "date": "2026-06-10",
+        "open": 2.57,
+        "high": 2.6,
         "low": 2.53,
-        "close": 2.6,
-        "volume": 79000,
-        "vs_avg5d_pct": -74.4
-      }
-    ],
-    "volume_profile": [],
-    "summary": {
-      "symbol": "BKG",
-      "group": "LOSER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "TAL",
-    "group": "LOSER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": NaN,
-    "volume_profile": [],
-    "summary": {
-      "symbol": "TAL",
-      "group": "LOSER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "VPD",
-    "group": "LOSER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": NaN,
-    "volume_profile": [],
-    "summary": {
-      "symbol": "VPD",
-      "group": "LOSER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "CIG",
-    "group": "LOSER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": NaN,
-    "volume_profile": [],
-    "summary": {
-      "symbol": "CIG",
-      "group": "LOSER",
-      "error": "Không đủ data"
-    }
-  },
-  {
-    "symbol": "TSC",
-    "group": "LOSER",
-    "exchange": "HSX",
-    "time": "2026-06-15 07:21",
-    "date": "2026-06-15",
-    "history_5d": [
-      {
-        "date": "2026-06-08",
-        "open": 2.26,
-        "high": 2.29,
-        "low": 2.23,
-        "close": 2.29,
-        "volume": 115900,
-        "vs_avg5d_pct": -82.4
-      },
-      {
-        "date": "2026-06-09",
-        "open": 2.27,
-        "high": 2.29,
-        "low": 2.26,
-        "close": 2.29,
-        "volume": 406300,
-        "vs_avg5d_pct": -38.3
-      },
-      {
-        "date": "2026-06-10",
-        "open": 2.28,
-        "high": 2.45,
-        "low": 2.28,
-        "close": 2.45,
-        "volume": 1342300,
-        "vs_avg5d_pct": 103.8
+        "close": 2.58,
+        "volume": 6600,
+        "vs_avg5d_pct": -50.3
       },
       {
         "date": "2026-06-11",
-        "open": 2.49,
-        "high": 2.5,
-        "low": 2.35,
-        "close": 2.39,
-        "volume": 546300,
-        "vs_avg5d_pct": -17.1
+        "open": 2.58,
+        "high": 2.6,
+        "low": 2.4,
+        "close": 2.59,
+        "volume": 29700,
+        "vs_avg5d_pct": 123.6
       },
       {
         "date": "2026-06-12",
-        "open": 2.39,
-        "high": 2.39,
-        "low": 2.29,
-        "close": 2.31,
-        "volume": 882500,
-        "vs_avg5d_pct": 34.0
+        "open": 2.59,
+        "high": 2.59,
+        "low": 2.59,
+        "close": 2.59,
+        "volume": 1300,
+        "vs_avg5d_pct": -90.2
+      },
+      {
+        "date": "2026-06-15",
+        "open": 2.53,
+        "high": 2.53,
+        "low": 2.46,
+        "close": 2.48,
+        "volume": 1100,
+        "vs_avg5d_pct": -91.7
       }
     ],
-    "volume_profile": [],
+    "volume_profile": [
+      {
+        "price": 2.53,
+        "trade_count": 3,
+        "volume": 700,
+        "buy_count": 2,
+        "sell_count": 0,
+        "buy_volume": 600,
+        "sell_volume": 0,
+        "count_pct": 42.9,
+        "volume_pct": 63.6,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 2.49,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 100,
+        "count_pct": 14.3,
+        "volume_pct": 9.1,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 2.48,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 100,
+        "count_pct": 14.3,
+        "volume_pct": 9.1,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 2.46,
+        "trade_count": 2,
+        "volume": 200,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 200,
+        "count_pct": 28.6,
+        "volume_pct": 18.2,
+        "buy_ratio": 0.0
+      }
+    ],
     "summary": {
-      "symbol": "TSC",
+      "symbol": "PTL",
       "group": "LOSER",
-      "error": "Không đủ data"
+      "poc_by_count": 2.53,
+      "poc_by_volume": 2.53,
+      "poc_diverge": false,
+      "value_area_high": 2.53,
+      "value_area_low": 2.46,
+      "value_area_pct": 71.4,
+      "total_trades": 7,
+      "total_volume": 1100,
+      "avg_trade_size": 157.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.6,
+      "sell_ratio_today": 0.4,
+      "current_price": 2.48,
+      "price_vs_poc_pct": -1.98,
+      "vol_5d_avg": 16325.0,
+      "vol_today": 1100.0,
+      "vol_spike_pct": -93.3,
+      "distribution_type": "FLAT",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "BSR",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 28.8,
+        "high": 28.8,
+        "low": 28.05,
+        "close": 28.05,
+        "volume": 5079800,
+        "vs_avg5d_pct": 2.0
+      },
+      {
+        "date": "2026-06-10",
+        "open": 28.15,
+        "high": 28.45,
+        "low": 27.9,
+        "close": 27.95,
+        "volume": 4454200,
+        "vs_avg5d_pct": -10.6
+      },
+      {
+        "date": "2026-06-11",
+        "open": 28.3,
+        "high": 28.7,
+        "low": 28.05,
+        "close": 28.05,
+        "volume": 4474400,
+        "vs_avg5d_pct": -10.2
+      },
+      {
+        "date": "2026-06-12",
+        "open": 28.0,
+        "high": 28.6,
+        "low": 27.75,
+        "close": 28.1,
+        "volume": 6629500,
+        "vs_avg5d_pct": 33.1
+      },
+      {
+        "date": "2026-06-15",
+        "open": 26.8,
+        "high": 27.8,
+        "low": 26.8,
+        "close": 27.05,
+        "volume": 4273500,
+        "vs_avg5d_pct": -14.2
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 27.8,
+        "trade_count": 25,
+        "volume": 33600,
+        "buy_count": 25,
+        "sell_count": 0,
+        "buy_volume": 33600,
+        "sell_volume": 0,
+        "count_pct": 0.7,
+        "volume_pct": 0.8,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 27.75,
+        "trade_count": 27,
+        "volume": 21200,
+        "buy_count": 23,
+        "sell_count": 4,
+        "buy_volume": 19600,
+        "sell_volume": 1600,
+        "count_pct": 0.8,
+        "volume_pct": 0.5,
+        "buy_ratio": 0.85
+      },
+      {
+        "price": 27.7,
+        "trade_count": 31,
+        "volume": 15100,
+        "buy_count": 22,
+        "sell_count": 9,
+        "buy_volume": 9600,
+        "sell_volume": 5500,
+        "count_pct": 0.9,
+        "volume_pct": 0.4,
+        "buy_ratio": 0.71
+      },
+      {
+        "price": 27.65,
+        "trade_count": 18,
+        "volume": 14300,
+        "buy_count": 14,
+        "sell_count": 4,
+        "buy_volume": 13100,
+        "sell_volume": 1200,
+        "count_pct": 0.5,
+        "volume_pct": 0.3,
+        "buy_ratio": 0.78
+      },
+      {
+        "price": 27.6,
+        "trade_count": 108,
+        "volume": 82600,
+        "buy_count": 15,
+        "sell_count": 93,
+        "buy_volume": 7500,
+        "sell_volume": 75100,
+        "count_pct": 3.1,
+        "volume_pct": 1.9,
+        "buy_ratio": 0.14
+      },
+      {
+        "price": 27.55,
+        "trade_count": 6,
+        "volume": 9600,
+        "buy_count": 3,
+        "sell_count": 3,
+        "buy_volume": 4500,
+        "sell_volume": 5100,
+        "count_pct": 0.2,
+        "volume_pct": 0.2,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 27.5,
+        "trade_count": 34,
+        "volume": 47800,
+        "buy_count": 8,
+        "sell_count": 26,
+        "buy_volume": 22300,
+        "sell_volume": 25500,
+        "count_pct": 1.0,
+        "volume_pct": 1.1,
+        "buy_ratio": 0.24
+      },
+      {
+        "price": 27.45,
+        "trade_count": 2,
+        "volume": 200,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 200,
+        "count_pct": 0.1,
+        "volume_pct": 0.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 27.4,
+        "trade_count": 54,
+        "volume": 36700,
+        "buy_count": 48,
+        "sell_count": 6,
+        "buy_volume": 29300,
+        "sell_volume": 7400,
+        "count_pct": 1.6,
+        "volume_pct": 0.9,
+        "buy_ratio": 0.89
+      },
+      {
+        "price": 27.35,
+        "trade_count": 80,
+        "volume": 46300,
+        "buy_count": 49,
+        "sell_count": 31,
+        "buy_volume": 31600,
+        "sell_volume": 14700,
+        "count_pct": 2.3,
+        "volume_pct": 1.1,
+        "buy_ratio": 0.61
+      },
+      {
+        "price": 27.3,
+        "trade_count": 101,
+        "volume": 70500,
+        "buy_count": 40,
+        "sell_count": 61,
+        "buy_volume": 20300,
+        "sell_volume": 50200,
+        "count_pct": 2.9,
+        "volume_pct": 1.6,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 27.25,
+        "trade_count": 129,
+        "volume": 93800,
+        "buy_count": 74,
+        "sell_count": 55,
+        "buy_volume": 52300,
+        "sell_volume": 41500,
+        "count_pct": 3.7,
+        "volume_pct": 2.2,
+        "buy_ratio": 0.57
+      },
+      {
+        "price": 27.2,
+        "trade_count": 375,
+        "volume": 282600,
+        "buy_count": 223,
+        "sell_count": 152,
+        "buy_volume": 184600,
+        "sell_volume": 98000,
+        "count_pct": 10.9,
+        "volume_pct": 6.6,
+        "buy_ratio": 0.59
+      },
+      {
+        "price": 27.15,
+        "trade_count": 376,
+        "volume": 293000,
+        "buy_count": 89,
+        "sell_count": 287,
+        "buy_volume": 72700,
+        "sell_volume": 220300,
+        "count_pct": 10.9,
+        "volume_pct": 6.8,
+        "buy_ratio": 0.24
+      },
+      {
+        "price": 27.1,
+        "trade_count": 333,
+        "volume": 318000,
+        "buy_count": 128,
+        "sell_count": 205,
+        "buy_volume": 105900,
+        "sell_volume": 212100,
+        "count_pct": 9.7,
+        "volume_pct": 7.4,
+        "buy_ratio": 0.38
+      },
+      {
+        "price": 27.05,
+        "trade_count": 386,
+        "volume": 332600,
+        "buy_count": 154,
+        "sell_count": 232,
+        "buy_volume": 128400,
+        "sell_volume": 204200,
+        "count_pct": 11.2,
+        "volume_pct": 7.7,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 27.0,
+        "trade_count": 857,
+        "volume": 1062000,
+        "buy_count": 332,
+        "sell_count": 525,
+        "buy_volume": 481500,
+        "sell_volume": 580500,
+        "count_pct": 24.9,
+        "volume_pct": 24.7,
+        "buy_ratio": 0.39
+      },
+      {
+        "price": 26.95,
+        "trade_count": 314,
+        "volume": 250100,
+        "buy_count": 87,
+        "sell_count": 227,
+        "buy_volume": 60100,
+        "sell_volume": 190000,
+        "count_pct": 9.1,
+        "volume_pct": 5.8,
+        "buy_ratio": 0.28
+      },
+      {
+        "price": 26.9,
+        "trade_count": 183,
+        "volume": 112700,
+        "buy_count": 0,
+        "sell_count": 183,
+        "buy_volume": 0,
+        "sell_volume": 112700,
+        "count_pct": 5.3,
+        "volume_pct": 2.6,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 26.8,
+        "trade_count": 2,
+        "volume": 1170500,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 4300,
+        "count_pct": 0.1,
+        "volume_pct": 27.3,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "BSR",
+      "group": "LOSER",
+      "poc_by_count": 27.0,
+      "poc_by_volume": 26.8,
+      "poc_diverge": true,
+      "value_area_high": 27.2,
+      "value_area_low": 26.95,
+      "value_area_pct": 76.8,
+      "total_trades": 3441,
+      "total_volume": 4293200,
+      "avg_trade_size": 1248.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.41,
+      "sell_ratio_today": 0.59,
+      "current_price": 27.05,
+      "price_vs_poc_pct": 0.19,
+      "vol_5d_avg": 5159475.0,
+      "vol_today": 4273500.0,
+      "vol_spike_pct": -17.2,
+      "distribution_type": "BIMODAL",
+      "pattern": "CONTENTION"
+    }
+  },
+  {
+    "symbol": "BFC",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 57.3,
+        "high": 57.3,
+        "low": 56.0,
+        "close": 56.7,
+        "volume": 180200,
+        "vs_avg5d_pct": 130.4
+      },
+      {
+        "date": "2026-06-10",
+        "open": 56.1,
+        "high": 57.2,
+        "low": 56.1,
+        "close": 56.7,
+        "volume": 95200,
+        "vs_avg5d_pct": 21.7
+      },
+      {
+        "date": "2026-06-11",
+        "open": 56.7,
+        "high": 56.7,
+        "low": 56.1,
+        "close": 56.7,
+        "volume": 34400,
+        "vs_avg5d_pct": -56.0
+      },
+      {
+        "date": "2026-06-12",
+        "open": 56.7,
+        "high": 56.7,
+        "low": 56.1,
+        "close": 56.5,
+        "volume": 23800,
+        "vs_avg5d_pct": -69.6
+      },
+      {
+        "date": "2026-06-15",
+        "open": 57.5,
+        "high": 57.5,
+        "low": 54.3,
+        "close": 54.8,
+        "volume": 57500,
+        "vs_avg5d_pct": -26.5
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 57.5,
+        "trade_count": 1,
+        "volume": 1000,
+        "buy_count": 0,
+        "sell_count": 0,
+        "buy_volume": 0,
+        "sell_volume": 0,
+        "count_pct": 1.3,
+        "volume_pct": 1.7,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 56.8,
+        "trade_count": 2,
+        "volume": 1200,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 1200,
+        "count_pct": 2.7,
+        "volume_pct": 2.1,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 56.3,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 100,
+        "sell_volume": 0,
+        "count_pct": 1.3,
+        "volume_pct": 0.2,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 56.1,
+        "trade_count": 2,
+        "volume": 500,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 500,
+        "count_pct": 2.7,
+        "volume_pct": 0.9,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 55.7,
+        "trade_count": 3,
+        "volume": 1500,
+        "buy_count": 0,
+        "sell_count": 3,
+        "buy_volume": 0,
+        "sell_volume": 1500,
+        "count_pct": 4.0,
+        "volume_pct": 2.6,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 55.6,
+        "trade_count": 6,
+        "volume": 25700,
+        "buy_count": 4,
+        "sell_count": 2,
+        "buy_volume": 900,
+        "sell_volume": 24800,
+        "count_pct": 8.0,
+        "volume_pct": 44.7,
+        "buy_ratio": 0.67
+      },
+      {
+        "price": 55.3,
+        "trade_count": 12,
+        "volume": 5800,
+        "buy_count": 4,
+        "sell_count": 8,
+        "buy_volume": 2600,
+        "sell_volume": 3200,
+        "count_pct": 16.0,
+        "volume_pct": 10.1,
+        "buy_ratio": 0.33
+      },
+      {
+        "price": 55.0,
+        "trade_count": 4,
+        "volume": 2000,
+        "buy_count": 1,
+        "sell_count": 3,
+        "buy_volume": 500,
+        "sell_volume": 1500,
+        "count_pct": 5.3,
+        "volume_pct": 3.5,
+        "buy_ratio": 0.25
+      },
+      {
+        "price": 54.8,
+        "trade_count": 4,
+        "volume": 1100,
+        "buy_count": 1,
+        "sell_count": 3,
+        "buy_volume": 500,
+        "sell_volume": 600,
+        "count_pct": 5.3,
+        "volume_pct": 1.9,
+        "buy_ratio": 0.25
+      },
+      {
+        "price": 54.7,
+        "trade_count": 9,
+        "volume": 2400,
+        "buy_count": 3,
+        "sell_count": 6,
+        "buy_volume": 600,
+        "sell_volume": 1800,
+        "count_pct": 12.0,
+        "volume_pct": 4.2,
+        "buy_ratio": 0.33
+      },
+      {
+        "price": 54.6,
+        "trade_count": 2,
+        "volume": 200,
+        "buy_count": 1,
+        "sell_count": 1,
+        "buy_volume": 100,
+        "sell_volume": 100,
+        "count_pct": 2.7,
+        "volume_pct": 0.3,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 54.5,
+        "trade_count": 13,
+        "volume": 2000,
+        "buy_count": 3,
+        "sell_count": 10,
+        "buy_volume": 500,
+        "sell_volume": 1500,
+        "count_pct": 17.3,
+        "volume_pct": 3.5,
+        "buy_ratio": 0.23
+      },
+      {
+        "price": 54.4,
+        "trade_count": 14,
+        "volume": 4200,
+        "buy_count": 2,
+        "sell_count": 12,
+        "buy_volume": 600,
+        "sell_volume": 3600,
+        "count_pct": 18.7,
+        "volume_pct": 7.3,
+        "buy_ratio": 0.14
+      },
+      {
+        "price": 54.3,
+        "trade_count": 2,
+        "volume": 9800,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 9800,
+        "count_pct": 2.7,
+        "volume_pct": 17.0,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "BFC",
+      "group": "LOSER",
+      "poc_by_count": 54.4,
+      "poc_by_volume": 55.6,
+      "poc_diverge": true,
+      "value_area_high": 55.6,
+      "value_area_low": 54.4,
+      "value_area_pct": 72.0,
+      "total_trades": 75,
+      "total_volume": 57500,
+      "avg_trade_size": 767.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.11,
+      "sell_ratio_today": 0.89,
+      "current_price": 54.8,
+      "price_vs_poc_pct": 0.74,
+      "vol_5d_avg": 83400.0,
+      "vol_today": 57500.0,
+      "vol_spike_pct": -31.1,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "NHT",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 10.7,
+        "high": 10.85,
+        "low": 10.7,
+        "close": 10.85,
+        "volume": 4900,
+        "vs_avg5d_pct": -7.9
+      },
+      {
+        "date": "2026-06-10",
+        "open": 11.0,
+        "high": 11.0,
+        "low": 10.9,
+        "close": 10.9,
+        "volume": 3000,
+        "vs_avg5d_pct": -43.6
+      },
+      {
+        "date": "2026-06-11",
+        "open": 10.9,
+        "high": 11.2,
+        "low": 10.85,
+        "close": 11.15,
+        "volume": 2200,
+        "vs_avg5d_pct": -58.6
+      },
+      {
+        "date": "2026-06-12",
+        "open": 11.3,
+        "high": 11.45,
+        "low": 11.3,
+        "close": 11.4,
+        "volume": 16000,
+        "vs_avg5d_pct": 200.8
+      },
+      {
+        "date": "2026-06-15",
+        "open": 11.0,
+        "high": 11.0,
+        "low": 11.0,
+        "close": 11.0,
+        "volume": 500,
+        "vs_avg5d_pct": -90.6
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 11.55,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 100,
+        "sell_volume": 0,
+        "count_pct": 50.0,
+        "volume_pct": 16.7,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 11.0,
+        "trade_count": 1,
+        "volume": 500,
+        "buy_count": 0,
+        "sell_count": 0,
+        "buy_volume": 0,
+        "sell_volume": 0,
+        "count_pct": 50.0,
+        "volume_pct": 83.3,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "NHT",
+      "group": "LOSER",
+      "poc_by_count": 11.55,
+      "poc_by_volume": 11.0,
+      "poc_diverge": true,
+      "value_area_high": 11.55,
+      "value_area_low": 11.0,
+      "value_area_pct": 100.0,
+      "total_trades": 2,
+      "total_volume": 600,
+      "avg_trade_size": 300.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 1.0,
+      "sell_ratio_today": 0.0,
+      "current_price": 11.0,
+      "price_vs_poc_pct": -4.76,
+      "vol_5d_avg": 6525.0,
+      "vol_today": 500.0,
+      "vol_spike_pct": -92.3,
+      "distribution_type": "INSUFFICIENT_DATA",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "HSL",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 6.0,
+        "high": 6.0,
+        "low": 6.0,
+        "close": 6.0,
+        "volume": 160500,
+        "vs_avg5d_pct": -88.8
+      },
+      {
+        "date": "2026-06-10",
+        "open": 6.42,
+        "high": 6.42,
+        "low": 6.42,
+        "close": 6.42,
+        "volume": 200800,
+        "vs_avg5d_pct": -86.0
+      },
+      {
+        "date": "2026-06-11",
+        "open": 6.86,
+        "high": 6.86,
+        "low": 6.55,
+        "close": 6.86,
+        "volume": 5117500,
+        "vs_avg5d_pct": 257.1
+      },
+      {
+        "date": "2026-06-12",
+        "open": 7.3,
+        "high": 7.3,
+        "low": 6.87,
+        "close": 6.9,
+        "volume": 1447600,
+        "vs_avg5d_pct": 1.0
+      },
+      {
+        "date": "2026-06-15",
+        "open": 6.8,
+        "high": 6.84,
+        "low": 6.66,
+        "close": 6.66,
+        "volume": 238600,
+        "vs_avg5d_pct": -83.3
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 6.84,
+        "trade_count": 2,
+        "volume": 600,
+        "buy_count": 2,
+        "sell_count": 0,
+        "buy_volume": 600,
+        "sell_volume": 0,
+        "count_pct": 1.9,
+        "volume_pct": 0.3,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 6.8,
+        "trade_count": 32,
+        "volume": 149000,
+        "buy_count": 26,
+        "sell_count": 5,
+        "buy_volume": 24500,
+        "sell_volume": 13700,
+        "count_pct": 30.5,
+        "volume_pct": 62.1,
+        "buy_ratio": 0.81
+      },
+      {
+        "price": 6.79,
+        "trade_count": 2,
+        "volume": 5000,
+        "buy_count": 2,
+        "sell_count": 0,
+        "buy_volume": 5000,
+        "sell_volume": 0,
+        "count_pct": 1.9,
+        "volume_pct": 2.1,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 6.78,
+        "trade_count": 1,
+        "volume": 2000,
+        "buy_count": 1,
+        "sell_count": 0,
+        "buy_volume": 2000,
+        "sell_volume": 0,
+        "count_pct": 1.0,
+        "volume_pct": 0.8,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 6.75,
+        "trade_count": 2,
+        "volume": 500,
+        "buy_count": 1,
+        "sell_count": 1,
+        "buy_volume": 200,
+        "sell_volume": 300,
+        "count_pct": 1.9,
+        "volume_pct": 0.2,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 6.72,
+        "trade_count": 1,
+        "volume": 1000,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 1000,
+        "count_pct": 1.0,
+        "volume_pct": 0.4,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 6.7,
+        "trade_count": 4,
+        "volume": 12000,
+        "buy_count": 0,
+        "sell_count": 4,
+        "buy_volume": 0,
+        "sell_volume": 12000,
+        "count_pct": 3.8,
+        "volume_pct": 5.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 6.69,
+        "trade_count": 2,
+        "volume": 300,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 300,
+        "count_pct": 1.9,
+        "volume_pct": 0.1,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 6.68,
+        "trade_count": 18,
+        "volume": 14900,
+        "buy_count": 4,
+        "sell_count": 14,
+        "buy_volume": 1800,
+        "sell_volume": 13100,
+        "count_pct": 17.1,
+        "volume_pct": 6.2,
+        "buy_ratio": 0.22
+      },
+      {
+        "price": 6.67,
+        "trade_count": 13,
+        "volume": 24100,
+        "buy_count": 2,
+        "sell_count": 11,
+        "buy_volume": 2100,
+        "sell_volume": 22000,
+        "count_pct": 12.4,
+        "volume_pct": 10.0,
+        "buy_ratio": 0.15
+      },
+      {
+        "price": 6.66,
+        "trade_count": 28,
+        "volume": 30500,
+        "buy_count": 9,
+        "sell_count": 19,
+        "buy_volume": 10400,
+        "sell_volume": 20100,
+        "count_pct": 26.7,
+        "volume_pct": 12.7,
+        "buy_ratio": 0.32
+      }
+    ],
+    "summary": {
+      "symbol": "HSL",
+      "group": "LOSER",
+      "poc_by_count": 6.8,
+      "poc_by_volume": 6.8,
+      "poc_diverge": false,
+      "value_area_high": 6.8,
+      "value_area_low": 6.66,
+      "value_area_pct": 74.3,
+      "total_trades": 105,
+      "total_volume": 239900,
+      "avg_trade_size": 2285.0,
+      "trader_type": "Mixed",
+      "buy_ratio_today": 0.36,
+      "sell_ratio_today": 0.64,
+      "current_price": 6.66,
+      "price_vs_poc_pct": -2.06,
+      "vol_5d_avg": 1731600.0,
+      "vol_today": 238600.0,
+      "vol_spike_pct": -86.2,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "GAS",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 84.5,
+        "high": 84.5,
+        "low": 81.9,
+        "close": 82.4,
+        "volume": 906800,
+        "vs_avg5d_pct": 5.2
+      },
+      {
+        "date": "2026-06-10",
+        "open": 82.1,
+        "high": 83.9,
+        "low": 81.9,
+        "close": 82.5,
+        "volume": 509100,
+        "vs_avg5d_pct": -40.9
+      },
+      {
+        "date": "2026-06-11",
+        "open": 83.3,
+        "high": 84.5,
+        "low": 82.5,
+        "close": 82.5,
+        "volume": 530400,
+        "vs_avg5d_pct": -38.5
+      },
+      {
+        "date": "2026-06-12",
+        "open": 82.5,
+        "high": 87.1,
+        "low": 82.0,
+        "close": 85.1,
+        "volume": 1976800,
+        "vs_avg5d_pct": 129.4
+      },
+      {
+        "date": "2026-06-15",
+        "open": 83.3,
+        "high": 84.3,
+        "low": 82.3,
+        "close": 83.0,
+        "volume": 386400,
+        "vs_avg5d_pct": -55.2
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 84.3,
+        "trade_count": 3,
+        "volume": 400,
+        "buy_count": 3,
+        "sell_count": 0,
+        "buy_volume": 400,
+        "sell_volume": 0,
+        "count_pct": 0.4,
+        "volume_pct": 0.1,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 84.1,
+        "trade_count": 2,
+        "volume": 5000,
+        "buy_count": 0,
+        "sell_count": 2,
+        "buy_volume": 0,
+        "sell_volume": 5000,
+        "count_pct": 0.3,
+        "volume_pct": 1.3,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 84.0,
+        "trade_count": 10,
+        "volume": 3100,
+        "buy_count": 7,
+        "sell_count": 3,
+        "buy_volume": 1000,
+        "sell_volume": 2100,
+        "count_pct": 1.4,
+        "volume_pct": 0.8,
+        "buy_ratio": 0.7
+      },
+      {
+        "price": 83.8,
+        "trade_count": 9,
+        "volume": 7900,
+        "buy_count": 0,
+        "sell_count": 9,
+        "buy_volume": 0,
+        "sell_volume": 7900,
+        "count_pct": 1.2,
+        "volume_pct": 2.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 83.6,
+        "trade_count": 4,
+        "volume": 1300,
+        "buy_count": 3,
+        "sell_count": 1,
+        "buy_volume": 800,
+        "sell_volume": 500,
+        "count_pct": 0.6,
+        "volume_pct": 0.3,
+        "buy_ratio": 0.75
+      },
+      {
+        "price": 83.5,
+        "trade_count": 12,
+        "volume": 3700,
+        "buy_count": 1,
+        "sell_count": 11,
+        "buy_volume": 100,
+        "sell_volume": 3600,
+        "count_pct": 1.7,
+        "volume_pct": 1.0,
+        "buy_ratio": 0.08
+      },
+      {
+        "price": 83.4,
+        "trade_count": 4,
+        "volume": 1600,
+        "buy_count": 2,
+        "sell_count": 2,
+        "buy_volume": 400,
+        "sell_volume": 1200,
+        "count_pct": 0.6,
+        "volume_pct": 0.4,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 83.3,
+        "trade_count": 21,
+        "volume": 36700,
+        "buy_count": 5,
+        "sell_count": 15,
+        "buy_volume": 4000,
+        "sell_volume": 10800,
+        "count_pct": 2.9,
+        "volume_pct": 9.5,
+        "buy_ratio": 0.24
+      },
+      {
+        "price": 83.2,
+        "trade_count": 40,
+        "volume": 17500,
+        "buy_count": 25,
+        "sell_count": 15,
+        "buy_volume": 9600,
+        "sell_volume": 7900,
+        "count_pct": 5.5,
+        "volume_pct": 4.5,
+        "buy_ratio": 0.62
+      },
+      {
+        "price": 83.1,
+        "trade_count": 95,
+        "volume": 57900,
+        "buy_count": 57,
+        "sell_count": 38,
+        "buy_volume": 36400,
+        "sell_volume": 21500,
+        "count_pct": 13.1,
+        "volume_pct": 14.9,
+        "buy_ratio": 0.6
+      },
+      {
+        "price": 83.0,
+        "trade_count": 103,
+        "volume": 72100,
+        "buy_count": 35,
+        "sell_count": 68,
+        "buy_volume": 39600,
+        "sell_volume": 32500,
+        "count_pct": 14.2,
+        "volume_pct": 18.6,
+        "buy_ratio": 0.34
+      },
+      {
+        "price": 82.9,
+        "trade_count": 16,
+        "volume": 7700,
+        "buy_count": 4,
+        "sell_count": 12,
+        "buy_volume": 1700,
+        "sell_volume": 6000,
+        "count_pct": 2.2,
+        "volume_pct": 2.0,
+        "buy_ratio": 0.25
+      },
+      {
+        "price": 82.8,
+        "trade_count": 54,
+        "volume": 42500,
+        "buy_count": 35,
+        "sell_count": 19,
+        "buy_volume": 32300,
+        "sell_volume": 10200,
+        "count_pct": 7.4,
+        "volume_pct": 11.0,
+        "buy_ratio": 0.65
+      },
+      {
+        "price": 82.7,
+        "trade_count": 69,
+        "volume": 28700,
+        "buy_count": 38,
+        "sell_count": 31,
+        "buy_volume": 18900,
+        "sell_volume": 9800,
+        "count_pct": 9.5,
+        "volume_pct": 7.4,
+        "buy_ratio": 0.55
+      },
+      {
+        "price": 82.6,
+        "trade_count": 89,
+        "volume": 28300,
+        "buy_count": 28,
+        "sell_count": 61,
+        "buy_volume": 8000,
+        "sell_volume": 20300,
+        "count_pct": 12.3,
+        "volume_pct": 7.3,
+        "buy_ratio": 0.31
+      },
+      {
+        "price": 82.5,
+        "trade_count": 129,
+        "volume": 49400,
+        "buy_count": 44,
+        "sell_count": 85,
+        "buy_volume": 16400,
+        "sell_volume": 33000,
+        "count_pct": 17.8,
+        "volume_pct": 12.8,
+        "buy_ratio": 0.34
+      },
+      {
+        "price": 82.4,
+        "trade_count": 58,
+        "volume": 21200,
+        "buy_count": 13,
+        "sell_count": 45,
+        "buy_volume": 4700,
+        "sell_volume": 16500,
+        "count_pct": 8.0,
+        "volume_pct": 5.5,
+        "buy_ratio": 0.22
+      },
+      {
+        "price": 82.3,
+        "trade_count": 8,
+        "volume": 2400,
+        "buy_count": 0,
+        "sell_count": 8,
+        "buy_volume": 0,
+        "sell_volume": 2400,
+        "count_pct": 1.1,
+        "volume_pct": 0.6,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "GAS",
+      "group": "LOSER",
+      "poc_by_count": 82.5,
+      "poc_by_volume": 83.0,
+      "poc_diverge": true,
+      "value_area_high": 83.1,
+      "value_area_low": 82.4,
+      "value_area_pct": 74.8,
+      "total_trades": 726,
+      "total_volume": 387400,
+      "avg_trade_size": 534.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.48,
+      "sell_ratio_today": 0.52,
+      "current_price": 83.0,
+      "price_vs_poc_pct": 0.61,
+      "vol_5d_avg": 980775.0,
+      "vol_today": 386400.0,
+      "vol_spike_pct": -60.6,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "PLX",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 41.8,
+        "high": 41.8,
+        "low": 40.2,
+        "close": 40.5,
+        "volume": 2504400,
+        "vs_avg5d_pct": 15.5
+      },
+      {
+        "date": "2026-06-10",
+        "open": 40.9,
+        "high": 40.95,
+        "low": 39.85,
+        "close": 40.05,
+        "volume": 2594400,
+        "vs_avg5d_pct": 19.6
+      },
+      {
+        "date": "2026-06-11",
+        "open": 40.6,
+        "high": 40.95,
+        "low": 39.85,
+        "close": 39.85,
+        "volume": 1687000,
+        "vs_avg5d_pct": -22.2
+      },
+      {
+        "date": "2026-06-12",
+        "open": 39.85,
+        "high": 41.0,
+        "low": 39.65,
+        "close": 40.05,
+        "volume": 2261400,
+        "vs_avg5d_pct": 4.3
+      },
+      {
+        "date": "2026-06-15",
+        "open": 39.4,
+        "high": 39.45,
+        "low": 38.4,
+        "close": 39.05,
+        "volume": 1798100,
+        "vs_avg5d_pct": -17.1
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 39.45,
+        "trade_count": 6,
+        "volume": 1700,
+        "buy_count": 6,
+        "sell_count": 0,
+        "buy_volume": 1700,
+        "sell_volume": 0,
+        "count_pct": 0.3,
+        "volume_pct": 0.1,
+        "buy_ratio": 1.0
+      },
+      {
+        "price": 39.4,
+        "trade_count": 10,
+        "volume": 107800,
+        "buy_count": 5,
+        "sell_count": 4,
+        "buy_volume": 1300,
+        "sell_volume": 2500,
+        "count_pct": 0.5,
+        "volume_pct": 6.0,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 39.35,
+        "trade_count": 4,
+        "volume": 600,
+        "buy_count": 0,
+        "sell_count": 4,
+        "buy_volume": 0,
+        "sell_volume": 600,
+        "count_pct": 0.2,
+        "volume_pct": 0.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 39.3,
+        "trade_count": 1,
+        "volume": 100,
+        "buy_count": 0,
+        "sell_count": 1,
+        "buy_volume": 0,
+        "sell_volume": 100,
+        "count_pct": 0.0,
+        "volume_pct": 0.0,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 39.25,
+        "trade_count": 5,
+        "volume": 1300,
+        "buy_count": 2,
+        "sell_count": 3,
+        "buy_volume": 800,
+        "sell_volume": 500,
+        "count_pct": 0.2,
+        "volume_pct": 0.1,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 39.2,
+        "trade_count": 36,
+        "volume": 58200,
+        "buy_count": 19,
+        "sell_count": 17,
+        "buy_volume": 19800,
+        "sell_volume": 38400,
+        "count_pct": 1.6,
+        "volume_pct": 3.2,
+        "buy_ratio": 0.53
+      },
+      {
+        "price": 39.15,
+        "trade_count": 111,
+        "volume": 97700,
+        "buy_count": 61,
+        "sell_count": 50,
+        "buy_volume": 49600,
+        "sell_volume": 48100,
+        "count_pct": 5.0,
+        "volume_pct": 5.4,
+        "buy_ratio": 0.55
+      },
+      {
+        "price": 39.1,
+        "trade_count": 181,
+        "volume": 125600,
+        "buy_count": 90,
+        "sell_count": 91,
+        "buy_volume": 45600,
+        "sell_volume": 80000,
+        "count_pct": 8.2,
+        "volume_pct": 7.0,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 39.05,
+        "trade_count": 154,
+        "volume": 145200,
+        "buy_count": 62,
+        "sell_count": 92,
+        "buy_volume": 39600,
+        "sell_volume": 105600,
+        "count_pct": 6.9,
+        "volume_pct": 8.1,
+        "buy_ratio": 0.4
+      },
+      {
+        "price": 39.0,
+        "trade_count": 320,
+        "volume": 373800,
+        "buy_count": 112,
+        "sell_count": 208,
+        "buy_volume": 114400,
+        "sell_volume": 259400,
+        "count_pct": 14.4,
+        "volume_pct": 20.8,
+        "buy_ratio": 0.35
+      },
+      {
+        "price": 38.95,
+        "trade_count": 141,
+        "volume": 65900,
+        "buy_count": 39,
+        "sell_count": 102,
+        "buy_volume": 15200,
+        "sell_volume": 50700,
+        "count_pct": 6.4,
+        "volume_pct": 3.7,
+        "buy_ratio": 0.28
+      },
+      {
+        "price": 38.9,
+        "trade_count": 125,
+        "volume": 99000,
+        "buy_count": 12,
+        "sell_count": 113,
+        "buy_volume": 11600,
+        "sell_volume": 87400,
+        "count_pct": 5.6,
+        "volume_pct": 5.5,
+        "buy_ratio": 0.1
+      },
+      {
+        "price": 38.85,
+        "trade_count": 132,
+        "volume": 67400,
+        "buy_count": 31,
+        "sell_count": 101,
+        "buy_volume": 15800,
+        "sell_volume": 51600,
+        "count_pct": 6.0,
+        "volume_pct": 3.7,
+        "buy_ratio": 0.23
+      },
+      {
+        "price": 38.8,
+        "trade_count": 121,
+        "volume": 98900,
+        "buy_count": 30,
+        "sell_count": 91,
+        "buy_volume": 11100,
+        "sell_volume": 87800,
+        "count_pct": 5.5,
+        "volume_pct": 5.5,
+        "buy_ratio": 0.25
+      },
+      {
+        "price": 38.75,
+        "trade_count": 118,
+        "volume": 88900,
+        "buy_count": 63,
+        "sell_count": 55,
+        "buy_volume": 31700,
+        "sell_volume": 57200,
+        "count_pct": 5.3,
+        "volume_pct": 4.9,
+        "buy_ratio": 0.53
+      },
+      {
+        "price": 38.7,
+        "trade_count": 165,
+        "volume": 105200,
+        "buy_count": 55,
+        "sell_count": 110,
+        "buy_volume": 46700,
+        "sell_volume": 58500,
+        "count_pct": 7.4,
+        "volume_pct": 5.8,
+        "buy_ratio": 0.33
+      },
+      {
+        "price": 38.65,
+        "trade_count": 76,
+        "volume": 28900,
+        "buy_count": 16,
+        "sell_count": 60,
+        "buy_volume": 5000,
+        "sell_volume": 23900,
+        "count_pct": 3.4,
+        "volume_pct": 1.6,
+        "buy_ratio": 0.21
+      },
+      {
+        "price": 38.6,
+        "trade_count": 134,
+        "volume": 109000,
+        "buy_count": 20,
+        "sell_count": 114,
+        "buy_volume": 6000,
+        "sell_volume": 103000,
+        "count_pct": 6.0,
+        "volume_pct": 6.1,
+        "buy_ratio": 0.15
+      },
+      {
+        "price": 38.55,
+        "trade_count": 115,
+        "volume": 87400,
+        "buy_count": 23,
+        "sell_count": 92,
+        "buy_volume": 16800,
+        "sell_volume": 70600,
+        "count_pct": 5.2,
+        "volume_pct": 4.9,
+        "buy_ratio": 0.2
+      },
+      {
+        "price": 38.5,
+        "trade_count": 172,
+        "volume": 91400,
+        "buy_count": 14,
+        "sell_count": 158,
+        "buy_volume": 7800,
+        "sell_volume": 83600,
+        "count_pct": 7.8,
+        "volume_pct": 5.1,
+        "buy_ratio": 0.08
+      },
+      {
+        "price": 38.45,
+        "trade_count": 46,
+        "volume": 18700,
+        "buy_count": 8,
+        "sell_count": 38,
+        "buy_volume": 1600,
+        "sell_volume": 17100,
+        "count_pct": 2.1,
+        "volume_pct": 1.0,
+        "buy_ratio": 0.17
+      },
+      {
+        "price": 38.4,
+        "trade_count": 45,
+        "volume": 25600,
+        "buy_count": 2,
+        "sell_count": 43,
+        "buy_volume": 3000,
+        "sell_volume": 22600,
+        "count_pct": 2.0,
+        "volume_pct": 1.4,
+        "buy_ratio": 0.04
+      }
+    ],
+    "summary": {
+      "symbol": "PLX",
+      "group": "LOSER",
+      "poc_by_count": 39.0,
+      "poc_by_volume": 39.0,
+      "poc_diverge": false,
+      "value_area_high": 39.1,
+      "value_area_low": 38.5,
+      "value_area_pct": 74.2,
+      "total_trades": 2218,
+      "total_volume": 1798300,
+      "avg_trade_size": 811.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.26,
+      "sell_ratio_today": 0.74,
+      "current_price": 39.05,
+      "price_vs_poc_pct": 0.13,
+      "vol_5d_avg": 2261800.0,
+      "vol_today": 1798100.0,
+      "vol_spike_pct": -20.5,
+      "distribution_type": "BIMODAL",
+      "pattern": "WEAK"
+    }
+  },
+  {
+    "symbol": "PVP",
+    "group": "LOSER",
+    "exchange": "HSX",
+    "time": "2026-06-15 09:56",
+    "date": "2026-06-15",
+    "history_5d": [
+      {
+        "date": "2026-06-09",
+        "open": 17.8,
+        "high": 17.85,
+        "low": 17.4,
+        "close": 17.4,
+        "volume": 269100,
+        "vs_avg5d_pct": 33.3
+      },
+      {
+        "date": "2026-06-10",
+        "open": 17.4,
+        "high": 17.6,
+        "low": 17.35,
+        "close": 17.4,
+        "volume": 139000,
+        "vs_avg5d_pct": -31.1
+      },
+      {
+        "date": "2026-06-11",
+        "open": 17.65,
+        "high": 17.65,
+        "low": 17.4,
+        "close": 17.55,
+        "volume": 211800,
+        "vs_avg5d_pct": 4.9
+      },
+      {
+        "date": "2026-06-12",
+        "open": 17.55,
+        "high": 17.6,
+        "low": 17.4,
+        "close": 17.4,
+        "volume": 174200,
+        "vs_avg5d_pct": -13.7
+      },
+      {
+        "date": "2026-06-15",
+        "open": 17.35,
+        "high": 17.35,
+        "low": 16.9,
+        "close": 17.0,
+        "volume": 215200,
+        "vs_avg5d_pct": 6.6
+      }
+    ],
+    "volume_profile": [
+      {
+        "price": 17.35,
+        "trade_count": 6,
+        "volume": 12100,
+        "buy_count": 3,
+        "sell_count": 2,
+        "buy_volume": 1600,
+        "sell_volume": 700,
+        "count_pct": 2.5,
+        "volume_pct": 5.6,
+        "buy_ratio": 0.5
+      },
+      {
+        "price": 17.3,
+        "trade_count": 9,
+        "volume": 9300,
+        "buy_count": 1,
+        "sell_count": 8,
+        "buy_volume": 500,
+        "sell_volume": 8800,
+        "count_pct": 3.7,
+        "volume_pct": 4.3,
+        "buy_ratio": 0.11
+      },
+      {
+        "price": 17.25,
+        "trade_count": 14,
+        "volume": 14000,
+        "buy_count": 0,
+        "sell_count": 14,
+        "buy_volume": 0,
+        "sell_volume": 14000,
+        "count_pct": 5.8,
+        "volume_pct": 6.5,
+        "buy_ratio": 0.0
+      },
+      {
+        "price": 17.2,
+        "trade_count": 11,
+        "volume": 12800,
+        "buy_count": 1,
+        "sell_count": 10,
+        "buy_volume": 100,
+        "sell_volume": 12700,
+        "count_pct": 4.5,
+        "volume_pct": 5.9,
+        "buy_ratio": 0.09
+      },
+      {
+        "price": 17.15,
+        "trade_count": 10,
+        "volume": 5800,
+        "buy_count": 3,
+        "sell_count": 7,
+        "buy_volume": 3000,
+        "sell_volume": 2800,
+        "count_pct": 4.1,
+        "volume_pct": 2.7,
+        "buy_ratio": 0.3
+      },
+      {
+        "price": 17.1,
+        "trade_count": 33,
+        "volume": 17700,
+        "buy_count": 14,
+        "sell_count": 19,
+        "buy_volume": 10700,
+        "sell_volume": 7000,
+        "count_pct": 13.6,
+        "volume_pct": 8.2,
+        "buy_ratio": 0.42
+      },
+      {
+        "price": 17.05,
+        "trade_count": 34,
+        "volume": 40100,
+        "buy_count": 10,
+        "sell_count": 24,
+        "buy_volume": 5300,
+        "sell_volume": 34800,
+        "count_pct": 14.0,
+        "volume_pct": 18.6,
+        "buy_ratio": 0.29
+      },
+      {
+        "price": 17.0,
+        "trade_count": 101,
+        "volume": 89500,
+        "buy_count": 38,
+        "sell_count": 63,
+        "buy_volume": 41500,
+        "sell_volume": 48000,
+        "count_pct": 41.6,
+        "volume_pct": 41.6,
+        "buy_ratio": 0.38
+      },
+      {
+        "price": 16.95,
+        "trade_count": 21,
+        "volume": 12500,
+        "buy_count": 2,
+        "sell_count": 19,
+        "buy_volume": 1200,
+        "sell_volume": 11300,
+        "count_pct": 8.6,
+        "volume_pct": 5.8,
+        "buy_ratio": 0.1
+      },
+      {
+        "price": 16.9,
+        "trade_count": 4,
+        "volume": 1400,
+        "buy_count": 0,
+        "sell_count": 4,
+        "buy_volume": 0,
+        "sell_volume": 1400,
+        "count_pct": 1.6,
+        "volume_pct": 0.7,
+        "buy_ratio": 0.0
+      }
+    ],
+    "summary": {
+      "symbol": "PVP",
+      "group": "LOSER",
+      "poc_by_count": 17.0,
+      "poc_by_volume": 17.0,
+      "poc_diverge": false,
+      "value_area_high": 17.1,
+      "value_area_low": 16.95,
+      "value_area_pct": 77.8,
+      "total_trades": 243,
+      "total_volume": 215200,
+      "avg_trade_size": 886.0,
+      "trader_type": "Retail",
+      "buy_ratio_today": 0.31,
+      "sell_ratio_today": 0.69,
+      "current_price": 17.0,
+      "price_vs_poc_pct": 0.0,
+      "vol_5d_avg": 198525.0,
+      "vol_today": 215200.0,
+      "vol_spike_pct": 8.4,
+      "distribution_type": "BIMODAL",
+      "pattern": "CONTENTION"
     }
   }
 ]
