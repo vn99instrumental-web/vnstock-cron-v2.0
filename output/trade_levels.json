@@ -1,32 +1,8 @@
 {
-  "generated_at": "2026-06-16T11:51:15.459432+07:00",
-  "buy_count": 1,
-  "exit_count": 7,
-  "buy_levels": [
-    {
-      "symbol": "TYA",
-      "exchange": "HSX",
-      "decision": "BUY",
-      "confidence": "HIGH",
-      "entry_style": "PULLBACK",
-      "price": 18.6,
-      "entry": 18.55,
-      "entry_low": 18.5,
-      "entry_high": 18.6,
-      "stop_loss": 18.3,
-      "risk_pct": 1.35,
-      "tp1": 18.9,
-      "tp2": 19.45,
-      "rr_tp1": 1.4,
-      "rr_headroom": 2.2,
-      "size_hint": "FULL",
-      "nearest_support": 18.53,
-      "nearest_resist": 19.1,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "CONSENSUS_BULL,TP2_FORCED_GAP",
-      "skip": ""
-    }
-  ],
+  "generated_at": "2026-06-16T13:51:16.422981+07:00",
+  "buy_count": 0,
+  "exit_count": 6,
+  "buy_levels": [],
   "exit_levels": [
     {
       "symbol": "FTS",
@@ -34,28 +10,18 @@
       "decision": "SELL",
       "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 24.95,
+      "price": 25.4,
       "exit_trigger": 23.9,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "TCX",
+      "symbol": "APG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 42.55,
-      "exit_trigger": 41.0,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "PNJ",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 67.8,
-      "exit_trigger": 65.5,
+      "price": 5.59,
+      "exit_trigger": 5.19,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -64,8 +30,18 @@
       "decision": "SELL",
       "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 128.7,
-      "exit_trigger": 127.7,
+      "price": 131.8,
+      "exit_trigger": 128.0,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TCX",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 42.9,
+      "exit_trigger": 41.0,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -86,16 +62,6 @@
       "entry_style": "EXIT",
       "price": 9.4,
       "exit_trigger": 9.15,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "SGT",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 14.5,
-      "exit_trigger": 14.4,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
