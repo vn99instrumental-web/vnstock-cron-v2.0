@@ -1,41 +1,61 @@
 {
-  "generated_at": "2026-06-16T09:51:38.049822+07:00",
+  "generated_at": "2026-06-16T10:51:27.965173+07:00",
   "buy_count": 1,
-  "exit_count": 9,
+  "exit_count": 8,
   "buy_levels": [
     {
-      "symbol": "ASP",
+      "symbol": "ADS",
       "exchange": "HSX",
       "decision": "BUY",
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
-      "price": 7.49,
-      "entry": 7.35,
-      "entry_low": 7.35,
-      "entry_high": 7.49,
-      "stop_loss": 7.14,
-      "risk_pct": 2.86,
-      "tp1": 7.66,
-      "tp2": 7.89,
+      "price": 9.53,
+      "entry": 9.52,
+      "entry_low": 9.51,
+      "entry_high": 9.53,
+      "stop_loss": 9.23,
+      "risk_pct": 3.05,
+      "tp1": 9.95,
+      "tp2": null,
       "rr_tp1": 1.48,
-      "rr_headroom": 1.19,
+      "rr_headroom": 0.21,
       "size_hint": "HALF",
-      "nearest_support": 7.35,
-      "nearest_resist": 7.6,
+      "nearest_support": 9.52,
+      "nearest_resist": 9.58,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "TP2_FORCED_GAP,TIGHT_HEADROOM",
+      "flags": "SINGLE_TP_ONLY,TIGHT_HEADROOM",
       "skip": ""
     }
   ],
   "exit_levels": [
     {
-      "symbol": "LDG",
+      "symbol": "FTS",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "LOW",
+      "entry_style": "EXIT",
+      "price": 24.9,
+      "exit_trigger": 23.85,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TCX",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 3.76,
-      "exit_trigger": 3.65,
+      "price": 42.65,
+      "exit_trigger": 41.0,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "FRT",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 128.8,
+      "exit_trigger": 127.7,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -49,52 +69,12 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "FRT",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 128.0,
-      "exit_trigger": 127.6,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "VOS",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 12.25,
-      "exit_trigger": 12.2,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "BCE",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 8.35,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "SHI",
       "exchange": "HSX",
       "decision": "STRONG SELL",
       "confidence": "HIGH",
       "entry_style": "EXIT",
-      "price": 13.9,
-      "exit_trigger": 13.85,
-      "note": "Thoát ngay (market)"
-    },
-    {
-      "symbol": "VRC",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 12.5,
+      "price": 13.8,
       "exit_trigger": null,
       "note": "Thoát ngay (market)"
     },
@@ -104,17 +84,27 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 9.5,
-      "exit_trigger": null,
+      "price": 9.4,
+      "exit_trigger": 9.15,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "NBB",
+      "symbol": "SGT",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 14.5,
+      "exit_trigger": 14.4,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "VRC",
       "exchange": "HSX",
       "decision": "STRONG SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 17.0,
+      "price": 12.5,
       "exit_trigger": null,
       "note": "Thoát ngay (market)"
     }
