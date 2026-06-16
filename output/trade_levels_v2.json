@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-16T18:44:06.983884+07:00",
+  "generated_at": "2026-06-16T19:27:49.899937+07:00",
   "scoring_version": "v2",
   "buy_count": 1,
-  "exit_count": 4,
+  "exit_count": 2,
   "buy_levels": [
     {
       "symbol": "VVS",
@@ -30,33 +30,13 @@
   ],
   "exit_levels": [
     {
-      "symbol": "BSI",
+      "symbol": "TCX",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 33.85,
-      "exit_trigger": 31.5,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "FTS",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 25.4,
-      "exit_trigger": 23.75,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "VNE",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 2.91,
-      "exit_trigger": null,
+      "price": 43.5,
+      "exit_trigger": 40.7,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -66,7 +46,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 9.42,
-      "exit_trigger": 9.15,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
