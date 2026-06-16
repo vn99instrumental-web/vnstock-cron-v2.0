@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-16T16:10:09.121069+07:00",
+  "generated_at": "2026-06-16T16:41:44.755651+07:00",
   "scoring_version": "v2",
   "buy_count": 1,
-  "exit_count": 2,
+  "exit_count": 1,
   "buy_levels": [
     {
       "symbol": "VVS",
@@ -19,26 +19,16 @@
       "tp1": 119.6,
       "tp2": null,
       "rr_tp1": 1.49,
-      "rr_headroom": 1.05,
+      "rr_headroom": 2.15,
       "size_hint": "HALF",
       "nearest_support": 110.8,
-      "nearest_resist": 117.0,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "SINGLE_TP_ONLY,TIGHT_HEADROOM,STOP_BELOW_FLOOR",
+      "nearest_resist": 123.5,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
+      "flags": "SINGLE_TP_ONLY,STOP_BELOW_FLOOR",
       "skip": ""
     }
   ],
   "exit_levels": [
-    {
-      "symbol": "VNE",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 2.91,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
     {
       "symbol": "DQC",
       "exchange": "HSX",
@@ -46,7 +36,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 9.42,
-      "exit_trigger": 9.15,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
