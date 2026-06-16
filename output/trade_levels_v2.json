@@ -1,38 +1,42 @@
 {
-  "generated_at": "2026-06-16T10:56:31.431793+07:00",
+  "generated_at": "2026-06-16T11:56:29.749993+07:00",
   "scoring_version": "v2",
-  "buy_count": 0,
-  "exit_count": 7,
-  "buy_levels": [],
-  "exit_levels": [
+  "buy_count": 1,
+  "exit_count": 4,
+  "buy_levels": [
     {
-      "symbol": "TCX",
+      "symbol": "TYA",
       "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 42.55,
-      "exit_trigger": 41.0,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
+      "decision": "BUY",
+      "confidence": "HIGH",
+      "entry_style": "PULLBACK",
+      "price": 18.6,
+      "entry": 18.55,
+      "entry_low": 18.5,
+      "entry_high": 18.6,
+      "stop_loss": 18.3,
+      "risk_pct": 1.35,
+      "tp1": 18.9,
+      "tp2": 19.45,
+      "rr_tp1": 1.4,
+      "rr_headroom": 2.2,
+      "size_hint": "FULL",
+      "nearest_support": 18.53,
+      "nearest_resist": 19.1,
+      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "flags": "CONSENSUS_BULL,TP2_FORCED_GAP",
+      "skip": ""
+    }
+  ],
+  "exit_levels": [
     {
       "symbol": "FRT",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 128.8,
+      "price": 128.7,
       "exit_trigger": 127.7,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "ITD",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 16.15,
-      "exit_trigger": 15.85,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -41,8 +45,8 @@
       "decision": "STRONG SELL",
       "confidence": "HIGH",
       "entry_style": "EXIT",
-      "price": 13.8,
-      "exit_trigger": null,
+      "price": 13.9,
+      "exit_trigger": 13.8,
       "note": "Thoát ngay (market)"
     },
     {
@@ -63,16 +67,6 @@
       "entry_style": "EXIT",
       "price": 14.5,
       "exit_trigger": 14.4,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "VRC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 12.5,
-      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]

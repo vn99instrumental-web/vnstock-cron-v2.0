@@ -1,2 +1,2 @@
 ﻿symbol,exchange,decision,confidence,entry_style,price,entry_low,entry,entry_high,stop_loss,risk_pct,tp1,tp2,rr_tp1,rr_headroom,size_hint,nearest_support,nearest_resist,levels_used,flags,skip
-BSR,HSX,BUY,MEDIUM,PULLBACK,26.5,26.25,26.3,26.5,25.6,2.66,27.35,28.35,1.5,3.57,HALF,26.29,28.8,"ema20,ema50,bb,supertrend,low_5d,atr",,
+TYA,HSX,BUY,HIGH,PULLBACK,18.6,18.5,18.55,18.6,18.3,1.35,18.9,19.45,1.4,2.2,FULL,18.53,19.1,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,TP2_FORCED_GAP",
