@@ -153,6 +153,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .pflag{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:2px;border:1px solid;letter-spacing:.05em;margin:0 4px 4px 0}
 .pf-BULL_TRAP_RISK{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
 .pf-CONSENSUS_BULL{border-color:var(--sb);color:var(--sb);background:var(--sb-bg)}
+.pf-TA_MISSING{border-color:var(--sell);color:var(--sell);background:var(--sell-bg)}
 .sbar-blk{padding:8px 12px 8px 17px;border-top:1px solid var(--border)}
 .sbar-ttl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
 .sbar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
@@ -317,6 +318,8 @@ const NORM_KEY={trend:'norm_trend',momentum:'norm_momentum',volume:'norm_volume'
 })();
 
 function buildOFHtml(d) {
+  const noOF = (d._of_buy_ratio==null && d._of_buy_count==null && d._of_sell_count==null && !d._of_pattern);
+  if (noOF) return `<div class="of-blk"><div class="of-hdr">🔄 LỰC KHỚP LỆNH</div><div style="font-size:10px;color:var(--muted);padding:6px 2px;line-height:1.5">Chưa có dữ liệu lực khớp lệnh<br><span style="color:var(--dim)">(ngoài giờ giao dịch hoặc chưa có khớp lệnh trong phiên)</span></div></div>`;
   const br = d._of_buy_ratio != null ? Math.round(d._of_buy_ratio * 100) : null;
   const sr = br != null ? 100 - br : null;
   const brClass = br == null ? 'of-badge-neu' : br >= 60 ? 'of-badge-buy' : br <= 40 ? 'of-badge-sell' : 'of-badge-neu';
@@ -579,7 +582,7 @@ document.getElementById('cards').innerHTML='<div class="cards-hint">👆 Bấm 1
   }
   window.showHint = showHint;
 
-  // click 1 mã → CHỈ render đúng card mã đó
+  // click 1 mã → CHỉ render đúng card mã đó
   function openSymbol(sym) {
     var idx = ALL_DATA.findIndex(function (d) { return d.symbol === sym; });
     if (idx < 0 || typeof renderCard !== 'function') return;
