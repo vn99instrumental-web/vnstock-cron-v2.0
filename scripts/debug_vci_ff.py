@@ -146,15 +146,28 @@ def run():
     log.info(f"        {cafef_net5d}")
     log.info("───────────────────────────────────")
 
-    if v_n >= 3 and v_u >= max(2, v_n - 1):
-        log.info("✅ VCI trả net VALUE phân biệt theo mã.")
-        log.info("   → AN TOÀN đổi source FF sang VCI (Phương án C).")
+    # Chạy ngoài giờ GD VẪN có data lịch sử T-1, T-2, ... → vẫn rút được kết luận
+    # về việc VCI có phân biệt per-symbol hay không. Chỉ caveat: không nói được
+    # gì về data phiên live (T+0).
+    log.info("Lưu ý: foreign_trade lấy data LỊCH SỬ (25 phiên gần nhất),")
+    log.info("       nên test này hoạt động cả ngoài giờ GD — chỉ thiếu T+0 hôm nay.\n")
+
+    if v_n == 0:
+        log.info("🚨 VCI KHÔNG TRẢ DATA cho cả 5 mã (cả lịch sử).")
+        log.info("   → VCI foreign_trade hỏng hẳn ở thời điểm này.")
+        log.info("   → Thử lại trong giờ GD trước khi kết luận; nếu vẫn rỗng → giữ CafeF.")
+    elif v_n >= 3 and v_u >= max(2, v_n - 1):
+        log.info("✅ VCI trả net VALUE phân biệt theo mã (kể cả với data lịch sử).")
+        log.info("   → AN TOÀN đổi source FF sang VCI.")
+        if c_n >= 3 and c_u == 1:
+            log.info("   → BONUS: confirm được CafeF lỗi (identical) so với VCI trên CÙNG khoảng thời gian.")
     elif v_n >= 3 and v_u == 1:
         log.info("🚨 VCI net_5d GIỐNG NHAU across mã (giống lỗi CafeF).")
-        log.info("   → VCI vẫn hỏng. Giữ Phương án B (loại ff khỏi total / qualifier).")
+        log.info("   → VCI cũng hỏng. Giữ Phương án B (loại ff khỏi total / qualifier).")
     elif v_n < 3:
-        log.info("⚠️ VCI quá ít data (ngoài giờ GD hoặc mã ít FF).")
-        log.info("   → Chạy lại TRONG PHIÊN với mã thanh khoản cao để kết luận chắc.")
+        log.info(f"⚠️ VCI chỉ có data cho {v_n}/5 mã — quá ít.")
+        log.info("   → Thử lại TRONG GIỜ GD với mã thanh khoản cao hơn,")
+        log.info("     hoặc mở rộng TEST_SYMBOLS lên 10 mã.")
     else:
         log.info("⚠️ Kết quả mơ hồ — xem net_5d chi tiết phía trên để quyết định.")
 
