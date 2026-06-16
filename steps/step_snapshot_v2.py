@@ -2,14 +2,25 @@
 step_snapshot_v2.py — Intraday snapshot cho V2 pipeline (fully standalone)
 ===========================================================================
 Copy đầy đủ của step_snapshot.py. KHÔNG import từ step_snapshot.
-Thay đổi duy nhất so với step_snapshot.py: output filenames có suffix _v2.
+Thay đổi so với step_snapshot.py: output filenames có suffix _v2 + FF source.
 
 Sync từ step_snapshot.py:
   2026-06-02 — FIX bb_position (Bug #11)
   2026-06-11 — v2 fork: output deep_raw_v2.json / ranking_v2.json
 
+Thay đổi RIÊNG của v2 (không có trong v3):
+  2026-06-16 — SWITCH FF source CafeF → VCI cho net values.
+    Bằng chứng debug_vci_ff.py (2026-06-16, ngoài giờ GD):
+      VCI: 5/5 mã trả per-symbol khác nhau (HPG +78.9 / VND -19.8 / SSI -54.7
+           / FPT -137.4 / VCB -100.5 tỷ VND).
+      CafeF: 5/5 mã trả identical -324.7M (aggregate market, không per-symbol).
+    → CafeF foreign_trade() hỏng client-side, không sửa được.
+    → get_flow() giờ chỉ 1 lệnh fetch VCI 25d, đọc cả room + net từ cùng DF.
+    → Giữ validate_ff_data() làm fail-safe phòng VCI lỗi tương lai.
+
 MAINTAINER: Khi step_snapshot.py cập nhật logic → copy lại toàn bộ
-body vào đây, giữ nguyên MAIN block cuối với filenames _v2.
+body vào đây, giữ nguyên MAIN block cuối với filenames _v2 VÀ
+giữ nguyên block get_flow() đã switch sang VCI.
 """
 import os
 import sys
@@ -322,82 +333,95 @@ def get_vnindex_return(history_length: str = "2M") -> dict:
 
 
 # =====================================================
-# FLOW — CafeF foreign_trade
+# FLOW — VCI foreign_trade (room + net values)
 # =====================================================
+# 2026-06-16: switch source CafeF → VCI cho net values.
+#   Bằng chứng (debug_vci_ff.py log 2026-06-16):
+#     VCI 5/5 mã trả per-symbol khác nhau (HPG +78.9tỷ, VND -19.8tỷ, …)
+#     CafeF 5/5 mã trả identical -324.7M (aggregate market, không per-symbol)
+#   → CafeF foreign_trade() hỏng client-side, không sửa được.
+#   → Dùng VCI cho cả room VÀ net (1 lệnh fetch thay 2).
+# Cột VCI: fr_net_value_total / fr_buy_value_matched / fr_sell_value_matched
+#          + fr_available_percentage / fr_room_percentage / fr_current_room /
+#          fr_total_room + trading_date.
+# Giữ validate_ff_data() làm fail-safe phòng khi VCI lỗi tương lai.
 
 def get_flow(symbol: str) -> dict:
     res = {"symbol": symbol}
 
-    # ── FF room từ VCI trực tiếp — Primary source, chính xác nhất ──
+    # ── 1 lệnh fetch VCI 25 ngày: vừa lấy room (row mới nhất), vừa lấy net (tail 5d/20d) ──
     # fr_available_percentage = % room ngoại còn có thể mua (0.0–1.0)
-    # fr_room_percentage = tổng room cho phép (thường 0.49 hoặc 0.3)
+    # fr_room_percentage      = tổng room cho phép (thường 0.49 hoặc 0.3)
+    # fr_net_value_total      = net value per-symbol (VCI trả đúng, đã verify)
     df_vci = safe_run(f"ff_vci {symbol}",
               lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
-                  start=start_str(5), end=today_str()))
+                  start=start_str(25), end=today_str()))
+
     if df_vci is not None and not df_vci.empty:
+        # Sort ASC theo date để tail(5).sum() = 5 phiên GẦN NHẤT
+        if "trading_date" in df_vci.columns:
+            df_vci = df_vci.copy()
+            df_vci["trading_date"] = pd.to_datetime(df_vci["trading_date"], errors="coerce")
+            df_vci = df_vci.sort_values("trading_date", ascending=True)
+
+        # ── ROOM (từ row mới nhất) ──
         row_vci = df_vci.iloc[-1]
         avail = row_vci.get("fr_available_percentage")
         total = row_vci.get("fr_room_percentage")
         if avail is not None and not (isinstance(avail, float) and avail != avail):
-            res["ff_room"] = round(float(avail) * 100, 2)   # 0.0102 → 1.02%
+            res["ff_room"] = round(float(avail) * 100, 2)
         if total is not None and not (isinstance(total, float) and total != total):
-            res["ff_room_max_pct"] = round(float(total) * 100, 2)  # 0.49 → 49%
+            res["ff_room_max_pct"] = round(float(total) * 100, 2)
         fr_cur  = row_vci.get("fr_current_room")
         fr_tot  = row_vci.get("fr_total_room")
         if fr_cur is not None:
-            res["ff_room_raw"]     = float(fr_cur)   # số CP còn có thể mua
+            res["ff_room_raw"] = float(fr_cur)
         if fr_tot is not None:
-            res["ff_total_room_raw"] = float(fr_tot)  # tổng room CP
+            res["ff_total_room_raw"] = float(fr_tot)
         log.info(f"  FF room VCI {symbol}: available={res.get('ff_room')}% "
                  f"total_room={res.get('ff_room_max_pct')}%")
 
-    df_ft = safe_run(f"foreign_trade {symbol}",
-             lambda: Trading(symbol=symbol, source="CafeF").foreign_trade(
-                 start=start_str(25), end=today_str()))
-
-    if df_ft is not None and not df_ft.empty:
+        # ── NET / BUY / SELL VALUES (VCI per-symbol đã verify) ──
         rename = {
             "fr_buy_value_matched" : "buy_val",
             "fr_sell_value_matched": "sell_val",
             "fr_net_value_total"   : "net_val",
         }
         for old, new in rename.items():
-            if old in df_ft.columns:
-                df_ft = df_ft.rename(columns={old: new})
+            if old in df_vci.columns:
+                df_vci = df_vci.rename(columns={old: new})
 
-        buy  = pd.to_numeric(df_ft.get("buy_val"),  errors="coerce").dropna() \
-               if "buy_val"  in df_ft.columns else pd.Series(dtype=float)
-        sell = pd.to_numeric(df_ft.get("sell_val"), errors="coerce").dropna() \
-               if "sell_val" in df_ft.columns else pd.Series(dtype=float)
-        net  = pd.to_numeric(df_ft.get("net_val"),  errors="coerce").dropna() \
-               if "net_val"  in df_ft.columns else pd.Series(dtype=float)
+        buy  = pd.to_numeric(df_vci.get("buy_val"),  errors="coerce").dropna() \
+               if "buy_val"  in df_vci.columns else pd.Series(dtype=float)
+        sell = pd.to_numeric(df_vci.get("sell_val"), errors="coerce").dropna() \
+               if "sell_val" in df_vci.columns else pd.Series(dtype=float)
+        net  = pd.to_numeric(df_vci.get("net_val"),  errors="coerce").dropna() \
+               if "net_val"  in df_vci.columns else pd.Series(dtype=float)
 
-        res["ff_buy_val_5d"]  = float(buy.tail(5).sum())  if not buy.empty  else 0.0
-        res["ff_sell_val_5d"] = float(sell.tail(5).sum()) if not sell.empty else 0.0
-        res["ff_net_val_5d"]  = float(net.tail(5).sum())
-        res["ff_net_val_20d"] = float(net.sum())
+        if not net.empty:
+            res["ff_buy_val_5d"]  = float(buy.tail(5).sum())  if not buy.empty  else 0.0
+            res["ff_sell_val_5d"] = float(sell.tail(5).sum()) if not sell.empty else 0.0
+            res["ff_net_val_5d"]  = float(net.tail(5).sum())
+            res["ff_net_val_20d"] = float(net.sum())
 
-        if "ff_room" in df_ft.columns:
-            # ff_room từ CafeF = số CP nước ngoài còn có thể mua (raw shares)
-            res["ff_room_raw"] = float(df_ft["ff_room"].iloc[-1])
-            # Tính % sẽ làm trong build_one khi có total_shares từ finance
+            if len(net) >= 5:
+                x     = np.arange(len(net))
+                y     = net.fillna(0).values
+                slope = np.polyfit(x, y, 1)[0]
+                res["ff_trend"]       = round(float(slope) / 1e9, 2)
+                res["ff_consistency"] = round((net > 0).sum() / len(net), 2)
+                ff_5d_avg  = net.tail(5).mean()
+                ff_20d_avg = net.mean()
+                res["ff_acceleration"] = round(
+                    float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
+                    if ff_20d_avg != 0 else 0.0
 
-        if len(net) >= 5:
-            x     = np.arange(len(net))
-            y     = net.fillna(0).values
-            slope = np.polyfit(x, y, 1)[0]
-            res["ff_trend"]       = round(float(slope) / 1e9, 2)
-            res["ff_consistency"] = round((net > 0).sum() / len(net), 2)
-            ff_5d_avg  = net.tail(5).mean()
-            ff_20d_avg = net.mean()
-            res["ff_acceleration"] = round(
-                float(ff_5d_avg - ff_20d_avg) / 1e9, 2) \
-                if ff_20d_avg != 0 else 0.0
-
-        log.info(f"  FF {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
-                 f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
-
-    # (VCI room đã được fetch ở đầu get_flow — không cần fallback thêm)
+            log.info(f"  FF VCI {symbol}: net5d={res.get('ff_net_val_5d'):.0f} "
+                     f"net20d={res.get('ff_net_val_20d'):.0f} rows={len(net)}")
+        else:
+            log.warning(f"  FF VCI {symbol}: không tìm thấy cột net (cols={list(df_vci.columns)[:8]})")
+    else:
+        log.warning(f"  FF VCI {symbol}: empty/None — ff_score sẽ = 0 cho mã này")
 
     # ── Prop Trade (Tự doanh CTCK) — Smart Money signal ──
     # VCI prop_trade(): tự doanh mua/bán ròng 25 ngày
