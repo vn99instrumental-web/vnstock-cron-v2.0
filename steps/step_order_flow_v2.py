@@ -25,6 +25,8 @@ os.makedirs("/home/runner/.vnstock",           exist_ok=True)
 os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
 
 import logging
+import random
+import time
 import traceback
 import numpy as np
 import pandas as pd
@@ -45,7 +47,8 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-MAX_WORKERS = 10
+# 2026-06-18: 10 → 5 (fix 429). Override khi test: VCI_MAX_WORKERS=N
+MAX_WORKERS = int(os.environ.get("VCI_MAX_WORKERS", "5"))
 
 # =====================================================
 # VOLUME PROFILE từ intraday
@@ -329,7 +332,7 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
         # fail khác nhau → order_flow_score nhảy giữa các run dù data không đổi.
         # Retry để fetch ổn định + đánh dấu fetch_failed để scoring phân biệt
         # "fail" với "phiên trầm thật" (cả hai cùng cho score 0).
-        import time
+        # 2026-06-18: backoff dài hơn + jitter để hồi quota khi gặp 429.
         _label = "intraday" if market_open else "intraday_eod"
         df_intra = None
         for _att in range(3):
@@ -337,7 +340,7 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
                        lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
             if df_intra is not None and not df_intra.empty:
                 break
-            time.sleep(1.5)
+            time.sleep(2.5 * (_att + 1) + random.uniform(0, 1.0))  # 2.5-3.5, 5-6, 7.5-8.5s
 
         fetch_failed = (df_intra is None or df_intra.empty)
 
