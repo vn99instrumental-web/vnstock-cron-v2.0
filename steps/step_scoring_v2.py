@@ -1291,6 +1291,54 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
             pattern_flags.insert(0, "TA_MISSING")
         confidence = "LOW"
 
+    # ── DATA COMPLETENESS (2026-06-17) — minh bạch field thiếu, KHÔNG đổi điểm ──
+    # Mục tiêu: phơi bày khi điểm được tính trên data KHÔNG đầy đủ (do fetch fail),
+    # để người đọc biết score có thể không ổn định. Theo chính sách: giữ điểm,
+    # chỉ đánh dấu — không ép NEUTRAL, không zero thêm.
+    CORE_FIELDS = {
+        "price"         : "Giá",
+        "ema200"        : "EMA200",
+        "rsi"           : "RSI",
+        "macd_hist"     : "MACD",
+        "high_52w"      : "Đỉnh52T",
+        "r_pe"          : "P/E",
+        "r_eps"         : "EPS",
+        "ff_net_val_5d" : "FF5d",
+    }
+    data_missing = []
+    for _f, _label in CORE_FIELDS.items():
+        _v = row.get(_f)
+        if _v is None or (isinstance(_v, float) and _v != _v):
+            data_missing.append(_label)
+    if not row.get("_ohlcv_5d"):
+        data_missing.append("OHLCV5d")
+    if row.get("_ta_window") == "3M":
+        data_missing.append("Đỉnh52T(3M)")     # 52W từ cửa sổ ngắn → kém tin cậy
+    if row.get("_price_fallback"):
+        data_missing.append("Giá(fallback)")    # price lấy từ ta last_close
+
+    # Order flow: phân biệt "fetch fail" với "phiên trầm" (cả hai cùng score 0).
+    # Ngoài giờ GD, EOD data CỐ ĐỊNH — nếu thiếu là do fetch fail, không phải
+    # do thị trường. Đánh dấu để biết order_flow_score=0 này không đáng tin.
+    _of = order_flow_map.get(sym, {})
+    _of_sum = _of.get("summary", {}) if isinstance(_of, dict) else {}
+    if _of_sum.get("fetch_failed") or _of_sum.get("pattern") == "ERROR":
+        data_missing.append("LựcKhớp")
+
+    n_core = len(CORE_FIELDS) + 1               # +1 cho OHLCV5d
+    data_completeness = round(max(0.0, 1 - len([m for m in data_missing
+                            if "(" not in m]) / n_core), 3)
+
+    # Flag minh bạch — chỉ bật khi gap THỰC SỰ ảnh hưởng (price/ta core mất, hoặc ≥3 field)
+    _material = (
+        "Giá" in data_missing or ta_missing or
+        sum(1 for m in data_missing if "(" not in m) >= 3
+    )
+    if data_missing and _material and "DATA_INCOMPLETE" not in pattern_flags:
+        pattern_flags.append("DATA_INCOMPLETE")
+        if confidence == "MEDIUM":
+            confidence = "LOW"                   # hạ confidence, KHÔNG đổi total_score
+
     # ── Build output ──
     out = dict(v3)
     out.update({
@@ -1303,6 +1351,8 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         "scoring_version"  : SCORING_VERSION,
         "tech_score"       : tech_score,
         "fund_score"       : fund_score,
+        "data_missing"     : data_missing,
+        "data_completeness": data_completeness,
         # Extended raw scores
         "ext_rs_score"      : rs_score,
         "ext_52w_score"     : w52_score,
