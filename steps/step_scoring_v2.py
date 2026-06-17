@@ -1202,9 +1202,16 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         # news: bỏ
     }
 
-    # ── TA_MISSING (v2.3): mã fetch TA thất bại (ta_error) ──
+    # ── TA STATE (v2.6, 2026-06-17): phân biệt 3 trạng thái ──
+    #   1. OK              → tính bình thường
+    #   2. CACHED (stale)  → tin tưởng full nếu ≤2 phiên, hạ confidence nếu >2
+    #   3. MISSING         → ép NEUTRAL+LOW (Lớp A fail-safe khi cache cũng fail)
     _ta_err = row.get("ta_error")
     ta_missing = bool(_ta_err) and not (isinstance(_ta_err, float) and _ta_err != _ta_err)
+    ta_from_cache = bool(row.get("_ta_from_cache"))
+    ta_stale_days = int(row.get("_ta_stale_days") or 0)
+
+    # MISSING — không có cache lẫn fetch → zero-hóa 4 group TA (như cũ)
     if ta_missing:
         for _g in ("trend", "momentum", "volume", "volatility"):
             raw[_g] = 0
@@ -1294,11 +1301,25 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
     elif abs(tech_score) < 20 and abs(fund_score) < 10:
         pattern_flags.append("UNCLEAR");          confidence = "LOW"
 
-    # TA_MISSING: ưu tiên cảnh báo — không tin decision khi thiếu TA
+    # TA_MISSING (Lớp A fail-safe, 2026-06-17): cache cũng fail → KHÔNG TIN
+    # total_score vì 4 group TA bị zero hóa lệch hướng → ép NEUTRAL+LOW để
+    # tránh flip decision do data missing. Đây là quyết định "an toàn hơn
+    # đúng" — khi không có data, không kêu BUY/SELL.
     if ta_missing:
         if "TA_MISSING" not in pattern_flags:
             pattern_flags.insert(0, "TA_MISSING")
+        decision   = "NEUTRAL"   # ép NEUTRAL bất kể total_score
         confidence = "LOW"
+
+    # TA_CACHED (B, 2026-06-17): dùng cache phiên trước → tin tưởng nhưng đánh dấu
+    if ta_from_cache:
+        if ta_stale_days <= 2:
+            # 1-2 phiên cũ: data hầu như không đổi → giữ nguyên decision+confidence
+            pass
+        else:
+            # 3-5 phiên cũ: hạ confidence vì có thể đã dịch nhiều
+            if confidence == "HIGH":   confidence = "MEDIUM"
+            elif confidence == "MEDIUM": confidence = "LOW"
 
     # ── DATA COMPLETENESS (2026-06-17) — minh bạch field thiếu, KHÔNG đổi điểm ──
     # Mục tiêu: phơi bày khi điểm được tính trên data KHÔNG đầy đủ (do fetch fail),
@@ -1325,6 +1346,8 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         data_missing.append("Đỉnh52T(3M)")     # 52W từ cửa sổ ngắn → kém tin cậy
     if row.get("_price_fallback"):
         data_missing.append("Giá(fallback)")    # price lấy từ ta last_close
+    if ta_from_cache:
+        data_missing.append(f"TA-cache-{ta_stale_days}d")   # B: cache phiên
 
     # Order flow: phân biệt "fetch fail" với "phiên trầm" (cả hai cùng score 0).
     # Ngoài giờ GD, EOD data CỐ ĐỊNH — nếu thiếu là do fetch fail, không phải
