@@ -151,10 +151,30 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
 # =====================================================
 
 def get_ta(symbol: str) -> dict:
-    # 2026-06-17: Tăng retry 2 → 4 lần. 12M ohlcv là CỐ ĐỊNH ngoài giờ nhưng
-    # VCI hay fail ConnectionError ngẫu nhiên → mỗi run tập mã fail khác nhau
-    # → fallback 3M kích hoạt khác nhau → 52W high khác → score 52W flip.
-    # Retry nhiều hơn để 12M luôn lấy được, tránh chạm fallback.
+    # 2026-06-17 (B): TA CACHE PHIÊN — đảm bảo determinism qua các run.
+    # Vấn đề gốc: VCI hay fail ConnectionError theo từng batch → mã ohlcv fail
+    # → kích hoạt fallback 3M hoặc ta_error → điểm dịch không kiểm soát giữa runs.
+    # Giải pháp: cache phiên gần nhất per-symbol. Fetch ok → ghi cache. Fetch
+    # fail (cả 12M và 3M) → đọc cache + đánh dấu _ta_stale_days. TA giữa 2 phiên
+    # cách nhau 1-2 ngày khác nhau rất ít → cache fallback gần như identical
+    # với data "đúng" + ổn định 100%.
+    from utils.cache import load_json as _ld, save_json as _sv
+    _TA_CACHE_FILE     = "cache/ta_cache.json"
+    _STALE_OK_DAYS     = 2     # ≤2 phiên: tin tưởng full, không hạ confidence
+    _STALE_MAX_DAYS    = 5     # >5 phiên: cache quá cũ, coi như không có
+    _today             = today_str()   # "YYYY-MM-DD"
+
+    def _stale_days(cached_date: str) -> int:
+        """Trả số phiên giữa cached_date và today (đơn giản: số ngày dương lịch)."""
+        try:
+            from datetime import datetime
+            d_cache = datetime.strptime(cached_date, "%Y-%m-%d")
+            d_today = datetime.strptime(_today,     "%Y-%m-%d")
+            return max(0, (d_today - d_cache).days)
+        except Exception:
+            return 999
+
+    # ── Fetch 12M (4 retry) ──
     df = None
     for attempt in range(4):
         df = safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
@@ -166,16 +186,31 @@ def get_ta(symbol: str) -> dict:
             import time
             time.sleep(2 + attempt)   # 2s, 3s, 4s — backoff nhẹ
 
+    _ta_window = None
     if df is None or df.empty or len(df) < 20:
-        # Final fallback: thử history ngắn hơn
+        # Fallback 12M fail → thử 3M
         df = safe_run(f"ohlcv_short {symbol}",
              lambda: Quote(source="VCI", symbol=symbol).history(
                  length="3M", interval="1D"))
         if df is None or df.empty or len(df) < 10:
-            log.warning(f"  {symbol}: TA fetch failed sau retry — returning empty")
+            # 3M cũng fail → ĐỌC CACHE thay vì trả ta_error
+            cache_all = _ld(_TA_CACHE_FILE) or {}
+            cached = cache_all.get(symbol)
+            if cached and cached.get("_cached_date"):
+                stale = _stale_days(cached["_cached_date"])
+                if stale <= _STALE_MAX_DAYS:
+                    log.warning(f"  {symbol}: ohlcv fail toàn bộ → DÙNG CACHE "
+                                f"({cached['_cached_date']}, stale={stale}d)")
+                    out = dict(cached)
+                    out["_ta_stale_days"] = stale
+                    out["_ta_from_cache"] = True
+                    return out
+                else:
+                    log.warning(f"  {symbol}: cache quá cũ ({stale}d > {_STALE_MAX_DAYS}d) → ta_error")
+            log.warning(f"  {symbol}: TA fetch failed sau retry, no cache → ta_error")
             return {"symbol": symbol, "ta_error": "Không đủ data sau retry"}
         log.info(f"  {symbol}: dùng 3M history ({len(df)} ngày) thay vì 12M")
-        _ta_window = "3M"   # 52W high/low từ cửa sổ ngắn → kém tin cậy
+        _ta_window = "3M"   # 52W high/low từ cửa sổ ngắn → kém tin cậy (scoring sẽ skip 52W)
     else:
         _ta_window = "12M"
 
@@ -296,6 +331,28 @@ def get_ta(symbol: str) -> dict:
         close_20d = float(df["close"].iloc[-21])
         if close_20d > 0 and pd.notna(close_now) and pd.notna(close_20d):
             res["return_20d"] = round((close_now / close_20d - 1) * 100, 2)
+
+    # ── B: GHI CACHE TA cho lần fetch fail sau ──
+    # Chỉ ghi nếu fetch 12M ok (window đầy đủ). 3M window không ghi vì kém tin cậy.
+    if _ta_window == "12M":
+        try:
+            res["_cached_date"]  = _today
+            res["_ta_from_cache"] = False
+            res["_ta_stale_days"] = 0
+            _cache_all = _ld(_TA_CACHE_FILE) or {}
+            _cache_all[symbol] = res
+            # TTL cleanup: bỏ entries cũ hơn 30 ngày để file không phình
+            try:
+                _cache_all = {
+                    k: v for k, v in _cache_all.items()
+                    if isinstance(v, dict)
+                       and _stale_days(v.get("_cached_date", "1970-01-01")) <= 30
+                }
+            except Exception:
+                pass
+            _sv(_TA_CACHE_FILE, _cache_all)
+        except Exception as _e:
+            log.warning(f"  {symbol}: ghi TA cache fail: {_e}")
 
     return res
 
