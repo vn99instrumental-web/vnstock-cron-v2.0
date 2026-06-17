@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T00:31:07.479836+07:00",
+  "generated_at": "2026-06-17T07:22:14.514135+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
   "exit_count": 4,
@@ -13,16 +13,6 @@
       "entry_style": "EXIT",
       "price": 7.16,
       "exit_trigger": 6.36,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TCX",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 43.5,
-      "exit_trigger": 40.7,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -42,6 +32,16 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 2.91,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "DQC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 9.42,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
