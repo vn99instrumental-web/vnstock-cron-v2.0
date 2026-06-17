@@ -145,13 +145,23 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step_finance_scan.py
 
-      - name: Step News — Daily crawl + index
-        env:
-          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
-          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
-        run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_news_daily.py
+      # ──────────────────────────────────────────────────────────────────
+      # [DISABLED 2026-06-17] News crawl — tạm tắt để tối ưu thời gian run.
+      # Lý do: news_score chỉ ±5/200 (~2.5% trọng số), 88% articles short_desc
+      # rỗng, symbol mention rate 1.2% → ROI thấp so với ~2-3 phút crawl 14 sites.
+      # step_scoring.py tự fallback news_score=0 khi today_index.json không tồn tại
+      # (warning: "news_today_index.json not found — news_score = neutral (0)").
+      # step_scoring_v2.py không dùng news từ thiết kế.
+      # Re-enable: uncomment block dưới. Giữ nguyên steps/step_news_daily.py,
+      # utils/industry_keywords.py, output/news/history.json để bật lại không mất data.
+      # ──────────────────────────────────────────────────────────────────
+      # - name: Step News — Daily crawl + index
+      #   env:
+      #     VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+      #     VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+      #   run: |
+      #     source /opt/vnstock/.venv/bin/activate
+      #     python steps/step_news_daily.py
 
       # ──────────────────────────────────────────────────────────────────
       # COMMIT OUTPUT — hardened:
