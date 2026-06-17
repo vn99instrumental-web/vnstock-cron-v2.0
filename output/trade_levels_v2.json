@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T13:56:17.256552+07:00",
+  "generated_at": "2026-06-17T14:37:03.441321+07:00",
   "scoring_version": "v2",
   "buy_count": 1,
   "exit_count": 8,
@@ -45,8 +45,18 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 26.85,
+      "price": 27.1,
       "exit_trigger": 26.05,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "BSI",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 35.15,
+      "exit_trigger": 33.9,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -55,18 +65,28 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 12.8,
-      "exit_trigger": 12.7,
+      "price": 12.75,
+      "exit_trigger": 12.65,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "LDG",
+      "symbol": "AFX",
       "exchange": "HSX",
-      "decision": "SELL",
+      "decision": "STRONG SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 3.45,
-      "exit_trigger": 3.39,
+      "price": 10.0,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
+    },
+    {
+      "symbol": "TCI",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "LOW",
+      "entry_style": "EXIT",
+      "price": 11.05,
+      "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -75,38 +95,18 @@
       "decision": "STRONG SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 9.35,
+      "price": 9.45,
       "exit_trigger": 9.2,
       "note": "Thoát ngay (market)"
     },
     {
-      "symbol": "SHI",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "HIGH",
-      "entry_style": "EXIT",
-      "price": 13.9,
-      "exit_trigger": null,
-      "note": "Thoát ngay (market)"
-    },
-    {
-      "symbol": "TVB",
+      "symbol": "TAL",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 7.4,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TNI",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 4.66,
-      "exit_trigger": null,
+      "price": 27.2,
+      "exit_trigger": 27.1,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
