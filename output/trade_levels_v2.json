@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T01:16:26.858822+07:00",
+  "generated_at": "2026-06-18T05:43:40.828871+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
   "exit_count": 5,
@@ -22,7 +22,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 27.1,
-      "exit_trigger": 24.1,
+      "exit_trigger": 26.05,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -32,7 +32,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 35.2,
-      "exit_trigger": 31.85,
+      "exit_trigger": 33.9,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -42,18 +42,18 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 9.4,
-      "exit_trigger": null,
+      "exit_trigger": 9.2,
       "note": "Thoát ngay (market)"
     },
     {
-      "symbol": "SHI",
+      "symbol": "KOS",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "HIGH",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 14.1,
-      "exit_trigger": 13.9,
-      "note": "Thoát ngay (market)"
+      "price": 37.65,
+      "exit_trigger": 37.6,
+      "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
 }
