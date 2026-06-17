@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-17T14:37:03.441321+07:00",
+  "generated_at": "2026-06-17T14:56:23.133092+07:00",
   "scoring_version": "v2",
   "buy_count": 1,
-  "exit_count": 8,
+  "exit_count": 7,
   "buy_levels": [
     {
       "symbol": "VSC",
@@ -55,29 +55,9 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 35.15,
+      "price": 35.2,
       "exit_trigger": 33.9,
       "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "BMC",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 12.75,
-      "exit_trigger": 12.65,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "AFX",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 10.0,
-      "exit_trigger": null,
-      "note": "Thoát ngay (market)"
     },
     {
       "symbol": "TCI",
@@ -85,7 +65,7 @@
       "decision": "SELL",
       "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 11.05,
+      "price": 10.9,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
@@ -95,19 +75,29 @@
       "decision": "STRONG SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 9.45,
+      "price": 9.4,
       "exit_trigger": 9.2,
       "note": "Thoát ngay (market)"
     },
     {
-      "symbol": "TAL",
+      "symbol": "SHI",
       "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "LOW",
+      "decision": "STRONG SELL",
+      "confidence": "HIGH",
       "entry_style": "EXIT",
-      "price": 27.2,
-      "exit_trigger": 27.1,
-      "note": "Thoát khi giá thủng exit_trigger"
+      "price": 14.1,
+      "exit_trigger": 13.9,
+      "note": "Thoát ngay (market)"
+    },
+    {
+      "symbol": "KOS",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 37.65,
+      "exit_trigger": 37.6,
+      "note": "Thoát ngay (market)"
     }
   ]
 }
