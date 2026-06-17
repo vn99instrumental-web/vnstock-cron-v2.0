@@ -194,7 +194,17 @@ def get_ta(symbol: str) -> dict:
                  length="3M", interval="1D"))
         if df is None or df.empty or len(df) < 10:
             # 3M cũng fail → ĐỌC CACHE thay vì trả ta_error
-            cache_all = _ld(_TA_CACHE_FILE) or {}
+            # Đọc silent (không gọi load_json để tránh WARNING khi cache trống lần đầu)
+            from config import OUTPUT_DIR
+            import json as _json
+            cache_path = os.path.join(OUTPUT_DIR, _TA_CACHE_FILE)
+            cache_all = {}
+            if os.path.exists(cache_path):
+                try:
+                    with open(cache_path, encoding="utf-8") as _fh:
+                        cache_all = _json.load(_fh)
+                except Exception:
+                    cache_all = {}
             cached = cache_all.get(symbol)
             if cached and cached.get("_cached_date"):
                 stale = _stale_days(cached["_cached_date"])
@@ -332,27 +342,15 @@ def get_ta(symbol: str) -> dict:
         if close_20d > 0 and pd.notna(close_now) and pd.notna(close_20d):
             res["return_20d"] = round((close_now / close_20d - 1) * 100, 2)
 
-    # ── B: GHI CACHE TA cho lần fetch fail sau ──
-    # Chỉ ghi nếu fetch 12M ok (window đầy đủ). 3M window không ghi vì kém tin cậy.
+    # ── B: Đánh dấu ĐỂ MAIN GHI CACHE 1 LẦN (tránh race condition concurrent) ──
+    # Trước đây mỗi thread tự load+modify+save → 15-20 thread song song ghi
+    # cùng 1 file → mất data (thread sau ghi đè thread trước). Giải pháp:
+    # chỉ flag _should_cache=True ở đây, MAIN gom tất cả rồi ghi 1 lần sau join.
     if _ta_window == "12M":
-        try:
-            res["_cached_date"]  = _today
-            res["_ta_from_cache"] = False
-            res["_ta_stale_days"] = 0
-            _cache_all = _ld(_TA_CACHE_FILE) or {}
-            _cache_all[symbol] = res
-            # TTL cleanup: bỏ entries cũ hơn 30 ngày để file không phình
-            try:
-                _cache_all = {
-                    k: v for k, v in _cache_all.items()
-                    if isinstance(v, dict)
-                       and _stale_days(v.get("_cached_date", "1970-01-01")) <= 30
-                }
-            except Exception:
-                pass
-            _sv(_TA_CACHE_FILE, _cache_all)
-        except Exception as _e:
-            log.warning(f"  {symbol}: ghi TA cache fail: {_e}")
+        res["_cached_date"]   = _today
+        res["_ta_from_cache"] = False
+        res["_ta_stale_days"] = 0
+        res["_should_cache"]  = True
 
     return res
 
@@ -879,6 +877,46 @@ if __name__ == "__main__":
 
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
+
+    # ── B (2026-06-17): GỘP GHI TA CACHE 1 LẦN ở MAIN (an toàn race) ──
+    # Mỗi thread get_ta chỉ flag _should_cache=True; MAIN gom tất cả ở đây và
+    # ghi 1 lệnh save_json duy nhất → an toàn 100% với mọi mức concurrent.
+    try:
+        from utils.cache import load_json as _ld_main, save_json as _sv_main
+        from datetime import datetime as _dt
+        _today_str = today_str()
+        _TA_CACHE_FILE = "cache/ta_cache.json"
+
+        _cache_all = _ld_main(_TA_CACHE_FILE) or {}
+        _new_count = 0
+        for r in all_deep_rows:
+            if not r.get("_should_cache"):
+                continue
+            sym = r.get("symbol")
+            if not sym:
+                continue
+            # Strip các field meta không cần cache
+            entry = {k: v for k, v in r.items()
+                     if not k.startswith("_should_cache")}
+            _cache_all[sym] = entry
+            _new_count += 1
+
+        # TTL cleanup: bỏ entries >30 ngày
+        def _days_old(d_str: str) -> int:
+            try:
+                return (_dt.strptime(_today_str, "%Y-%m-%d") -
+                        _dt.strptime(d_str, "%Y-%m-%d")).days
+            except Exception:
+                return 999
+        _cache_all = {
+            k: v for k, v in _cache_all.items()
+            if isinstance(v, dict) and _days_old(v.get("_cached_date", "1970-01-01")) <= 30
+        }
+
+        _sv_main(_TA_CACHE_FILE, _cache_all)
+        log.info(f"TA cache: cập nhật {_new_count} mã (tổng {len(_cache_all)} entries trong file)")
+    except Exception as _e:
+        log.warning(f"TA cache write fail: {_e}")
 
     # ── V2: output filenames có suffix _v2 ──
     if all_ranking_rows:
