@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-17T07:39:22.006619+07:00",
+  "generated_at": "2026-06-17T07:42:20.900839+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
-  "exit_count": 3,
+  "exit_count": 4,
   "buy_levels": [],
   "exit_levels": [
     {
@@ -22,6 +22,16 @@
       "confidence": "LOW",
       "entry_style": "EXIT",
       "price": 6.4,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "VNE",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 2.91,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     },
