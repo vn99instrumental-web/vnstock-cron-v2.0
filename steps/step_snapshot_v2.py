@@ -115,8 +115,15 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
             row["intra_delta"]     = buy_vol - sell_vol
             row["intra_buy_ratio"] = round(buy_vol / total, 2) if total > 0 else None
     else:
-        df_hist = safe_run(f"history {symbol}",
-            lambda: Quote(source="VCI", symbol=symbol).history(length="5D", interval="1D"))
+        # 2026-06-17: retry 3 lần (trước đây 0 retry → hay fail → price mất →
+        #             52W/FairVal/trend dịch điểm ngẫu nhiên giữa các run).
+        df_hist = None
+        for _att in range(3):
+            df_hist = safe_run(f"history {symbol} (attempt {_att+1})",
+                lambda: Quote(source="VCI", symbol=symbol).history(length="5D", interval="1D"))
+            if df_hist is not None and not df_hist.empty:
+                break
+            import time; time.sleep(1.5)
         if df_hist is not None and not df_hist.empty:
             df_hist["close"] = pd.to_numeric(df_hist["close"], errors="coerce")
             row["price"]      = float(df_hist["close"].iloc[-1])
@@ -164,10 +171,14 @@ def get_ta(symbol: str) -> dict:
             log.warning(f"  {symbol}: TA fetch failed sau retry — returning empty")
             return {"symbol": symbol, "ta_error": "Không đủ data sau retry"}
         log.info(f"  {symbol}: dùng 3M history ({len(df)} ngày) thay vì 12M")
+        _ta_window = "3M"   # 52W high/low từ cửa sổ ngắn → kém tin cậy
+    else:
+        _ta_window = "12M"
 
     ta         = Indicator(data=df)
-    res        = {"symbol": symbol}
+    res        = {"symbol": symbol, "_ta_window": _ta_window}
     last_close = float(df["close"].iloc[-1])
+    res["_last_close"] = round(last_close, 2)   # để build_one fallback price khi snapshot fail
 
     ema20 = ta.trend.ema(length=20)
     ema50 = ta.trend.ema(length=50)
@@ -636,6 +647,17 @@ def build_one(symbol: str, group: str, market_open: bool,
             "industry": ind_row.get("icb_name", ""),
             "icb_code": ind_row.get("icb_code", ""),
         }
+
+        # ── PRICE FALLBACK CHAIN (2026-06-17) ──────────────────────────
+        # Nguyên nhân non-determinism: get_snapshot 5D history fail → price
+        # mất → score_52w_high / score_fair_value / trend bail → điểm dịch
+        # ngẫu nhiên giữa các run. get_ta (12M) là SUPERSET của 5D nên luôn
+        # có last_close → dùng làm fallback để price LUÔN tồn tại.
+        if row.get("price") is None and ta.get("_last_close") is not None:
+            row["price"]          = ta["_last_close"]
+            row["price_type"]     = "ta_last_close"
+            row["_price_fallback"] = True
+            log.warning(f"  {symbol}: snapshot price fail → fallback ta last_close={row['price']}")
 
         # ff_room đã được tính từ VCI (fr_available_percentage × 100) trong get_flow
         # Không cần tính từ KBS — VCI fr_available_percentage chính xác hơn
