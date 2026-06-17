@@ -781,7 +781,16 @@ def score_rs_vnindex(row: dict, context: dict) -> tuple:
 
 
 def score_52w_high(row: dict) -> tuple:
-    """52-Week High proximity / breakout."""
+    """52-Week High proximity / breakout.
+
+    2026-06-17: bail khi _ta_window=3M (fallback). Lý do non-determinism:
+      Mã có 12M ok → 52W lấy từ 12M (đúng)
+      Mã fallback 3M → 52W từ cửa sổ 3 tháng → giá trị thấp hơn nhiều → score lệch.
+    Không dùng giá trị 3M giả tạo: trả 0 + đánh dấu để row có thể vào data_missing.
+    """
+    if row.get("_ta_window") == "3M":
+        return 0, "52W skip (TA window 3M, không đủ tin cậy)"
+
     price    = _to_float(row.get("price"))
     high_52w = _to_float(row.get("high_52w"))
     low_52w  = _to_float(row.get("low_52w"))
