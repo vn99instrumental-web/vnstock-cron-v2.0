@@ -41,7 +41,7 @@ from utils.helpers import (
 )
 from utils.cache import load_json, save_json
 # 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
-from utils.vci_throttle import vci_safe_run
+from utils.vci_throttle import vci_safe_run, set_min_interval
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,8 +49,12 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# 2026-06-18: 10 → 5 (fix 429). Override khi test: VCI_MAX_WORKERS=N
-MAX_WORKERS = int(os.environ.get("VCI_MAX_WORKERS", "5"))
+# 2026-06-18: intraday(page_size=10000) là endpoint NẶNG → 5 worker vẫn 429 (log
+#   xác nhận 11/20 fail). Hạ workers xuống 2 + giãn cách 0.5s + circuit breaker
+#   (trong vci_throttle) để mọi thread cùng lùi khi dính 429.
+#   Override khi test: VCI_OF_WORKERS=N, VCI_OF_MIN_INTERVAL=giây.
+MAX_WORKERS      = int(os.environ.get("VCI_OF_WORKERS", "2"))
+OF_MIN_INTERVAL  = float(os.environ.get("VCI_OF_MIN_INTERVAL", "0.5"))
 # Cooldown đầu step: step_snapshot_v2 (chạy ngay trước) vừa burst hết quota VCI.
 # Nghỉ vài giây cho server-side rate window hồi trước khi order_flow bắn intraday.
 # Override khi test: VCI_STEP_COOLDOWN=N giây.
@@ -389,6 +393,9 @@ if __name__ == "__main__":
     trading = is_market_open()
     log.info(f"=== ORDER FLOW V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
     log.info(f"Market open: {trading}")
+
+    # 2026-06-18: endpoint nặng → giãn cách lớn hơn snapshot.
+    set_min_interval(OF_MIN_INTERVAL)
 
     # 2026-06-18: cooldown cho quota VCI hồi sau burst của step_snapshot_v2.
     if STEP_COOLDOWN > 0:
