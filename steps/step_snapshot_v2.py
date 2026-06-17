@@ -33,6 +33,8 @@ os.makedirs("/home/runner/.vnstock",           exist_ok=True)
 os.makedirs("/home/runner/.config/matplotlib", exist_ok=True)
 
 import logging
+import random
+import time
 import numpy as np
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -48,6 +50,8 @@ from utils.helpers import (
 )
 from utils.cache import save_json, load_json, save_csv
 from utils.formatter import clean_for_export, fmt_money_bil
+# 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
+from utils.vci_throttle import vci_safe_run, throttle
 
 logging.basicConfig(
     level=logging.INFO,
@@ -55,7 +59,8 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-MAX_WORKERS    = 10
+# 2026-06-18: 10 → 5 (fix 429). Override khi test: VCI_MAX_WORKERS=N
+MAX_WORKERS    = int(os.environ.get("VCI_MAX_WORKERS", "5"))
 
 def _to_float_safe(v, default=0.0):
     try:
@@ -80,9 +85,9 @@ def get_ranking() -> dict:
     log.info("=== RANKING ===")
     ins = TopStock()
     return {
-        "gainers": safe_run("gainer",
+        "gainers": vci_safe_run("gainer",
             lambda: ins.gainer(index="VNINDEX", limit=10)),
-        "losers":  safe_run("loser",
+        "losers":  vci_safe_run("loser",
             lambda: ins.loser(index="VNINDEX",  limit=10)),
     }
 
@@ -98,7 +103,7 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
     }
 
     if market_open:
-        df_intra = safe_run(f"intraday {symbol}",
+        df_intra = vci_safe_run(f"intraday {symbol}",
             lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=200))
         if df_intra is not None and not df_intra.empty:
             df_intra["price"]  = pd.to_numeric(df_intra["price"],  errors="coerce")
@@ -119,11 +124,11 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
         #             52W/FairVal/trend dịch điểm ngẫu nhiên giữa các run).
         df_hist = None
         for _att in range(3):
-            df_hist = safe_run(f"history {symbol} (attempt {_att+1})",
+            df_hist = vci_safe_run(f"history {symbol} (attempt {_att+1})",
                 lambda: Quote(source="VCI", symbol=symbol).history(length="5D", interval="1D"))
             if df_hist is not None and not df_hist.empty:
                 break
-            import time; time.sleep(1.5)
+            time.sleep(2.0 * (_att + 1) + random.uniform(0, 1.0))  # 2-3, 4-5, 6-7s + jitter
         if df_hist is not None and not df_hist.empty:
             df_hist["close"] = pd.to_numeric(df_hist["close"], errors="coerce")
             row["price"]      = float(df_hist["close"].iloc[-1])
@@ -177,19 +182,19 @@ def get_ta(symbol: str) -> dict:
     # ── Fetch 12M (4 retry) ──
     df = None
     for attempt in range(4):
-        df = safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
+        df = vci_safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
              lambda: Quote(source="VCI", symbol=symbol).history(
                  length=HISTORY_LENGTH, interval="1D"))
         if df is not None and not df.empty and len(df) >= 20:
             break
         if attempt < 3:
-            import time
-            time.sleep(2 + attempt)   # 2s, 3s, 4s — backoff nhẹ
+            # 2026-06-18: backoff dài hơn + jitter để hồi quota khi gặp 429
+            time.sleep(3.0 * (attempt + 1) + random.uniform(0, 1.0))  # 3-4, 6-7, 9-10s
 
     _ta_window = None
     if df is None or df.empty or len(df) < 20:
         # Fallback 12M fail → thử 3M
-        df = safe_run(f"ohlcv_short {symbol}",
+        df = vci_safe_run(f"ohlcv_short {symbol}",
              lambda: Quote(source="VCI", symbol=symbol).history(
                  length="3M", interval="1D"))
         if df is None or df.empty or len(df) < 10:
@@ -365,6 +370,7 @@ def get_vnindex_return(history_length: str = "2M") -> dict:
     """
     for attempt in range(3):
         try:
+            throttle()
             df = Quote(source="VCI", symbol="VNINDEX").history(
                 length=history_length, interval="1D")
             if df is not None and not df.empty and len(df) >= 5:
@@ -373,7 +379,7 @@ def get_vnindex_return(history_length: str = "2M") -> dict:
         except Exception as e:
             log.warning(f"VNINDEX fetch attempt {attempt+1}/3 failed: {e}")
             df = None
-        import time; time.sleep(1)
+        time.sleep(1.5 * (attempt + 1) + random.uniform(0, 0.5))
     else:
         log.error("VNINDEX fetch failed after 3 attempts")
         return {}
@@ -423,7 +429,7 @@ def get_flow(symbol: str) -> dict:
     # fr_available_percentage = % room ngoại còn có thể mua (0.0–1.0)
     # fr_room_percentage      = tổng room cho phép (thường 0.49 hoặc 0.3)
     # fr_net_value_total      = net value per-symbol (VCI trả đúng, đã verify)
-    df_vci = safe_run(f"ff_vci {symbol}",
+    df_vci = vci_safe_run(f"ff_vci {symbol}",
               lambda: Trading(symbol=symbol, source="VCI").foreign_trade(
                   start=start_str(25), end=today_str()))
 
@@ -495,9 +501,16 @@ def get_flow(symbol: str) -> dict:
 
     # ── Prop Trade (Tự doanh CTCK) — Smart Money signal ──
     # VCI prop_trade(): tự doanh mua/bán ròng 25 ngày
-    df_pt = safe_run(f"prop_trade {symbol}",
+    # 2026-06-18: quiet=True — mã KHÔNG có giao dịch tự doanh → vnstock_data trả
+    #   DataFrame cột rỗng/NaN → lib tự gọi .str trên cột non-string → AttributeError
+    #   ("Can only use .str accessor with string values!"). Đây là LIB BUG, không
+    #   sửa được client-side; vci_safe_run catch → trả None → mã KHÔNG bị mất, chỉ
+    #   thiếu pt_net_val. quiet=True để khỏi spam traceback. end=last_trading_date()
+    #   thay today_str() để không request ngày chưa giao dịch (chạy ngoài giờ).
+    df_pt = vci_safe_run(f"prop_trade {symbol}",
               lambda: Trading(symbol=symbol, source="VCI").prop_trade(
-                  start=start_str(25), end=today_str()))
+                  start=start_str(25), end=last_trading_date()),
+              quiet=True)
     if df_pt is not None and not df_pt.empty:
         try:
             # VCI prop_trade() trả cột 'total_trade_net_value' (đã confirm từ debug)
@@ -523,7 +536,7 @@ def get_flow(symbol: str) -> dict:
             log.warning(f"  PropTrade {symbol} parse error: {e}")
 
     # ── Insider: limit=20 để phân biệt được số lượng giao dịch ──
-    df_id = safe_run(f"insider_deal_vci {symbol}",
+    df_id = vci_safe_run(f"insider_deal_vci {symbol}",
              lambda: Trading(symbol=symbol, source="VCI").insider_deal(limit=20))
     if df_id is None:
         df_id = safe_run(f"insider_deal_cafef {symbol}",
