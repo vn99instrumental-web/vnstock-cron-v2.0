@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-17T10:56:24.185887+07:00",
+  "generated_at": "2026-06-17T11:01:39.840266+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
-  "exit_count": 8,
+  "exit_count": 10,
   "buy_levels": [],
   "exit_levels": [
     {
@@ -21,7 +21,7 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 97.0,
+      "price": 97.1,
       "exit_trigger": 96.0,
       "note": "Thoát khi giá thủng exit_trigger"
     },
@@ -56,6 +56,26 @@
       "note": "Thoát ngay (market)"
     },
     {
+      "symbol": "VIC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 187.6,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "LDG",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 3.49,
+      "exit_trigger": 3.35,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
       "symbol": "ACC",
       "exchange": "HSX",
       "decision": "STRONG SELL",
@@ -66,22 +86,22 @@
       "note": "Thoát ngay (market)"
     },
     {
+      "symbol": "AFX",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 10.15,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
+    },
+    {
       "symbol": "VRC",
       "exchange": "HSX",
       "decision": "STRONG SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 12.5,
-      "exit_trigger": null,
-      "note": "Thoát ngay (market)"
-    },
-    {
-      "symbol": "KOS",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 37.6,
       "exit_trigger": null,
       "note": "Thoát ngay (market)"
     }
