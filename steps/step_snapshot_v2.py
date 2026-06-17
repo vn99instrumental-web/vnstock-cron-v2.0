@@ -151,16 +151,20 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
 # =====================================================
 
 def get_ta(symbol: str) -> dict:
-    # Retry 2 lần cho symbols hay fail (thanh khoản thấp, API throttle)
+    # 2026-06-17: Tăng retry 2 → 4 lần. 12M ohlcv là CỐ ĐỊNH ngoài giờ nhưng
+    # VCI hay fail ConnectionError ngẫu nhiên → mỗi run tập mã fail khác nhau
+    # → fallback 3M kích hoạt khác nhau → 52W high khác → score 52W flip.
+    # Retry nhiều hơn để 12M luôn lấy được, tránh chạm fallback.
     df = None
-    for attempt in range(2):
+    for attempt in range(4):
         df = safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
              lambda: Quote(source="VCI", symbol=symbol).history(
                  length=HISTORY_LENGTH, interval="1D"))
         if df is not None and not df.empty and len(df) >= 20:
             break
-        if attempt == 0:
-            import time; time.sleep(2)
+        if attempt < 3:
+            import time
+            time.sleep(2 + attempt)   # 2s, 3s, 4s — backoff nhẹ
 
     if df is None or df.empty or len(df) < 20:
         # Final fallback: thử history ngắn hơn
