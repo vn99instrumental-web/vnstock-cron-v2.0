@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T00:23:57.834126+07:00",
+  "generated_at": "2026-06-18T00:41:23.151921+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
   "exit_count": 6,
@@ -8,12 +8,12 @@
     {
       "symbol": "TPC",
       "exchange": "HSX",
-      "decision": "SELL",
+      "decision": "STRONG SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 6.84,
       "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
+      "note": "Thoát ngay (market)"
     },
     {
       "symbol": "FTS",
@@ -22,7 +22,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 27.1,
-      "exit_trigger": 24.1,
+      "exit_trigger": 26.05,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -36,14 +36,14 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "RYG",
+      "symbol": "TCI",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
+      "decision": "SELL",
+      "confidence": "LOW",
       "entry_style": "EXIT",
-      "price": 9.4,
+      "price": 10.9,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "SHI",
@@ -62,7 +62,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 37.65,
-      "exit_trigger": null,
+      "exit_trigger": 37.6,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
