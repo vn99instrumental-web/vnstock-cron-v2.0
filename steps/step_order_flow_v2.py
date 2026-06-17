@@ -7,6 +7,12 @@ Thay đổi duy nhất so với step_order_flow.py: input/output filenames có s
 Sync từ step_order_flow.py:
   2026-05-25 — FIX BUG TPC 'float' object is not subscriptable
   2026-06-11 — v2 fork: input deep_raw_v2.json / output order_flow_v2.json
+
+Thay đổi RIÊNG của v2:
+  2026-06-17 — FIX non-determinism: intraday_eod fetch retry 3 lần.
+    EOD data (phiên đóng) cố định ngoài giờ, nhưng VCI fail ConnectionError
+    ngẫu nhiên → mỗi run tập mã fail khác nhau → order_flow_score nhảy.
+    Thêm retry + cờ summary["fetch_failed"] để scoring phân biệt fail vs trầm.
 """
 import os
 import sys
@@ -318,16 +324,27 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
         group    = deep_row.get("group", "")
         ohlcv_5d = deep_row.get("_ohlcv_5d") or []
 
+        # 2026-06-17: retry 3 lần. EOD data (phiên đã đóng) CỐ ĐỊNH ngoài giờ,
+        # nhưng VCI intraday hay fail ConnectionError NGẪU NHIÊN → mỗi run tập mã
+        # fail khác nhau → order_flow_score nhảy giữa các run dù data không đổi.
+        # Retry để fetch ổn định + đánh dấu fetch_failed để scoring phân biệt
+        # "fail" với "phiên trầm thật" (cả hai cùng cho score 0).
+        import time
+        _label = "intraday" if market_open else "intraday_eod"
         df_intra = None
-        if market_open:
-            df_intra = safe_run(f"intraday {symbol}",
+        for _att in range(3):
+            df_intra = safe_run(f"{_label} {symbol} (attempt {_att+1})",
                        lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
-        else:
-            df_intra = safe_run(f"intraday_eod {symbol}",
-                       lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
+            if df_intra is not None and not df_intra.empty:
+                break
+            time.sleep(1.5)
+
+        fetch_failed = (df_intra is None or df_intra.empty)
 
         vol_profile = build_volume_profile(df_intra)
         summary     = build_summary(symbol, df_intra, ohlcv_5d, vol_profile, group)
+        if fetch_failed:
+            summary["fetch_failed"] = True   # scoring đọc cờ này → data_missing["LựcKhớp"]
 
         log.info(
             f"  [{symbol}] "
@@ -336,6 +353,7 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
             f"poc={summary.get('poc_by_count')}, "
             f"buy_ratio={summary.get('buy_ratio_today')}, "
             f"vol_spike={summary.get('vol_spike_pct')}%"
+            + (" [FETCH_FAILED]" if fetch_failed else "")
         )
 
         return {
