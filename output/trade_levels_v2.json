@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-18T05:43:40.828871+07:00",
+  "generated_at": "2026-06-18T06:02:39.323093+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
-  "exit_count": 5,
+  "exit_count": 4,
   "buy_levels": [],
   "exit_levels": [
     {
@@ -22,7 +22,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 27.1,
-      "exit_trigger": 26.05,
+      "exit_trigger": 24.1,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -34,16 +34,6 @@
       "price": 35.2,
       "exit_trigger": 33.9,
       "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "RYG",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 9.4,
-      "exit_trigger": 9.2,
-      "note": "Thoát ngay (market)"
     },
     {
       "symbol": "KOS",
