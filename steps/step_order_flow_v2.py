@@ -37,9 +37,11 @@ from vnstock_data import Quote
 from utils.helpers import (
     now_ict, is_market_open,
     load_exchange_map, get_exchange,
-    safe_run, today_str
+    today_str
 )
 from utils.cache import load_json, save_json
+# 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
+from utils.vci_throttle import vci_safe_run
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,6 +51,10 @@ log = logging.getLogger(__name__)
 
 # 2026-06-18: 10 → 5 (fix 429). Override khi test: VCI_MAX_WORKERS=N
 MAX_WORKERS = int(os.environ.get("VCI_MAX_WORKERS", "5"))
+# Cooldown đầu step: step_snapshot_v2 (chạy ngay trước) vừa burst hết quota VCI.
+# Nghỉ vài giây cho server-side rate window hồi trước khi order_flow bắn intraday.
+# Override khi test: VCI_STEP_COOLDOWN=N giây.
+STEP_COOLDOWN = int(os.environ.get("VCI_STEP_COOLDOWN", "8"))
 
 # =====================================================
 # VOLUME PROFILE từ intraday
@@ -332,11 +338,11 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
         # fail khác nhau → order_flow_score nhảy giữa các run dù data không đổi.
         # Retry để fetch ổn định + đánh dấu fetch_failed để scoring phân biệt
         # "fail" với "phiên trầm thật" (cả hai cùng cho score 0).
-        # 2026-06-18: backoff dài hơn + jitter để hồi quota khi gặp 429.
+        # 2026-06-18: qua vci_safe_run (throttle 429) + backoff dài hơn + jitter.
         _label = "intraday" if market_open else "intraday_eod"
         df_intra = None
         for _att in range(3):
-            df_intra = safe_run(f"{_label} {symbol} (attempt {_att+1})",
+            df_intra = vci_safe_run(f"{_label} {symbol} (attempt {_att+1})",
                        lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
             if df_intra is not None and not df_intra.empty:
                 break
@@ -383,6 +389,11 @@ if __name__ == "__main__":
     trading = is_market_open()
     log.info(f"=== ORDER FLOW V2 START ({now_ict():%Y-%m-%d %H:%M:%S} ICT) ===")
     log.info(f"Market open: {trading}")
+
+    # 2026-06-18: cooldown cho quota VCI hồi sau burst của step_snapshot_v2.
+    if STEP_COOLDOWN > 0:
+        log.info(f"Cooldown {STEP_COOLDOWN}s (hồi quota VCI sau snapshot)...")
+        time.sleep(STEP_COOLDOWN)
 
     load_exchange_map()
 
