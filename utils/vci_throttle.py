@@ -52,6 +52,8 @@ _VCI_BLOCKED       = [None]  # set khi VCI server-side block (vd "chuẩn bị p
                              # connection refused sau giờ GD, etc.) → mọi call sau
                              # bail tức thì, không gọi API.
 _VCI_CONSEC_FAIL   = [0]     # đếm số fail LIÊN TIẾP (reset khi có 1 success).
+_VCI_TOTAL_FAIL    = [0]     # đếm TỔNG fail real (quiet=False), KHÔNG reset.
+_VCI_TOTAL_OK      = [0]     # đếm tổng success — để tính fail-rate.
 
 # Ngưỡng kích hoạt kill switch sau N fail liên tiếp. 1-2 fail = network jitter
 # bình thường; ≥10 fail liên tiếp = systematic outage (vd VCI từ chối connection
@@ -61,6 +63,14 @@ _VCI_CONSEC_FAIL   = [0]     # đếm số fail LIÊN TIẾP (reset khi có 1 su
 #   120 calls, 5 quá nhạy → kill switch bật sai gây mất data. Lỗi từ quiet=True
 #   call (vd prop_trade fail lành tính) cũng KHÔNG tăng counter (xem vci_safe_run).
 _VCI_CONSEC_THRESHOLD = int(os.environ.get("VCI_CONSEC_FAIL_THRESHOLD", "10"))
+
+# 2026-06-18 (fix intermittent blackout): với workers=1, fail/success XEN KẼ
+#   (intermittent outage) → consecutive reset liên tục → kill switch không bao giờ
+#   bật dù đốt 8 phút (xác nhận log 17:50 ICT: 28 fail nhưng xen success).
+#   → thêm tiêu chí CUMULATIVE: sau ≥N tổng fail real VÀ fail-rate ≥ ngưỡng → bật.
+#   Bắt được cả intermittent lẫn full outage.
+_VCI_TOTAL_FAIL_THRESHOLD = int(os.environ.get("VCI_TOTAL_FAIL_THRESHOLD", "12"))
+_VCI_FAIL_RATE_THRESHOLD  = float(os.environ.get("VCI_FAIL_RATE_THRESHOLD", "0.6"))
 
 # Pattern phát hiện server-side blackout: VCI trả ValueError với thông điệp tiếng
 # Việt trong cửa sổ ~07:00-09:00 ICT trước giờ mở phiên ("data_status=preparing").
@@ -140,10 +150,12 @@ def note_premarket_block(reason: str) -> None:
 
 
 def reset_kill_switch() -> None:
-    """Reset kill switch + consecutive-fail counter (chỉ dùng trong test/manual recovery)."""
+    """Reset kill switch + counters (chỉ dùng trong test/manual recovery)."""
     with _VCI_LOCK:
         _VCI_BLOCKED[0]     = None
         _VCI_CONSEC_FAIL[0] = 0
+        _VCI_TOTAL_FAIL[0]  = 0
+        _VCI_TOTAL_OK[0]    = 0
 
 
 def note_rate_limited() -> None:
@@ -206,6 +218,7 @@ def vci_safe_run(label: str, fn, quiet: bool = False):
         # Success → reset consecutive-fail counter (không phải outage systematic).
         with _VCI_LOCK:
             _VCI_CONSEC_FAIL[0] = 0
+            _VCI_TOTAL_OK[0]   += 1
         return result
     except Exception as e:
         if is_premarket_block(e):
@@ -229,12 +242,25 @@ def vci_safe_run(label: str, fn, quiet: bool = False):
         if not quiet:
             with _VCI_LOCK:
                 _VCI_CONSEC_FAIL[0] += 1
+                _VCI_TOTAL_FAIL[0]  += 1
                 n_consec = _VCI_CONSEC_FAIL[0]
-            if n_consec >= _VCI_CONSEC_THRESHOLD and _VCI_BLOCKED[0] is None:
-                note_premarket_block(
-                    f"{n_consec} consecutive failures — likely server outage "
-                    f"({type(e).__name__})"
-                )
+                n_total  = _VCI_TOTAL_FAIL[0]
+                n_ok     = _VCI_TOTAL_OK[0]
+            if _VCI_BLOCKED[0] is None:
+                rate = n_total / max(1, n_total + n_ok)
+                # (a) consecutive: full outage liên tục
+                if n_consec >= _VCI_CONSEC_THRESHOLD:
+                    note_premarket_block(
+                        f"{n_consec} consecutive failures — likely server outage "
+                        f"({type(e).__name__})"
+                    )
+                # (b) cumulative: intermittent outage (fail/success xen kẽ) — bắt khi
+                #     đã đủ nhiều fail VÀ tỷ lệ fail cao (tránh kill sớm khi đa số OK).
+                elif n_total >= _VCI_TOTAL_FAIL_THRESHOLD and rate >= _VCI_FAIL_RATE_THRESHOLD:
+                    note_premarket_block(
+                        f"{n_total} total failures, rate={rate:.0%} — likely "
+                        f"intermittent outage ({type(e).__name__})"
+                    )
 
         if quiet:
             log.warning(f"  ⚠️ {label}: {type(e).__name__} — bỏ qua (không có data)")
