@@ -48,6 +48,19 @@ _VCI_PENALTY_CAP  = 30.0
 _VCI_LOCK          = threading.Lock()
 _VCI_LAST_CALL     = [0.0]   # monotonic time của call gần nhất
 _VCI_PENALTY_UNTIL = [0.0]   # monotonic time đến khi hết phạt toàn cục
+_VCI_BLOCKED       = [None]  # set khi VCI server-side block (vd "chuẩn bị phiên")
+                             # → mọi call sau bail tức thì, không gọi API.
+
+# Pattern phát hiện server-side blackout: VCI trả ValueError với thông điệp tiếng
+# Việt trong cửa sổ ~07:00-09:00 ICT trước giờ mở phiên ("data_status=preparing").
+# Lib vnstock_data không nhận diện được → retry nội bộ 3-5 lần × 20 mã × 3 attempt
+# ngoài → đốt 600s+. Kill switch dưới đây phát hiện lần đầu rồi bail mọi call tiếp.
+_BLOCK_PATTERNS = (
+    "chuẩn bị phiên",
+    "dữ liệu khớp lệnh không thể truy cập",
+    "data_status=preparing",
+    "is_trading_hour=false",
+)
 
 
 def set_min_interval(seconds: float) -> None:
@@ -61,6 +74,32 @@ def is_rate_limited(err) -> bool:
     """True nếu lỗi là 429 / Too Many Requests."""
     s = str(err).lower()
     return "429" in s or "too many" in s
+
+
+def is_premarket_block(err) -> bool:
+    """True nếu VCI từ chối phục vụ vì đang chuẩn bị phiên mới (~07:00-09:00 ICT)."""
+    s = str(err).lower()
+    return any(p in s for p in _BLOCK_PATTERNS)
+
+
+def is_blocked() -> str | None:
+    """Trả về lý do nếu VCI đang bị block toàn cục (kill switch đã bật)."""
+    return _VCI_BLOCKED[0]
+
+
+def note_premarket_block(reason: str) -> None:
+    """Bật kill switch toàn cục: mọi call vci_safe_run sau sẽ bail tức thì."""
+    with _VCI_LOCK:
+        if _VCI_BLOCKED[0] is None:
+            _VCI_BLOCKED[0] = reason[:120]
+            log.warning(f"  🚫 KILL SWITCH: VCI blocked — {_VCI_BLOCKED[0]}")
+            log.warning(f"  🚫 Mọi call VCI tiếp theo sẽ bail tức thì để tránh đốt thời gian.")
+
+
+def reset_kill_switch() -> None:
+    """Reset kill switch (chỉ dùng trong test/manual recovery)."""
+    with _VCI_LOCK:
+        _VCI_BLOCKED[0] = None
 
 
 def note_rate_limited() -> None:
@@ -105,15 +144,26 @@ def vci_safe_run(label: str, fn, quiet: bool = False):
                    LIB BUG, safe_run/None là hành vi đúng — chỉ cần khỏi spam log).
 
     Khi lỗi là 429 -> bật circuit breaker toàn cục (note_rate_limited) để mọi thread
-    cùng lùi. Trả None khi lỗi (giữ nguyên hành vi của safe_run).
+    cùng lùi.
+    Khi lỗi là blackout server-side ("chuẩn bị phiên") -> bật kill switch (note_premarket_block),
+    mọi call sau bail tức thì (không qua throttle, không gọi API).
+    Trả None khi lỗi (giữ nguyên hành vi của safe_run).
     """
+    # Kill switch: bail tức thì không gọi API → không tốn API quota, không tốn thời gian.
+    if _VCI_BLOCKED[0] is not None:
+        if not quiet:
+            log.warning(f"  ⏭️  {label}: skipped (VCI blocked: {_VCI_BLOCKED[0]})")
+        return None
+
     throttle()
     try:
         result = fn()
         log.info(f"  ✅ {label}")
         return result
     except Exception as e:
-        if is_rate_limited(e):
+        if is_premarket_block(e):
+            note_premarket_block(str(e).split("\n")[0])
+        elif is_rate_limited(e):
             note_rate_limited()
         if quiet:
             log.warning(f"  ⚠️ {label}: {type(e).__name__} — bỏ qua (không có data)")
