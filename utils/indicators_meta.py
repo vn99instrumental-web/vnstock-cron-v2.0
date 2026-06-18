@@ -99,6 +99,12 @@ INDICATORS_META = {
     "price_vs_ema200_pct": {"desc": "% giá vs EMA200",             "formula": "(price-EMA200)/EMA200×100",   "baseline": ">0 trên EMA200 (uptrend dài hạn) | <0 dưới EMA200", "unit": _UNIT_PCT_DEC},
     "adx"                : {"desc": "Sức mạnh xu hướng",           "formula": "ADX(14)",                     "baseline": ">25 mạnh +5đ | <20 sideways 0đ",                 "unit": "0–100"},
     "supertrend"         : {"desc": "Supertrend level",            "formula": "ST(10,3)",                    "baseline": "Giá>ST = uptrend +5đ | Giá<ST -5đ",              "unit": _UNIT_PRICE},
+    # v2.2 NEW (Hướng A) — library indicators (vnstock_ta)
+    "linreg_20"          : {"desc": "Linear Regression 20",         "formula": "linreg(close,20) last value",  "baseline": "Giá projected từ regression 20 phiên. Dùng để tính slope.",                                  "unit": _UNIT_PRICE},
+    "linreg_slope_pct"   : {"desc": "% slope linreg 5 phiên",       "formula": "(linreg[t]-linreg[t-5])/|linreg[t-5]|×100", "baseline": ">+3% strong up +3đ | >+1% up +1đ | ±1% flat 0đ | <-1% down -1đ | <-3% strong down -3đ", "unit": _UNIT_PCT_DEC},
+    "aroon_osc"          : {"desc": "Aroon Oscillator (14)",        "formula": "Aroon Up - Aroon Down",        "baseline": ">+60 strong up +3đ | >+30 up +2đ | ±30 flat 0đ | <-30 down -2đ | <-60 strong down -3đ.",       "unit": "-100 đến +100"},
+    "donchian_upper_prev": {"desc": "Donchian high 20d (PREV bar)", "formula": "max(high[t-21:t-1])",          "baseline": "Price > prev_DCU = breakout +2đ. Dùng prev (không include today) để detect breakout đúng.", "unit": _UNIT_PRICE},
+    "donchian_lower_prev": {"desc": "Donchian low 20d (PREV bar)",  "formula": "min(low[t-21:t-1])",           "baseline": "Price < prev_DCL = breakdown -2đ.",                                                          "unit": _UNIT_PRICE},
 
     # ══════════════════════════════════════════════════════════════
     # TA — MOMENTUM
@@ -109,6 +115,8 @@ INDICATORS_META = {
     "macd_hist" : {"desc": "MACD histogram",                       "formula": "MACD-signal",                 "baseline": ">0 +10đ(×0.5 flat) | <0 -10đ(×0.5 flat)",       "unit": _UNIT_PRICE},
     "stoch_k"   : {"desc": "Stochastic %K",                        "formula": "Stoch(14,3,3).K",             "baseline": "<20 oversold +5đ | >80 overbought -5đ",          "unit": "0–100"},
     "stoch_d"   : {"desc": "Stochastic %D",                        "formula": "Stoch(14,3,3).D",             "baseline": "K>D cross up +3đ | K<D -3đ (ngoài vùng cực đoan)", "unit": "0–100"},
+    # v2.2 NEW (Hướng A)
+    "willr_14"  : {"desc": "Williams %R (14)",                     "formula": "(highest_high-close)/(HH-LL)×-100", "baseline": "<= -80 oversold +3đ | <= -60 +1đ | mid 0đ | >= -40 -1đ | >= -20 overbought -3đ. Reverse-coded.", "unit": "-100 đến 0"},
 
     # ══════════════════════════════════════════════════════════════
     # TA — VOLATILITY (BB moved here; ATR/atr_pct dùng làm filter)
@@ -126,6 +134,10 @@ INDICATORS_META = {
     "obv"          : {"desc": "On Balance Volume",                 "formula": "Σ±volume theo giá",           "baseline": "OBV & EMA cùng chiều +4đ | divergence -4đ",      "unit": _UNIT_VOL},
     "cmf"          : {"desc": "Chaikin Money Flow",                "formula": "CMF(20)",                     "baseline": ">0.1 inflow +8đ | <-0.1 outflow -8đ",            "unit": "-1 đến 1"},
     "mfi"          : {"desc": "Money Flow Index",                  "formula": "MFI(14)",                     "baseline": "<20 oversold +8đ | >80 overbought -5đ",          "unit": "0–100"},
+    # v2.2 NEW (Hướng A) — library indicators
+    "ad_line"          : {"desc": "Accumulation/Distribution Line", "formula": "Σ((close-low)-(high-close))/(high-low)×volume", "baseline": "Cumulative money flow. Slope dương = accumulation. Dùng ad_slope_20d_pct để score.", "unit": _UNIT_VOL},
+    "ad_slope_20d_pct" : {"desc": "% slope A/D Line 20 phiên",     "formula": "(AD[t]-AD[t-20])/|AD[t-20]|×100", "baseline": ">+5% strong accum +2đ | >+1% +1đ | ±1% 0đ | <-1% -1đ | <-5% strong dist -2đ.",       "unit": _UNIT_PCT_DEC},
+    "efi_13"           : {"desc": "Elder Force Index (13)",         "formula": "EMA13((close-prev_close)×volume)", "baseline": "Dấu = hướng áp lực; magnitude/vol_today để chuẩn hóa. Strength>2.0 ±3đ | >0.5 ±2đ | else ±1đ.", "unit": _UNIT_VOL},
     # Phase 2.8 NEW — breakout confirmation
     "vol_ma_ratio" : {"desc": "Volume hôm nay / TB20 ngày",        "formula": "vol_today / avg_vol_20d",     "baseline": ">2.0 breakout +5đ | >1.5 elevated +3đ | <0.5 yếu -3đ", "unit": "×"},
     "vol_today"    : {"desc": "Volume hôm nay",                    "formula": "volume cuối cùng trong OHLCV","baseline": "-",                                              "unit": _UNIT_VOL},
