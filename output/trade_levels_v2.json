@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T07:14:53.123060+07:00",
+  "generated_at": "2026-06-18T07:36:03.711632+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
   "exit_count": 5,
@@ -8,12 +8,12 @@
     {
       "symbol": "TPC",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 6.84,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "FTS",
@@ -48,12 +48,12 @@
     {
       "symbol": "KOS",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 37.65,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
 }
