@@ -18,6 +18,15 @@ Thay đổi RIÊNG của v2 (không có trong v3):
     → get_flow() giờ chỉ 1 lệnh fetch VCI 25d, đọc cả room + net từ cùng DF.
     → Giữ validate_ff_data() làm fail-safe phòng VCI lỗi tương lai.
 
+  2026-06-18 — v2.2 Hướng A: thêm 6 chỉ số từ vnstock_ta library (zero fetch).
+    Diagnostic 2026-06-17 (scripts/diag_ta_library.py) đã verify trên HPG/VCB/FPT.
+    NEW raw fields trong get_ta():
+      Trend:    linreg_20, linreg_slope_pct, aroon_osc, donchian_upper_prev,
+                donchian_lower_prev
+      Volume:   ad_line, ad_slope_20d_pct, efi_13
+      Momentum: willr_14
+    Tổng +9 field. Tất cả cache cùng với 11 indicator cũ trong ta_cache.json.
+
 MAINTAINER: Khi step_snapshot.py cập nhật logic → copy lại toàn bộ
 body vào đây, giữ nguyên MAIN block cuối với filenames _v2 VÀ
 giữ nguyên block get_flow() đã switch sang VCI.
@@ -302,6 +311,77 @@ def get_ta(symbol: str) -> dict:
     res["obv"] = safe_val(ta.volume.obv())
     res["cmf"] = safe_val(ta.volume.cmf(length=20))
     res["mfi"] = safe_val(ta.volume.mfi(length=14))
+
+    # ── v2.2 NEW (Hướng A): 6 chỉ số library vnstock_ta ────────────────
+    # Diagnostic 2026-06-17 đã verify shape & column names trên HPG/VCB/FPT.
+    # Tất cả tính từ df 12M sẵn có — KHÔNG fetch thêm data.
+    #
+    #   Trend group:    linreg(20), aroon(14), donchian(20)
+    #   Volume group:   ad(), efi(13)
+    #   Momentum group: willr(14)
+    #
+    # Lưu cả raw values + derived (slope_pct, prev_breakout) để scoring đơn giản.
+
+    # Trend — Linear Regression slope (5-bar % change)
+    try:
+        ls = ta.trend.linreg(length=20)   # Series LINREG_20
+        res["linreg_20"] = safe_val(ls)
+        if ls is not None and len(ls) >= 6:
+            cur, prev = ls.iloc[-1], ls.iloc[-6]
+            if pd.notna(cur) and pd.notna(prev) and prev != 0:
+                res["linreg_slope_pct"] = round(
+                    (cur - prev) / abs(prev) * 100, 2)
+    except Exception as e:
+        log.warning(f"  {symbol} linreg failed: {e}")
+
+    # Trend — Aroon Oscillator (only osc, raw up/down skipped)
+    try:
+        aroon = ta.trend.aroon(length=14)  # DF: AROOND_14, AROONU_14, AROONOSC_14
+        res["aroon_osc"] = safe_val(aroon, 2)  # AROONOSC_14
+    except Exception as e:
+        log.warning(f"  {symbol} aroon failed: {e}")
+
+    # Trend — Donchian Channels (lưu PREV day's value cho breakout detection)
+    try:
+        donchian = ta.volatility.donchian(lower_length=20, upper_length=20)
+        if donchian is not None and len(donchian) >= 2:
+            dcu_cols = [c for c in donchian.columns if c.startswith("DCU")]
+            dcl_cols = [c for c in donchian.columns if c.startswith("DCL")]
+            if dcu_cols:
+                v = donchian[dcu_cols[0]].iloc[-2]
+                if pd.notna(v):
+                    res["donchian_upper_prev"] = round(float(v), 2)
+            if dcl_cols:
+                v = donchian[dcl_cols[0]].iloc[-2]
+                if pd.notna(v):
+                    res["donchian_lower_prev"] = round(float(v), 2)
+    except Exception as e:
+        log.warning(f"  {symbol} donchian failed: {e}")
+
+    # Volume — A/D Line + 20d slope %
+    try:
+        ad_s = ta.volume.ad()  # Series AD (cumulative)
+        res["ad_line"] = safe_val(ad_s)
+        if ad_s is not None and len(ad_s) >= 21:
+            cur, prev = ad_s.iloc[-1], ad_s.iloc[-21]
+            if pd.notna(cur) and pd.notna(prev) and prev != 0:
+                res["ad_slope_20d_pct"] = round(
+                    (cur - prev) / abs(prev) * 100, 2)
+    except Exception as e:
+        log.warning(f"  {symbol} ad failed: {e}")
+
+    # Volume — Force Index (13)
+    try:
+        res["efi_13"] = safe_val(ta.volume.efi(length=13))
+    except Exception as e:
+        log.warning(f"  {symbol} efi failed: {e}")
+
+    # Momentum — Williams %R (14)
+    try:
+        res["willr_14"] = safe_val(ta.momentum.willr(length=14))
+    except Exception as e:
+        log.warning(f"  {symbol} willr failed: {e}")
+    # ── END v2.2 NEW ──────────────────────────────────────────────────
 
     df["volume"] = pd.to_numeric(df["volume"], errors="coerce")
     if len(df) >= 21:
