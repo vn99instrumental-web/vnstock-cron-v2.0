@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-18T17:59:41.879006+07:00",
+  "generated_at": "2026-06-18T18:06:56.347424+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
-  "exit_count": 4,
+  "exit_count": 3,
   "buy_levels": [],
   "exit_levels": [
     {
@@ -33,16 +33,6 @@
       "entry_style": "EXIT",
       "price": 6.4,
       "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "DGW",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 41.0,
-      "exit_trigger": 40.6,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
