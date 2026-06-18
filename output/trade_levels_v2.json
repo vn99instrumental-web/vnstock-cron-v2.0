@@ -1,9 +1,33 @@
 {
-  "generated_at": "2026-06-18T08:19:19.571356+07:00",
+  "generated_at": "2026-06-18T09:16:17.488888+07:00",
   "scoring_version": "v2",
-  "buy_count": 0,
-  "exit_count": 5,
-  "buy_levels": [],
+  "buy_count": 1,
+  "exit_count": 6,
+  "buy_levels": [
+    {
+      "symbol": "CTS",
+      "exchange": "HSX",
+      "decision": "BUY",
+      "confidence": "MEDIUM",
+      "entry_style": "PULLBACK",
+      "price": 25.5,
+      "entry": null,
+      "entry_low": null,
+      "entry_high": null,
+      "stop_loss": null,
+      "risk_pct": 11.61,
+      "tp1": null,
+      "tp2": null,
+      "rr_tp1": null,
+      "rr_headroom": null,
+      "size_hint": "NO_TRADE",
+      "nearest_support": 25.4,
+      "nearest_resist": 25.9,
+      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "flags": "SKIP_WIDE_STOP",
+      "skip": "wide_stop"
+    }
+  ],
   "exit_levels": [
     {
       "symbol": "TPC",
@@ -32,7 +56,17 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 35.2,
-      "exit_trigger": 31.85,
+      "exit_trigger": 35.0,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TCI",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "LOW",
+      "entry_style": "EXIT",
+      "price": 10.9,
+      "exit_trigger": 10.7,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -52,7 +86,7 @@
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 37.65,
-      "exit_trigger": null,
+      "exit_trigger": 36.0,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
