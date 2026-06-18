@@ -49,16 +49,27 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# 2026-06-18: intraday(page_size=10000) là endpoint NẶNG → 5 worker vẫn 429 (log
-#   xác nhận 11/20 fail). Hạ workers xuống 2 + giãn cách 0.5s + circuit breaker
-#   (trong vci_throttle) để mọi thread cùng lùi khi dính 429.
+# 2026-06-18 (lần 4 — fix 429 + tối ưu thời gian):
+#   Phân tích log run 23:06:
+#     - API intraday() thực tế mất ~1-2s/call (measure từ timestamp ✅).
+#     - Lúc 23:06:37 có 3 success trong 0.7s → workers=2 + interval 0.5s cho phép
+#       2 worker fire QUÁ GẦN → call NẶNG overlap in-flight → lib retry nội bộ x2
+#       → burst 429 vỡ quota.
+#     - Mỗi `intraday()` ngoài là 3-5 HTTP request trong (tenacity retry của
+#       vnstock_data); workers=2 + 1 sự cố → 6 dòng 429 dồn 1 giây.
+#   Phép thử (sim API=1.5s): workers=2 + interval 1.5s = ~30s; workers=1 + interval
+#     0.5s = ~30s — CÙNG TỐC ĐỘ vì khi gate ≥ API latency, worker thứ 2 luôn phải
+#     chờ gate, không có lợi parallel. → chọn workers=1 cho an toàn tuyệt đối.
+#   Tốc độ dự kiến: 3s cooldown + 20 × ~1.5s = ~33s (so với 240s lần trước w=2/0.5s
+#     — nhanh hơn ~7× mà 0 risk overlap).
 #   Override khi test: VCI_OF_WORKERS=N, VCI_OF_MIN_INTERVAL=giây.
-MAX_WORKERS      = int(os.environ.get("VCI_OF_WORKERS", "2"))
+MAX_WORKERS      = int(os.environ.get("VCI_OF_WORKERS", "1"))
 OF_MIN_INTERVAL  = float(os.environ.get("VCI_OF_MIN_INTERVAL", "0.5"))
-# Cooldown đầu step: step_snapshot_v2 (chạy ngay trước) vừa burst hết quota VCI.
-# Nghỉ vài giây cho server-side rate window hồi trước khi order_flow bắn intraday.
+# Cooldown đầu step: step_snapshot_v2 vừa burst quota VCI.
+# 2026-06-18 (lần 4): 8 → 3s. Circuit breaker (vci_throttle) tự kích hoạt khi
+# call đầu dính 429 → tiết kiệm 5s mà không tăng rủi ro.
 # Override khi test: VCI_STEP_COOLDOWN=N giây.
-STEP_COOLDOWN = int(os.environ.get("VCI_STEP_COOLDOWN", "8"))
+STEP_COOLDOWN = int(os.environ.get("VCI_STEP_COOLDOWN", "3"))
 
 # =====================================================
 # VOLUME PROFILE từ intraday
