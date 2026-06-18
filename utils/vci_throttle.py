@@ -39,7 +39,9 @@ log = logging.getLogger(__name__)
 # Min-interval giữa 2 call VCI bất kỳ trong cùng process (giây).
 _VCI_MIN_INTERVAL = float(os.environ.get("VCI_MIN_INTERVAL", "0.20"))
 # Phạt toàn cục mỗi lần dính 429 (giây) — circuit breaker.
-_VCI_PENALTY      = float(os.environ.get("VCI_PENALTY", "5.0"))
+# 2026-06-18 (lần 3): 5 → 8s. Lib retry nội bộ làm 1 lần 429 có thể là 3-5 HTTP
+# request hammer trong vài giây — penalty ngắn hơn không đủ cho rate window hồi.
+_VCI_PENALTY      = float(os.environ.get("VCI_PENALTY", "8.0"))
 # Trần phạt: dù 429 dồn dập, không hoãn quá ngần này kể từ hiện tại (giây).
 _VCI_PENALTY_CAP  = 30.0
 
