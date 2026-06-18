@@ -34,6 +34,14 @@ CHANGELOG:
                        ADX>25 không còn cộng +5 vô điều kiện; gắn hướng EMA200
                        (giá>EMA200 → -5 mean-rev short | giá<EMA200 → +5 long).
                      SCORING_VERSION bump "v2" → "v2.1" để tách performance.
+  2026-06-18 — v2.2 HƯỚNG A: thêm 6 chỉ số library vnstock_ta vào scoring.
+                     Snapshot fetch zero new API (diag verified 2026-06-17):
+                       Trend group   +8 cap: linreg(±3) + aroon(±3) + donchian(±2)
+                       Volume group  +5 cap: ad_line vs 20d(±2) + efi(±3)
+                       Momentum group+3 cap: willr(±3)
+                     GROUP_CAPS bump trend 45→53, momentum 26→29, volume 20→25.
+                     Output thêm 6 ext_*_score fields.
+                     SCORING_VERSION bump "v2.1" → "v2.2" để tách performance.
 """
 import math
 import os
@@ -61,22 +69,22 @@ log = logging.getLogger(__name__)
 # V2 CONFIG
 # =====================================================
 
-SCORING_VERSION = "v2.1"   # bump từ "v2" do ADX fix + standalone (tách performance)
+SCORING_VERSION = "v2.2"   # Hướng A: +6 chỉ số library (linreg/aroon/donchian/ad/efi/willr)
 
 # Cap cho từng group — extended caps cho groups có chỉ số mới
 GROUP_CAPS = {
-    "trend":        45,   # +15 từ RS(±8) + 52W(±7)
-    "momentum":     26,   # +3 từ ROC(±3)
-    "volume":       20,
-    "volatility":    8,   # +3 từ NR7(±3)
+    "trend":        53,   # v2.1=45; v2.2 +8 (linreg ±3 + aroon ±3 + donchian ±2)
+    "momentum":     29,   # v2.1=26; v2.2 +3 (willr ±3)
+    "volume":       25,   # v2.1=20; v2.2 +5 (ad ±2 + efi ±3)
+    "volatility":    8,
     "order_flow":   10,
-    "depth":         7,   # +2 từ bid/ask imbalance(±2)
-    "ff":           27,   # +7 từ room utilization(±7)
-    "fundamental":  29,   # +6 từ fair value(±6) + div yield(±3)
+    "depth":         7,
+    "ff":           27,
+    "fundamental":  29,
     "cf":           10,
-    "growth":       15,   # +5 từ EPS consistency(±5)
-    "context":       9,   # +2 từ market breadth(±2)
-    "smart_money":  20,   # NEW: prop trade ±10 + insider ±5 (moved từ fundamental)
+    "growth":       15,
+    "context":       9,
+    "smart_money":  20,
     # news: bỏ
 }
 
@@ -865,6 +873,143 @@ def score_nr7(row: dict) -> tuple:
     return score, label
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# V2.2 NEW (Hướng A): 6 library indicators from vnstock_ta
+# ══════════════════════════════════════════════════════════════════════════
+
+def score_linreg_slope(row: dict) -> tuple:
+    """Linear Regression slope (5-bar % change) — objective trend angle.
+
+    Bổ sung EMA cross: EMA bị lag, linreg-slope bắt trend đảo chiều sớm hơn.
+    Multi-collinear risk thấp với EMA: linreg đo TỐC ĐỘ, EMA đo POSITION.
+    """
+    slope = _to_float(row.get("linreg_slope_pct"))
+    if slope is None:
+        return 0, ""
+
+    if   slope >  3.0: score = +3   # strong uptrend
+    elif slope >  1.0: score = +1
+    elif slope > -1.0: score =  0
+    elif slope > -3.0: score = -1
+    else:              score = -3   # strong downtrend
+
+    return score, f"LinReg_slope={slope:+.1f}%/5d {score:+d}"
+
+
+def score_aroon(row: dict) -> tuple:
+    """Aroon Oscillator: trend strength independent of price scale.
+
+    Khác ADX: ADX = strength không hướng. Aroon Osc = strength + hướng.
+    Range -100..+100. >+30 uptrend, <-30 downtrend.
+    """
+    osc = _to_float(row.get("aroon_osc"))
+    if osc is None:
+        return 0, ""
+
+    if   osc >  60: score = +3
+    elif osc >  30: score = +2
+    elif osc > -30: score =  0
+    elif osc > -60: score = -2
+    else:           score = -3
+
+    arrow = '▲' if score > 0 else '▼' if score < 0 else '─'
+    return score, f"Aroon={osc:+.0f}({arrow}) {score:+d}"
+
+
+def score_donchian(row: dict) -> tuple:
+    """Donchian Channel breakout: price vs prev 20d high/low.
+
+    Lưu ý: dùng PREV day's DCU/DCL (donchian_upper_prev / lower_prev) — đó là
+    max(high[t-21:t-1]) → 20-day high TRƯỚC bar hôm nay. close > prev DCU =
+    breakout thực sự (vượt mức cao 20 phiên trước).
+    """
+    price    = _to_float(row.get("price"))
+    dcu_prev = _to_float(row.get("donchian_upper_prev"))
+    dcl_prev = _to_float(row.get("donchian_lower_prev"))
+
+    if price is None or price <= 0:
+        return 0, ""
+
+    if dcu_prev and price > dcu_prev:
+        return +2, f"Donch_BO↑(>{dcu_prev:.2f}) +2"
+    if dcl_prev and price < dcl_prev:
+        return -2, f"Donch_BD↓(<{dcl_prev:.2f}) -2"
+
+    return 0, ""
+
+
+def score_ad_line(row: dict) -> tuple:
+    """A/D Line 20-day slope %.
+
+    A/D Line = cumulative money flow (close vs range × volume).
+    Slope dương = accumulation, âm = distribution. Khác OBV: OBV chỉ
+    dùng dấu close vs prev close; A/D dùng VỊ TRÍ close trong bar range
+    → granular hơn, ít noise ở phiên doji.
+    """
+    slope = _to_float(row.get("ad_slope_20d_pct"))
+    if slope is None:
+        return 0, ""
+
+    if   slope >  5.0: score = +2
+    elif slope >  1.0: score = +1
+    elif slope > -1.0: score =  0
+    elif slope > -5.0: score = -1
+    else:              score = -2
+
+    return score, f"AD_slope20d={slope:+.1f}% {score:+d}"
+
+
+def score_efi(row: dict) -> tuple:
+    """Elder Force Index (13) — volume × momentum signed.
+
+    EFI = (close - prev_close) × volume, smoothed EMA(13).
+    Sign rõ → áp lực ngắn hạn. Magnitude normalize qua vol_today để
+    so sánh được giữa các mã khác nhau (HPG vs VCB khác volume scale).
+    """
+    efi = _to_float(row.get("efi_13"))
+    if efi is None:
+        return 0, ""
+
+    vol_today = _to_float(row.get("vol_today"))
+
+    # Normalize: |EFI| / vol_today ≈ avg price move per share weighted by signal
+    if vol_today and vol_today > 0:
+        strength = abs(efi) / vol_today
+        if   efi > 0 and strength > 2.0: score = +3
+        elif efi > 0 and strength > 0.5: score = +2
+        elif efi > 0:                    score = +1
+        elif efi < 0 and strength > 2.0: score = -3
+        elif efi < 0 and strength > 0.5: score = -2
+        elif efi < 0:                    score = -1
+        else:                            score =  0
+    else:
+        # Fallback: dấu thuần
+        if   efi > 0: score = +1
+        elif efi < 0: score = -1
+        else:         score =  0
+
+    return score, f"EFI={efi:+,.0f} {score:+d}"
+
+
+def score_willr(row: dict) -> tuple:
+    """Williams %R (14) — oversold/overbought, range -100..0.
+
+    Tương tự Stoch nhưng dùng range high-low của lookback (Stoch dùng close).
+    Reverse-coded: < -80 = oversold = BULLISH cho mean-reversion.
+    """
+    wr = _to_float(row.get("willr_14"))
+    if wr is None:
+        return 0, ""
+
+    if   wr <= -80: score = +3   # oversold
+    elif wr <= -60: score = +1
+    elif wr >= -20: score = -3   # overbought
+    elif wr >= -40: score = -1
+    else:           score =  0   # mid-range
+
+    return score, f"Williams%R={wr:.1f} {score:+d}"
+
+
 def score_bid_ask_imbalance(row: dict) -> tuple:
     """
     Depth scoring dựa trên wall position + volume.
@@ -1225,6 +1370,15 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
     if rs_label:  ext_sigs.append(rs_label)
     if w52_label: ext_sigs.append(w52_label)
 
+    # ── v2.2 Extended: Trend group library indicators ──
+    linreg_score,   linreg_label   = score_linreg_slope(row)
+    aroon_score,    aroon_label    = score_aroon(row)
+    donchian_score, donchian_label = score_donchian(row)
+    raw["trend"] += linreg_score + aroon_score + donchian_score
+    if linreg_label:   ext_sigs.append(linreg_label)
+    if aroon_label:    ext_sigs.append(aroon_label)
+    if donchian_label: ext_sigs.append(donchian_label)
+
     # ── Extended: Context group — market breadth ──
     breadth_score, breadth_label = score_market_breadth(row, context)
     raw["context"] += breadth_score
@@ -1235,10 +1389,22 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
     raw["momentum"] += roc_score
     if roc_label: ext_sigs.append(roc_label)
 
+    # ── v2.2 Extended: Momentum group library indicator ──
+    willr_score, willr_label = score_willr(row)
+    raw["momentum"] += willr_score
+    if willr_label: ext_sigs.append(willr_label)
+
     # ── Extended: Volatility group ──
     nr7_score, nr7_label = score_nr7(row)
     raw["volatility"] += nr7_score
     if nr7_label: ext_sigs.append(nr7_label)
+
+    # ── v2.2 Extended: Volume group library indicators ──
+    ad_score,  ad_label  = score_ad_line(row)
+    efi_score, efi_label = score_efi(row)
+    raw["volume"] += ad_score + efi_score
+    if ad_label:  ext_sigs.append(ad_label)
+    if efi_label: ext_sigs.append(efi_label)
 
     # ── Extended: Depth group ──
     ba_score, ba_label = score_bid_ask_imbalance(row)
@@ -1398,6 +1564,13 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
         "ext_prop_score"    : prop_score,
         "ext_insider_score" : insider_score,
         "ext_breadth_score" : breadth_score,
+        # v2.2 NEW (Hướng A) — library indicators
+        "ext_linreg_score"  : linreg_score,
+        "ext_aroon_score"   : aroon_score,
+        "ext_donchian_score": donchian_score,
+        "ext_ad_score"      : ad_score,
+        "ext_efi_score"     : efi_score,
+        "ext_willr_score"   : willr_score,
         "ext_signals"       : " | ".join(ext_sigs) if ext_sigs else "",
         # Smart money group
         "smart_money_score" : raw.get("smart_money", 0),
