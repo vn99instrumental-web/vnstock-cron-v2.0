@@ -41,7 +41,7 @@ from utils.helpers import (
 )
 from utils.cache import load_json, save_json
 # 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
-from utils.vci_throttle import vci_safe_run, set_min_interval
+from utils.vci_throttle import vci_safe_run, set_min_interval, is_blocked
 
 logging.basicConfig(
     level=logging.INFO,
@@ -354,12 +354,20 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
         # Retry để fetch ổn định + đánh dấu fetch_failed để scoring phân biệt
         # "fail" với "phiên trầm thật" (cả hai cùng cho score 0).
         # 2026-06-18: qua vci_safe_run (throttle 429) + backoff dài hơn + jitter.
+        # 2026-06-18 (lần 5): break sớm khi VCI bị block server-side (vd cửa sổ
+        #   "chuẩn bị phiên" 07:00-09:00 ICT). Kill switch (vci_throttle) phát hiện
+        #   ở mã đầu tiên gặp → 19 mã sau bail tức thì + KHÔNG sleep backoff vô
+        #   ích → tiết kiệm ~10 phút.
         _label = "intraday" if market_open else "intraday_eod"
         df_intra = None
         for _att in range(3):
+            if is_blocked():   # kill switch đã bật → bỏ retry, không tốn API
+                break
             df_intra = vci_safe_run(f"{_label} {symbol} (attempt {_att+1})",
                        lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
             if df_intra is not None and not df_intra.empty:
+                break
+            if is_blocked():   # lần gọi vừa rồi có thể đã bật kill switch
                 break
             time.sleep(2.5 * (_att + 1) + random.uniform(0, 1.0))  # 2.5-3.5, 5-6, 7.5-8.5s
 
