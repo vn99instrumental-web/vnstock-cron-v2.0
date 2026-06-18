@@ -54,10 +54,13 @@ _VCI_BLOCKED       = [None]  # set khi VCI server-side block (vd "chuẩn bị p
 _VCI_CONSEC_FAIL   = [0]     # đếm số fail LIÊN TIẾP (reset khi có 1 success).
 
 # Ngưỡng kích hoạt kill switch sau N fail liên tiếp. 1-2 fail = network jitter
-# bình thường; ≥5 fail liên tiếp = systematic outage (vd VCI từ chối connection
+# bình thường; ≥10 fail liên tiếp = systematic outage (vd VCI từ chối connection
 # sau-phiên 16-18h ICT, server maintenance). Catch mọi loại lỗi generic
 # (ConnectionError, ReadTimeout, ...) mà pattern matching không enum hết được.
-_VCI_CONSEC_THRESHOLD = int(os.environ.get("VCI_CONSEC_FAIL_THRESHOLD", "5"))
+# 2026-06-18 (fix bug counter): bump 5 → 10 vì snapshot có 6 endpoint × 20 mã =
+#   120 calls, 5 quá nhạy → kill switch bật sai gây mất data. Lỗi từ quiet=True
+#   call (vd prop_trade fail lành tính) cũng KHÔNG tăng counter (xem vci_safe_run).
+_VCI_CONSEC_THRESHOLD = int(os.environ.get("VCI_CONSEC_FAIL_THRESHOLD", "10"))
 
 # Pattern phát hiện server-side blackout: VCI trả ValueError với thông điệp tiếng
 # Việt trong cửa sổ ~07:00-09:00 ICT trước giờ mở phiên ("data_status=preparing").
@@ -218,14 +221,20 @@ def vci_safe_run(label: str, fn, quiet: bool = False):
         # 2026-06-18 (consecutive-fail detection): catch outage systematic mà
         # pattern Vietnamese không bắt được (vd 17:01 ICT sau giờ GD: VCI trả
         # ConnectionError đồng loạt). Sau N fail liên tiếp → bật kill switch.
-        with _VCI_LOCK:
-            _VCI_CONSEC_FAIL[0] += 1
-            n_consec = _VCI_CONSEC_FAIL[0]
-        if n_consec >= _VCI_CONSEC_THRESHOLD and _VCI_BLOCKED[0] is None:
-            note_premarket_block(
-                f"{n_consec} consecutive failures — likely server outage "
-                f"({type(e).__name__})"
-            )
+        # 2026-06-18 (fix bug counter): KHÔNG tăng counter cho quiet=True call.
+        #   Quiet là CỜ EXPECTED FAILURE (vd prop_trade khi mã không có data tự doanh:
+        #   lib bug .str, fail lành tính). Đếm những fail này gây kill switch BẬT SAI
+        #   khi snapshot có ~12-15 mã không có prop_trade data → tích 5-10 fail liên
+        #   tiếp → kill các endpoint sau dù VCI vẫn khỏe.
+        if not quiet:
+            with _VCI_LOCK:
+                _VCI_CONSEC_FAIL[0] += 1
+                n_consec = _VCI_CONSEC_FAIL[0]
+            if n_consec >= _VCI_CONSEC_THRESHOLD and _VCI_BLOCKED[0] is None:
+                note_premarket_block(
+                    f"{n_consec} consecutive failures — likely server outage "
+                    f"({type(e).__name__})"
+                )
 
         if quiet:
             log.warning(f"  ⚠️ {label}: {type(e).__name__} — bỏ qua (không có data)")
