@@ -48,8 +48,16 @@ _VCI_PENALTY_CAP  = 30.0
 _VCI_LOCK          = threading.Lock()
 _VCI_LAST_CALL     = [0.0]   # monotonic time của call gần nhất
 _VCI_PENALTY_UNTIL = [0.0]   # monotonic time đến khi hết phạt toàn cục
-_VCI_BLOCKED       = [None]  # set khi VCI server-side block (vd "chuẩn bị phiên")
-                             # → mọi call sau bail tức thì, không gọi API.
+_VCI_BLOCKED       = [None]  # set khi VCI server-side block (vd "chuẩn bị phiên",
+                             # connection refused sau giờ GD, etc.) → mọi call sau
+                             # bail tức thì, không gọi API.
+_VCI_CONSEC_FAIL   = [0]     # đếm số fail LIÊN TIẾP (reset khi có 1 success).
+
+# Ngưỡng kích hoạt kill switch sau N fail liên tiếp. 1-2 fail = network jitter
+# bình thường; ≥5 fail liên tiếp = systematic outage (vd VCI từ chối connection
+# sau-phiên 16-18h ICT, server maintenance). Catch mọi loại lỗi generic
+# (ConnectionError, ReadTimeout, ...) mà pattern matching không enum hết được.
+_VCI_CONSEC_THRESHOLD = int(os.environ.get("VCI_CONSEC_FAIL_THRESHOLD", "5"))
 
 # Pattern phát hiện server-side blackout: VCI trả ValueError với thông điệp tiếng
 # Việt trong cửa sổ ~07:00-09:00 ICT trước giờ mở phiên ("data_status=preparing").
@@ -70,15 +78,47 @@ def set_min_interval(seconds: float) -> None:
     log.info(f"  [throttle] min-interval = {_VCI_MIN_INTERVAL:.2f}s, penalty = {_VCI_PENALTY:.1f}s")
 
 
+def _full_err_text(e) -> str:
+    """
+    Trả về CHUỖI gộp str(e) + mọi nested cause/context + tenacity last_attempt.
+    Cần thiết vì tenacity (dùng trong vnstock_data) wrap exception thật vào
+    RetryError → str(RetryError) chỉ thấy 'raised ValueError', không thấy message
+    gốc tiếng Việt "chuẩn bị phiên" → pattern match fail nếu chỉ str(e).
+    """
+    parts = []
+    seen  = set()
+    cur   = e
+    depth = 0
+    while cur is not None and id(cur) not in seen and depth < 10:
+        seen.add(id(cur))
+        depth += 1
+        try:
+            parts.append(str(cur))
+        except Exception:
+            pass
+        # Tenacity: RetryError có .last_attempt — exception thật ở trong
+        nxt = None
+        if hasattr(cur, "last_attempt"):
+            try:
+                nxt = cur.last_attempt.exception()
+            except Exception:
+                nxt = None
+        if nxt is None:
+            nxt = getattr(cur, "__cause__", None) or getattr(cur, "__context__", None)
+        cur = nxt
+    return "\n".join(parts)
+
+
 def is_rate_limited(err) -> bool:
-    """True nếu lỗi là 429 / Too Many Requests."""
-    s = str(err).lower()
+    """True nếu lỗi là 429 / Too Many Requests (kiểm cả chain nested)."""
+    s = _full_err_text(err).lower()
     return "429" in s or "too many" in s
 
 
 def is_premarket_block(err) -> bool:
-    """True nếu VCI từ chối phục vụ vì đang chuẩn bị phiên mới (~07:00-09:00 ICT)."""
-    s = str(err).lower()
+    """True nếu VCI từ chối phục vụ vì đang chuẩn bị phiên mới (~07:00-09:00 ICT).
+    Kiểm cả chain nested vì tenacity wrap exception thật vào RetryError."""
+    s = _full_err_text(err).lower()
     return any(p in s for p in _BLOCK_PATTERNS)
 
 
@@ -97,9 +137,10 @@ def note_premarket_block(reason: str) -> None:
 
 
 def reset_kill_switch() -> None:
-    """Reset kill switch (chỉ dùng trong test/manual recovery)."""
+    """Reset kill switch + consecutive-fail counter (chỉ dùng trong test/manual recovery)."""
     with _VCI_LOCK:
-        _VCI_BLOCKED[0] = None
+        _VCI_BLOCKED[0]     = None
+        _VCI_CONSEC_FAIL[0] = 0
 
 
 def note_rate_limited() -> None:
@@ -159,12 +200,33 @@ def vci_safe_run(label: str, fn, quiet: bool = False):
     try:
         result = fn()
         log.info(f"  ✅ {label}")
+        # Success → reset consecutive-fail counter (không phải outage systematic).
+        with _VCI_LOCK:
+            _VCI_CONSEC_FAIL[0] = 0
         return result
     except Exception as e:
         if is_premarket_block(e):
-            note_premarket_block(str(e).split("\n")[0])
+            # Lấy đúng dòng tiếng Việt làm reason (thay vì 'RetryError outer')
+            full = _full_err_text(e)
+            inner = next((ln for ln in full.split("\n")
+                          if any(p in ln.lower() for p in _BLOCK_PATTERNS)),
+                         str(e))
+            note_premarket_block(inner)
         elif is_rate_limited(e):
             note_rate_limited()
+
+        # 2026-06-18 (consecutive-fail detection): catch outage systematic mà
+        # pattern Vietnamese không bắt được (vd 17:01 ICT sau giờ GD: VCI trả
+        # ConnectionError đồng loạt). Sau N fail liên tiếp → bật kill switch.
+        with _VCI_LOCK:
+            _VCI_CONSEC_FAIL[0] += 1
+            n_consec = _VCI_CONSEC_FAIL[0]
+        if n_consec >= _VCI_CONSEC_THRESHOLD and _VCI_BLOCKED[0] is None:
+            note_premarket_block(
+                f"{n_consec} consecutive failures — likely server outage "
+                f"({type(e).__name__})"
+            )
+
         if quiet:
             log.warning(f"  ⚠️ {label}: {type(e).__name__} — bỏ qua (không có data)")
         else:
