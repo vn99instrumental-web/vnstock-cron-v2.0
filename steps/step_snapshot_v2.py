@@ -51,7 +51,7 @@ from utils.helpers import (
 from utils.cache import save_json, load_json, save_csv
 from utils.formatter import clean_for_export, fmt_money_bil
 # 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
-from utils.vci_throttle import vci_safe_run, throttle
+from utils.vci_throttle import vci_safe_run, throttle, is_blocked
 
 logging.basicConfig(
     level=logging.INFO,
@@ -124,6 +124,8 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
         #             52W/FairVal/trend dịch điểm ngẫu nhiên giữa các run).
         df_hist = None
         for _att in range(3):
+            if is_blocked():
+                break
             df_hist = vci_safe_run(f"history {symbol} (attempt {_att+1})",
                 lambda: Quote(source="VCI", symbol=symbol).history(length="5D", interval="1D"))
             if df_hist is not None and not df_hist.empty:
@@ -182,12 +184,16 @@ def get_ta(symbol: str) -> dict:
     # ── Fetch 12M (4 retry) ──
     df = None
     for attempt in range(4):
+        if is_blocked():   # 2026-06-18: kill switch bật → bỏ retry tránh đốt time
+            break
         df = vci_safe_run(f"ohlcv {symbol} (attempt {attempt+1})",
              lambda: Quote(source="VCI", symbol=symbol).history(
                  length=HISTORY_LENGTH, interval="1D"))
         if df is not None and not df.empty and len(df) >= 20:
             break
         if attempt < 3:
+            if is_blocked():
+                break
             # 2026-06-18: backoff dài hơn + jitter để hồi quota khi gặp 429
             time.sleep(3.0 * (attempt + 1) + random.uniform(0, 1.0))  # 3-4, 6-7, 9-10s
 
