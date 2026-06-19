@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T18:07:39.652403+07:00",
+  "generated_at": "2026-06-19T18:54:58.691792+07:00",
   "scoring_version": "v2",
   "buy_count": 2,
   "exit_count": 7,
@@ -46,7 +46,7 @@
       "size_hint": "FULL",
       "nearest_support": 32.43,
       "nearest_resist": 33.45,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
       "flags": "CONSENSUS_BULL,TP2_FORCED_GAP",
       "skip": ""
     }
@@ -60,6 +60,16 @@
       "entry_style": "EXIT",
       "price": 9.6,
       "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "AGR",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 15.05,
+      "exit_trigger": 14.5,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -103,24 +113,14 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "VRE",
+      "symbol": "TEG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 29.35,
-      "exit_trigger": 29.3,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "TEG",
-      "exchange": "HSX",
-      "decision": "STRONG SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
       "price": 5.95,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
 }
