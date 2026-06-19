@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-19T10:52:26.308461+07:00",
+  "generated_at": "2026-06-19T11:52:02.055174+07:00",
   "scoring_version": "v2",
   "buy_count": 2,
-  "exit_count": 5,
+  "exit_count": 6,
   "buy_levels": [
     {
       "symbol": "VVS",
@@ -42,10 +42,10 @@
       "tp1": 14.45,
       "tp2": null,
       "rr_tp1": 1.44,
-      "rr_headroom": 0.78,
+      "rr_headroom": 0.67,
       "size_hint": "FULL",
       "nearest_support": 13.8,
-      "nearest_resist": 14.15,
+      "nearest_resist": 14.1,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
       "flags": "CONSENSUS_BULL,SINGLE_TP_ONLY,TIGHT_HEADROOM",
       "skip": ""
@@ -53,23 +53,13 @@
   ],
   "exit_levels": [
     {
-      "symbol": "DTL",
+      "symbol": "QCG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 9.95,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "CII",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 18.0,
-      "exit_trigger": 17.55,
+      "price": 13.5,
+      "exit_trigger": 13.3,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -83,24 +73,44 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "TNI",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 4.5,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "TCO",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 11.4,
+      "price": 11.45,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "KBC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 29.8,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "VRE",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 29.6,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "TEG",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 6.0,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
     }
   ]
 }
