@@ -42,6 +42,18 @@ CHANGELOG:
                      GROUP_CAPS bump trend 45→53, momentum 26→29, volume 20→25.
                      Output thêm 6 ext_*_score fields.
                      SCORING_VERSION bump "v2.1" → "v2.2" để tách performance.
+  2026-06-21 — v2.3 FIX 4 lỗi điểm (review trước forward-validation):
+                     #1 FF: gộp 4 tín hiệu cộng-tuyến → 2; thêm dead-band cường độ
+                        0.10 (net/turnover) + magnitude. FF base max ±20 → ±15.
+                     #2 Trend: thuần trend-following (Option A) — bỏ phạt
+                        overextended EMA200; ADX>25 XÁC NHẬN hướng thay vì mean-rev
+                        (sửa lỗi nhóm trend tự triệt tiêu & thưởng điểm downtrend).
+                     #3 score_ff_room: guard total_room<=0 / available<0 → 0
+                        (hết phạt -7 oan cho mã không có room cap, vd TTA/CIG/RYG).
+                     #5 score_dividend_yield: bỏ heuristic <1.0 ×100 (r_div_yield
+                        đã là %) → hết lỗi yield 0.8% bị đọc thành 80%.
+                     SCORING_VERSION bump "v2.2" → "v2.3" để tách performance.
+                     Lưu ý: GROUP_CAPS/WEIGHTS giữ nguyên (KHÔNG re-tune trong lần này).
 """
 import math
 import os
@@ -69,7 +81,7 @@ log = logging.getLogger(__name__)
 # V2 CONFIG
 # =====================================================
 
-SCORING_VERSION = "v2.2"   # Hướng A: +6 chỉ số library (linreg/aroon/donchian/ad/efi/willr)
+SCORING_VERSION = "v2.3"   # FIX 4 lỗi điểm: FF dead-band+gộp, trend thuần TF, ff_room guard, div yield
 
 # Cap cho từng group — extended caps cho groups có chỉ số mới
 GROUP_CAPS = {
@@ -373,24 +385,30 @@ def _score_base(row: dict, context: dict, news_scores: dict,
             label += "(flat×0.5)"
         add("trend", pts, label)
 
+    # v2.3 FIX #2: nhóm trend trước đây TRỘN thuận-xu-hướng (EMA cross/Supertrend)
+    #   với đảo-chiều (phạt overextended EMA200, ADX mean-rev) → tự triệt tiêu,
+    #   mất sức phân biệt, có lúc THƯỞNG điểm cho downtrend. Chuyển sang THUẦN
+    #   trend-following (Option A): trên EMA200 = cộng, dưới = trừ; ADX>25 XÁC NHẬN
+    #   hướng hiện tại thay vì fade. (Ý "overextended/quá đà" tách thành qualifier
+    #   riêng sau, KHÔNG nằm trong nhóm trend.)
     if price and ema200:
         dist_pct = (price - ema200) / ema200 * 100
-        if dist_pct > 15:    add("trend", -8, f"Price {dist_pct:.0f}%>EMA200 (overextended)")
-        elif dist_pct > 5:   add("trend", -5, f"Price {dist_pct:.0f}%>EMA200 (extended)")
-        elif dist_pct < -15: add("trend",  8, f"Price {dist_pct:.0f}%<EMA200 (oversold)")
-        elif dist_pct < -5:  add("trend",  5, f"Price {dist_pct:.0f}%<EMA200 (below)")
+        if   dist_pct > 5:    add("trend",  5, f"Giá {dist_pct:.0f}%>EMA200 (uptrend dài hạn)")
+        elif dist_pct > 0:    add("trend",  3, f"Giá {dist_pct:.0f}%>EMA200 (trên xu hướng)")
+        elif dist_pct > -5:   add("trend", -3, f"Giá {dist_pct:.0f}%<EMA200 (dưới xu hướng)")
+        else:                 add("trend", -5, f"Giá {dist_pct:.0f}%<EMA200 (downtrend dài hạn)")
     elif price and ema20:
         dist20 = (price - ema20) / ema20 * 100
-        if dist20 > 5:    add("trend", -3, "Price>EMA20 extended (no EMA200)")
-        elif dist20 < -5: add("trend",  3, "Price<EMA20 (no EMA200)")
+        if   dist20 > 0:  add("trend",  3, "Giá>EMA20 (no EMA200)")
+        elif dist20 < 0:  add("trend", -3, "Giá<EMA20 (no EMA200)")
 
-    # ADX — FIX Phase 2.12: direction-aware, PRE-CAP (bỏ +5 vô điều kiện)
+    # ADX>25 = xu hướng MẠNH → xác nhận hướng theo EMA200 (trend-following)
     if adx and adx > 25:
         if price and ema200:
             if price > ema200:
-                add("trend", -5, f"ADX={adx} strong + price>EMA200 (mean-rev short)")
+                add("trend",  5, f"ADX={adx} mạnh + giá>EMA200 (uptrend xác nhận)")
             else:
-                add("trend",  5, f"ADX={adx} strong + price<EMA200 (mean-rev long)")
+                add("trend", -5, f"ADX={adx} mạnh + giá<EMA200 (downtrend xác nhận)")
         else:
             sigs.append(f"ADX={adx} strong (no EMA200, skip) +0")
 
@@ -469,23 +487,46 @@ def _score_base(row: dict, context: dict, news_scores: dict,
     s["depth"] = d_score
     sigs.extend(d_sigs)
 
-    # ── FOREIGN FLOW (max ±20) ──
+    # ── FOREIGN FLOW (max ±15 từ base; +room ±3 ở extended) ──
+    # v2.3 FIX #1: 4 tín hiệu cũ (net5d/net20d/trend/accel) đều phái sinh từ CÙNG
+    #   một chuỗi net → cộng tuyến, chấm THUẦN DẤU, không biên trung tính →
+    #   1 biến gốc chi phối ±20 và dễ flip dấu do nhiễu phiên.
+    #   Sửa: gộp 4 → 2 tín hiệu, thêm DEAD-BAND theo cường độ, có MAGNITUDE.
+    #     (a) Lập trường ròng (±10/±5/0): intensity = net_5d / (buy_5d+sell_5d).
+    #         |intensity| < 0.10 → trung tính (0). |intensity| ≥ 0.30 VÀ 5d/20d
+    #         cùng chiều → mạnh (±10); còn lại có hướng → vừa (±5).
+    #     (b) Động lượng dòng tiền (±5): trend & accel CÙNG dấu mới tính.
     ff_net_5d  = row.get("ff_net_val_5d")
     ff_net_20d = row.get("ff_net_val_20d")
+    ff_buy_5d  = row.get("ff_buy_val_5d")
+    ff_sell_5d = row.get("ff_sell_val_5d")
     ff_trend   = row.get("ff_trend")
     ff_accel   = row.get("ff_acceleration")
+
+    FF_DEADBAND = 0.10   # |net|/turnover dưới mức này coi như nhiễu → 0
+    FF_STRONG   = 0.30   # cường độ mạnh
+
     if ff_net_5d is not None:
-        add("ff", 5 if ff_net_5d > 0 else -5,
-            "FF net buy 5d" if ff_net_5d > 0 else "FF net sell 5d")
-    if ff_net_20d is not None:
-        add("ff", 5 if ff_net_20d > 0 else -5,
-            "FF net buy 20d" if ff_net_20d > 0 else "FF net sell 20d")
-    if ff_trend is not None:
-        add("ff", 5 if ff_trend > 0 else -5,
-            "FF trend accumulating" if ff_trend > 0 else "FF trend distributing")
-    if ff_accel is not None:
-        add("ff", 5 if ff_accel > 0 else -5,
-            "FF accelerating" if ff_accel > 0 else "FF decelerating")
+        turnover  = abs(ff_buy_5d or 0) + abs(ff_sell_5d or 0)
+        intensity = (ff_net_5d / turnover) if turnover > 0 else 0.0
+        # (a) lập trường ròng — dead-band + magnitude
+        if abs(intensity) < FF_DEADBAND:
+            sigs.append(f"FF net trung tính (intensity={intensity:+.2f}) +0")
+        else:
+            aligned_20d = (ff_net_20d is not None
+                           and (ff_net_20d > 0) == (ff_net_5d > 0))
+            sign = 1 if ff_net_5d > 0 else -1
+            mag  = 10 if (abs(intensity) >= FF_STRONG and aligned_20d) else 5
+            dir_txt = "buy" if sign > 0 else "sell"
+            extra   = " (5d/20d aligned)" if aligned_20d else ""
+            add("ff", sign * mag,
+                f"FF net {dir_txt} intensity={intensity:+.2f}{extra}")
+        # (b) động lượng dòng tiền — chỉ tính khi trend & accel CÙNG dấu
+        if ff_trend is not None and ff_accel is not None:
+            if   ff_trend > 0 and ff_accel > 0:
+                add("ff",  5, "FF flow tăng tốc (trend+accel cùng dương)")
+            elif ff_trend < 0 and ff_accel < 0:
+                add("ff", -5, "FF flow giảm tốc (trend+accel cùng âm)")
 
     # ── FUNDAMENTAL (max ±20) ──
     r_pe = row.get("r_pe")
@@ -1101,16 +1142,23 @@ def score_bid_ask_imbalance(row: dict) -> tuple:
 
 def score_ff_room(row: dict) -> tuple:
     """Foreign room utilization. ff_room = % room còn lại (0–100)."""
-    room = _to_float(row.get("ff_room"))
+    room  = _to_float(row.get("ff_room"))
+    total = _to_float(row.get("ff_room_max_pct"))
     if room is None:
         return 0, ""
+
+    # v2.3 FIX #3: mã KHÔNG có room cap (total_room=0) hoặc available âm do
+    #   artifact → KHÔNG phạt. Trước đây rơi vào else → -7 oan (vd TTA/CIG/RYG
+    #   room 0% bị -7, trong khi mã room trống 99% lại +3).
+    if (total is not None and total <= 0) or room < 0:
+        return 0, f"FFroom={room:.1f}%(no cap) +0"
 
     if room > 100:
         return 0, f"FFroom={room:.1f}(invalid>100) +0"
     if   room > 30: score = +3
     elif room > 10: score =  0
     elif room >  5: score = -3
-    else:           score = -7   # bao gồm âm và 0-5%
+    else:           score = -7   # 0-5% room (đã loại ca no-cap/âm ở trên)
 
     label = f"FFroom={room:.1f}% {score:+d}"
     return score, label
@@ -1149,16 +1197,16 @@ def score_fair_value(row: dict, context: dict) -> tuple:
 
 
 def score_dividend_yield(row: dict) -> tuple:
-    """Dividend yield score. r_div_yield từ finance cache."""
+    """Dividend yield score. r_div_yield từ finance cache (đơn vị %)."""
     yield_pct = _to_float(row.get("r_div_yield"))
     if yield_pct is None or yield_pct <= 0:
         return 0, ""
 
-    if yield_pct < 1.0:
-        yield_pct_pct = yield_pct * 100
-    else:
-        yield_pct_pct = yield_pct
-    yield_pct = yield_pct_pct
+    # v2.3 FIX #5: bỏ heuristic `if yield<1.0: ×100`. r_div_yield ĐÃ ở dạng %
+    #   (KBS trả %, vd 3.0=3%; đường VCI cũng đã _vci_pct về %). Heuristic cũ
+    #   biến yield thật 0.8% (=0.8) thành 80% → +3 oan. Mã yield <1% rất phổ biến.
+    if yield_pct > 100:          # chặn artifact bất thường
+        return 0, f"DivYield={yield_pct:.1f}(invalid) +0"
 
     if   yield_pct > 6: score = +3
     elif yield_pct > 4: score = +2
