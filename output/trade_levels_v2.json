@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-19T18:54:58.691792+07:00",
+  "generated_at": "2026-06-20T15:59:16.308207+07:00",
   "scoring_version": "v2",
   "buy_count": 2,
-  "exit_count": 7,
+  "exit_count": 6,
   "buy_levels": [
     {
       "symbol": "VVS",
@@ -63,16 +63,6 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "AGR",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 15.05,
-      "exit_trigger": 14.5,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "TPC",
       "exchange": "HSX",
       "decision": "SELL",
@@ -105,12 +95,12 @@
     {
       "symbol": "MCH",
       "exchange": "HSX",
-      "decision": "SELL",
+      "decision": "STRONG SELL",
       "confidence": "HIGH",
       "entry_style": "EXIT",
       "price": 126.5,
       "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
+      "note": "Thoát ngay (market)"
     },
     {
       "symbol": "TEG",
