@@ -61,6 +61,8 @@ from utils.cache import save_json, load_json, save_csv
 from utils.formatter import clean_for_export, fmt_money_bil
 # 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
 from utils.vci_throttle import vci_safe_run, throttle, is_blocked
+# 2026-06-21: VN100 universe (VN100 → recompute gainer/loser → top X) — V2 only.
+from utils.universe_v2 import build_vn100_universe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -87,18 +89,12 @@ FF_FIELDS = [
 ]
 
 # =====================================================
-# RANKING
+# RANKING / UNIVERSE
 # =====================================================
-
-def get_ranking() -> dict:
-    log.info("=== RANKING ===")
-    ins = TopStock()
-    return {
-        "gainers": vci_safe_run("gainer",
-            lambda: ins.gainer(index="VNINDEX", limit=10)),
-        "losers":  vci_safe_run("loser",
-            lambda: ins.loser(index="VNINDEX",  limit=10)),
-    }
+# 2026-06-21: Universe chuyển từ "top 10 gainer + 10 loser TOÀN thị trường"
+# sang "VN100 → tính lại gainer/loser TRONG rổ → top X mỗi phía".
+# Logic gom về utils/universe_v2.build_vn100_universe() (standalone, V2-only).
+# get_ranking() cũ (TopStock VNINDEX limit=10) đã bỏ.
 
 # =====================================================
 # SNAPSHOT — Quote(VCI)
@@ -911,30 +907,25 @@ if __name__ == "__main__":
     else:
         log.warning(f"⚠️ VNINDEX return not available: {vnindex_info} — RS sẽ dùng fallback")
 
-    # Market breadth: tính từ ranking universe (20 symbols có sẵn)
-    # Full breadth cần 100 symbols — dùng 20 symbols hiện tại làm proxy
-    # Kết quả lưu vào vnindex_info để pass sang scoring
+    # Market breadth: tính từ universe đã chọn (~2*VN100_TOP_X mã)
+    # Đây là proxy cho breadth toàn VN100; kết quả pass sang scoring qua vnindex_info
 
-    ranking = get_ranking()
+    # ── V2 universe: VN100 → tính lại gainer/loser trong rổ → top X mỗi phía ──
+    # symbol_jobs : [(symbol, "GAINER"/"LOSER")] cho pass 2 (TA / FF / depth)
+    # ranking_rows: schema price_change_percent_1d / price_change_1d /
+    #               accumulated_value → scoring._attach_daily_change đọc trực tiếp.
+    symbol_jobs, ranking_rows = build_vn100_universe()
+    if not symbol_jobs:
+        log.error("Universe rỗng (VN100/TopStock fail) — dừng, không có mã để chấm.")
+        sys.exit(1)
 
-    all_ranking_rows = []
-    all_deep_rows    = []
-    symbol_jobs: list[tuple[str, str]] = []
+    # Enrich exchange + date cho ranking_v2.json (parity schema cũ + dashboard)
+    _today_rank = today_str()
+    for _r in ranking_rows:
+        _r["exchange"] = get_exchange(_r["symbol"])
+        _r["date"]     = _today_rank
 
-    for group, df_rank in [
-        ("GAINER", ranking["gainers"]),
-        ("LOSER",  ranking["losers"]),
-    ]:
-        if df_rank is None or df_rank.empty:
-            log.warning(f"No data: {group}")
-            continue
-        symbols = df_rank["symbol"].tolist()
-        df_rank["exchange"] = df_rank["symbol"].map(get_exchange)
-        df_rank["group"]    = group
-        df_rank["date"]     = today_str()
-        all_ranking_rows.append(df_rank)
-        for sym in symbols:
-            symbol_jobs.append((sym, group))
+    all_deep_rows = []
 
     log.info(f"Fetching {len(symbol_jobs)} symbols concurrently "
              f"(workers={MAX_WORKERS})...")
@@ -972,7 +963,7 @@ if __name__ == "__main__":
         )
         breadth_pct = round(n_above_ema20 / len(all_deep_rows) * 100, 1)
         vnindex_info["market_breadth_pct"] = breadth_pct
-        log.info(f"Market breadth (20 sym proxy): {n_above_ema20}/{len(all_deep_rows)} = {breadth_pct}%")
+        log.info(f"Market breadth (universe proxy): {n_above_ema20}/{len(all_deep_rows)} = {breadth_pct}%")
 
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
@@ -1018,11 +1009,11 @@ if __name__ == "__main__":
         log.warning(f"TA cache write fail: {_e}")
 
     # ── V2: output filenames có suffix _v2 ──
-    if all_ranking_rows:
-        df_rank_all = pd.concat(all_ranking_rows, ignore_index=True)
-        save_json("ranking_v2.json", df_rank_all.to_dict(orient="records"))
+    if ranking_rows:
+        df_rank_all = pd.DataFrame(ranking_rows)
+        save_json("ranking_v2.json", ranking_rows)
         save_csv("ranking_v2.csv",   clean_for_export(df_rank_all))
-        log.info(f"Saved ranking_v2.json ({len(df_rank_all)} rows)")
+        log.info(f"Saved ranking_v2.json ({len(ranking_rows)} rows)")
 
     if all_deep_rows:
         df_deep = pd.DataFrame(all_deep_rows)
