@@ -1656,7 +1656,7 @@ def score_symbol_v2(row: dict, context: dict, news_scores: dict,
 def _attach_daily_change(result: dict, ranking_map: dict) -> None:
     """
     Gắn % và giá trị tuyệt đối thay đổi trong ngày vào signal row.
-    Nguồn: ranking.json (TopStock gainer/loser).
+    Nguồn: ranking_v2.json (VN100 → gainer/loser trong rổ, utils/universe_v2).
     """
     rk = ranking_map.get(result.get("symbol"))
     if not rk:
@@ -1725,8 +1725,11 @@ def run():
         if isinstance(r, dict) and r.get("symbol")
     }
 
-    # ── Daily change từ ranking.json (v2.2) ──
-    ranking = load_json("ranking.json") or load_json("market/ranking.json") or []
+    # ── Daily change từ ranking_v2.json (VN100 universe) ──
+    # 2026-06-21: V2 universe ghi ranking_v2.json (VN100 → gainer/loser trong rổ).
+    # Ưu tiên file V2; fallback ranking.json (V3) nếu chạy lệch thứ tự.
+    ranking = load_json("ranking_v2.json") or load_json("ranking.json") \
+              or load_json("market/ranking.json") or []
     ranking_map = {
         r["symbol"]: r
         for r in ranking
@@ -1735,7 +1738,7 @@ def run():
     if ranking_map:
         log.info(f"Ranking loaded: {len(ranking_map)} symbols (daily change → chg_pct_1d/chg_abs_vnd)")
     else:
-        log.warning("ranking.json not found — chg_pct_1d/chg_abs_vnd sẽ = None")
+        log.warning("ranking_v2.json/ranking.json not found — chg_pct_1d/chg_abs_vnd sẽ = None")
 
     symbols_with_industry = [
         {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
