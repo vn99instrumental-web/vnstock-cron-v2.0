@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-22T16:30:43.515759+07:00",
+  "generated_at": "2026-06-22T17:31:08.813302+07:00",
   "scoring_version": "v2",
   "buy_count": 2,
-  "exit_count": 9,
+  "exit_count": 3,
   "buy_levels": [
     {
       "symbol": "POW",
@@ -11,20 +11,20 @@
       "confidence": "HIGH",
       "entry_style": "PULLBACK",
       "price": 14.5,
-      "entry": 14.1,
-      "entry_low": 14.1,
+      "entry": 14.3,
+      "entry_low": 14.3,
       "entry_high": 14.5,
       "stop_loss": 13.65,
-      "risk_pct": 3.19,
-      "tp1": 14.75,
-      "tp2": 15.2,
-      "rr_tp1": 1.44,
-      "rr_headroom": 1.0,
+      "risk_pct": 4.55,
+      "tp1": 15.25,
+      "tp2": null,
+      "rr_tp1": 1.46,
+      "rr_headroom": 0.38,
       "size_hint": "FULL",
-      "nearest_support": 14.1,
+      "nearest_support": 13.87,
       "nearest_resist": 14.55,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "CONSENSUS_BULL,TP2_FORCED_GAP,TIGHT_HEADROOM",
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
+      "flags": "CONSENSUS_BULL,SINGLE_TP_ONLY,TIGHT_HEADROOM",
       "skip": ""
     },
     {
@@ -34,20 +34,20 @@
       "confidence": "MEDIUM",
       "entry_style": "PULLBACK",
       "price": 75.6,
-      "entry": 75.5,
-      "entry_low": 75.5,
+      "entry": 75.2,
+      "entry_low": 75.2,
       "entry_high": 75.6,
-      "stop_loss": 74.5,
-      "risk_pct": 1.32,
-      "tp1": 77.0,
-      "tp2": 79.3,
-      "rr_tp1": 1.5,
-      "rr_headroom": 0.7,
+      "stop_loss": 73.1,
+      "risk_pct": 2.79,
+      "tp1": 78.3,
+      "tp2": 80.7,
+      "rr_tp1": 1.48,
+      "rr_headroom": 2.23,
       "size_hint": "HALF",
-      "nearest_support": 75.5,
-      "nearest_resist": 76.2,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "TP2_FORCED_GAP,TIGHT_HEADROOM",
+      "nearest_support": 75.2,
+      "nearest_resist": 79.88,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
+      "flags": "TP2_FORCED_GAP",
       "skip": ""
     }
   ],
@@ -73,16 +73,6 @@
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "VPI",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 59.5,
-      "exit_trigger": 58.7,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
       "symbol": "SJS",
       "exchange": "HSX",
       "decision": "SELL",
@@ -90,56 +80,6 @@
       "entry_style": "EXIT",
       "price": 47.8,
       "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "DXG",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 13.0,
-      "exit_trigger": 12.7,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "KDH",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 22.5,
-      "exit_trigger": null,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "SIP",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 50.5,
-      "exit_trigger": 50.4,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "GEE",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 91.6,
-      "exit_trigger": 90.0,
-      "note": "Thoát khi giá thủng exit_trigger"
-    },
-    {
-      "symbol": "CMG",
-      "exchange": "HSX",
-      "decision": "SELL",
-      "confidence": "MEDIUM",
-      "entry_style": "EXIT",
-      "price": 27.4,
-      "exit_trigger": 27.35,
       "note": "Thoát khi giá thủng exit_trigger"
     }
   ]
