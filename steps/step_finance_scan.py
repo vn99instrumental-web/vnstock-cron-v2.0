@@ -74,6 +74,14 @@ CHANGELOG:
     ext_div_score 0/40.
     Fix: bọc _vci_pct cho KBS div_yield (0.03 → 3.0; idempotent nếu đã là %).
     Bump SCHEMA_VERSION 7→8 → force re-fetch để chuẩn hoá 328 entry decimal cũ.
+
+  v10 (2026-06-21) — Silence log spam balance_sheet EMPTY.
+    Verify (diag_balance_sheet): 6 mã × 2 source × 4 (period,limit) = 48/48 EMPTY
+    → Finance.balance_sheet outage thượng nguồn (cả KBS lẫn VCI). Không fix được
+    trong pipeline. score_de đã graceful (dòng 559: if de is not None) → mất
+    sub-signal D/E nhưng không lệch điểm.
+    Đổi log: bỏ WARNING per-symbol (~150 dòng/daily), thay bằng 1 dòng INFO tổng
+    cuối run. Vẫn cố fetch để khi lib khôi phục là có data ngay.
 """
 import os
 import sys
@@ -116,6 +124,12 @@ TTL_EARNINGS    = 3
 TTL_NORMAL      = 30
 
 CACHE_FILE = "finance/cache.json"
+
+# v9 (2026-06-21): balance_sheet EMPTY cho 100% mã VN100 (xác nhận diag_balance_sheet:
+# 6 mã × 2 source × 4 (period,limit) = 48/48 EMPTY → library/API outage, không phải
+# bug pipeline). Spam 150 WARNING/run vô ích. Đổi sang: tăng counter im lặng, in 1
+# dòng tổng cuối run. score_de đã graceful (skip nếu de=None) → không ảnh hưởng điểm.
+_BALANCE_EMPTY_COUNT = [0]
 
 # Schema version — bump khi đổi structure/fields trong cache entry
 # Lịch sử:
@@ -590,10 +604,15 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
             result["data_status"]["growth_available"] = True
 
     # ── CALL 3: BALANCE SHEET (quarter) ──
+    # v9: lib outage xác nhận → KHÔNG log warning per-symbol (spam). Chỉ đếm,
+    # tổng kết cuối run. Vẫn cố fetch để lúc lib khôi phục là có data luôn.
     df_bs = None
     try:
         df_bs = Finance(source="KBS", symbol=symbol).balance_sheet(period="quarter", limit=1)
-        _log_df(symbol, "balance_sheet", df_bs)
+        if df_bs is None or df_bs.empty:
+            _BALANCE_EMPTY_COUNT[0] += 1  # silent — tổng kết ở run()
+        else:
+            log.info(f"  ✅ balance_sheet {symbol}")
     except ValueError:
         return None
     except Exception as e:
@@ -935,6 +954,12 @@ def run(extra_symbols: list[str] | None = None) -> dict:
         f"{fetched_err} failed, {len(to_skip)} from cache. "
         f"Total in cache: {len(cache)} symbols"
     )
+    # v9: tổng kết balance_sheet (chi tiết bị silence ở fetch_one).
+    if _BALANCE_EMPTY_COUNT[0]:
+        log.info(
+            f"balance_sheet: {_BALANCE_EMPTY_COUNT[0]} EMPTY "
+            f"(lib outage xác nhận — D/E disabled, scoring graceful)"
+        )
     log.info("=== step_finance_scan: DONE ===")
     return cache
 
