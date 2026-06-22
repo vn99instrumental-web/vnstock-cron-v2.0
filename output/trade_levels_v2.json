@@ -1,28 +1,58 @@
 {
-  "generated_at": "2026-06-22T07:47:07.169431+07:00",
+  "generated_at": "2026-06-22T09:52:25.517383+07:00",
   "scoring_version": "v2",
   "buy_count": 0,
-  "exit_count": 5,
+  "exit_count": 12,
   "buy_levels": [],
   "exit_levels": [
     {
-      "symbol": "BAF",
+      "symbol": "VRE",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 29.8,
-      "exit_trigger": 29.15,
+      "price": 29.5,
+      "exit_trigger": 29.1,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "VCI",
+      "symbol": "HDG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 24.6,
-      "exit_trigger": 24.5,
+      "price": 20.85,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "CTG",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 33.9,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "NVL",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 12.65,
+      "exit_trigger": 12.6,
+      "note": "Thoát ngay (market)"
+    },
+    {
+      "symbol": "FRT",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 127.7,
+      "exit_trigger": 120.5,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
@@ -31,19 +61,39 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 13.3,
-      "exit_trigger": 13.15,
+      "price": 13.1,
+      "exit_trigger": 12.7,
       "note": "Thoát khi giá thủng exit_trigger"
     },
     {
-      "symbol": "SJS",
+      "symbol": "GEE",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 92.2,
+      "exit_trigger": 91.5,
+      "note": "Thoát ngay (market)"
+    },
+    {
+      "symbol": "CMG",
       "exchange": "HSX",
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 49.4,
+      "price": 27.5,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "PDR",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 14.85,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
     },
     {
       "symbol": "SIP",
@@ -51,7 +101,27 @@
       "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
-      "price": 51.3,
+      "price": 50.8,
+      "exit_trigger": null,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
+    {
+      "symbol": "KBC",
+      "exchange": "HSX",
+      "decision": "STRONG SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 29.75,
+      "exit_trigger": null,
+      "note": "Thoát ngay (market)"
+    },
+    {
+      "symbol": "CTD",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 71.9,
       "exit_trigger": null,
       "note": "Thoát khi giá thủng exit_trigger"
     }
