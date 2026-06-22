@@ -65,6 +65,15 @@ CHANGELOG:
       → Mọi bước bọc try/except: daily scan không bao giờ chết nếu API đổi.
 
     Không bump SCHEMA_VERSION (entry schema không đổi, chỉ đổi mã nào được scan).
+
+  v9 (2026-06-21) — FIX BUG div_yield unit mismatch (KBS path).
+    Verify (diag_vci_finance + cache audit): KBS ratio trả `dividend_yield` dạng
+    DECIMAL (0.03 = 3%), khác roe/margins (KBS trả %). VCI path đã chuẩn hoá qua
+    _vci_pct; KBS path KHÔNG → r_div_yield lưu decimal → score_dividend_yield
+    (kỳ vọng %, ngưỡng >2/>4/>6) luôn ra 0 cho mọi mã KBS-sourced (328/402) →
+    ext_div_score 0/40.
+    Fix: bọc _vci_pct cho KBS div_yield (0.03 → 3.0; idempotent nếu đã là %).
+    Bump SCHEMA_VERSION 7→8 → force re-fetch để chuẩn hoá 328 entry decimal cũ.
 """
 import os
 import sys
@@ -117,7 +126,7 @@ CACHE_FILE = "finance/cache.json"
 #   5 = CF year + IS year for cf_quality
 #   6 = securities brokers CF key added
 #   7 = VCI ratio_summary fallback + data_status flag
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 
 _NON_STOCK_PATTERN = _re.compile(
     r'^(VN30F|VNINDEX|HNXINDEX|HNX30|VHNDEX|E1|FUED|FUEV|SSIAM|DCDS)', _re.IGNORECASE
@@ -529,7 +538,9 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         r["eps"]          = _kbs_lookup(df_ratio, ["trailing_eps", "eps"])
         r["bvps"]         = _kbs_lookup(df_ratio, ["book_value_per_share_bvps", "bvps"])
         r["beta"]         = _kbs_lookup(df_ratio, ["beta"])
-        r["div_yield"]    = _kbs_lookup(df_ratio, ["dividend_yield"])
+        # v9: KBS trả div_yield DECIMAL (0.03=3%) khác roe/margins (%). Bọc
+        # _vci_pct để chuẩn hoá về % cho khớp score_dividend_yield + VCI path.
+        r["div_yield"]    = _vci_pct(_kbs_lookup(df_ratio, ["dividend_yield"]))
         r["gross_margin"] = _kbs_lookup(df_ratio, ["gross_margin"])
         r["net_margin"]   = _kbs_lookup(df_ratio, ["net_margin"])
         r["quick_ratio"]  = _kbs_lookup(df_ratio, ["quick_ratio"])
