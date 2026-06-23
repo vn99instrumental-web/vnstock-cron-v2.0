@@ -1,9 +1,32 @@
 {
-  "generated_at": "2026-06-22T20:17:41.449112+07:00",
+  "generated_at": "2026-06-23T07:38:11.539897+07:00",
   "scoring_version": "v2",
-  "buy_count": 1,
-  "exit_count": 2,
+  "buy_count": 2,
+  "exit_count": 3,
   "buy_levels": [
+    {
+      "symbol": "BMP",
+      "exchange": "HSX",
+      "decision": "BUY",
+      "confidence": "HIGH",
+      "entry_style": "PULLBACK",
+      "price": 151.5,
+      "entry": null,
+      "entry_low": null,
+      "entry_high": null,
+      "stop_loss": null,
+      "risk_pct": 8.34,
+      "tp1": null,
+      "tp2": null,
+      "rr_tp1": null,
+      "rr_headroom": null,
+      "size_hint": "NO_TRADE",
+      "nearest_support": 140.81,
+      "nearest_resist": 152.5,
+      "levels_used": "ema20,ema50,bb,supertrend,low_5d,atr",
+      "flags": "CONSENSUS_BULL,SKIP_WIDE_STOP",
+      "skip": "wide_stop"
+    },
     {
       "symbol": "POW",
       "exchange": "HSX",
@@ -29,6 +52,16 @@
     }
   ],
   "exit_levels": [
+    {
+      "symbol": "VIC",
+      "exchange": "HSX",
+      "decision": "SELL",
+      "confidence": "MEDIUM",
+      "entry_style": "EXIT",
+      "price": 219.8,
+      "exit_trigger": 203.5,
+      "note": "Thoát khi giá thủng exit_trigger"
+    },
     {
       "symbol": "VRE",
       "exchange": "HSX",
