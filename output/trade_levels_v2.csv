@@ -1,3 +1,4 @@
 ﻿symbol,exchange,decision,confidence,entry_style,price,entry_low,entry,entry_high,stop_loss,risk_pct,tp1,tp2,rr_tp1,rr_headroom,size_hint,nearest_support,nearest_resist,levels_used,flags,skip
 LPB,HSX,BUY,MEDIUM,PULLBACK,52.6,52.0,52.0,52.6,49.85,4.13,55.2,,1.49,0.91,HALF,52.0,53.96,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","SINGLE_TP_ONLY,TIGHT_HEADROOM",
-POW,HSX,BUY,HIGH,PULLBACK,14.25,13.9,13.9,14.25,13.65,1.8,14.25,14.7,1.4,2.0,FULL,13.91,14.4,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,TP2_FORCED_GAP",
+NAB,HSX,BUY,HIGH,PULLBACK,12.9,12.85,12.85,12.9,12.7,1.17,13.05,13.45,1.33,,FULL,12.85,,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,TP2_FORCED_GAP",
+POW,HSX,BUY,HIGH,PULLBACK,14.25,14.15,14.2,14.25,13.65,3.87,15.0,,1.45,0.27,FULL,14.2,14.35,"ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr","CONSENSUS_BULL,SINGLE_TP_ONLY,TIGHT_HEADROOM",
