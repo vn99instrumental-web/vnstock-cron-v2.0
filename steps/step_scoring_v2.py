@@ -54,6 +54,17 @@ CHANGELOG:
                         đã là %) → hết lỗi yield 0.8% bị đọc thành 80%.
                      SCORING_VERSION bump "v2.2" → "v2.3" để tách performance.
                      Lưu ý: GROUP_CAPS/WEIGHTS giữ nguyên (KHÔNG re-tune trong lần này).
+  2026-06-23 — FIX dashboard: refactor v2.2→v2.3 làm RƠI bước enrichment _of_*.
+                     Order flow vẫn fetch + ghi order_flow_v2.json đầy đủ (log
+                     "0 with errors", 40/40 mã có pattern/buy_ratio), nhưng
+                     score_symbol_v2() chỉ dùng summary để tính order_flow_score
+                     rồi vứt → signals_v2.json mất _of_pattern/_of_buy_vol/... →
+                     block "🔄 LỰC KHỚP LỆNH" trên indexv2.html hiển thị 0cp /
+                     không pattern (trông như không có lực khớp, kể cả trong giờ GD).
+                     Thêm _attach_order_flow() gọi trong main loop.
+                     CHỈ passthrough hiển thị — KHÔNG đụng scoring math/caps/weights/
+                     total_score → KHÔNG bump SCORING_VERSION (giữ "v2.3") để
+                     forward-validation buckets không bị tách oan.
 """
 import math
 import os
@@ -1672,6 +1683,57 @@ def _attach_daily_change(result: dict, ranking_map: dict) -> None:
     result["accumulated_value"] = _to_float(rk.get("accumulated_value"))
 
 
+def _attach_order_flow(result: dict, order_flow_map: dict) -> None:
+    """
+    v2.5: gắn các field _of_* vào signal row cho dashboard (indexv2.html
+    block "🔄 LỰC KHỚP LỆNH" đọc các field này).
+
+    BUG được fix: refactor v2.2→v2.3 đã làm rơi bước enrichment này. Order flow
+    vẫn fetch + ghi order_flow_v2.json đầy đủ, nhưng score_symbol_v2() chỉ dùng
+    summary để tính order_flow_score rồi vứt đi → signals_v2.json không còn
+    _of_pattern/_of_buy_vol/... → dashboard hiển thị "0cp / không pattern"
+    (trông như không có lực khớp lệnh, kể cả trong giờ giao dịch).
+
+    Nguồn số liệu:
+      - summary{}      : pattern, distribution_type, buy_ratio_today,
+                         sell_ratio_today, vol_spike_pct, avg_trade_size,
+                         total_trades, trader_type
+      - volume_profile : cộng dồn buy/sell count + buy/sell volume
+        (key đặt trong step_order_flow_v2.build_volume_profile:
+         buy_count, sell_count, buy_volume, sell_volume)
+    """
+    of_full = order_flow_map.get(result.get("symbol")) or {}
+    if not isinstance(of_full, dict):
+        of_full = {}
+    s  = of_full.get("summary", {}) if isinstance(of_full.get("summary"), dict) else {}
+    vp = of_full.get("volume_profile") or []
+
+    buy_cnt = sell_cnt = 0
+    buy_vol = sell_vol = 0
+    for r in vp:
+        if not isinstance(r, dict):
+            continue
+        buy_cnt  += int(_to_float(r.get("buy_count"),   0) or 0)
+        sell_cnt += int(_to_float(r.get("sell_count"),  0) or 0)
+        buy_vol  += int(_to_float(r.get("buy_volume"),  0) or 0)
+        sell_vol += int(_to_float(r.get("sell_volume"), 0) or 0)
+
+    result.update({
+        "_of_pattern"      : s.get("pattern"),
+        "_of_distribution" : s.get("distribution_type"),
+        "_of_buy_ratio"    : s.get("buy_ratio_today"),
+        "_of_sell_ratio"   : s.get("sell_ratio_today"),
+        "_of_vol_spike"    : s.get("vol_spike_pct"),
+        "_of_avg_size"     : s.get("avg_trade_size"),
+        "_of_total_trades" : s.get("total_trades"),
+        "_of_trader_type"  : s.get("trader_type"),
+        "_of_buy_count"    : buy_cnt  or None,
+        "_of_sell_count"   : sell_cnt or None,
+        "_of_buy_vol"      : buy_vol  or None,
+        "_of_sell_vol"     : sell_vol or None,
+    })
+
+
 def _ctx_passthrough(ctx: dict) -> dict:
     """v2.4: map context.json → các field _ctx_* để dashboard tự đủ."""
     if not ctx:
@@ -1759,6 +1821,7 @@ def run():
     for row in deep_raw:
         result = score_symbol_v2(row, ctx, news_scores, order_flow_map)
         _attach_daily_change(result, ranking_map)   # v2.2: gắn chg ngày
+        _attach_order_flow(result, order_flow_map)  # v2.5: gắn _of_* cho dashboard
         if ctx_fields:
             result.update(ctx_fields)               # v2.4: gắn _ctx_*
         scored_rows.append(result)
