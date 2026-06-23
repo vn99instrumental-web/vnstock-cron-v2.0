@@ -1,32 +1,9 @@
 {
-  "generated_at": "2026-06-23T14:53:27.276905+07:00",
+  "generated_at": "2026-06-23T15:07:05.485321+07:00",
   "scoring_version": "v2",
   "buy_count": 4,
   "exit_count": 11,
   "buy_levels": [
-    {
-      "symbol": "LPB",
-      "exchange": "HSX",
-      "decision": "BUY",
-      "confidence": "MEDIUM",
-      "entry_style": "PULLBACK",
-      "price": 52.6,
-      "entry": 52.0,
-      "entry_low": 52.0,
-      "entry_high": 52.6,
-      "stop_loss": 49.85,
-      "risk_pct": 4.13,
-      "tp1": 55.2,
-      "tp2": null,
-      "rr_tp1": 1.49,
-      "rr_headroom": 0.91,
-      "size_hint": "HALF",
-      "nearest_support": 52.0,
-      "nearest_resist": 53.96,
-      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
-      "flags": "SINGLE_TP_ONLY,TIGHT_HEADROOM",
-      "skip": ""
-    },
     {
       "symbol": "ACB",
       "exchange": "HSX",
@@ -48,6 +25,29 @@
       "nearest_resist": 22.7,
       "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
       "flags": "CONSENSUS_BULL,TP2_FORCED_GAP",
+      "skip": ""
+    },
+    {
+      "symbol": "GMD",
+      "exchange": "HSX",
+      "decision": "BUY",
+      "confidence": "MEDIUM",
+      "entry_style": "PULLBACK",
+      "price": 76.4,
+      "entry": 76.4,
+      "entry_low": 76.3,
+      "entry_high": 76.4,
+      "stop_loss": 74.7,
+      "risk_pct": 2.23,
+      "tp1": 78.9,
+      "tp2": 81.3,
+      "rr_tp1": 1.47,
+      "rr_headroom": 2.06,
+      "size_hint": "HALF",
+      "nearest_support": 76.37,
+      "nearest_resist": 79.9,
+      "levels_used": "ema20,ema50,bb,poc_vol,value_area_low,supertrend,low_5d,atr",
+      "flags": "TP2_FORCED_GAP",
       "skip": ""
     },
     {
@@ -121,12 +121,12 @@
     {
       "symbol": "SJS",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 48.0,
       "exit_trigger": 47.25,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "DSE",
@@ -161,12 +161,12 @@
     {
       "symbol": "CII",
       "exchange": "HSX",
-      "decision": "STRONG SELL",
+      "decision": "SELL",
       "confidence": "MEDIUM",
       "entry_style": "EXIT",
       "price": 17.15,
       "exit_trigger": null,
-      "note": "Thoát ngay (market)"
+      "note": "Thoát khi giá thủng exit_trigger"
     },
     {
       "symbol": "DCM",
