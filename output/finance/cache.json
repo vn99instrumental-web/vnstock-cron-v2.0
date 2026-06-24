@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-23T13:18:15.945452+07:00",
+  "generated_at": "2026-06-24T13:15:33.201004+07:00",
   "schema_version": 8,
   "ttl_days": 30,
-  "count": 404,
+  "count": 405,
   "symbols": {
     "CRE": {
       "symbol": "CRE",
@@ -22890,6 +22890,62 @@
         "cashflow": 5,
         "growth": 0,
         "total": 15,
+        "max": 38
+      }
+    },
+    "LSS": {
+      "symbol": "LSS",
+      "fetched_at": "2026-06-24T13:15:21.580312+07:00",
+      "schema_version": 8,
+      "ratio": {
+        "pe": 6.47,
+        "pb": 0.44,
+        "roe": 1.38,
+        "roa": 3.45,
+        "eps": 1429.44,
+        "bvps": 21107.0,
+        "beta": 0.97,
+        "div_yield": 5.0,
+        "gross_margin": 12.4,
+        "net_margin": 4.3,
+        "quick_ratio": 0.31,
+        "interest_cov": 2.68,
+        "ev_ebitda": 12.36
+      },
+      "income": {
+        "revenue": 384409808.0,
+        "gross_profit": 51467763.0,
+        "net_profit": 15956539.0,
+        "operating_profit": 20461178.0,
+        "eps": null,
+        "rev_growth_qoq": -0.4208,
+        "profit_growth_qoq": -0.7232,
+        "rev_growth_yoy": null,
+        "profit_growth_yoy": null,
+        "net_profit_year": 116072816.0
+      },
+      "balance": {},
+      "cashflow": {
+        "cf_operating": -213277766.0,
+        "cf_investing": -162490529.0,
+        "cf_financing": 349691946.0,
+        "cf_period": "annual",
+        "cf_free": -375768295.0,
+        "cf_quality": -1.84,
+        "cf_quality_period": "annual"
+      },
+      "data_status": {
+        "ratio_source": "kbs",
+        "cf_available": true,
+        "growth_available": true,
+        "incomplete": false
+      },
+      "period": "2026-Q3",
+      "finance_score": {
+        "fundamental": 12,
+        "cashflow": -10,
+        "growth": -6,
+        "total": -4,
         "max": 38
       }
     }
