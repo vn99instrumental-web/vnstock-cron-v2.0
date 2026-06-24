@@ -550,7 +550,7 @@ function renderCard(d, idx) {
       <span class="v2tag">v2.3</span>
     </div>
     <div class="ch-meta">
-      <span>${d.industry||''}</span>
+      <span>${d.organ_short_name||d.organ_name||d.industry||''}</span>
       ${d.exchange?`<span class="ch-meta-sep">·</span><span>${d.exchange}</span>`:''}
       ${confHtml}
       ${groupHtml}
