@@ -801,6 +801,8 @@ def build_one(symbol: str, group: str, market_open: bool,
             **{k: v for k, v in finance.items() if k != "symbol"},
             "industry": ind_row.get("icb_name", ""),
             "icb_code": ind_row.get("icb_code", ""),
+            "organ_short_name": ind_row.get("organ_short_name", "") or "",
+            "organ_name"      : ind_row.get("organ_name", "") or "",
         }
 
         # ── PRICE FALLBACK CHAIN (2026-06-17) ──────────────────────────
