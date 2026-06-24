@@ -1,10 +1,10 @@
 """
-utils/v2f_universe.py — Universe cho nhánh V2F (full-VN100, monitor cả rổ)
-==========================================================================
+utils/v2f_universe.py — Universe cho nhánh V2F (full VN100 + HNX30, monitor cả rổ)
+==================================================================================
 FORK của utils/universe_v2.py. KHÁC BIỆT DUY NHẤT:
   - V2  (universe_v2): VN100 → cắt top_x gainer + top_x loser (~40 mã).
-  - V2F (file này)   : lấy ĐỦ 100 mã VN100, KHÔNG cắt. 'group' chỉ là
-    provenance theo dấu %change; scoring tự surface mã tăng/giảm mạnh.
+  - V2F (file này)   : lấy ĐỦ rổ core (VN100 + HNX30 = ~130 mã), KHÔNG cắt.
+    'group' chỉ là provenance theo dấu %change; scoring tự surface mã tăng/giảm.
 
 Lý do tách file (không tham số hoá): yêu cầu giữ V2 hiện tại nguyên vẹn và
 V2F là một flow độc lập hoàn toàn (file .py + output riêng, prefix v2f_).
@@ -17,9 +17,21 @@ ISOLATION:
 OUTPUT ranking rows giữ ĐÚNG schema mà scoring đọc:
     symbol, price_change_percent_1d, price_change_1d, accumulated_value, group
 
+MULTI-GROUP (2026-06-24):
+  Universe = hợp các group trong V2F_INDEX_GROUPS, gom theo THỨ TỰ liệt kê,
+  dedupe bằng `seen` set. Mặc định "VN100,HNX30".
+  - VN100 = sàn HSX, HNX30 = sàn HNX → hai rổ RỜI NHAU (overlap=0, đã verify
+    bằng diag_hnx30_coverage 2026-06-24: 0 trùng, universe gộp = 130 mã).
+  - Movers (%change) lấy từ TopStock index=VNINDEX = chỉ HOSE → mã HNX KHÔNG
+    có trong movers → pct=None → mặc định GAINER (đúng quy ước hiện hành;
+    _attach_daily_change tự xử None). 'group' chỉ là provenance.
+  - Fundamentals của HNX30 đã nằm sẵn trong finance cache (step_finance_scan
+    _CORE_INDEX_GROUPS = ["VN100","HNX30"]) → không tốn thêm call KBS.
+
 ENV overrides:
-    V2F_INDEX_GROUP = "VN100"   # rổ universe
-    V2F_RANK_LIMIT  = "300"     # limit kéo gainer/loser toàn thị trường (pass 1)
+    V2F_INDEX_GROUPS = "VN100,HNX30"  # danh sách rổ core (phẩy ngăn cách)
+    V2F_INDEX_GROUP  = "VN100"        # [deprecated] fallback nếu GROUPS rỗng
+    V2F_RANK_LIMIT   = "300"          # limit kéo gainer/loser toàn TT (pass 1)
 """
 import os
 import logging
@@ -31,8 +43,17 @@ from utils.vci_throttle import vci_safe_run
 
 log = logging.getLogger(__name__)
 
+# [deprecated single] giữ lại cho tương thích ngược (diag/caller cũ tham chiếu).
 INDEX_GROUP = os.environ.get("V2F_INDEX_GROUP", "VN100")
-RANK_LIMIT  = int(os.environ.get("V2F_RANK_LIMIT", "300"))
+
+# Danh sách rổ core — gom theo thứ tự, dedupe khi build.
+INDEX_GROUPS = [
+    g.strip().upper()
+    for g in os.environ.get("V2F_INDEX_GROUPS", "VN100,HNX30").split(",")
+    if g.strip()
+] or [INDEX_GROUP]
+
+RANK_LIMIT = int(os.environ.get("V2F_RANK_LIMIT", "300"))
 
 _PCT_COL = "price_change_percent_1d"
 _ABS_COL = "price_change_1d"
@@ -66,6 +87,26 @@ def fetch_index_members(group: str = INDEX_GROUP) -> list:
     return [s.strip().upper() for s in syms if s and s.strip()]
 
 
+def _build_core_universe(index_groups: list) -> list:
+    """
+    Gom thành viên nhiều group theo THỨ TỰ, dedupe bằng `seen`.
+    Trả list[str] (đã upper, đã loại trùng). Log từng group + tổng.
+    """
+    seen: set = set()
+    universe: list = []
+    for grp in index_groups:
+        members = fetch_index_members(grp)
+        added = 0
+        for s in members:
+            if s and s not in seen:
+                seen.add(s)
+                universe.append(s)
+                added += 1
+        log.info(f"[v2f-universe] {grp}: {len(members)} mã → +{added} mới "
+                 f"(tổng {len(universe)})")
+    return universe
+
+
 def _market_movers(limit: int):
     """Kéo gainer + loser toàn thị trường (VNINDEX) với limit lớn — pass 1."""
     ins = TopStock()
@@ -74,15 +115,15 @@ def _market_movers(limit: int):
     return gainers, losers
 
 
-def _movers_lookup(gainers, losers, vn100: set) -> dict:
-    """Gộp gainer+loser → map symbol → {schema cols} (chỉ giữ mã VN100)."""
+def _movers_lookup(gainers, losers, universe: set) -> dict:
+    """Gộp gainer+loser → map symbol → {schema cols} (chỉ giữ mã trong universe)."""
     out: dict = {}
     for df in (gainers, losers):
         if df is None or getattr(df, "empty", True) or "symbol" not in df.columns:
             continue
         d = df.copy()
         d["symbol"] = d["symbol"].astype(str).str.strip().str.upper()
-        d = d[d["symbol"].isin(vn100)]
+        d = d[d["symbol"].isin(universe)]
         if d.empty:
             continue
         for c in _RANK_COLS:
@@ -96,29 +137,40 @@ def _movers_lookup(gainers, losers, vn100: set) -> dict:
     return out
 
 
-def build_v2f_universe(index_group: str = INDEX_GROUP,
+def build_v2f_universe(index_groups=None,
                        rank_limit: int = RANK_LIMIT):
     """
-    Trả về (symbol_jobs, ranking_rows) cho TOÀN BỘ rổ VN100 (~100 mã).
+    Trả về (symbol_jobs, ranking_rows) cho TOÀN BỘ rổ core (VN100 + HNX30, ~130 mã).
       symbol_jobs  : list[(symbol, group)] — universe pass 2 (đã dedupe)
       ranking_rows : list[dict]            — ghi v2f_ranking.json cho scoring
 
+    index_groups: list[str] | str | None
+      - None  → dùng INDEX_GROUPS (mặc định ["VN100","HNX30"]).
+      - str   → 1 group đơn (tương thích ngược cách gọi cũ build_v2f_universe("VN100")).
+      - list  → gom nhiều group theo thứ tự, dedupe.
+
     group = "LOSER" nếu %change < 0, còn lại (>=0 / =0 / thiếu) → "GAINER".
-    Mã thiếu %change (ngoài top-limit / movers fail) vẫn giữ với pct=None;
+    Mã thiếu %change (mã HNX hoặc ngoài movers) giữ với pct=None;
     _attach_daily_change tự xử None.
     """
-    vn100 = set(fetch_index_members(index_group))
-    log.info(f"[v2f-universe] {index_group}: {len(vn100)} mã (FULL)")
-    if not vn100:
-        log.error(f"[v2f-universe] {index_group} rỗng — không build được universe")
+    if index_groups is None:
+        index_groups = INDEX_GROUPS
+    elif isinstance(index_groups, str):
+        index_groups = [g.strip().upper() for g in index_groups.split(",") if g.strip()]
+
+    universe_list = _build_core_universe(index_groups)
+    universe = set(universe_list)
+    log.info(f"[v2f-universe] core {'+'.join(index_groups)}: {len(universe)} mã (FULL)")
+    if not universe:
+        log.error(f"[v2f-universe] {index_groups} rỗng — không build được universe")
         return [], []
 
     gainers, losers = _market_movers(rank_limit)
-    look = _movers_lookup(gainers, losers, vn100)
+    look = _movers_lookup(gainers, losers, universe)
 
     ranking_rows = []
     missing = 0
-    for sym in sorted(vn100):
+    for sym in sorted(universe):
         r = look.get(sym)
         if r is None:
             missing += 1
@@ -129,7 +181,7 @@ def build_v2f_universe(index_group: str = INDEX_GROUP,
 
     n_gain = sum(1 for r in ranking_rows if r["group"] == "GAINER")
     n_lose = sum(1 for r in ranking_rows if r["group"] == "LOSER")
-    log.info(f"[v2f-universe] {len(vn100)} mã → {n_gain} gainer / {n_lose} loser "
+    log.info(f"[v2f-universe] {len(universe)} mã → {n_gain} gainer / {n_lose} loser "
              f"({missing} mã thiếu %change → mặc định GAINER)")
 
     seen: set = set()
