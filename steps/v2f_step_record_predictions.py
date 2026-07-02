@@ -153,7 +153,7 @@ def run():
             "symbol"         : sym,
             "signal_date"    : snap_date,
             "snap_time"      : snap_time,
-            "scoring_version": SCORING_VERSION,
+           "scoring_version": sig.get("scoring_version") or SCORING_VERSION,
             "flow"           : FLOW,
             "universe_variant": "full_vn100",
             "schema_version" : SCHEMA_VERSION,
