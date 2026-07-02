@@ -45,6 +45,17 @@ jobs:
           restore-keys: |
             vnstock-stable-v4-
 
+      # ── Restore backtest dataset (READ-ONLY cho diagnostic scripts) ──
+      # cache/restore (không phải cache) → không bao giờ ghi đè cache của
+      # backtest.yml. Cache miss → script tự fail-soft, không chặn run.
+      - name: Restore backtest dataset cache
+        uses: actions/cache/restore@v4
+        with:
+          path: backtest_output/dataset.parquet
+          key: backtest-dataset-v2-full-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
+          restore-keys: |
+            backtest-dataset-v2-full-
+
       - name: Fallback install nếu cache miss
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
