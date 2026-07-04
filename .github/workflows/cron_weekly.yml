@@ -95,6 +95,14 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/step_eval_predictions.py
 
+      # -- Eval V2F: cham ca 2 ledger v2f (v2.3 prod + v3 shadow) --
+      - name: Eval predictions V2F
+        env:
+          EVAL_HORIZON_BARS: ${{ inputs.horizon || '10' }}
+        run: |
+          source /opt/vnstock/.venv/bin/activate
+          python steps/v2f_step_eval_predictions.py
+
       # -- Analyze: tong hop performance report --
       - name: Analyze performance
         run: |
