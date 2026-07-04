@@ -112,8 +112,25 @@ jobs:
           /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions.py
 
       # ──────────────────────────────────────────────────────────────────
-      # COMMIT — chỉ add v2f_* output + history/v2f_predictions
-      # KHÔNG đụng v2 hay v3 output. Push retry + rebase để tránh race với
+      # SHADOW V3 — registry scoring, chạy SAU v2.3, đọc lại output đã có
+      # (v2f_signals.json + context.json), ZERO API call thêm.
+      # continue-on-error: v3 crash KHÔNG được chặn pipeline v2.3.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Step Scoring V3 (shadow registry)
+        continue-on-error: true
+        run: |
+          /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v3.py
+
+      - name: Step Record Predictions V3 (shadow ledger)
+        continue-on-error: true
+        env:
+          FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
+        run: |
+          /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v3.py
+
+      # ──────────────────────────────────────────────────────────────────
+      # COMMIT — add v2f_* output + 2 ledger (v2f_predictions + _v3 shadow)
+      # KHÔNG đụng output của track v2 cũ. Push retry + rebase để tránh race với
       # workflow v2 (mặc dù file khác tên, branch main vẫn có thể đụng ref).
       # ──────────────────────────────────────────────────────────────────
       - name: Commit V2F output
@@ -133,6 +150,8 @@ jobs:
             output/v2f_trade_levels.json \
             output/v2f_trade_levels.csv \
             output/history/v2f_predictions/ \
+            output/v2f_signals_v3.json \
+            output/history/v2f_predictions_v3/ \
             2>/dev/null || true
 
           if git diff --staged --quiet; then
