@@ -50,6 +50,10 @@ YÊU CẦU: backtest_output/dataset.parquet đã build (chạy bt_data.py trư�
 
 CHANGELOG:
   v1 (2026-07-03) — initial. Evidence-gathering cho batch v2.4.
+  v2 (2026-07-03) — Phase 0 Option C: IC stability theo quý + regime proxy
+                    (up/flat/down từ median perf20d universe). Verdict
+                    STABLE_POS/STABLE_NEG/UNSTABLE/INSUFFICIENT + gate_hint
+                    làm input trực tiếp cho registry v3 & regime gate.
 """
 import os
 import sys
@@ -95,32 +99,35 @@ def daily_cs_ic(df: pd.DataFrame, sig_col: str, ret_col: str,
 
     Chỉ tính trên obs có signal != 0 & notna (với score transform, obs = 0
     là "không bắn" — đưa vào rank sẽ pha loãng IC về 0 một cách cơ học).
+    Trả thêm 'series' = list[(Timestamp, ic)] cho phân tích stability.
     """
     sub = df.dropna(subset=[sig_col, ret_col])
     sub = sub[sub[sig_col] != 0]
     if sub.empty:
-        return {"ic": None, "t": None, "n_days": 0, "n_obs": 0}
+        return {"ic": None, "t": None, "n_days": 0, "n_obs": 0, "series": []}
 
-    ics = []
-    for _, g in sub.groupby("time"):
+    series = []
+    for day, g in sub.groupby("time"):
         if len(g) < min_sym:
             continue
         if g[sig_col].nunique() < 2:
             continue
         ic = g[sig_col].rank().corr(g[ret_col].rank())
         if pd.notna(ic):
-            ics.append(ic)
+            series.append((day, float(ic)))
 
-    if len(ics) < 5:
-        return {"ic": None, "t": None, "n_days": len(ics), "n_obs": len(sub)}
+    if len(series) < 5:
+        return {"ic": None, "t": None, "n_days": len(series),
+                "n_obs": len(sub), "series": series}
 
-    ics  = np.array(ics)
+    ics  = np.array([v for _, v in series])
     mean = float(np.mean(ics))
     std  = float(np.std(ics, ddof=1))
     t    = mean / std * math.sqrt(len(ics)) if std > 1e-12 else None
     return {"ic": round(mean, 4),
             "t": round(t, 2) if t is not None else None,
-            "n_days": len(ics), "n_obs": int(len(sub))}
+            "n_days": len(series), "n_obs": int(len(sub)),
+            "series": series}
 
 
 def sign_stats(s: pd.Series) -> dict:
@@ -155,6 +162,118 @@ def verdict(row: dict, expected_sign: int, src: str) -> str:
             return "KEEP"
         return "FLIP?"
     return "WEAK"
+
+
+# ══════════════════════════════════════════════════════════════════════
+# PHASE 0 v2 — IC STABILITY (theo quý + theo regime proxy)
+# ══════════════════════════════════════════════════════════════════════
+MIN_DAYS_QUARTER = 15   # tối thiểu ngày IC hợp lệ để 1 quý được tính
+MIN_DAYS_REGIME  = 20   # tối thiểu ngày IC hợp lệ để 1 regime được tính
+STABLE_SHARE     = 0.8  # >=80% quý cùng dấu → STABLE
+REGIME_UP_TH     = 2.0  # median perf20 universe > +2% → 'up'
+REGIME_DOWN_TH   = -2.0 # < -2% → 'down'; còn lại 'flat'
+
+
+def classify_regime(median_perf20_pct: float):
+    if pd.isna(median_perf20_pct):
+        return None
+    if median_perf20_pct > REGIME_UP_TH:
+        return "up"
+    if median_perf20_pct < REGIME_DOWN_TH:
+        return "down"
+    return "flat"
+
+
+def stability_for_signal(series: list, regime_by_date: dict) -> dict:
+    """series = list[(Timestamp, ic)] (horizon 5d). Trả quarter/regime/verdict."""
+    if not series:
+        return {"quarters": {}, "regimes": {}, "verdict": "INSUFFICIENT",
+                "consistency": "—", "gate_hint": "—"}
+
+    s = pd.DataFrame(series, columns=["time", "ic"])
+    s["quarter"] = s["time"].dt.to_period("Q").astype(str)
+    s["regime"]  = s["time"].map(regime_by_date)
+
+    # ── theo quý ──
+    q_agg = s.groupby("quarter")["ic"].agg(["mean", "count"])
+    quarters = {q: {"ic": round(float(r["mean"]), 4), "n": int(r["count"])}
+                for q, r in q_agg.iterrows()}
+    valid = {q: v for q, v in quarters.items() if v["n"] >= MIN_DAYS_QUARTER}
+
+    # ── theo regime ──
+    r_agg = (s.dropna(subset=["regime"])
+              .groupby("regime")["ic"].agg(["mean", "count"]))
+    regimes = {rg: {"ic": round(float(r["mean"]), 4), "n": int(r["count"])}
+               for rg, r in r_agg.iterrows() if r["count"] >= MIN_DAYS_REGIME}
+
+    # ── verdict ──
+    overall = float(s["ic"].mean())
+    if len(valid) < 4:
+        vd, cons = "INSUFFICIENT", f"{len(valid)}q hợp lệ"
+    else:
+        signs      = [np.sign(v["ic"]) for v in valid.values() if v["ic"] != 0]
+        same       = sum(1 for x in signs if x == np.sign(overall))
+        share      = same / len(signs) if signs else 0
+        cons       = f"{same}/{len(signs)} {'dương' if overall > 0 else 'âm'}"
+        if share >= STABLE_SHARE:
+            vd = "STABLE_POS" if overall > 0 else "STABLE_NEG"
+        else:
+            vd = "UNSTABLE"
+
+    # ── gate hint (input thiết kế regime gate Phase 2) ──
+    gate = "—"
+    if vd == "UNSTABLE":
+        icu = regimes.get("up",   {}).get("ic")
+        icd = regimes.get("down", {}).get("ic")
+        icf = regimes.get("flat", {}).get("ic")
+        cands = [x for x in (icu, icd, icf) if x is not None]
+        if len(cands) >= 2 and (max(cands) - min(cands)) > 0.02:
+            gate = "GATE?"
+        else:
+            gate = "DROP?"
+    return {"quarters": quarters, "regimes": regimes, "verdict": vd,
+            "consistency": cons, "gate_hint": gate}
+
+
+def print_stability(stab: dict, order: list) -> None:
+    all_q = sorted({q for r in stab.values() for q in r["quarters"]})
+    log.info(f"\n{'═'*110}\n  IC STABILITY 5d — theo quý (chỉ quý ≥{MIN_DAYS_QUARTER} ngày IC được xét verdict)\n{'═'*110}")
+    hdr = f"{'signal':<16}" + "".join(f"{q:>9}" for q in all_q) \
+        + f"  {'consistency':<14} {'verdict':<13} {'gate':<6}"
+    log.info(hdr)
+    log.info("─" * 110)
+    for sig in order:
+        r = stab.get(sig)
+        if not r:
+            continue
+        cells = ""
+        for q in all_q:
+            v = r["quarters"].get(q)
+            if v is None:
+                cells += f"{'—':>9}"
+            else:
+                mark = "" if v["n"] >= MIN_DAYS_QUARTER else "*"
+                cells += f"{v['ic']:>+8.3f}{mark or ' '}"
+        log.info(f"{sig:<16}{cells}  {r['consistency']:<14} "
+                 f"{r['verdict']:<13} {r['gate_hint']:<6}")
+    log.info("(* = quý dưới ngưỡng ngày, chỉ tham khảo)")
+
+    log.info(f"\n{'═'*80}\n  IC STABILITY 5d — theo REGIME proxy "
+             f"(median perf20d universe: up>+{REGIME_UP_TH}%, down<{REGIME_DOWN_TH}%)\n{'═'*80}")
+    log.info(f"{'signal':<16}{'up':>10}{'flat':>10}{'down':>10}"
+             f"{'  n(u/f/d)':<16}{'verdict':<13}")
+    log.info("─" * 80)
+    for sig in order:
+        r = stab.get(sig)
+        if not r:
+            continue
+        def cell(rg):
+            v = r["regimes"].get(rg)
+            return f"{v['ic']:>+10.3f}" if v else f"{'—':>10}"
+        ns = "/".join(str(r["regimes"].get(rg, {}).get("n", 0))
+                      for rg in ("up", "flat", "down"))
+        log.info(f"{sig:<16}{cell('up')}{cell('flat')}{cell('down')}"
+                 f"  {ns:<14}{r['verdict']:<13}")
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -479,6 +598,7 @@ def run_part_c(report: dict) -> None:
     df = build_score_transforms(df)
 
     rows = []
+    series5 = {}
     for col, grp, exp_sign, note in PART_C_SIGNALS:
         if col not in df.columns:
             continue
@@ -490,9 +610,23 @@ def run_part_c(report: dict) -> None:
             row[f"t_{hz}d"]  = r["t"]
             row[f"n_days_{hz}d"] = r["n_days"]
             row[f"n_obs_{hz}d"]  = r["n_obs"]
+            if hz == 5:
+                series5[col] = r["series"]
         row["verdict"] = verdict(row, exp_sign, "C")
         rows.append(row)
     report["signals_c"] = rows
+
+    # ── PHASE 0 v2: IC stability theo quý & regime proxy ────────────
+    regime_by_date = (df.groupby("time")["_perf20"].median()
+                        .map(classify_regime).to_dict())
+    dist = pd.Series([v for v in regime_by_date.values() if v]).value_counts()
+    log.info(f"\n[C] Regime proxy — phân bố phiên: {dist.to_dict()}")
+    report["regime_distribution"] = dist.to_dict()
+
+    stab = {sig: stability_for_signal(series5.get(sig, []), regime_by_date)
+            for sig in series5}
+    print_stability(stab, [c for c, _, _, _ in PART_C_SIGNALS if c in stab])
+    report["ic_stability_5d"] = stab
 
     # Intra-group correlation (evidence #2)
     corr_out = {}
