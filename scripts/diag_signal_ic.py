@@ -57,6 +57,11 @@ CHANGELOG:
   v3 (2026-07-04) — Regime proxy chuyển từ ngưỡng cứng ±2% sang TERCILE
                     (phân vị 1/3) sau khi run thật cho thấy 301/301 phiên
                     đều rơi vào 'flat'. gate_hint giờ có ý nghĩa thực.
+  v4 (2026-07-04) — Thêm horizon 10d/20d (khung HOLD ~1 tháng): ret tự tính
+                    từ close, bảng chính thêm IC_10d/IC_20d + verdict kép
+                    TRADE(5d)/HOLD(20d), stability chạy cho cả 5d và 20d.
+                    Trả lời: tín hiệu TF bị off ở khung trade có sống ở khung
+                    hold không → quyết định score_hold trong registry v3.
 """
 import os
 import sys
@@ -81,7 +86,8 @@ REPORT_DIR  = BT_DIR / "reports"
 PARQUET     = BT_DIR / "dataset.parquet"
 SIGNALS_GIT = "output/v2f_signals.json"
 
-HORIZONS      = [1, 3, 5]
+HORIZONS      = [1, 3, 5, 10, 20]   # 1-5d = khung trade | 10-20d = khung hold
+STABILITY_HZS = [5, 20]              # stability theo quý/regime cho 2 khung
 MIN_SYM_DAY   = 30    # tối thiểu mã/ngày để tính 1 IC daily (Part C)
 MIN_SYM_DAY_A = 30    # Part A (~130 mã → OK)
 MIN_DAYS_VERDICT = 60
@@ -148,14 +154,14 @@ def sign_stats(s: pd.Series) -> dict:
     }
 
 
-def verdict(row: dict, expected_sign: int, src: str) -> str:
+def verdict(row: dict, expected_sign: int, src: str, hz: int = 5) -> str:
     if src == "A":
         return "INDICATIVE"
     if row["fire_rate"] is not None and row["fire_rate"] < 1.0:
         return "DEAD"
-    ic = row.get("ic_5d")
-    t  = row.get("t_5d")
-    nd = row.get("n_days_5d") or 0
+    ic = row.get(f"ic_{hz}d")
+    t  = row.get(f"t_{hz}d")
+    nd = row.get(f"n_days_{hz}d") or 0
     if ic is None or nd < MIN_DAYS_VERDICT:
         return "N/A"
     if abs(ic) < 0.005 and (t is None or abs(t) < 1.0):
@@ -246,9 +252,10 @@ def stability_for_signal(series: list, regime_by_date: dict) -> dict:
             "consistency": cons, "gate_hint": gate}
 
 
-def print_stability(stab: dict, order: list) -> None:
+def print_stability(stab: dict, order: list, hz: int = 5) -> None:
+    tag = "TRADE" if hz <= 5 else "HOLD"
     all_q = sorted({q for r in stab.values() for q in r["quarters"]})
-    log.info(f"\n{'═'*110}\n  IC STABILITY 5d — theo quý (chỉ quý ≥{MIN_DAYS_QUARTER} ngày IC được xét verdict)\n{'═'*110}")
+    log.info(f"\n{'═'*110}\n  IC STABILITY {hz}d [{tag}] — theo quý (chỉ quý ≥{MIN_DAYS_QUARTER} ngày IC được xét verdict)\n{'═'*110}")
     hdr = f"{'signal':<16}" + "".join(f"{q:>9}" for q in all_q) \
         + f"  {'consistency':<14} {'verdict':<13} {'gate':<6}"
     log.info(hdr)
@@ -269,7 +276,7 @@ def print_stability(stab: dict, order: list) -> None:
                  f"{r['verdict']:<13} {r['gate_hint']:<6}")
     log.info("(* = quý dưới ngưỡng ngày, chỉ tham khảo)")
 
-    log.info(f"\n{'═'*80}\n  IC STABILITY 5d — theo REGIME proxy "
+    log.info(f"\n{'═'*80}\n  IC STABILITY {hz}d [{tag}] — theo REGIME proxy "
              f"(tercile của median perf20d universe)\n{'═'*80}")
     log.info(f"{'signal':<16}{'up':>10}{'flat':>10}{'down':>10}"
              f"{'  n(u/f/d)':<16}{'verdict':<13}")
@@ -599,6 +606,15 @@ def run_part_c(report: dict) -> None:
         report["part_c"] = {"error": "parquet missing OHLCV"}
         return
 
+    # Tự tính forward return cho horizon chưa có sẵn trong parquet (10d, 20d)
+    df = df.sort_values(["symbol", "time"]).reset_index(drop=True)
+    for hz in HORIZONS:
+        col = f"ret_{hz}d"
+        if col not in df.columns:
+            df[col] = (df.groupby("symbol")["close"].shift(-hz)
+                       / df["close"] - 1)
+            log.info(f"[C] Tính bổ sung {col} từ close (parquet không có sẵn)")
+
     log.info("[C] Tính extended indicators per-symbol (pure pandas/numpy)...")
     parts = []
     for sym, g in df.groupby("symbol"):
@@ -609,7 +625,7 @@ def run_part_c(report: dict) -> None:
     df = build_score_transforms(df)
 
     rows = []
-    series5 = {}
+    series_hz = {h: {} for h in STABILITY_HZS}
     for col, grp, exp_sign, note in PART_C_SIGNALS:
         if col not in df.columns:
             continue
@@ -621,9 +637,10 @@ def run_part_c(report: dict) -> None:
             row[f"t_{hz}d"]  = r["t"]
             row[f"n_days_{hz}d"] = r["n_days"]
             row[f"n_obs_{hz}d"]  = r["n_obs"]
-            if hz == 5:
-                series5[col] = r["series"]
-        row["verdict"] = verdict(row, exp_sign, "C")
+            if hz in STABILITY_HZS:
+                series_hz[hz][col] = r["series"]
+        row["verdict"]     = verdict(row, exp_sign, "C", hz=5)   # khung TRADE
+        row["verdict_20d"] = verdict(row, exp_sign, "C", hz=20)  # khung HOLD
         rows.append(row)
     report["signals_c"] = rows
 
@@ -636,10 +653,14 @@ def run_part_c(report: dict) -> None:
     report["regime_distribution"] = dist.to_dict()
     report["regime_terciles"] = {"q33_pct": q33, "q67_pct": q67}
 
-    stab = {sig: stability_for_signal(series5.get(sig, []), regime_by_date)
-            for sig in series5}
-    print_stability(stab, [c for c, _, _, _ in PART_C_SIGNALS if c in stab])
-    report["ic_stability_5d"] = stab
+    for hz in STABILITY_HZS:
+        stab = {sig: stability_for_signal(series_hz[hz].get(sig, []),
+                                          regime_by_date)
+                for sig in series_hz[hz]}
+        print_stability(stab,
+                        [c for c, _, _, _ in PART_C_SIGNALS if c in stab],
+                        hz=hz)
+        report[f"ic_stability_{hz}d"] = stab
 
     # Intra-group correlation (evidence #2)
     corr_out = {}
@@ -836,20 +857,21 @@ def run_part_a(report: dict) -> None:
 
 def _print_table(rows: list, title: str) -> None:
     log.info(f"\n{'═'*100}\n  {title}\n{'═'*100}")
-    hdr = (f"{'signal':<18} {'group':<11} {'fire%':>6} {'mean':>7} "
-           f"{'IC_1d':>7} {'IC_3d':>7} {'IC_5d':>7} {'t_5d':>6} "
-           f"{'nDays':>6} {'verdict':<11}")
+    hdr = (f"{'signal':<18} {'group':<11} {'fire%':>6} "
+           f"{'IC_1d':>7} {'IC_5d':>7} {'IC_10d':>7} {'IC_20d':>7} "
+           f"{'t_5d':>6} {'t_20d':>6} {'v_TRADE(5d)':<12} {'v_HOLD(20d)':<12}")
     log.info(hdr)
-    log.info("─" * 100)
+    log.info("─" * 112)
     for r in sorted(rows, key=lambda x: (x["group"], x["signal"])):
         def fmt(v, spec):
             return format(v, spec) if v is not None else "  —"
         log.info(
             f"{r['signal']:<18} {r['group']:<11} "
-            f"{fmt(r.get('fire_rate'), '6.1f')} {fmt(r.get('mean'), '7.2f')} "
-            f"{fmt(r.get('ic_1d'), '7.3f')} {fmt(r.get('ic_3d'), '7.3f')} "
-            f"{fmt(r.get('ic_5d'), '7.3f')} {fmt(r.get('t_5d'), '6.1f')} "
-            f"{str(r.get('n_days_5d') or '—'):>6} {r['verdict']:<11}")
+            f"{fmt(r.get('fire_rate'), '6.1f')} "
+            f"{fmt(r.get('ic_1d'), '7.3f')} {fmt(r.get('ic_5d'), '7.3f')} "
+            f"{fmt(r.get('ic_10d'), '7.3f')} {fmt(r.get('ic_20d'), '7.3f')} "
+            f"{fmt(r.get('t_5d'), '6.1f')} {fmt(r.get('t_20d'), '6.1f')} "
+            f"{r.get('verdict', '—'):<12} {r.get('verdict_20d', '—'):<12}")
 
 
 def main():
