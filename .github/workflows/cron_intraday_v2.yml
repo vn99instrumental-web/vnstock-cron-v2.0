@@ -1,11 +1,8 @@
-name: VNStock Intraday V2F (full-VN100)
+name: VNStock Intraday V2
 
-# Lệch v2 (09:30 ICT = 02:30 UTC) 10 phút → 09:40 ICT = 02:40 UTC.
-# Lệch để: (1) tránh race khi 2 workflow cùng push main; (2) tách spike quota VCI;
-# (3) easy bisect khi đọc log Actions.
 on:
   schedule:
-    - cron: '40 2 * * 1-5'   # 09:40 ICT
+    - cron: '30 2 * * 1-5'   # 09:30 ICT    
   workflow_dispatch:
     inputs:
       force_record:
@@ -16,15 +13,14 @@ on:
 permissions:
   contents: write
 
-# Concurrency group RIÊNG → không serialize / cancel chéo với v2.
 concurrency:
-  group: vnstock-intraday-v2f
+  group: vnstock-intraday-v2
   cancel-in-progress: false
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 40   # V2F xử lý ~100 mã (≈2.5× v2) → nới timeout
+    timeout-minutes: 30
 
     env:
       VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
@@ -45,8 +41,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Restore cache do cron_daily.yml tạo — KHÔNG install gì thêm.
-      # Cache dùng chung với v2 (cùng venv vnstock, an toàn vì read-only ở đây).
+      # Restore cache do cron_daily.yml tạo — không install gì thêm
       - name: Compute cache key suffix (weekly)
         id: cache-suffix
         run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
@@ -74,84 +69,60 @@ jobs:
           $VENV_PY -m pip list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
 
       # ──────────────────────────────────────────────────────────────────
-      # V2F PIPELINE — fork song song, prefix v2f_* cho mọi output
-      # I/O đọc/ghi: v2f_deep_raw → v2f_order_flow → v2f_signals → v2f_trade_levels
-      #   + dùng CHUNG context.json / news/today_index.json / finance/cache.json
-      #   + ledger ledger riêng: output/history/v2f_predictions/
+      # V2 PIPELINE — tất cả dùng file standalone, không patch runtime
       # ──────────────────────────────────────────────────────────────────
-      - name: Step Snapshot V2F — Universe (full-VN100) + Ranking + Deep
+      - name: Step Snapshot V2 — Ranking + Deep
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
-          /opt/vnstock/.venv/bin/python steps/v2f_step_snapshot.py
+          /opt/vnstock/.venv/bin/python steps/step_snapshot_v2.py
 
-      - name: Step Order Flow V2F
+      - name: Step Order Flow V2
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_order_flow.py
+          /opt/vnstock/.venv/bin/python steps/step_order_flow_v2.py
 
-      - name: Step Scoring V2F (weighted normalized)
+      - name: Step Scoring V2 (weighted normalized)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_scoring.py
+          /opt/vnstock/.venv/bin/python steps/step_scoring_v2.py
 
-      - name: Step Price Levels V2F
+      - name: Step Price Levels V2
         run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_price_levels.py
+          /opt/vnstock/.venv/bin/python steps/step_price_levels_v2.py
 
-      - name: Step Record Predictions V2F (forward log → v2f_predictions)
+      - name: Step Record Predictions V2 (forward log)
         env:
           FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
         run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions.py
+          /opt/vnstock/.venv/bin/python steps/step_record_predictions_v2.py
 
       # ──────────────────────────────────────────────────────────────────
-      # SHADOW V3 — registry scoring, chạy SAU v2.3, đọc lại output đã có
-      # (v2f_signals.json + context.json), ZERO API call thêm.
-      # continue-on-error: v3 crash KHÔNG được chặn pipeline v2.3.
+      # COMMIT — chỉ add v2 output files, không đụng v3
       # ──────────────────────────────────────────────────────────────────
-      - name: Step Scoring V3 (shadow registry)
-        continue-on-error: true
-        run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v3.py
-
-      - name: Step Record Predictions V3 (shadow ledger)
-        continue-on-error: true
-        env:
-          FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
-        run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v3.py
-
-      # ──────────────────────────────────────────────────────────────────
-      # COMMIT — add v2f_* output + 2 ledger (v2f_predictions + _v3 shadow)
-      # KHÔNG đụng output của track v2 cũ. Push retry + rebase để tránh race với
-      # workflow v2 (mặc dù file khác tên, branch main vẫn có thể đụng ref).
-      # ──────────────────────────────────────────────────────────────────
-      - name: Commit V2F output
+      - name: Commit V2 output
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add \
-            output/v2f_deep_raw.json \
-            output/v2f_deep.json \
-            output/v2f_deep.csv \
-            output/v2f_ranking.json \
-            output/v2f_ranking.csv \
-            output/v2f_order_flow.json \
-            output/v2f_signals.json \
-            output/v2f_signals.csv \
-            output/v2f_trade_levels.json \
-            output/v2f_trade_levels.csv \
-            output/history/v2f_predictions/ \
-            output/v2f_signals_v3.json \
-            output/history/v2f_predictions_v3/ \
+            output/deep_raw_v2.json \
+            output/deep_v2.json \
+            output/deep_v2.csv \
+            output/ranking_v2.json \
+            output/ranking_v2.csv \
+            output/order_flow_v2.json \
+            output/signals_v2.json \
+            output/signals_v2.csv \
+            output/trade_levels_v2.json \
+            output/trade_levels_v2.csv \
+            output/history/predictions_v2/ \
             2>/dev/null || true
 
           if git diff --staged --quiet; then
@@ -159,7 +130,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "data[v2f]: $(date +'%Y-%m-%d %H:%M') ICT"
+          git commit -m "data[v2]: $(date +'%Y-%m-%d %H:%M') ICT"
 
           pushed=0
           for i in 1 2 3 4 5; do
