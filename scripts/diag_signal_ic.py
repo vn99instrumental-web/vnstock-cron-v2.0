@@ -54,6 +54,9 @@ CHANGELOG:
                     (up/flat/down từ median perf20d universe). Verdict
                     STABLE_POS/STABLE_NEG/UNSTABLE/INSUFFICIENT + gate_hint
                     làm input trực tiếp cho registry v3 & regime gate.
+  v3 (2026-07-04) — Regime proxy chuyển từ ngưỡng cứng ±2% sang TERCILE
+                    (phân vị 1/3) sau khi run thật cho thấy 301/301 phiên
+                    đều rơi vào 'flat'. gate_hint giờ có ý nghĩa thực.
 """
 import os
 import sys
@@ -170,18 +173,26 @@ def verdict(row: dict, expected_sign: int, src: str) -> str:
 MIN_DAYS_QUARTER = 15   # tối thiểu ngày IC hợp lệ để 1 quý được tính
 MIN_DAYS_REGIME  = 20   # tối thiểu ngày IC hợp lệ để 1 regime được tính
 STABLE_SHARE     = 0.8  # >=80% quý cùng dấu → STABLE
-REGIME_UP_TH     = 2.0  # median perf20 universe > +2% → 'up'
-REGIME_DOWN_TH   = -2.0 # < -2% → 'down'; còn lại 'flat'
+# Regime proxy v3 (TERCILE): chia phân phối median-perf20d của universe thành
+# 3 phần bằng nhau theo PHÂN VỊ (không dùng ngưỡng cứng): 1/3 phiên yếu nhất
+# = 'down', 1/3 mạnh nhất = 'up', giữa = 'flat'. Luôn phân tách được bất kể
+# đặc tính thị trường — sửa lỗi v2 (ngưỡng cứng ±2% → 100% phiên rơi vào flat).
 
 
-def classify_regime(median_perf20_pct: float):
-    if pd.isna(median_perf20_pct):
-        return None
-    if median_perf20_pct > REGIME_UP_TH:
-        return "up"
-    if median_perf20_pct < REGIME_DOWN_TH:
-        return "down"
-    return "flat"
+def build_regime_map(df: pd.DataFrame) -> tuple:
+    """Trả (regime_by_date: dict, q33: float, q67: float)."""
+    med = df.groupby("time")["_perf20"].median().dropna()
+    if len(med) < 30:
+        return {}, None, None
+    q33 = float(med.quantile(1 / 3))
+    q67 = float(med.quantile(2 / 3))
+    def _cls(v):
+        if v <= q33:
+            return "down"
+        if v >= q67:
+            return "up"
+        return "flat"
+    return {d: _cls(v) for d, v in med.items()}, q33, q67
 
 
 def stability_for_signal(series: list, regime_by_date: dict) -> dict:
@@ -259,7 +270,7 @@ def print_stability(stab: dict, order: list) -> None:
     log.info("(* = quý dưới ngưỡng ngày, chỉ tham khảo)")
 
     log.info(f"\n{'═'*80}\n  IC STABILITY 5d — theo REGIME proxy "
-             f"(median perf20d universe: up>+{REGIME_UP_TH}%, down<{REGIME_DOWN_TH}%)\n{'═'*80}")
+             f"(tercile của median perf20d universe)\n{'═'*80}")
     log.info(f"{'signal':<16}{'up':>10}{'flat':>10}{'down':>10}"
              f"{'  n(u/f/d)':<16}{'verdict':<13}")
     log.info("─" * 80)
@@ -617,11 +628,13 @@ def run_part_c(report: dict) -> None:
     report["signals_c"] = rows
 
     # ── PHASE 0 v2: IC stability theo quý & regime proxy ────────────
-    regime_by_date = (df.groupby("time")["_perf20"].median()
-                        .map(classify_regime).to_dict())
+    regime_by_date, q33, q67 = build_regime_map(df)
     dist = pd.Series([v for v in regime_by_date.values() if v]).value_counts()
-    log.info(f"\n[C] Regime proxy — phân bố phiên: {dist.to_dict()}")
+    log.info(f"\n[C] Regime proxy TERCILE — ngưỡng thực tế: "
+             f"down ≤ {q33:+.2f}% < flat < {q67:+.2f}% ≤ up | "
+             f"phân bố phiên: {dist.to_dict()}")
     report["regime_distribution"] = dist.to_dict()
+    report["regime_terciles"] = {"q33_pct": q33, "q67_pct": q67}
 
     stab = {sig: stability_for_signal(series5.get(sig, []), regime_by_date)
             for sig in series5}
