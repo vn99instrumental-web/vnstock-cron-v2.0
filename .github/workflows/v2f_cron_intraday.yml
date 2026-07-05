@@ -121,6 +121,11 @@ jobs:
         run: |
           /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v3.py
 
+      - name: Step Price Levels V3 (levels riêng của shadow)
+        continue-on-error: true
+        run: |
+          /opt/vnstock/.venv/bin/python steps/v2f_step_price_levels_v3.py
+
       - name: Step Record Predictions V3 (shadow ledger)
         continue-on-error: true
         env:
@@ -151,6 +156,7 @@ jobs:
             output/v2f_trade_levels.csv \
             output/history/v2f_predictions/ \
             output/v2f_signals_v3.json \
+            output/v2f_trade_levels_v3.json \
             output/history/v2f_predictions_v3/ \
             2>/dev/null || true
 
