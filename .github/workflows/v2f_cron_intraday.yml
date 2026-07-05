@@ -143,7 +143,10 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add \
+          # BUGFIX 05/07: git add 1 lệnh nhiều path → 1 path chưa tồn tại
+          # (vd file v3 khi shadow crash) làm FAIL TOÀN BỘ lệnh add → mất
+          # commit data v2.3. Add TỪNG path riêng, path thiếu chỉ mất mình nó.
+          for p in \
             output/v2f_deep_raw.json \
             output/v2f_deep.json \
             output/v2f_deep.csv \
@@ -157,8 +160,9 @@ jobs:
             output/history/v2f_predictions/ \
             output/v2f_signals_v3.json \
             output/v2f_trade_levels_v3.json \
-            output/history/v2f_predictions_v3/ \
-            2>/dev/null || true
+            output/history/v2f_predictions_v3/ ; do
+            git add "$p" 2>/dev/null || true
+          done
 
           if git diff --staged --quiet; then
             echo "No changes to commit — skipping."
