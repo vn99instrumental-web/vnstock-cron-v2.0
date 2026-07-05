@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 FLOW              = "v2f_v3"
 SCHEMA_VERSION    = 1
 SIGNALS_FILE      = "v2f_signals_v3.json"
-TRADE_LEVELS_FILE = "v2f_trade_levels.json"    # dùng chung level với v2.3
+TRADE_LEVELS_FILE = "v2f_trade_levels_v3.json"  # levels RIÊNG của v3 (độc lập)
 HISTORY_SUBDIR    = "history/v2f_predictions_v3"
 
 ANCHOR_HOUR_ICT = int(os.environ.get("RECORD_ANCHOR_HOUR", "0"))
