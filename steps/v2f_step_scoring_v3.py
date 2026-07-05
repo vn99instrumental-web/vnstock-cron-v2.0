@@ -308,17 +308,26 @@ FN_TABLE = {
 # CORE — chấm 1 symbol, 2 khung
 # ══════════════════════════════════════════════════════════════════════
 
+# Field scoring của v2.3 KHÔNG được lọt vào output v3 (v3 phải tự chủ
+# decision/điểm số; chỉ passthrough DATA THÔ: TA, _of_*, FF raw, finance...)
+_V23_SCORING_KEYS = {"decision", "confidence", "total_score", "base_score_v2",
+                     "signals", "pattern_flags", "confluence_bonus",
+                     "data_completeness", "scoring_version"}
+
+
+def _is_v23_scoring_field(k: str) -> bool:
+    return (k in _V23_SCORING_KEYS or k.endswith("_score")
+            or k.startswith("norm_"))
+
+
 def score_symbol(row: dict, ctx: dict, caps: dict, actives: dict) -> dict:
-    out = {
-        "symbol":           row.get("symbol"),
-        "date":             row.get("date"),
-        "snap_time":        row.get("snap_time"),
-        "price":            row.get("price"),
-        "industry":         row.get("industry"),
-        "exchange":         row.get("exchange"),
+    # PASSTHROUGH data thô từ row v2.3 → v2f_signals_v3.json TỰ CHỦ hoàn toàn:
+    # price levels v3 + dashboard sau này đọc 1 file, không mượn gì của v2.3.
+    out = {k: v for k, v in row.items() if not _is_v23_scoring_field(k)}
+    out.update({
         "scoring_version":  SCORING_VERSION,
         "registry_version": REGISTRY_VERSION,
-    }
+    })
     sig_labels = []
     sig_scores = {}                       # id → điểm (tính 1 lần, dùng 2 khung)
 
