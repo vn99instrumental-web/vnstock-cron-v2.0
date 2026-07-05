@@ -169,7 +169,8 @@ def sc_rs_rev(row, ctx):
         return 0, ""
     vr = _f(row.get("vnindex_return_20d"))
     if vr is None:
-        vr = _f(ctx.get("vnindex_return_20d") or ctx.get("market_return_20d"))
+        vr = _f(ctx.get("vnindex_return_20d") or ctx.get("market_return_20d")
+                or ctx.get("vnindex_chg_20d") or ctx.get("chg_20d"))
     if vr is not None:
         rs = (1 + sr / 100) / (1 + vr / 100)
         if   rs > 1.30: s = -4
@@ -412,8 +413,16 @@ def run():
     if not rows:
         log.warning(f"{SIGNALS_IN} rỗng/không tồn tại — skip (shadow fail-soft)")
         return
-    ctx = load_json(CONTEXT_FILE) or {}
-    if rows and rows[0].get("snap_time"):
+    # BUGFIX 05/07: context.json của track V2F là LIST (không phải dict như
+    # V1) → run đầu crash "list indices must be integers". Nhận cả 2 dạng.
+    raw_ctx = load_json(CONTEXT_FILE)
+    if isinstance(raw_ctx, dict):
+        ctx = dict(raw_ctx)
+    elif isinstance(raw_ctx, list) and raw_ctx and isinstance(raw_ctx[0], dict):
+        ctx = dict(raw_ctx[0])
+    else:
+        ctx = {}
+    if rows and isinstance(rows[0], dict) and rows[0].get("snap_time"):
         ctx["_snap_time"] = rows[0]["snap_time"]
 
     out_rows, n_err = [], 0
