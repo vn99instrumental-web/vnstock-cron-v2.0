@@ -1,0 +1,65 @@
+# ============================================================
+# Deploy GitHub Pages — CHỈ khi dashboard (docs/) thay đổi
+# ------------------------------------------------------------
+# Muc dich: cham dut viec MOI commit vao main (ke ca commit output/
+# data tu cac workflow) deu bat Pages build lai -> nghen hang doi ->
+# loi "Deployment failed, try again later".
+#
+# Cach hoat dong:
+#   - Chi chay khi co file trong docs/** doi (paths filter ben duoi).
+#     => commit output/*.json cua v1/v2f/daily KHONG con kich hoat Pages.
+#   - concurrency + cancel-in-progress: deploy sau tu huy deploy truoc
+#     dang chay dang do -> khong con xep hang chong nhau.
+#   - Stage rieng thu muc docs/ -> URL giu nguyen .../docs/indexv2.html
+#     (khong doi link Telegram/dashboard hien co).
+# ============================================================
+name: Deploy Pages (docs only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:   # cho phep bam chay tay de test / deploy lai
+
+# Quyen toi thieu bat buoc cho actions/deploy-pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Deploy moi tu huy deploy cu dang chay -> chi ban moi nhat len web,
+# het canh nhieu deploy chen nhau gay "try again later".
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Chi dua thu muc docs/ len site, GIU nguyen cau truc /docs/
+      # => URL van la .../vnstock-cron-v2.0/docs/indexv2.html nhu cu.
+      - name: Stage docs folder
+        run: |
+          mkdir -p _site
+          cp -r docs _site/docs
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
