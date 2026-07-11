@@ -105,12 +105,17 @@ jobs:
 
       # -- Analyze: tong hop performance report --
       - name: Analyze performance
+        # script này hiện KHÔNG tồn tại trên repo → fail từ nhiều tuần nay và
+        # giết job TRƯỚC bước commit (làm mất mọi outcomes đã chấm xong).
+        # continue-on-error để không chặn; quyết định khôi phục/xóa hẳn sau.
+        continue-on-error: true
         run: |
           source /opt/vnstock/.venv/bin/activate
           python scripts/analyze_performance.py
 
       # -- Commit (pull --rebase + retry, giong intraday) --
       - name: Commit history ledger
+        if: always()      # LUÔN vớt outcomes đã sinh, kể cả khi step trước fail
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
