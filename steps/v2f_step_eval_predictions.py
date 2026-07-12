@@ -269,7 +269,8 @@ def evaluate_one(pred: dict, bars: list[dict],
     # ── Lăng kính TRADE (chỉ khung trade + pred actionable có entry/stop) ──
     if lens == "trade":
         entry = _f(pred.get("entry"))
-        stop  = _f(pred.get("stop"))
+        stop  = _f(pred.get("stop") if pred.get("stop") is not None
+                   else pred.get("stop_loss"))
         tp1   = _f(pred.get("tp1"))
         if (pred.get("decision") in ("BUY", "STRONG BUY")
                 and entry and stop and entry > stop):
