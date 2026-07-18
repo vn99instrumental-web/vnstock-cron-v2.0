@@ -41,6 +41,16 @@ CHANGELOG:
   v1 (2026-07-04) — initial. Lấp lỗ hổng "sổ ghi đều nhưng không ai chấm"
                     (audit: không tồn tại outcomes cho v2f). Chấm HỒI TỐ được
                     toàn bộ backlog tháng 6 → không mất record nào.
+  v2 (2026-07-18) — (A) GHI TĂNG DẦN: flush outcomes sau MỖI mã (trước đây
+                    chỉ ghi 1 lần cuối vòng → timeout-minutes chém ngang là
+                    mất trắng, sự cố 18/07: 2 lần cancel ở mã 60/140, 0 byte
+                    ghi ra đĩa). Dedup pred_id sẵn có → rerun an toàn, chấm
+                    tiếp từ chỗ dở.
+                    (B) LỌC UNIVERSE: chỉ chấm mã thuộc universe hiện tại
+                    (nguồn chuẩn utils/v2f_universe; fallback v2f_ranking.json
+                    trên đĩa nếu VCI chết; fallback cuối = không lọc). Mã
+                    ngoài universe (penny đời cũ) để OPEN, không đốt quota VCI.
+                    Tắt lọc: EVAL_UNIVERSE_FILTER=0.
 """
 import os
 import sys
@@ -212,6 +222,74 @@ def fetch_ohlcv(symbol: str, start: str, end: str) -> list[dict]:
 
 
 # =====================================================
+# Universe hiện tại (Patch B) + flush tăng dần (Patch A)
+# =====================================================
+
+UNIVERSE_FILTER = os.getenv("EVAL_UNIVERSE_FILTER", "1") != "0"
+MIN_UNIVERSE_SIZE = 50   # sanity: nhỏ hơn mức này coi như fetch hỏng → fallback
+
+
+def _load_current_universe() -> set | None:
+    """
+    Trả set mã thuộc universe hiện tại, hoặc None nếu không xác định được
+    (None → KHÔNG lọc, giữ hành vi cũ — an toàn tuyệt đối).
+
+    Thứ tự nguồn:
+      1) utils.v2f_universe._build_core_universe (nguồn chuẩn, 2 call VCI nhẹ)
+      2) output/v2f_ranking.json trên đĩa (universe từ lượt intraday gần nhất,
+         KHÔNG cần mạng — cứu cánh khi VCI đang chập chờn)
+      3) None → không lọc
+    """
+    # Nguồn 1: module chuẩn
+    try:
+        from utils.v2f_universe import _build_core_universe, INDEX_GROUPS
+        syms = _build_core_universe(INDEX_GROUPS)
+        if syms and len(syms) >= MIN_UNIVERSE_SIZE:
+            log.info(f"  [universe] nguồn chuẩn v2f_universe: {len(syms)} mã")
+            return set(syms)
+        log.warning(f"  [universe] v2f_universe trả {len(syms) if syms else 0} mã "
+                    f"(< {MIN_UNIVERSE_SIZE}) — thử fallback ranking file")
+    except Exception as e:
+        log.warning(f"  [universe] v2f_universe lỗi ({e}) — thử fallback ranking file")
+
+    # Nguồn 2: ranking file trên đĩa
+    try:
+        rk_path = Path(OUTPUT_DIR) / "v2f_ranking.json"
+        if rk_path.exists():
+            with rk_path.open(encoding="utf-8") as f:
+                data = json.load(f)
+            rows = data if isinstance(data, list) else (
+                data.get("rows") or data.get("data") or data.get("ranking") or [])
+            syms = {str(r.get("symbol")).strip().upper()
+                    for r in rows if isinstance(r, dict) and r.get("symbol")}
+            if len(syms) >= MIN_UNIVERSE_SIZE:
+                log.info(f"  [universe] fallback v2f_ranking.json: {len(syms)} mã")
+                return syms
+            log.warning(f"  [universe] ranking file chỉ có {len(syms)} mã "
+                        f"(< {MIN_UNIVERSE_SIZE}) — bỏ lọc")
+    except Exception as e:
+        log.warning(f"  [universe] đọc v2f_ranking.json lỗi ({e}) — bỏ lọc")
+
+    return None
+
+
+def _flush_outcomes(outcomes: dict) -> int:
+    """
+    Patch A: append mọi record đang buffer xuống đĩa NGAY rồi xóa buffer.
+    Gọi sau MỖI mã → timeout chém ngang chỉ mất tối đa 1 mã đang dở,
+    phần đã chấm được commit if:always() vớt về repo.
+    """
+    n = 0
+    for (out_sub, m), recs in sorted(outcomes.items()):
+        if not recs:
+            continue
+        _append_jsonl(_path(out_sub, m), recs)
+        n += len(recs)
+    outcomes.clear()
+    return n
+
+
+# =====================================================
 # Evaluate 1 prediction — 1 khung (trade hoặc hold)
 # =====================================================
 
@@ -356,9 +434,25 @@ def main():
     for j in jobs:
         by_symbol[j[0]["symbol"]].append(j)
 
+    # ── Patch B: chỉ chấm mã thuộc universe hiện tại ──
+    if UNIVERSE_FILTER:
+        universe = _load_current_universe()
+        if universe:
+            skipped = sorted(s for s in by_symbol if s not in universe)
+            if skipped:
+                n_jobs_skip = sum(len(by_symbol[s]) for s in skipped)
+                log.info(f"  [universe] bỏ qua {len(skipped)} mã ngoài universe "
+                         f"({n_jobs_skip} pred để OPEN): {', '.join(skipped)}")
+                for s in skipped:
+                    del by_symbol[s]
+        else:
+            log.warning("  [universe] không xác định được universe — "
+                        "chấm TẤT CẢ mã (hành vi cũ)")
+
     end = today_str()
     outcomes: dict[tuple, list] = defaultdict(list)   # (out_sub, month) → recs
     stats = defaultdict(int)
+    total = 0   # Patch A: cộng dồn qua các lần flush
 
     for i, (sym, jlist) in enumerate(sorted(by_symbol.items()), 1):
         earliest = min(j[0]["signal_date"] for j in jlist)
@@ -381,16 +475,17 @@ def main():
             stats[f"closed_{lens}"] += 1
             n_ok += 1
 
+        # ── Patch A: flush NGAY sau mỗi mã (chống mất trắng khi timeout) ──
+        flushed = _flush_outcomes(outcomes)
+        total += flushed
+
         log.info(f"  [{i}/{len(by_symbol)}] ✓ {sym}: {len(bars)} bars → "
-                 f"chấm {n_ok}, OPEN {n_open}")
+                 f"chấm {n_ok}, OPEN {n_open}"
+                 + (f" (💾 +{flushed}, tổng {total})" if flushed else ""))
         time.sleep(0.4)
 
-    # ── Ghi outcomes (append-only, partition theo tháng signal_date) ──
-    total = 0
-    for (out_sub, m), recs in sorted(outcomes.items()):
-        _append_jsonl(_path(out_sub, m), recs)
-        total += len(recs)
-        log.info(f"  💾 {len(recs)} outcome → {out_sub}/{m}.jsonl")
+    # ── Vét buffer còn sót (thường rỗng nhờ Patch A) ──
+    total += _flush_outcomes(outcomes)
 
     log.info("─" * 50)
     log.info(f"Đã chấm (đóng)  : trade={stats['closed_trade']} "
