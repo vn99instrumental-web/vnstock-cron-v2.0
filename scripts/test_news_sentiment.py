@@ -54,6 +54,12 @@ CASES: list[tuple[str, str]] = [
     ("Công ty lỗ hơn 200 tỷ đồng trong quý II",                           "-"),
     ("Biên lợi nhuận gộp quý này thu hẹp đáng kể",                        "-"),
 
+    # ── Gate ngữ cảnh doanh nghiệp (case thật từ log dry run 19/07) ──
+    ("Bị khởi tố vì giao xe máy cho con 15 tuổi điều khiển, gây tai nạn",  "0"),
+    ("8 lần giao dịch trên trang 8Xbet, Nguyễn Ngọc Lễ SN 1999 bị bắt giữ", "0"),
+    ("6 người bị khởi tố vì tiêu thụ hơn 250 tấn lợn bệnh",                 "0"),
+    ("Chủ tịch công ty bị bắt tạm giam để điều tra",                        "-"),
+
     # ── Mild ──
     ("Ngành dệt may hưởng lợi từ hiệp định thương mại mới",               "+"),
     ("Doanh nghiệp xi măng đối mặt áp lực chi phí đầu vào",               "-"),
