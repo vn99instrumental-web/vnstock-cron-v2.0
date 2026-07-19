@@ -287,16 +287,44 @@ def _match_symbols(art: dict,
 # ─── Time helpers ─────────────────────────────────────────────────────────────
 
 def _parse_time(raw) -> datetime | None:
+    """
+    v3 FIX (2026-07-19, log run 80408946108): RSS pubDate dạng RFC 2822
+    ("Sun, 19 Jul 2026 10:30:00 +0700") KHÔNG parse được bằng strptime cũ
+    → decay luôn rơi về fallback 0.5, history không prune được theo tuổi.
+    Thêm layer RFC 2822 + ISO 8601 đầy đủ trước strptime legacy.
+    """
     if raw is None:
         return None
     if isinstance(raw, datetime):
         return raw if raw.tzinfo else raw.replace(tzinfo=timezone.utc)
+
+    s = str(raw).strip()
+    if not s or s.lower() in ("none", "nat", "nan"):
+        return None
+
+    # 1. RFC 2822 (RSS pubDate): "Sun, 19 Jul 2026 10:30:00 +0700"
+    try:
+        from email.utils import parsedate_to_datetime
+        dt = parsedate_to_datetime(s)
+        if dt is not None:
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        pass
+
+    # 2. ISO 8601 đầy đủ (kể cả offset / 'Z'): "2026-07-19T10:30:00+07:00"
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except ValueError:
+        pass
+
+    # 3. Legacy strptime (cắt [:19] — mất offset, coi như UTC)
     for fmt in (
         "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S",
         "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S%z", "%Y-%m-%d",
     ):
         try:
-            dt = datetime.strptime(str(raw).strip()[:19], fmt)
+            dt = datetime.strptime(s[:19], fmt)
             return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
         except ValueError:
             continue
