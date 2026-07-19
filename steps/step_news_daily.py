@@ -577,7 +577,13 @@ def _update_history(new_articles: list) -> list:
 
     def _should_keep(art: dict) -> bool:
         pub = _parse_time(art.get("publish_time"))
-        if pub and pub.replace(tzinfo=timezone.utc) < \
+        # v2 FIX (2026-07-19, log run 80408379183): bài không parse được
+        # publish_time bị giữ VĨNH VIỄN → history phình 12.290 bài legacy,
+        # pha loãng mọi điểm về 0. Không rõ tuổi → loại (bài mới của hôm
+        # nay vẫn vào index qua danh sách `kept`, không mất tín hiệu).
+        if pub is None:
+            return False
+        if pub.replace(tzinfo=timezone.utc) < \
                 cutoff.replace(tzinfo=timezone.utc):
             if art.get("news_type") == "delayed" and art.get("effective_date"):
                 eff = _parse_time(art["effective_date"])
@@ -599,6 +605,39 @@ def _update_history(new_articles: list) -> list:
 
 
 # ─── Index (schema 2) ────────────────────────────────────────────────────────
+
+# Cửa sổ bài được vào index (ngày). Decay đã giảm trọng số bài cũ nhưng
+# KHÔNG chống được pha loãng mean() khi số bài cũ áp đảo → cần cắt cứng.
+INDEX_WINDOW_DAYS = 7
+
+
+def _is_index_fresh(art: dict, now: datetime, today_urls: set[str]) -> bool:
+    """
+    v2 FIX (2026-07-19): chỉ đưa vào index bài thỏa 1 trong 3:
+      1. Nằm trong batch crawl HÔM NAY (kể cả publish_time lỗi)
+      2. publish_time parse được và ≤ INDEX_WINDOW_DAYS ngày
+      3. news_type=delayed có effective_date trong ±INDEX_WINDOW_DAYS
+         (văn bản ban hành lâu nhưng sắp/vừa hiệu lực vẫn có giá trị)
+    """
+    if art.get("url", "") in today_urls:
+        return True
+
+    if art.get("news_type") == "delayed" and art.get("effective_date"):
+        eff = _parse_time(art.get("effective_date"))
+        if eff:
+            delta_days = abs((eff.replace(tzinfo=timezone.utc)
+                              - now.replace(tzinfo=timezone.utc)
+                              ).total_seconds()) / 86400
+            if delta_days <= INDEX_WINDOW_DAYS:
+                return True
+
+    pub = _parse_time(art.get("publish_time"))
+    if pub is None:
+        return False
+    age_days = (now.replace(tzinfo=timezone.utc)
+                - pub.replace(tzinfo=timezone.utc)).total_seconds() / 86400
+    return age_days <= INDEX_WINDOW_DAYS
+
 
 def _build_today_index(all_articles: list,
                        ticker_patterns: dict,
@@ -883,6 +922,15 @@ def run():
         if url and url not in seen:
             seen.add(url)
             merged.append(art)
+
+    # 4b. Freshness window (2026-07-19): chặn pha loãng mean() bởi bài cũ
+    now_run    = now_ict()
+    today_urls = {a.get("url", "") for a in kept if a.get("url")}
+    n_before   = len(merged)
+    merged     = [a for a in merged
+                  if _is_index_fresh(a, now_run, today_urls)]
+    log.info(f"  Freshness window ≤{INDEX_WINDOW_DAYS}d: "
+             f"giữ {len(merged)}/{n_before} bài cho index")
 
     # 5. Index (schema 2)
     log.info("  Building today index (schema 2)...")
