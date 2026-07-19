@@ -214,6 +214,22 @@ _NEG_SINGLE = {"không", "chưa", "khó", "hết", "ngừng", "dừng"}
 _NEG_MULTI  = ("chấm dứt", "thoát khỏi")
 _NEG_WINDOW = 16   # số ký tự nhìn ngược trước cụm
 
+# ─── Gate ngữ cảnh doanh nghiệp cho cụm pháp lý chung chung ─────────────────
+# v3 FIX (2026-07-19, log run 80408946108): tin hình sự dân sự
+# ("bị khởi tố vì giao xe máy cho con", "8Xbet ... bị bắt giữ") ăn điểm -3
+# dù không liên quan doanh nghiệp niêm yết. Các cụm pháp lý KHÔNG tự mang
+# ngữ cảnh tài chính chỉ được tính khi bài có từ ngữ cảnh doanh nghiệp.
+# Cụm vốn đã gắn tài chính (thao túng chứng khoán, hủy niêm yết, gian lận
+# tài chính...) KHÔNG cần gate.
+_GATED_LEGAL = {"bị khởi tố", "bắt tạm giam", "bị bắt"}
+
+_CORP_CONTEXT = (
+    "chủ tịch", "tổng giám đốc", "phó tổng giám đốc", "giám đốc tài chính",
+    "kế toán trưởng", "hđqt", "hội đồng quản trị", "người nội bộ",
+    "cổ đông", "cổ phiếu", "doanh nghiệp", "công ty", "tập đoàn",
+    "ngân hàng", "niêm yết", "lãnh đạo",
+)
+
 ARTICLE_CLAMP = 3.0
 
 
@@ -247,6 +263,9 @@ def score_sentiment(text: str, return_evidence: bool = False):
     total    = 0.0
     evidence: list[tuple[str, float]] = []
 
+    # Gate: bài có ngữ cảnh doanh nghiệp hay không (tính 1 lần)
+    has_corp = any(w in t for w in _CORP_CONTEXT)
+
     for phrase, pts in _PHRASES_SORTED:
         start = 0
         while True:
@@ -256,6 +275,10 @@ def score_sentiment(text: str, return_evidence: bool = False):
             j = i + len(phrase)
             # Chồng lấn với vùng đã match (cụm dài hơn đã ăn) → bỏ qua
             if any(not (j <= s or i >= e) for s, e in consumed):
+                start = j
+                continue
+            # Cụm pháp lý chung chung: cần ngữ cảnh doanh nghiệp
+            if phrase in _GATED_LEGAL and not has_corp:
                 start = j
                 continue
             consumed.append((i, j))
