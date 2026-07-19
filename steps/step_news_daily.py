@@ -4,18 +4,31 @@ step_news_daily.py — Daily news crawl + index builder
 CHANGELOG:
   2026-05-25 — Multi-layer RSS fallback (Layer 1 unified + Layer 2 manual)
   2026-05-26 — FIX BUG Macro false positive (MACRO_CONTEXT_INDUSTRIES filter)
-  2026-05-26 — FIX BUG #11 Symbol mention matching:
-    Báo chí VN dùng "Hòa Phát" thay vì "HPG" → trước đây chỉ 40/3338 = 1.2% match.
-
-    Fix: thêm matching theo organ_name + organ_short_name (từ industry_map.json):
-      - Ticker matching (như cũ): "HPG" → HPG
-      - Short name matching: "Hòa Phát" → HPG
-      - Full name matching: "Tập đoàn Hòa Phát" → HPG (sau khi strip prefix)
-
-    Stop-list để tránh false positives:
-      - Names quá ngắn (<4 chars)
-      - Names trùng với common Vietnamese words
-      - Generic words: "tập đoàn", "công ty"
+  2026-05-26 — FIX BUG #11 Symbol mention matching (ticker + organ names + stoplist)
+  2026-07-19 — NEWS RESTART v2 (Gói 1 + 2a + Gói 3):
+    1. SENTIMENT: bỏ đếm từ đơn (POSITIVE_WORDS/NEGATIVE_WORDS) → dùng
+       utils/news_sentiment.py: cụm từ có chủ thể + hướng (3 mức ±1/±2/±3),
+       xử lý phủ định, gap-matching "chủ thể ... hướng" (≤40 ký tự).
+       Test offline: scripts/test_news_sentiment.py (28/28 pass 2026-07-19).
+       raw_sentiment mới ∈ [-3, +3] (cũ: đếm từ, không chặn biên).
+    2. UNIVERSE: symbol matching CHỈ trong universe V2F (~130 mã VN100+HNX30)
+       thay vì 3.338 mã toàn thị trường. Nguồn: v2f_ranking.json (không tốn
+       API call) → fallback v2f_universe API → fallback all (log warning).
+    3. RELEVANCE FILTER: bài không match gì (không ngành, không macro,
+       không nhắc mã universe) → loại khỏi history + index. raw.json vẫn
+       giữ đủ để debug.
+    4. ĐIỂM MỚI (schema 2): biên độ thành phần symbol ±3 / industry ±1.5 /
+       macro ±0.5 (tổng đúng ±5). GIỮ NGUYÊN contract encode với consumer
+       (build_news_scores trong v2f_step_scoring.py): file lưu điểm quanh
+       mốc symbol/industry=2.0, macro=1.0; consumer trừ mốc để ra điểm
+       đối xứng. → KHÔNG cần sửa consumer, KHÔNG bump SCORING_VERSION.
+       Điểm thành phần = mean(weighted_sentiment) clamp biên độ — 1 bài
+       mạnh nhắc đích danh mã đủ đẩy component symbol ra gần biên (hết
+       cảnh điểm co cụm quanh 0 do lớp quy đổi 0-4 cũ).
+    5. Recompute raw_sentiment bằng engine MỚI cho cả bài cũ trong history
+       khi build index (đồng nhất thang điểm).
+    6. METRICS mỗi run: % bài có mô tả, % universe được nhắc, phân phối
+       điểm symbol, top bài ±.
 """
 import os
 import re
@@ -34,6 +47,7 @@ from datetime import datetime, timezone, timedelta
 
 from utils.cache import save_json, load_json
 from utils.helpers import now_ict
+from utils.news_sentiment import score_sentiment
 from utils.industry_keywords import (
     INDUSTRY_KEYWORDS, MACRO_KEYWORDS,
     NEWS_TYPE_KEYWORDS, EFFECTIVE_DATE_PATTERNS,
@@ -67,6 +81,19 @@ FINANCE_SITES = [
 LIMIT_PER_FEED = 30
 HISTORY_DAYS   = 30
 
+# Biên độ thành phần điểm news (schema 2) — tổng = ±5
+SYM_CAP = 3.0    # tin nhắc đích danh mã = tín hiệu mạnh nhất
+IND_CAP = 1.5
+MAC_CAP = 0.5
+
+# Mốc encode giữ contract với build_news_scores (consumer trừ mốc)
+SYM_CENTER = 2.0
+IND_CENTER = 2.0
+MAC_CENTER = 1.0
+
+# Mô tả ≥ ngưỡng này mới tính là "có mô tả" (metrics)
+_DESC_MIN_LEN = 30
+
 _RSS_FALLBACK_URLS = {
     "baodautu": [
         "https://baodautu.vn/rss/tin-moi-nhat.rss",
@@ -86,11 +113,8 @@ MACRO_CONTEXT_INDUSTRIES: set[str] = {
 }
 
 # ─── Symbol matching config (Bug #11 fix) ────────────────────────────────────
-# Min length cho company name match — quá ngắn dễ false positive
 _MIN_NAME_LEN = 4
 
-# Prefixes thường gặp trong organ_name cần strip để được short form
-# Order quan trọng: longest prefix first
 _COMPANY_PREFIXES = [
     "tổng công ty cổ phần",
     "tổng công ty",
@@ -107,8 +131,6 @@ _COMPANY_PREFIXES = [
     "ctcp",
 ]
 
-# Stop-list: names trùng với common Vietnamese words / sites
-# (sẽ skip nếu sau strip prefix mà thành 1 trong các từ này)
 _STOPLIST = {
     "VIỆT NAM", "DỊCH VỤ", "ĐẦU TƯ", "PHÁT TRIỂN", "THƯƠNG MẠI",
     "SẢN XUẤT", "XÂY DỰNG", "KINH DOANH", "VẬN TẢI", "ĐIỆN LỰC",
@@ -139,15 +161,18 @@ def _strip_company_prefix(name: str) -> str:
     return norm
 
 
-def _build_company_name_map(industry_map: list) -> dict[str, str]:
+def _build_company_name_map(industry_map: list,
+                            universe: set[str] | None = None) -> dict[str, str]:
     """
     Build name (normalized, uppercase) → symbol mapping.
+
+    v2 (2026-07-19): nếu universe được cung cấp → CHỈ build cho mã trong
+    universe (giảm false positive từ ~3.300 tên công ty ngoài rổ trade).
 
     Sources:
       1. organ_short_name (nếu có và len ≥ MIN_NAME_LEN)
       2. organ_name strip prefix (nếu có và len ≥ MIN_NAME_LEN)
       3. Skip nếu trong _STOPLIST
-
     Conflicts: nếu 2 symbols cùng name → ưu tiên 1 cái đầu (deterministic).
     """
     name_to_sym: dict[str, str] = {}
@@ -157,8 +182,9 @@ def _build_company_name_map(industry_map: list) -> dict[str, str]:
         sym = entry.get("symbol") or entry.get("ticker") or entry.get("code")
         if not sym:
             continue
+        if universe and sym not in universe:
+            continue
 
-        # Try organ_short_name first
         short = (entry.get("organ_short_name") or "").strip()
         if short and len(short) >= _MIN_NAME_LEN:
             short_norm = _normalize(short)
@@ -166,15 +192,14 @@ def _build_company_name_map(industry_map: list) -> dict[str, str]:
                 name_to_sym[short_norm] = sym
                 n_short += 1
 
-        # Then organ_name (strip prefix)
         full = (entry.get("organ_name") or "").strip()
         if full:
             stripped = _strip_company_prefix(full)
             if stripped and len(stripped) >= _MIN_NAME_LEN:
                 full_norm = _normalize(stripped)
                 if (full_norm not in _STOPLIST
-                    and full_norm not in name_to_sym
-                    and full_norm != _normalize(short)):
+                        and full_norm not in name_to_sym
+                        and full_norm != _normalize(short)):
                     name_to_sym[full_norm] = sym
                     n_full += 1
                 elif full_norm in _STOPLIST:
@@ -185,6 +210,78 @@ def _build_company_name_map(industry_map: list) -> dict[str, str]:
         f"({n_short} short, {n_full} full prefix-stripped, {n_skip} stoplist-skip)"
     )
     return name_to_sym
+
+
+# ─── Universe (2026-07-19) ───────────────────────────────────────────────────
+
+def _load_universe() -> set[str]:
+    """
+    Universe V2F (~130 mã VN100+HNX30) cho symbol matching.
+
+    Chain (rẻ → đắt):
+      1. output/v2f_ranking.json — commit từ intraday run gần nhất, 0 API call
+      2. utils/v2f_universe.fetch_index_members — VCI API (throttled)
+      3. set() rỗng → caller fallback match toàn bộ industry_map (hành vi cũ)
+    """
+    # 1. v2f_ranking.json
+    rank = load_json("v2f_ranking.json") or []
+    syms = {
+        str(r.get("symbol", "")).strip().upper()
+        for r in rank if isinstance(r, dict) and r.get("symbol")
+    }
+    syms.discard("")
+    if len(syms) >= 50:
+        log.info(f"  Universe: {len(syms)} mã từ v2f_ranking.json")
+        return syms
+
+    # 2. API fallback
+    try:
+        from utils.v2f_universe import fetch_index_members, INDEX_GROUPS
+        api_syms: set[str] = set()
+        for grp in INDEX_GROUPS:
+            api_syms.update(fetch_index_members(grp))
+        api_syms.discard("")
+        if api_syms:
+            log.info(f"  Universe: {len(api_syms)} mã từ v2f_universe API "
+                     f"({'+'.join(INDEX_GROUPS)})")
+            return api_syms
+    except Exception as e:
+        log.warning(f"  Universe API fallback lỗi: {e}")
+
+    log.warning("  ⚠️ Không load được universe — fallback match TOÀN BỘ "
+                "industry_map (hành vi cũ, nhiều false positive hơn)")
+    return set()
+
+
+def _match_symbols(art: dict,
+                   ticker_patterns: dict[str, re.Pattern],
+                   name_to_sym: dict[str, str],
+                   name_patterns: dict[str, re.Pattern]) -> tuple[set, set]:
+    """
+    Trả (via_ticker, via_name) — set mã match trong 1 bài.
+    Ticker: word-boundary trên text UPPER gốc.
+    Name  : word-boundary trên text đã _normalize.
+    """
+    title = (art.get("title") or "")
+    desc  = (art.get("short_description") or "")
+    tags  = str(art.get("tags") or "")
+
+    via_ticker: set[str] = set()
+    via_name:   set[str] = set()
+
+    text_for_ticker = f"{title.upper()} {tags.upper()} {desc.upper()}"
+    for sym, pattern in ticker_patterns.items():
+        if pattern.search(text_for_ticker):
+            via_ticker.add(sym)
+
+    text_normalized = _normalize(f"{title} {desc} {tags}")
+    for name, pattern in name_patterns.items():
+        if pattern.search(text_normalized):
+            sym = name_to_sym[name]
+            if sym not in via_ticker:
+                via_name.add(sym)
+
+    return via_ticker, via_name
 
 
 # ─── Time helpers ─────────────────────────────────────────────────────────────
@@ -249,7 +346,8 @@ def _extract_effective_date(text: str) -> str | None:
                 return f"{y}-{mo:02d}-{d:02d}"
             elif len(parts) == 3:
                 d, mo, y = int(parts[0]), int(parts[1]), int(parts[2])
-                if y < 100: y += 2000
+                if y < 100:
+                    y += 2000
                 return f"{y}-{mo:02d}-{d:02d}"
         except (ValueError, IndexError):
             continue
@@ -265,7 +363,8 @@ def _impact_decay(article: dict, now: datetime) -> float:
         publish_time = publish_time.replace(tzinfo=timezone.utc)
 
     if news_type == "immediate":
-        if publish_time is None: return 0.5
+        if publish_time is None:
+            return 0.5
         age_hours = (now - publish_time).total_seconds() / 3600
         if age_hours < 0:   return 1.00
         if age_hours < 1:   return 1.00
@@ -276,7 +375,8 @@ def _impact_decay(article: dict, now: datetime) -> float:
 
     elif news_type == "delayed":
         if effective_date is None:
-            if publish_time is None: return 0.40
+            if publish_time is None:
+                return 0.40
             age_days = (now - publish_time).total_seconds() / 86400
             if age_days < 1:  return 0.70
             if age_days < 3:  return 0.55
@@ -295,40 +395,23 @@ def _impact_decay(article: dict, now: datetime) -> float:
         return 0.10
 
     elif news_type == "monitoring":
-        if publish_time is None: return 0.40
+        if publish_time is None:
+            return 0.40
         age_days = (now - publish_time).total_seconds() / 86400
         if age_days < 1:  return 0.80
         if age_days < 3:  return 0.60
         if age_days < 7:  return 0.40
         return 0.20
 
-    if publish_time is None: return 0.40
+    if publish_time is None:
+        return 0.40
     age_hours = (now - publish_time).total_seconds() / 3600
     if age_hours < 6:  return 0.85
     if age_hours < 24: return 0.40
     return 0.20
 
 
-POSITIVE_WORDS = [
-    "tăng", "tích cực", "khởi sắc", "hưởng lợi", "cơ hội",
-    "tăng trưởng", "vượt kỳ vọng", "lợi nhuận cao", "kỷ lục",
-    "bứt phá", "phục hồi", "tốt", "thuận lợi", "tăng mạnh",
-    "lạc quan", "triển vọng", "tích lũy", "đột phá",
-]
-NEGATIVE_WORDS = [
-    "giảm", "tiêu cực", "rủi ro", "áp lực", "sụt giảm", "thua lỗ",
-    "bị phạt", "điều tra", "nợ xấu", "mất thanh khoản", "cảnh báo",
-    "khó khăn", "giảm mạnh", "thất bại", "vi phạm", "bắt giữ",
-    "lo ngại", "bất ổn", "suy giảm", "vỡ nợ",
-]
-
-
-def _score_sentiment(text: str) -> float:
-    t   = text.lower()
-    pos = sum(1 for w in POSITIVE_WORDS if w in t)
-    neg = sum(1 for w in NEGATIVE_WORDS if w in t)
-    return float(pos - neg)
-
+# ─── Sentiment / tagging (v2: engine mới) ────────────────────────────────────
 
 def _score_macro(text: str, industries: list | None = None) -> float:
     t = text.lower()
@@ -364,7 +447,7 @@ def _enrich_article(art: dict, site_name: str, source_weight: float,
     effective_date = _extract_effective_date(text) \
                      if news_type == "delayed" else None
     industries     = _tag_industries(text)
-    raw_sentiment  = _score_sentiment(text)
+    raw_sentiment  = score_sentiment(text)          # v2: engine cụm từ mới
     macro_score    = _score_macro(text, industries)
 
     art_meta = {
@@ -396,6 +479,8 @@ def _enrich_article(art: dict, site_name: str, source_weight: float,
         "weighted_sentiment": round(raw_sentiment * source_weight * decay, 4),
     }
 
+
+# ─── Crawl layers ────────────────────────────────────────────────────────────
 
 def _try_unified_crawler(site_name: str) -> list | None:
     try:
@@ -474,6 +559,8 @@ def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
     return enriched
 
 
+# ─── History ─────────────────────────────────────────────────────────────────
+
 def _update_history(new_articles: list) -> list:
     history = load_json("news/history.json") or \
               load_json("news_history.json") or []
@@ -511,34 +598,47 @@ def _update_history(new_articles: list) -> list:
     return history
 
 
-def _build_today_index(all_articles: list) -> dict:
-    """
-    Pre-compute scores by industry, symbol, macro.
+# ─── Index (schema 2) ────────────────────────────────────────────────────────
 
-    v2 (Bug #9 fix): Recompute macro_score with tighter industry filter
-    v3 (Bug #11 fix): Match symbol_mentions by ticker + organ_name + organ_short_name
+def _build_today_index(all_articles: list,
+                       ticker_patterns: dict,
+                       name_to_sym: dict,
+                       name_patterns: dict) -> dict:
+    """
+    Pre-compute scores by industry, symbol, macro — SCHEMA 2 (2026-07-19).
+
+    Encode giữ contract consumer (build_news_scores):
+      file_score = CENTER + component
+      component  = clamp(mean(weighted_sentiment), ±CAP)
+        symbol   : CENTER 2.0, CAP ±3.0 (ticker match boost ×1.5 trong ws)
+        industry : CENTER 2.0, CAP ±1.5 (mean ws × 0.5)
+        macro    : CENTER 1.0, CAP ±0.5 (mean contrib × 0.5)
+    Consumer trừ CENTER → symbol ±3 + industry ±1.5 + macro ±0.5 = tổng ±5.
+
+    Recompute raw_sentiment bằng engine MỚI cho mọi bài (kể cả history cũ
+    còn điểm từ engine đếm-từ) để đồng nhất thang.
     """
     now = now_ict()
 
-    # Recompute macro_score với filter mới (cho cả articles cũ từ history)
+    # Recompute sentiment (engine mới) + macro + decay cho TẤT CẢ bài
     for art in all_articles:
-        art["macro_score"] = _score_macro(
-            f"{art.get('title','')} {art.get('short_description','')}",
-            art.get("matched_industries", [])
-        )
+        text = f"{art.get('title','')} {art.get('short_description','')}"
+        art["raw_sentiment"] = score_sentiment(text)
+        art["macro_score"] = _score_macro(text, art.get("matched_industries", []))
         art["time_decay"] = _impact_decay(art, now)
         art["weighted_sentiment"] = round(
-            art.get("raw_sentiment", 0)
+            art["raw_sentiment"]
             * art.get("source_weight", 1.0)
             * art["time_decay"], 4
         )
 
-    def _raw_to_score(values: list[float], max_pts: float) -> float:
+    def _encode(values: list[float], center: float, cap: float,
+                scale: float = 1.0) -> float:
         if not values:
-            return round(max_pts / 2, 2)
-        avg     = sum(values) / len(values)
-        clipped = max(-5.0, min(5.0, avg))
-        return round((clipped + 5.0) / 10.0 * max_pts, 2)
+            return round(center, 2)
+        avg  = sum(values) / len(values) * scale
+        comp = max(-cap, min(cap, avg))
+        return round(center + comp, 2)
 
     def _top_articles(tuples: list[tuple], n: int = 3) -> list[dict]:
         sorted_t  = sorted(tuples, key=lambda x: abs(x[0]), reverse=True)
@@ -562,7 +662,7 @@ def _build_today_index(all_articles: list) -> dict:
                 break
         return result
 
-    # By industry
+    # ── By industry ──
     industry_tuples: dict[str, list[tuple]] = {}
     for art in all_articles:
         ws = art.get("weighted_sentiment", 0.0)
@@ -573,116 +673,124 @@ def _build_today_index(all_articles: list) -> dict:
     for ind, tuples in industry_tuples.items():
         vals = [v for v, _ in tuples]
         by_industry[ind] = {
-            "score"         : _raw_to_score(vals, 4.0),
+            "score"         : _encode(vals, IND_CENTER, IND_CAP, scale=0.5),
             "article_count" : len(tuples),
-            "delayed_count" : sum(1 for _, a in tuples if a.get("news_type") == "delayed"),
+            "delayed_count" : sum(1 for _, a in tuples
+                                  if a.get("news_type") == "delayed"),
             "top_articles"  : _top_articles(tuples, n=3),
         }
 
-    # Macro
+    # ── Macro ──
     macro_tuples = [
         (art.get("macro_score", 0) * art.get("time_decay", 0.5), art)
         for art in all_articles
         if art.get("macro_score", 0) != 0
     ]
     macro_vals = [v for v, _ in macro_tuples]
-
+    macro = {
+        "score"        : _encode(macro_vals, MAC_CENTER, MAC_CAP, scale=0.5),
+        "article_count": len(macro_tuples),
+        "top_articles" : _top_articles(macro_tuples, n=3),
+    }
     log.info(f"  Macro: {len(macro_tuples)} articles tagged "
              f"(after MACRO_CONTEXT filter)")
 
-    # ── Symbol mentions (v3 Bug #11: ticker + company name matching) ──
-    industry_map = load_json("market/industry_map.json") or \
-                   load_json("industry_map.json") or []
-
-    # Universe of all tickers
-    all_symbols = list({
-        r.get("symbol") or r.get("ticker") or r.get("code")
-        for r in industry_map
-        if r.get("symbol") or r.get("ticker") or r.get("code")
-    })
-    log.info(f"  Symbol universe: {len(all_symbols)} tickers")
-
-    # Ticker patterns (word boundary)
-    ticker_patterns = {
-        sym: re.compile(r'\b' + re.escape(sym) + r'\b', re.UNICODE)
-        for sym in all_symbols
-    }
-
-    # v3: Build company name → symbol map
-    name_to_sym = _build_company_name_map(industry_map)
-
+    # ── Symbol mentions (universe-restricted, v2) ──
     symbol_tuples: dict[str, list[tuple]] = {}
     n_via_ticker = 0
     n_via_name   = 0
 
     for art in all_articles:
-        # Match against title + tags + short_description
-        title = (art.get("title") or "")
-        desc  = (art.get("short_description") or "")
-        tags  = str(art.get("tags") or "")
-        text_normalized = _normalize(f"{title} {desc} {tags}")
         ws = art.get("weighted_sentiment", 0.0)
+        via_ticker, via_name = _match_symbols(
+            art, ticker_patterns, name_to_sym, name_patterns)
+        for sym in via_ticker:
+            symbol_tuples.setdefault(sym, []).append((ws * 1.5, art))
+            n_via_ticker += 1
+        for sym in via_name:
+            symbol_tuples.setdefault(sym, []).append((ws, art))
+            n_via_name += 1
 
-        # Match symbols hit per article (avoid double-count)
-        matched_syms = set()
+    log.info(f"  Symbol matches: {n_via_ticker} via ticker, "
+             f"{n_via_name} via company name")
 
-        # 1. Ticker matching
-        # Use original text (not normalized) for ticker — case-sensitive in regex
-        text_for_ticker = f"{title.upper()} {tags.upper()} {desc.upper()}"
-        for sym, pattern in ticker_patterns.items():
-            if pattern.search(text_for_ticker):
-                if sym not in matched_syms:
-                    matched_syms.add(sym)
-                    symbol_tuples.setdefault(sym, []).append((ws * 1.5, art))
-                    n_via_ticker += 1
-
-        # 2. Company name matching (substring with unicode normalization)
-        for name, sym in name_to_sym.items():
-            if sym in matched_syms:
-                continue  # Already matched via ticker
-            if name in text_normalized:
-                matched_syms.add(sym)
-                # Lower confidence weight (1.2x) cho name match vs ticker (1.5x)
-                symbol_tuples.setdefault(sym, []).append((ws * 1.2, art))
-                n_via_name += 1
-
-    symbol_mentions: dict[str, dict] = {}
+    symbol_mentions = {}
     for sym, tuples in symbol_tuples.items():
         vals = [v for v, _ in tuples]
         symbol_mentions[sym] = {
-            "score"         : _raw_to_score(vals, 4.0),
-            "article_count" : len(tuples),
-            "top_articles"  : _top_articles(tuples, n=2),
+            "score"        : _encode(vals, SYM_CENTER, SYM_CAP),
+            "article_count": len(tuples),
+            "top_articles" : _top_articles(tuples, n=3),
         }
 
-    log.info(
-        f"  symbol_mentions: {len(symbol_mentions)} symbols matched "
-        f"({n_via_ticker} hits via ticker, {n_via_name} hits via company name)"
-    )
-
     return {
-        "date"            : now.strftime("%Y-%m-%d"),
-        "generated_at"    : now.strftime("%H:%M"),
-        "by_industry"     : by_industry,
-        "macro"           : {
-            "score"       : _raw_to_score(macro_vals, 2.0),
-            "article_count": len(macro_tuples),
-            "top_articles": _top_articles(macro_tuples, n=2),
-        },
-        "symbol_mentions" : symbol_mentions,
+        "schema"         : 2,
+        "generated_at"   : now.strftime("%Y-%m-%d %H:%M:%S"),
+        "by_industry"    : by_industry,
+        "symbol_mentions": symbol_mentions,
+        "macro"          : macro,
     }
 
+
+# ─── Metrics (v2) ────────────────────────────────────────────────────────────
+
+def _log_metrics(deduped: list, kept: list, today_index: dict,
+                 universe: set[str]) -> None:
+    n_all  = len(deduped)
+    n_desc = sum(1 for a in deduped
+                 if len(a.get("short_description") or "") >= _DESC_MIN_LEN)
+    log.info("  ── METRICS ──────────────────────────────────")
+    log.info(f"  Articles: {n_all} crawled, "
+             f"{n_desc} có mô tả ≥{_DESC_MIN_LEN} ký tự "
+             f"({(n_desc / n_all * 100) if n_all else 0:.0f}%)")
+    log.info(f"  Relevance filter: giữ {len(kept)}/{n_all} "
+             f"({(len(kept) / n_all * 100) if n_all else 0:.0f}%)")
+
+    mentions = today_index.get("symbol_mentions", {})
+    if universe:
+        log.info(f"  Universe coverage: {len(mentions)}/{len(universe)} mã "
+                 f"được nhắc ({len(mentions) / len(universe) * 100:.0f}%)")
+    else:
+        log.info(f"  Symbols mentioned: {len(mentions)} (universe unavailable)")
+
+    comps = [round(d.get("score", SYM_CENTER) - SYM_CENTER, 2)
+             for d in mentions.values()]
+    n_pos  = sum(1 for c in comps if c >= 0.5)
+    n_neg  = sum(1 for c in comps if c <= -0.5)
+    n_spos = sum(1 for c in comps if c >= 1.5)
+    n_sneg = sum(1 for c in comps if c <= -1.5)
+    log.info(f"  Symbol comp distribution: {n_pos} pos (≥+0.5, trong đó "
+             f"{n_spos} ≥+1.5) | {n_neg} neg (≤-0.5, trong đó {n_sneg} ≤-1.5) "
+             f"| {len(comps) - n_pos - n_neg} neutral")
+
+    ranked = sorted(deduped, key=lambda a: a.get("weighted_sentiment", 0.0))
+    for art in ranked[-3:][::-1]:
+        if art.get("weighted_sentiment", 0) > 0:
+            log.info(f"  TOP+ {art['weighted_sentiment']:+.2f} "
+                     f"[{art.get('source','')}] {(art.get('title') or '')[:70]}")
+    for art in ranked[:3]:
+        if art.get("weighted_sentiment", 0) < 0:
+            log.info(f"  TOP- {art['weighted_sentiment']:+.2f} "
+                     f"[{art.get('source','')}] {(art.get('title') or '')[:70]}")
+    log.info("  ─────────────────────────────────────────────")
+
+
+# ─── Version check ───────────────────────────────────────────────────────────
 
 def _log_vnstock_news_version():
     try:
         import vnstock_news
-        version = getattr(vnstock_news, "__version__", None) or \
-                  getattr(vnstock_news, "VERSION", None) or \
-                  "unknown"
-        log.info(f"  vnstock_news version: {version}")
-        if version != "unknown" and isinstance(version, str):
+        version = getattr(vnstock_news, "__version__", None)
+        if version is None:
             try:
-                major, minor = map(int, version.split(".")[:2])
+                from importlib.metadata import version as _v
+                version = _v("vnstock_news")
+            except Exception:
+                version = "unknown"
+        log.info(f"  vnstock_news version: {version}")
+        if version not in (None, "unknown"):
+            try:
+                major, minor = map(int, str(version).split(".")[:2])
                 if (major, minor) < (2, 2):
                     log.warning(
                         f"  ⚠️ vnstock_news {version} is older than v2.2.0 — "
@@ -695,10 +803,13 @@ def _log_vnstock_news_version():
         log.debug(f"  Could not detect vnstock_news version: {e}")
 
 
+# ─── Main ────────────────────────────────────────────────────────────────────
+
 def run():
-    log.info("=== step_news_daily: START ===")
+    log.info("=== step_news_daily: START (news restart v2) ===")
     _log_vnstock_news_version()
 
+    # 1. Crawl
     all_articles: list[dict] = []
     for site_name, weight in FINANCE_SITES:
         articles = _crawl_site(site_name, weight)
@@ -714,27 +825,69 @@ def run():
     tagged_count  = sum(1 for a in deduped if a["matched_industries"])
     delayed_count = sum(1 for a in deduped if a["news_type"] == "delayed")
     macro_count   = sum(1 for a in deduped if a["macro_score"] != 0)
-
     log.info(f"  Today: {len(deduped)} articles "
              f"({tagged_count} industry-tagged, "
              f"{delayed_count} delayed, "
              f"{macro_count} macro-tagged)")
 
-    save_json("news/raw.json",   deduped)
-    save_json("news_raw.json",   deduped)
+    # raw.json giữ TẤT CẢ bài (kể cả bị filter) để debug
+    save_json("news/raw.json", deduped)
+    save_json("news_raw.json", deduped)
 
-    history = _update_history(deduped)
+    # 2. Universe + matching maps (build 1 lần, dùng cho filter + index)
+    universe     = _load_universe()
+    industry_map = load_json("market/industry_map.json") or \
+                   load_json("industry_map.json") or []
+
+    if universe:
+        match_symbols_set = universe
+    else:
+        match_symbols_set = {
+            r.get("symbol") or r.get("ticker") or r.get("code")
+            for r in industry_map
+            if r.get("symbol") or r.get("ticker") or r.get("code")
+        }
+    log.info(f"  Symbol matching scope: {len(match_symbols_set)} tickers")
+
+    ticker_patterns = {
+        sym: re.compile(r'\b' + re.escape(sym) + r'\b', re.UNICODE)
+        for sym in match_symbols_set
+    }
+    name_to_sym = _build_company_name_map(
+        industry_map, universe=match_symbols_set)
+    name_patterns = {
+        name: re.compile(r'\b' + re.escape(name) + r'\b', re.UNICODE)
+        for name in name_to_sym
+    }
+
+    # 3. Relevance filter (2026-07-19): bài không match gì → loại khỏi
+    #    history + index (raw.json vẫn giữ đủ)
+    kept = []
+    for art in deduped:
+        if art["matched_industries"] or art["macro_score"] != 0:
+            kept.append(art)
+            continue
+        via_ticker, via_name = _match_symbols(
+            art, ticker_patterns, name_to_sym, name_patterns)
+        if via_ticker or via_name:
+            kept.append(art)
+    log.info(f"  Relevance filter: giữ {len(kept)}/{len(deduped)} bài")
+
+    # 4. History (chỉ bài relevant)
+    history = _update_history(kept)
 
     seen   = set()
     merged = []
-    for art in deduped + history:
+    for art in kept + history:
         url = art.get("url", "")
         if url and url not in seen:
             seen.add(url)
             merged.append(art)
 
-    log.info("  Building today index...")
-    today_index = _build_today_index(merged)
+    # 5. Index (schema 2)
+    log.info("  Building today index (schema 2)...")
+    today_index = _build_today_index(
+        merged, ticker_patterns, name_to_sym, name_patterns)
 
     save_json("news/today_index.json", today_index)
     save_json("news_today_index.json", today_index)
@@ -742,6 +895,10 @@ def run():
     n_ind = len(today_index["by_industry"])
     n_sym = len(today_index["symbol_mentions"])
     log.info(f"  Index: {n_ind} industries, {n_sym} symbols mentioned")
+
+    # 6. Metrics
+    _log_metrics(deduped, kept, today_index, universe)
+
     log.info("=== step_news_daily: DONE ===")
 
 
