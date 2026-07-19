@@ -148,7 +148,12 @@ MILD_POS: dict[str, float] = {
     "triển vọng tích cực"    : 1,
     "khả quan"               : 1,
     "khởi sắc"               : 1,
-    "phục hồi"               : 1,
+    # v4 FIX: "phục hồi" đứng một mình quá chung chung ("phục hồi điều tra
+    # vụ tai nạn" ăn +1 sai) → thay bằng biến thể có chủ thể
+    "lợi nhuận phục hồi"     : 1,
+    "doanh thu phục hồi"     : 1,
+    "đơn hàng phục hồi"      : 1,
+    "kết quả kinh doanh phục hồi": 1,
     "hưởng lợi"              : 1,
     "được chấp thuận"        : 1,
     "được phê duyệt"         : 1,
@@ -221,7 +226,11 @@ _NEG_WINDOW = 16   # số ký tự nhìn ngược trước cụm
 # ngữ cảnh tài chính chỉ được tính khi bài có từ ngữ cảnh doanh nghiệp.
 # Cụm vốn đã gắn tài chính (thao túng chứng khoán, hủy niêm yết, gian lận
 # tài chính...) KHÔNG cần gate.
-_GATED_LEGAL = {"bị khởi tố", "bắt tạm giam", "bị bắt"}
+# v4 FIX (log run 80409573801): thêm "bị phạt"/"bị xử phạt"/"sa thải" vào
+# gate — tin dân sự ("du khách bẻ san hô bị phạt 50 triệu") ăn -2 sai.
+# Tin doanh nghiệp thật ("Công ty CP ... bị xử phạt") có "công ty" → vẫn tính.
+_GATED_LEGAL = {"bị khởi tố", "bắt tạm giam", "bị bắt",
+                "bị phạt", "bị xử phạt", "sa thải"}
 
 _CORP_CONTEXT = (
     "chủ tịch", "tổng giám đốc", "phó tổng giám đốc", "giám đốc tài chính",
