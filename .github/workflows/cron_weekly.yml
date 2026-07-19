@@ -1,9 +1,15 @@
 # =============================================================================
-# cron_weekly.yml — Vòng feedback hàng tuần (eval đề xuất + phân tích)
+# cron_weekly.yml — Vòng feedback hàng tuần (trọng tài V2F)
 # =============================================================================
-# T7 sáng (08:00 ICT). Đọc ledger predictions (do cron_intraday ghi trong
-# tuần), đối chiếu giá thật từ VCI -> outcomes, rồi tổng hợp performance.
-# Ghi output/history/{outcomes,performance}/ và commit về repo.
+# T7 sáng (08:00 ICT). Đọc 2 sổ ledger v2f (v2.3 prod + v3 shadow) do
+# v2f_cron_intraday ghi trong tuần, đối chiếu giá thật từ VCI -> outcomes
+# (2 sổ × 2 khung TRADE/HOLD), rồi commit về repo.
+#
+# 2026-07-18: GỠ trọng tài V1 (step_eval_predictions.py — track cũ, đầy penny
+# ngoài universe) + bước Analyze (scripts/analyze_performance.py không tồn
+# tại). Lý do: sự cố 18/07 — V1 nhai hết 30 phút ngân sách khi VCI chập chờn,
+# job bị chém TRƯỚC KHI trọng tài V2F kịp chạy (3 lần liên tiếp). Từ nay chỉ
+# quan tâm track V2F; eval V2F có flush tăng dần + lọc universe (patch A+B).
 #
 # Setup (cache restore + verify) bám theo backtest.yml — KHÔNG cài lại sponsor
 # package, chỉ dùng venv đã cache (daily/intraday đã warm cache trong tuần).
@@ -86,32 +92,17 @@ jobs:
           $VENV_PY -c "import pandas" 2>/dev/null || \
             $VENV_PY -m pip install pandas --quiet
 
-      # -- Eval: doi chieu pred du tuoi voi gia that --
-      - name: Eval predictions
+      # -- Eval V2F: cham ca 2 ledger v2f (v2.3 prod + v3 shadow) --
+      # Duy nhat 1 buoc eval — huong tron ngan sach timeout-minutes.
+      # Script co flush tang dan: timeout chem ngang van giu phan da cham,
+      # buoc Commit if:always() vot ve repo, lan sau cham tiep tu cho do.
+      - name: Eval predictions V2F
         env:
           EVAL_HORIZON_BARS: ${{ inputs.horizon || '10' }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
           source /opt/vnstock/.venv/bin/activate
-          python steps/step_eval_predictions.py
-
-      # -- Eval V2F: cham ca 2 ledger v2f (v2.3 prod + v3 shadow) --
-      - name: Eval predictions V2F
-        env:
-          EVAL_HORIZON_BARS: ${{ inputs.horizon || '10' }}
-        run: |
-          source /opt/vnstock/.venv/bin/activate
           python steps/v2f_step_eval_predictions.py
-
-      # -- Analyze: tong hop performance report --
-      - name: Analyze performance
-        # script này hiện KHÔNG tồn tại trên repo → fail từ nhiều tuần nay và
-        # giết job TRƯỚC bước commit (làm mất mọi outcomes đã chấm xong).
-        # continue-on-error để không chặn; quyết định khôi phục/xóa hẳn sau.
-        continue-on-error: true
-        run: |
-          source /opt/vnstock/.venv/bin/activate
-          python scripts/analyze_performance.py
 
       # -- Commit (pull --rebase + retry, giong intraday) --
       - name: Commit history ledger
@@ -125,7 +116,7 @@ jobs:
             echo "No changes to commit — skipping."
             exit 0
           fi
-          git commit -m "weekly: eval + performance $(date +'%Y-%m-%d')"
+          git commit -m "weekly: eval v2f $(date +'%Y-%m-%d')"
 
           pushed=0
           for i in 1 2 3 4 5; do
