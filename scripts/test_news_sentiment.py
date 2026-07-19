@@ -60,6 +60,13 @@ CASES: list[tuple[str, str]] = [
     ("6 người bị khởi tố vì tiêu thụ hơn 250 tấn lợn bệnh",                 "0"),
     ("Chủ tịch công ty bị bắt tạm giam để điều tra",                        "-"),
 
+    # ── v4: false positive thật từ log dry run 19/07 (lần 3) ──
+    ("Phục hồi điều tra vụ tai nạn giao thông khiến nữ sinh tử vong",       "0"),
+    ("Bẻ san hô ở biển Nha Trang, hai du khách bị phạt 50 triệu đồng",      "0"),
+    ("Xâm hại, bẻ san hô có thể bị xử phạt đến 150 triệu đồng",             "0"),
+    ("Công ty CP Đầu tư Xây dựng và Vật liệu Đồng Nai bị xử phạt 360 triệu", "-"),
+    ("Lợi nhuận phục hồi mạnh trong quý II",                                 "+"),
+
     # ── Mild ──
     ("Ngành dệt may hưởng lợi từ hiệp định thương mại mới",               "+"),
     ("Doanh nghiệp xi măng đối mặt áp lực chi phí đầu vào",               "-"),
