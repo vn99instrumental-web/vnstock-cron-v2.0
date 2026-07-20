@@ -1,0 +1,179 @@
+name: VNStock News
+
+# ══════════════════════════════════════════════════════════════════════════
+# NEWS RESTART v2 (2026-07-20) — workflow RIÊNG, chạy TRƯỚC mọi thứ:
+#   08:00 ICT news (n8n trigger) → 08:30 cron_daily → 09:30 intraday v2
+#   → 09:40 v2f
+#
+# TRIGGER: KHÔNG dùng schedule (GitHub cron hay delay/sót) — n8n gọi
+# workflow_dispatch qua GitHub API lúc 08:00 ICT:
+#   POST https://api.github.com/repos/{owner}/{repo}/actions/workflows/cron_news.yml/dispatches
+#   Headers: Authorization: Bearer <PAT scope repo>, Accept: application/vnd.github+json
+#   Body:    {"ref": "main"}
+#
+# Lý do tách khỏi cron_daily:
+#   - Crawl news KHÔNG tốn quota VCI/KBS (RSS trực tiếp qua vnstock_news;
+#     universe đọc từ output/v2f_ranking.json trong repo — 0 API call)
+#     → tách ra để cron_daily gọn, không kéo dài sát giờ spike quota intraday
+#   - Cache key tuần ISO reset thứ Hai 07:00 ICT → run 08:00 thứ Hai là
+#     workflow ĐẦU TIÊN của tuần, PHẢI tự cài được khi cache miss
+#     (pattern Fallback install như cron_daily, KHÔNG dùng pattern
+#     verify-venv-exit của v2f). Side effect có lợi: warm cache cho
+#     cron_daily 08:30 thứ Hai.
+#
+# news_score hiện weight = 0 trong scoring (chỉ ghi nhận vào ledger để đo
+# IC) → workflow này fail cũng không ảnh hưởng tín hiệu.
+# ══════════════════════════════════════════════════════════════════════════
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Group riêng — không serialize / cancel chéo với daily hay intraday
+concurrency:
+  group: vnstock-news
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25      # crawl ~3 phút; nới cho fallback install thứ Hai
+
+    env:
+      VNSTOCK_API_KEY:     ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:   ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      VNSTOCK_VENV_PATH:   /opt/vnstock/.venv
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: |
+          echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+          echo "Cache suffix: $(date -u +%Y-W%V)"
+
+      - name: Restore vnstock cache
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
+
+      # Run đầu tuần (thứ Hai 08:00) chắc chắn cache miss theo key mới
+      # → tự cài, đồng thời warm cache cho cron_daily 08:30
+      - name: Fallback install nếu cache miss
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          pip install requests
+          mkdir -p /home/runner/.vnstock /home/runner/.config/matplotlib
+          wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
+            -O installer.run
+          chmod +x installer.run
+          ./installer.run -- \
+            --non-interactive \
+            --api-key "$VNSTOCK_API_KEY" \
+            --venv-path "$VNSTOCK_VENV_PATH" \
+            --language en
+          wget -q https://vnstocks.com/files/generate_user_info.min.py \
+            -O generate_user_info.min.py
+          source /opt/vnstock/.venv/bin/activate
+          python3 generate_user_info.min.py \
+            --api-key "$VNSTOCK_API_KEY"
+
+      # Upgrade nhẹ như cron_daily — venv pip trực tiếp, không source activate
+      - name: Ensure latest vnstock packages
+        run: |
+          VENV_PIP="/opt/vnstock/.venv/bin/pip"
+
+          if [ ! -x "$VENV_PIP" ]; then
+            echo "⚠️ Venv pip not found at $VENV_PIP — skipping upgrade"
+            exit 0
+          fi
+
+          echo "=== Upgrading public 'vnstock' package only ==="
+          $VENV_PIP install --upgrade vnstock 2>&1 | tail -5 || \
+            echo "⚠️ vnstock upgrade failed (continuing)"
+
+          echo "=== Sponsor packages ==="
+          for pkg in vnstock_data vnstock_news vnstock_ta; do
+            version=$($VENV_PIP show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
+            if [ -n "$version" ]; then
+              echo "  $pkg: $version"
+            else
+              echo "  $pkg: NOT INSTALLED ⚠️"
+            fi
+          done
+
+      # ──────────────────────────────────────────────────────────────────
+      # NEWS — crawl 14 báo + build index (schema 2)
+      # 0 API call tới VCI/KBS: universe từ output/v2f_ranking.json
+      # ──────────────────────────────────────────────────────────────────
+      - name: Step News — Daily crawl + index
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          /opt/vnstock/.venv/bin/python steps/step_news_daily.py
+
+      # ──────────────────────────────────────────────────────────────────
+      # COMMIT — per-path, CHỈ file news (không đụng output khác)
+      # pull --rebase + retry: phòng race với run khác đang push main
+      # ──────────────────────────────────────────────────────────────────
+      - name: Commit news output
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            output/news/raw.json \
+            output/news/history.json \
+            output/news/today_index.json \
+            output/news_raw.json \
+            output/news_history.json \
+            output/news_today_index.json \
+            2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit — skipping."
+            exit 0
+          fi
+          git commit -m "news: daily crawl + index $(date +'%Y-%m-%d %H:%M')"
+
+          pushed=0
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "pushed (attempt $i)"
+              pushed=1
+              break
+            fi
+            echo "push attempt $i failed — retrying..."
+            sleep $((RANDOM % 5 + 3))
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "push failed after 5 attempts"
+            exit 1
+          fi
