@@ -35,6 +35,27 @@ jobs:
       HOME:                /home/runner
       MPLCONFIGDIR:        /home/runner/.config/matplotlib
 
+      # ──────────────────────────────────────────────────────────────
+      # 2026-07-22 — FIX "Rate limit exceeded 300/300" (log run 09:50 ICT)
+      # Bằng chứng đo từ log: 738 lệnh / 167 giây = 4,42 lệnh/giây;
+      # đỉnh cửa sổ 60 giây = 274 lệnh (log) ≈ 300 lệnh (VCI đếm, do
+      # thư viện tự retry ngầm ~10%). Trần gói Silver = 300 lệnh/phút
+      # → mặc định VCI_MIN_INTERVAL=0.20s cho phép ĐÚNG 300/phút,
+      #   không chừa dư địa nào → chắc chắn vỡ.
+      # Thư viện tự giết tiến trình khi hết quota ("Process terminated",
+      # exit 1) nên circuit breaker trong vci_throttle KHÔNG kịp chạy
+      # → chỉ có thể phòng ngừa trước, không chữa được sau.
+      # Hậu quả run 09:50: xong 125/130 mã rồi mất trắng cả run
+      # (order_flow / scoring / price_levels / record / V3 đều không chạy).
+      #
+      # 0.30s = 3,33 lệnh/giây = ~200 lệnh/phút ≈ 73% hạn mức.
+      # Bước Snapshot: ~2,8 phút → ~4,2 phút (chậm hơn ~1,4 phút).
+      # Rollback: xóa 2 dòng dưới là về nguyên trạng.
+      # Nếu vẫn dính 429: nâng lên "0.40" (~150 lệnh/phút = 55% hạn mức).
+      # ──────────────────────────────────────────────────────────────
+      VCI_MIN_INTERVAL:    "0.30"
+      VCI_STEP_COOLDOWN:   "30"
+
     steps:
       - uses: actions/checkout@v4
         with:
