@@ -81,6 +81,7 @@ import pandas as pd
 
 from utils.helpers   import now_ict, today_str
 from utils.cache     import load_json, save_json, save_csv
+from utils.v2f_industry_groups import compute_group_ranks   # ghi thầm 22/07
 from utils.formatter import clean_for_export
 
 logging.basicConfig(
@@ -1838,6 +1839,13 @@ def run():
             f"→ {result['decision']:12s} [{result['confidence']}]{chg_str}"
             + (f"\n    ext: {ext}" if ext else "")
         )
+
+    # ── GHI THẦM (22/07): xếp hạng trong 6 nhóm ngành — CHỈ gắn trường,
+    # KHÔNG đổi điểm/decision/SCORING_VERSION. Promote cần round-1 + bump. ──
+    try:
+        compute_group_ranks(scored_rows)
+    except Exception as e:
+        log.warning(f"[industry_groups] lỗi ghi thầm (bỏ qua, không chặn flow): {e}")
 
     df = pd.DataFrame(scored_rows)
     save_json("v2f_signals.json", df.to_dict(orient="records"))
