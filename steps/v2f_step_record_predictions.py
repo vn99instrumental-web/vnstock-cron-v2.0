@@ -178,6 +178,17 @@ def run():
             "context_score"    : sig.get("context_score"),
             "news_score"       : sig.get("news_score"),
 
+            # ── Ghi thầm 22/07: xếp hạng trong nhóm ngành (chưa dùng ra quyết định) ──
+            "sector_group"    : sig.get("sector_group"),
+            "rank_fund_grp"   : sig.get("rank_fund_grp"),
+            "rank_fund_uni"   : sig.get("rank_fund_uni"),
+            "rank_trend_grp"  : sig.get("rank_trend_grp"),
+            "rank_ff_grp"     : sig.get("rank_ff_grp"),
+            "rank_cf_grp"     : sig.get("rank_cf_grp"),
+            "rank_growth_grp" : sig.get("rank_growth_grp"),
+            "adtv_bil"        : sig.get("adtv_bil"),
+            "size_band"       : sig.get("size_band"),
+
             "norm_trend"      : sig.get("norm_trend"),
             "norm_momentum"   : sig.get("norm_momentum"),
             "norm_volume"     : sig.get("norm_volume"),
