@@ -138,6 +138,18 @@ def run():
 
             "price"           : sig.get("price"),
             "industry"        : sig.get("industry"),
+
+            # ── Ghi thầm 22/07: rank trong nhóm ngành (kế thừa từ v2f_signals.json
+            # qua scoring_v3; metadata theo dõi — KHÔNG dùng ra quyết định v3) ──
+            "sector_group"    : sig.get("sector_group"),
+            "rank_fund_grp"   : sig.get("rank_fund_grp"),
+            "rank_fund_uni"   : sig.get("rank_fund_uni"),
+            "rank_trend_grp"  : sig.get("rank_trend_grp"),
+            "rank_ff_grp"     : sig.get("rank_ff_grp"),
+            "rank_cf_grp"     : sig.get("rank_cf_grp"),
+            "rank_growth_grp" : sig.get("rank_growth_grp"),
+            "adtv_bil"        : sig.get("adtv_bil"),
+            "size_band"       : sig.get("size_band"),
             "exchange"        : sig.get("exchange"),
 
             # Trade levels (BUY/SB) — dùng chung file level với v2.3
