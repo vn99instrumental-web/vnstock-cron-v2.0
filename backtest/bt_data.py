@@ -92,6 +92,57 @@ def load_universe(min_pe: bool = True) -> list[str]:
 
 
 # ══════════════════════════════════════════════════════════════════════
+# INDUSTRY MAP (thêm 22/07/2026)
+# ══════════════════════════════════════════════════════════════════════
+# Lý do: dataset cũ chỉ có OHLCV + TA, KHÔNG có ngành → không kiểm được
+# giả thuyết "xếp hạng trong nhóm ngành" trên 15 tháng. Thêm cột industry
+# để bt_audit/bt_evaluate đo cross-sectional theo ngành.
+#
+# CẢNH BÁO SAI LỆCH: ngành lấy theo HIỆN TẠI, áp ngược cho toàn bộ lịch sử.
+# ICB rất ít khi đổi nên ảnh hưởng nhỏ, nhưng không phải zero — mã đổi ngành
+# giữa kỳ sẽ mang nhãn mới cho cả giai đoạn cũ.
+#
+# ISOLATION: chỉ ĐỌC output/market/industry_map.json (giống load_universe
+# đọc finance/cache.json). Không ghi, không import production code.
+
+_INDUSTRY_MAP_CACHE = None
+
+
+def load_industry_map() -> dict:
+    """symbol -> icb_name. Trả {} nếu thiếu file (dataset vẫn build được,
+    chỉ là cột industry rỗng → phép đo theo ngành tự bỏ qua)."""
+    global _INDUSTRY_MAP_CACHE
+    if _INDUSTRY_MAP_CACHE is not None:
+        return _INDUSTRY_MAP_CACHE
+
+    out = {}
+    for rel in ("market/industry_map.json", "industry_map.json"):
+        path = PROD_OUTPUT / rel
+        if not path.exists():
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                raw = json.load(f)
+            rows = raw if isinstance(raw, list) else raw.get("data", [])
+            for r in rows:
+                if isinstance(r, dict) and r.get("symbol"):
+                    name = r.get("icb_name")
+                    if name:
+                        out[str(r["symbol"]).strip().upper()] = str(name).strip()
+            if out:
+                log.info(f"Industry map: {len(out)} symbols (từ {rel})")
+                break
+        except Exception as e:
+            log.warning(f"Đọc {rel} lỗi: {e}")
+
+    if not out:
+        log.warning("KHÔNG có industry map — cột industry sẽ rỗng, "
+                    "phép đo theo ngành bị bỏ qua")
+    _INDUSTRY_MAP_CACHE = out
+    return out
+
+
+# ══════════════════════════════════════════════════════════════════════
 # FETCH OHLCV
 # ══════════════════════════════════════════════════════════════════════
 
@@ -556,6 +607,11 @@ def process_symbol(symbol: str) -> pd.DataFrame | None:
     keep_cols = [c for c in keep_cols if c in df.columns]
     df_out    = pd.concat([df[keep_cols], df_scores, df_v2], axis=1)
     df_out.insert(0, "symbol", symbol)
+
+    # Cột ngành (22/07/2026) — phục vụ phép đo cross-sectional theo nhóm.
+    # Đặt ngay sau symbol; mã không có trong map → "" (phép đo tự bỏ qua).
+    df_out.insert(1, "industry",
+                  load_industry_map().get(str(symbol).strip().upper(), ""))
 
     return df_out
 
