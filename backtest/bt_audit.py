@@ -563,7 +563,8 @@ def run_sector_audit(horizon: int):
 
 def main():
     parser = argparse.ArgumentParser(description="Audit từng indicator đơn lẻ")
-    parser.add_argument("--horizon", type=int, default=5, choices=[1, 3, 5])
+    parser.add_argument("--horizon", type=int, default=5,
+                        choices=[1, 3, 5, 10, 20])
     parser.add_argument("--all-horizons", action="store_true")
     parser.add_argument("--sector", action="store_true",
                         help="Chạy THÊM audit xếp hạng trong nhóm ngành")
@@ -571,7 +572,7 @@ def main():
                         help="CHỈ chạy audit theo ngành (bỏ 3 audit cũ)")
     args = parser.parse_args()
 
-    horizons = [1, 3, 5] if args.all_horizons else [args.horizon]
+    horizons = [1, 3, 5, 10, 20] if args.all_horizons else [args.horizon]
     for h in horizons:
         if not args.sector_only:
             run_audit(h)
