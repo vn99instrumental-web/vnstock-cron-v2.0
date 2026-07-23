@@ -288,6 +288,7 @@ def main(horizon: int = 5):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Drift detection cho scoring edge")
-    parser.add_argument("--horizon", type=int, default=5, choices=[1, 3, 5])
+    parser.add_argument("--horizon", type=int, default=5,
+                        choices=[1, 3, 5, 10, 20])
     args = parser.parse_args()
     main(horizon=args.horizon)
