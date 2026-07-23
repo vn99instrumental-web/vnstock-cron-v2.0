@@ -561,6 +561,214 @@ def run_sector_audit(horizon: int):
             log.info("     → xếp hạng ngành cũng KHÔNG có edge ngoài mẫu")
 
 
+# ══════════════════════════════════════════════════════════════════════
+# AUDIT THANH KHOẢN (ADTV) — thêm 23/07/2026
+# ══════════════════════════════════════════════════════════════════════
+# BỐI CẢNH: 35 phép thử (7 factor × 5 khung) cho thấy ràng buộc thật KHÔNG
+# phải "thiếu factor tốt" mà là BIÊN LÃI QUÁ NHỎ SO VỚI CHI PHÍ:
+#   - mọi gap đo được 0.2-1.0%, chi phí vòng VN ~0.3-0.5%
+#   - kéo dài khung KHÔNG cứu được (gap tăng dưới tuyến tính: 1.72x rồi 1.21x)
+#
+# GIẢ THUYẾT (đăng ký trước, KHÔNG quét biến thể):
+#   Mã thanh khoản thấp có chi phí hiệu dụng cao hơn nhiều do trượt giá.
+#   Nếu lọc chỉ giữ nhóm thanh khoản cao, gap phải RỘNG HƠN ĐÁNG KỂ.
+#
+# TIÊU CHÍ ĐẠT (cả 2, đăng ký trước):
+#   (1) gap nhóm thanh khoản CAO >= 1.5 x gap toàn rổ
+#   (2) >= 9/12 kỳ dương trong nhóm thanh khoản cao
+#   Trượt => DỪNG, không thử ngưỡng khác.
+#
+# FACTOR KIỂM:
+#   - trend_rank: giả thuyết GỐC (đã đăng ký từ đầu)
+#   - adx_rank:   THĂM DÒ (hậu nghiệm, chọn từ 35 phép thử → độ tin thấp,
+#                 báo cáo riêng, KHÔNG dùng để ra quyết định)
+
+ADTV_WINDOW = 20        # phiên, tính giá trị giao dịch bình quân
+LIQ_PRIMARY = "trend_rank"
+LIQ_EXPLORATORY = "adx_rank"
+
+
+def _add_adtv_tiers(d: pd.DataFrame) -> pd.DataFrame | None:
+    """Thêm adtv (bình quân 20 phiên) + liq_tier (CAO/GIUA/THAP theo tam phân
+    vị CẮT NGANG mỗi ngày). Cắt ngang theo ngày → tier ổn định qua thời gian,
+    không bị lệch do thanh khoản toàn thị trường thay đổi."""
+    if not {"volume", "close"}.issubset(d.columns):
+        log.warning("Dataset thiếu volume/close — bỏ qua audit thanh khoản")
+        return None
+
+    d = d.sort_values(["symbol", "time"]).copy()
+    d["_turnover"] = d["volume"] * d["close"]
+    d["adtv"] = (d.groupby("symbol")["_turnover"]
+                   .transform(lambda x: x.rolling(ADTV_WINDOW, min_periods=10).mean()))
+    d = d.dropna(subset=["adtv"])
+    if not len(d):
+        return None
+
+    # Tam phân vị cắt ngang theo từng ngày
+    d["_adtv_pct"] = d.groupby("time")["adtv"].rank(pct=True, method="average")
+    d["liq_tier"] = pd.cut(d["_adtv_pct"], bins=[0, 1/3, 2/3, 1.0],
+                           labels=["THAP", "GIUA", "CAO"], include_lowest=True)
+    return d
+
+
+def audit_liquidity(df: pd.DataFrame, horizon: int) -> pd.DataFrame:
+    """Gap của sector-rank TRONG TỪNG nhóm thanh khoản.
+    Benchmark giữ nguyên: lợi suất vượt trung bình (ngày, nhóm ngành) tính
+    trên TOÀN rổ — để so sánh được với các lần đo trước."""
+    d = _prepare_sector_ranks(df)
+    if d is None:
+        return pd.DataFrame()
+    d = _add_adtv_tiers(d)
+    if d is None:
+        return pd.DataFrame()
+
+    ret_col = f"ret_{horizon}d"
+    if ret_col not in d.columns:
+        return pd.DataFrame()
+    d = d.dropna(subset=[ret_col])
+    if not len(d):
+        return pd.DataFrame()
+
+    d["_base"] = d.groupby(["time", "sector_group"])[ret_col].transform("mean")
+    d["_exc"] = d[ret_col] - d["_base"]
+
+    rows = []
+    for factor in (LIQ_PRIMARY, LIQ_EXPLORATORY):
+        if factor not in d.columns:
+            continue
+        for tier in ("TOAN_RO", "CAO", "GIUA", "THAP"):
+            sub = d if tier == "TOAN_RO" else d[d["liq_tier"] == tier]
+            sub = sub.dropna(subset=[factor])
+            top = sub[sub[factor] >= RANK_TOP]["_exc"]
+            bot = sub[sub[factor] <= RANK_BOT]["_exc"]
+            if len(top) < 300 or len(bot) < 300:
+                continue
+            adtv_med = sub["adtv"].median() / 1e9
+            rows.append({
+                "factor":      factor,
+                "tier":        tier,
+                "adtv_med_ty": round(adtv_med, 2),
+                "n_top":       len(top),
+                "top_exc_pct": round(top.mean() * 100, 3),
+                "bot_exc_pct": round(bot.mean() * 100, 3),
+                "gap_pct":     round((top.mean() - bot.mean()) * 100, 3),
+                "hit_top":     round((top > 0).mean(), 3),
+                "hit_bot":     round((bot > 0).mean(), 3),
+            })
+    return pd.DataFrame(rows)
+
+
+def walkforward_liquidity(df: pd.DataFrame, horizon: int,
+                          n_periods: int = 12) -> pd.DataFrame:
+    """Walk-forward theo tháng, riêng cho nhóm thanh khoản CAO."""
+    d = _prepare_sector_ranks(df)
+    if d is None:
+        return pd.DataFrame()
+    d = _add_adtv_tiers(d)
+    if d is None:
+        return pd.DataFrame()
+
+    ret_col = f"ret_{horizon}d"
+    if ret_col not in d.columns:
+        return pd.DataFrame()
+    d = d.dropna(subset=[ret_col]).copy()
+    d["_base"] = d.groupby(["time", "sector_group"])[ret_col].transform("mean")
+    d["_exc"] = d[ret_col] - d["_base"]
+    d["_period"] = pd.to_datetime(d["time"]).dt.to_period("M").astype(str)
+    periods = sorted(d["_period"].unique())[-n_periods:]
+
+    rows = []
+    for factor in (LIQ_PRIMARY, LIQ_EXPLORATORY):
+        if factor not in d.columns:
+            continue
+        for tier in ("TOAN_RO", "CAO"):
+            gaps = []
+            for p in periods:
+                sub = d[d["_period"] == p]
+                if tier != "TOAN_RO":
+                    sub = sub[sub["liq_tier"] == tier]
+                sub = sub.dropna(subset=[factor])
+                top = sub[sub[factor] >= RANK_TOP]["_exc"]
+                bot = sub[sub[factor] <= RANK_BOT]["_exc"]
+                if len(top) < 50 or len(bot) < 50:
+                    continue
+                gaps.append((top.mean() - bot.mean()) * 100)
+            if len(gaps) < 6:
+                continue
+            pos = sum(1 for g in gaps if g > 0)
+            rows.append({
+                "factor":       factor,
+                "tier":         tier,
+                "n_periods":    len(gaps),
+                "pos_periods":  pos,
+                "pos_rate":     round(pos / len(gaps), 3),
+                "mean_gap_pct": round(float(np.mean(gaps)), 3),
+                "median_gap":   round(float(np.median(gaps)), 3),
+                "std_gap":      round(float(np.std(gaps)), 3),
+            })
+    return pd.DataFrame(rows)
+
+
+def run_liquidity_audit(horizon: int):
+    df = load_dataset()
+    log.info(f"\n{'═'*64}")
+    log.info(f"LIQUIDITY (ADTV) AUDIT — horizon={horizon}d")
+    log.info(f"{'═'*64}")
+    log.info(f"  Tam phân vị ADTV {ADTV_WINDOW} phiên, cắt ngang theo NGÀY")
+    log.info(f"  Giả thuyết: lọc thanh khoản cao → gap RỘNG HƠN >= 1.5 lần")
+
+    t6 = audit_liquidity(df, horizon)
+    if not len(t6):
+        log.warning("  Không đủ dữ liệu cho audit thanh khoản")
+        return
+    log.info(f"\n── [6] GAP THEO NHÓM THANH KHOẢN (toàn mẫu) ──")
+    log.info("\n" + t6.to_string(index=False))
+
+    t7 = walkforward_liquidity(df, horizon)
+    log.info(f"\n── [7] WALK-FORWARD nhóm thanh khoản CAO ──")
+    if len(t7):
+        log.info("\n" + t7.to_string(index=False))
+
+    reports = BT_OUTPUT_DIR / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    t6.to_csv(reports / f"audit_liquidity_h{horizon}.csv", index=False)
+    if len(t7):
+        t7.to_csv(reports / f"audit_liquidity_wf_h{horizon}.csv", index=False)
+    log.info(f"\nSaved liquidity CSVs → {reports}")
+
+    # ── VERDICT theo tiêu chí ĐĂNG KÝ TRƯỚC ──
+    log.info(f"\n── VERDICT THANH KHOẢN (horizon={horizon}d) ──")
+    for factor, tag in ((LIQ_PRIMARY, "CHÍNH (đăng ký trước)"),
+                        (LIQ_EXPLORATORY, "THĂM DÒ (hậu nghiệm — độ tin THẤP)")):
+        f6 = t6[t6["factor"] == factor]
+        all_row = f6[f6["tier"] == "TOAN_RO"]
+        cao_row = f6[f6["tier"] == "CAO"]
+        if not len(all_row) or not len(cao_row):
+            continue
+        g_all = float(all_row.iloc[0]["gap_pct"])
+        g_cao = float(cao_row.iloc[0]["gap_pct"])
+        ratio = g_cao / g_all if g_all != 0 else float("nan")
+        wf = t7[(t7["factor"] == factor) & (t7["tier"] == "CAO")]
+        pos = int(wf.iloc[0]["pos_periods"]) if len(wf) else 0
+        npd = int(wf.iloc[0]["n_periods"]) if len(wf) else 0
+
+        c1 = ratio >= 1.5
+        c2 = (pos >= 9)
+        log.info(f"  [{tag}] {factor}:")
+        log.info(f"    gap toàn rổ {g_all:+.3f}% → thanh khoản CAO {g_cao:+.3f}% "
+                 f"(tỷ lệ {ratio:.2f}x) — ĐK1 (>=1.5x): {'ĐẠT' if c1 else 'TRƯỢT'}")
+        log.info(f"    kỳ dương {pos}/{npd} — ĐK2 (>=9/12): "
+                 f"{'ĐẠT' if c2 else 'TRƯỢT'}")
+        if factor == LIQ_PRIMARY:
+            if c1 and c2:
+                log.info(f"    ✓ ĐẠT CẢ 2 → cổng thanh khoản có giá trị")
+                log.info(f"    Kinh tế: mua nhóm đầu thu {cao_row.iloc[0]['top_exc_pct']:+.3f}% "
+                         f"| chi phí vòng ~0.30-0.50%")
+            else:
+                log.info(f"    ✗ TRƯỢT → theo luật đăng ký trước: DỪNG, "
+                         f"không thử ngưỡng khác")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Audit từng indicator đơn lẻ")
     parser.add_argument("--horizon", type=int, default=5,
@@ -570,14 +778,18 @@ def main():
                         help="Chạy THÊM audit xếp hạng trong nhóm ngành")
     parser.add_argument("--sector-only", action="store_true",
                         help="CHỈ chạy audit theo ngành (bỏ 3 audit cũ)")
+    parser.add_argument("--liquidity-only", action="store_true",
+                        help="CHỈ chạy audit thanh khoản ADTV")
     args = parser.parse_args()
 
     horizons = [1, 3, 5, 10, 20] if args.all_horizons else [args.horizon]
     for h in horizons:
-        if not args.sector_only:
+        if not args.sector_only and not args.liquidity_only:
             run_audit(h)
         if args.sector or args.sector_only:
             run_sector_audit(h)
+        if args.liquidity_only:
+            run_liquidity_audit(h)
 
 
 if __name__ == "__main__":
