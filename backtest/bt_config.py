@@ -19,7 +19,11 @@ BT_OUTPUT_DIR  = REPO_ROOT / "backtest_output"  # write target
 # ── Data ───────────────────────────────────────────────────────────────
 START_DATE     = "2024-06-01"   # 12M history từ hôm nay
 MIN_HISTORY    = 220            # cần EMA200 (200 + buffer 20)
-HORIZONS       = [1, 3, 5]     # forward return days
+HORIZONS       = [1, 3, 5, 10, 20]   # forward return days
+# 23/07/2026: thêm 10, 20. Lý do: sector-rank cho thấy trend_rank MẠNH DẦN
+# theo khung (3d +0.26% → 5d +0.42%) trong khi chi phí giao dịch CỐ ĐỊNH
+# (~0.3-0.5%/vòng). Ở 5d biên lãi thua phí → phải đo khung dài mới biết có
+# edge khai thác được không. CẢNH BÁO: đổi file này làm MẤT cache dataset.
 RET_THRESHOLD  = 0.005         # ±0.5% → mới tính là move có nghĩa (0 = flat)
 
 # ── Scoring caps hiện tại (v3 production) ──────────────────────────────
