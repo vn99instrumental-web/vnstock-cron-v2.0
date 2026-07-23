@@ -73,8 +73,8 @@ def main():
         help="Bỏ qua bước fetch data, dùng dataset.parquet đã có"
     )
     parser.add_argument(
-        "--horizon", type=int, default=5, choices=[1, 3, 5],
-        help="Forward return horizon (days): 1, 3, hoặc 5 (mặc định: 5)"
+        "--horizon", type=int, default=5, choices=[1, 3, 5, 10, 20],
+        help="Forward return horizon (days): 1/3/5/10/20 (mặc định: 5)"
     )
     parser.add_argument(
         "--threshold", type=int, default=20,
@@ -123,7 +123,7 @@ def main():
     log.info("\n[Step 2/2] Evaluating...")
     from backtest.bt_evaluate import main as run_evaluate
 
-    horizons = [1, 3, 5] if args.all_horizons else [args.horizon]
+    horizons = [1, 3, 5, 10, 20] if args.all_horizons else [args.horizon]
 
     for h in horizons:
         log.info(f"\n  → Horizon: {h}d")
