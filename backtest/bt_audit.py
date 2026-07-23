@@ -339,15 +339,244 @@ def run_audit(horizon: int):
             log.info(f"  ⚠️ Best edge chỉ {best_edge['edge_pct']:+.2f}% — không đáng kể")
 
 
+# ══════════════════════════════════════════════════════════════════════
+# AUDIT XẾP HẠNG TRONG NHÓM NGÀNH (thêm 23/07/2026)
+# ══════════════════════════════════════════════════════════════════════
+# BỐI CẢNH: walk-forward (23/07) cho thấy chấm điểm theo NGƯỠNG TUYỆT ĐỐI
+# không tổng quát hóa được — hit ngoài mẫu 0.486 (5d) / 0.495 (1d), grid
+# search tốt nhất 0.4943, tức thua tung xu ở MỌI cấu hình trọng số.
+#
+# GIẢ THUYẾT CÒN LẠI: xếp hạng CẮT NGANG trong nhóm ngành khác về bản chất
+# — không hỏi "mã này mạnh hay yếu" mà hỏi "mã này đứng thứ mấy trong nhóm
+# hôm nay". Forward 3 tuần cho +2.29%/5 phiên, hit 71%, dương 10/11 ngày.
+# Đây là phép kiểm tra giả thuyết đó trên 16 tháng + walk-forward.
+#
+# KHÔNG đụng 3 audit cũ — kết quả các lần chạy trước vẫn so sánh được.
+
+# Ngành con (icb_name) → 6 nhóm cấu trúc định giá đồng nhất.
+# Đồng bộ với utils/v2f_industry_groups.py (production). KHÔNG import
+# production code (luật cách ly backtest) → chép bảng sang đây.
+SECTOR_GROUPS = {
+    "Ngân hàng": "NGAN_HANG",
+    "Bất động sản": "BAT_DONG_SAN",
+    "Dịch vụ tài chính": "TAI_CHINH_PHI_NH",
+    "Bảo hiểm": "TAI_CHINH_PHI_NH",
+    "Xây dựng và Vật liệu": "CONG_NGHIEP",
+    "Hàng & Dịch vụ Công nghiệp": "CONG_NGHIEP",
+    "Tài nguyên Cơ bản": "NGUYEN_LIEU_NANG_LUONG",
+    "Hóa chất": "NGUYEN_LIEU_NANG_LUONG",
+    "Dầu khí": "NGUYEN_LIEU_NANG_LUONG",
+    "Điện, nước & xăng dầu khí đốt": "NGUYEN_LIEU_NANG_LUONG",
+    "Thực phẩm và đồ uống": "TIEU_DUNG_DICH_VU",
+    "Bán lẻ": "TIEU_DUNG_DICH_VU",
+    "Y tế": "TIEU_DUNG_DICH_VU",
+    "Du lịch và Giải trí": "TIEU_DUNG_DICH_VU",
+    "Hàng cá nhân & Gia dụng": "TIEU_DUNG_DICH_VU",
+    "Ô tô và phụ tùng": "TIEU_DUNG_DICH_VU",
+    "Công nghệ Thông tin": "TIEU_DUNG_DICH_VU",
+    "Truyền thông": "TIEU_DUNG_DICH_VU",
+    "Viễn thông": "TIEU_DUNG_DICH_VU",
+}
+
+# Chỉ báo đem xếp hạng. Cột phải có sẵn trong dataset.
+RANK_FACTORS = [
+    ("trend_rank",  "ema_cross_pct"),   # sức mạnh xu hướng tương đối
+    ("adx_rank",    "adx"),
+    ("rsi_rank",    "rsi"),
+    ("mfi_rank",    "mfi"),
+    ("bb_rank",     "bb_pos"),
+    ("cmf_rank",    "cmf"),
+    ("vol_rank",    "vol_ratio"),
+]
+
+MIN_GROUP_SIZE = 8      # nhóm nhỏ hơn → hạng vô nghĩa, bỏ qua
+RANK_TOP = 0.70
+RANK_BOT = 0.30
+
+
+def _prepare_sector_ranks(df: pd.DataFrame) -> pd.DataFrame | None:
+    """Gắn sector_group + hạng phần trăm trong (ngày, nhóm) cho từng factor.
+    Trả None nếu dataset chưa có cột industry (bt_data.py bản cũ)."""
+    if "industry" not in df.columns:
+        log.warning("Dataset KHÔNG có cột 'industry' — bỏ qua audit theo ngành. "
+                    "Chạy lại mode=full với bt_data.py bản mới (>=23/07).")
+        return None
+
+    d = df.copy()
+    d["sector_group"] = d["industry"].map(SECTOR_GROUPS).fillna("KHAC")
+
+    # Loại nhóm quá nhỏ theo từng ngày (hạng trong nhóm <8 mã = nhiễu)
+    grp_size = d.groupby(["time", "sector_group"])["symbol"].transform("size")
+    d = d[grp_size >= MIN_GROUP_SIZE].copy()
+    if not len(d):
+        log.warning("Không nhóm (ngày, ngành) nào đủ %d mã", MIN_GROUP_SIZE)
+        return None
+
+    for rank_name, col in RANK_FACTORS:
+        if col not in d.columns:
+            continue
+        d[rank_name] = (d.groupby(["time", "sector_group"])[col]
+                          .rank(pct=True, method="average"))
+    return d
+
+
+def audit_sector_ranks(df: pd.DataFrame, horizon: int) -> pd.DataFrame:
+    """Top30% vs bot30% TRONG NHÓM NGÀNH, đo bằng lợi suất VƯỢT TRUNG BÌNH
+    NHÓM cùng ngày (đã triệt tiêu hiệu ứng ngành và hiệu ứng thị trường)."""
+    d = _prepare_sector_ranks(df)
+    if d is None:
+        return pd.DataFrame()
+
+    ret_col = f"ret_{horizon}d"
+    if ret_col not in d.columns:
+        return pd.DataFrame()
+    d = d.dropna(subset=[ret_col])
+    if not len(d):
+        return pd.DataFrame()
+
+    # excess = ret - trung bình nhóm cùng ngày
+    d["_base"] = d.groupby(["time", "sector_group"])[ret_col].transform("mean")
+    d["_exc"] = d[ret_col] - d["_base"]
+
+    rows = []
+    for rank_name, col in RANK_FACTORS:
+        if rank_name not in d.columns:
+            continue
+        sub = d.dropna(subset=[rank_name])
+        top = sub[sub[rank_name] >= RANK_TOP]["_exc"]
+        bot = sub[sub[rank_name] <= RANK_BOT]["_exc"]
+        if len(top) < 500 or len(bot) < 500:
+            continue
+        rows.append({
+            "factor":        rank_name,
+            "n_top":         len(top),
+            "n_bot":         len(bot),
+            "top_exc_pct":   round(top.mean() * 100, 3),
+            "bot_exc_pct":   round(bot.mean() * 100, 3),
+            "gap_pct":       round((top.mean() - bot.mean()) * 100, 3),
+            "hit_top":       round((top > 0).mean(), 3),
+            "hit_bot":       round((bot > 0).mean(), 3),
+        })
+    out = pd.DataFrame(rows)
+    if len(out):
+        out = out.reindex(out["gap_pct"].abs().sort_values(ascending=False).index)
+    return out.reset_index(drop=True)
+
+
+def walkforward_sector_ranks(df: pd.DataFrame, horizon: int,
+                             n_periods: int = 12) -> pd.DataFrame:
+    """Kiểm ngoài mẫu: chia thời gian thành các kỳ ~1 tháng, đo gap của
+    từng factor ở TỪNG kỳ. Factor thật sẽ dương ở đa số kỳ; factor khớp
+    nhiễu sẽ nhảy dấu loạn xạ (bài học walk-forward caps 23/07)."""
+    d = _prepare_sector_ranks(df)
+    if d is None:
+        return pd.DataFrame()
+
+    ret_col = f"ret_{horizon}d"
+    if ret_col not in d.columns:
+        return pd.DataFrame()
+    d = d.dropna(subset=[ret_col]).copy()
+    if not len(d):
+        return pd.DataFrame()
+
+    d["_base"] = d.groupby(["time", "sector_group"])[ret_col].transform("mean")
+    d["_exc"] = d[ret_col] - d["_base"]
+    d["_period"] = pd.to_datetime(d["time"]).dt.to_period("M").astype(str)
+    periods = sorted(d["_period"].unique())[-n_periods:]
+
+    rows = []
+    for rank_name, _ in RANK_FACTORS:
+        if rank_name not in d.columns:
+            continue
+        gaps = []
+        for p in periods:
+            sub = d[(d["_period"] == p)].dropna(subset=[rank_name])
+            top = sub[sub[rank_name] >= RANK_TOP]["_exc"]
+            bot = sub[sub[rank_name] <= RANK_BOT]["_exc"]
+            if len(top) < 100 or len(bot) < 100:
+                continue
+            gaps.append((top.mean() - bot.mean()) * 100)
+        if len(gaps) < 6:
+            continue
+        pos = sum(1 for g in gaps if g > 0)
+        rows.append({
+            "factor":       rank_name,
+            "n_periods":    len(gaps),
+            "pos_periods":  pos,
+            "pos_rate":     round(pos / len(gaps), 3),
+            "mean_gap_pct": round(float(np.mean(gaps)), 3),
+            "median_gap":   round(float(np.median(gaps)), 3),
+            "std_gap":      round(float(np.std(gaps)), 3),
+            "min_gap":      round(float(np.min(gaps)), 3),
+            "max_gap":      round(float(np.max(gaps)), 3),
+        })
+    out = pd.DataFrame(rows)
+    if len(out):
+        out = out.sort_values("mean_gap_pct", ascending=False)
+    return out.reset_index(drop=True)
+
+
+def run_sector_audit(horizon: int):
+    df = load_dataset()
+    log.info(f"\n{'═'*64}")
+    log.info(f"SECTOR-RANK AUDIT — horizon={horizon}d")
+    log.info(f"{'═'*64}")
+    log.info("  Xếp hạng CẮT NGANG trong nhóm ngành, đo bằng lợi suất vượt")
+    log.info("  TRUNG BÌNH NHÓM cùng ngày (triệt tiêu hiệu ứng ngành + thị trường)")
+
+    t4 = audit_sector_ranks(df, horizon)
+    if not len(t4):
+        log.warning("  Không đủ dữ liệu cho audit theo ngành")
+        return
+    log.info(f"\n── [4] SECTOR RANK: top30% vs bot30% (toàn mẫu) ──")
+    log.info("\n" + t4.to_string(index=False))
+
+    t5 = walkforward_sector_ranks(df, horizon)
+    log.info(f"\n── [5] WALK-FORWARD theo tháng (kiểm ngoài mẫu) ──")
+    log.info("   pos_rate = tỷ lệ kỳ có gap dương. Factor thật: >=0.70")
+    if len(t5):
+        log.info("\n" + t5.to_string(index=False))
+
+    reports = BT_OUTPUT_DIR / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    t4.to_csv(reports / f"audit_sector_rank_h{horizon}.csv", index=False)
+    if len(t5):
+        t5.to_csv(reports / f"audit_sector_wf_h{horizon}.csv", index=False)
+    log.info(f"\nSaved sector audit CSVs → {reports}")
+
+    log.info(f"\n── VERDICT SECTOR-RANK (horizon={horizon}d) ──")
+    best = t4.iloc[0]
+    log.info(f"  Gap lớn nhất: {best['factor']} = {best['gap_pct']:+.2f}% "
+             f"(hit_top={best['hit_top']:.3f}, n={best['n_top']:,})")
+    if len(t5):
+        stable = t5[(t5["pos_rate"] >= 0.70) & (t5["mean_gap_pct"] > 0.10)]
+        if len(stable):
+            log.info(f"  ✓ BỀN qua walk-forward: "
+                     f"{', '.join(stable['factor'].tolist())}")
+            for _, r in stable.iterrows():
+                log.info(f"      {r['factor']}: gap TB {r['mean_gap_pct']:+.2f}%, "
+                         f"dương {r['pos_periods']}/{r['n_periods']} kỳ")
+        else:
+            log.info("  ⚠️ KHÔNG factor nào bền (pos_rate>=0.70 & gap>0.10%)")
+            log.info("     → xếp hạng ngành cũng KHÔNG có edge ngoài mẫu")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Audit từng indicator đơn lẻ")
     parser.add_argument("--horizon", type=int, default=5, choices=[1, 3, 5])
     parser.add_argument("--all-horizons", action="store_true")
+    parser.add_argument("--sector", action="store_true",
+                        help="Chạy THÊM audit xếp hạng trong nhóm ngành")
+    parser.add_argument("--sector-only", action="store_true",
+                        help="CHỈ chạy audit theo ngành (bỏ 3 audit cũ)")
     args = parser.parse_args()
 
     horizons = [1, 3, 5] if args.all_horizons else [args.horizon]
     for h in horizons:
-        run_audit(h)
+        if not args.sector_only:
+            run_audit(h)
+        if args.sector or args.sector_only:
+            run_sector_audit(h)
 
 
 if __name__ == "__main__":
