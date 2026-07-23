@@ -20,7 +20,7 @@ on:
           - drift
           - sector
       horizon:
-        description: 'Forward return horizon (ngày): 1, 3, hoặc 5'
+        description: 'Forward return horizon (ngày): 1/3/5/10/20'
         required: false
         default: '5'
         type: choice
@@ -28,6 +28,8 @@ on:
           - '1'
           - '3'
           - '5'
+          - '10'
+          - '20'
           - 'all'
       threshold:
         description: '|score| threshold để tính hit rate (mặc định: 20)'
