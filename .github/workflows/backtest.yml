@@ -18,6 +18,7 @@ on:
           - eval-only
           - audit
           - drift
+          - sector
       horizon:
         description: 'Forward return horizon (ngày): 1, 3, hoặc 5'
         required: false
@@ -111,7 +112,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backtest_output/dataset.parquet
-          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only' || github.event.inputs.mode == 'drift') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
+          key: backtest-dataset-v2-${{ (github.event.inputs.mode == 'audit' || github.event.inputs.mode == 'eval-only' || github.event.inputs.mode == 'drift' || github.event.inputs.mode == 'sector') && 'full' || github.event.inputs.mode }}-${{ hashFiles('backtest/bt_config.py', 'backtest/bt_data.py') }}
           restore-keys: |
             backtest-dataset-v2-full-
 
@@ -197,6 +198,26 @@ jobs:
             python backtest/bt_audit.py --horizon ${{ github.event.inputs.horizon }}
           fi
 
+      # ── Sector-rank audit (thêm 23/07/2026) ──────────────────────────
+      # Kiểm giả thuyết CÒN LẠI sau khi walk-forward bác bỏ chấm điểm theo
+      # ngưỡng tuyệt đối: xếp hạng cắt ngang trong nhóm ngành có edge không.
+      - name: Run — sector (xếp hạng trong nhóm ngành + walk-forward)
+        if: ${{ github.event.inputs.mode == 'sector' }}
+        run: |
+          mkdir -p backtest_output/reports
+          source /opt/vnstock/.venv/bin/activate
+          if [ ! -f backtest_output/dataset.parquet ]; then
+            echo "Dataset chưa có — build (fetch VCI ~5 phút)..."
+            python backtest/bt_data.py
+          fi
+          echo "=== Sector-rank audit ==="
+          if [ "${{ github.event.inputs.horizon }}" = "all" ]; then
+            python backtest/bt_audit.py --sector-only --all-horizons
+          else
+            python backtest/bt_audit.py --sector-only \
+              --horizon ${{ github.event.inputs.horizon }}
+          fi
+
       - name: Run — drift (theo dõi edge theo thời gian)
         if: ${{ github.event.inputs.mode == 'drift' }}
         run: |
@@ -273,6 +294,17 @@ jobs:
 
           echo ""
           echo "────────────────────────────────────────"
+          echo "  Sector-rank audit (nếu mode=sector)"
+          echo "────────────────────────────────────────"
+          for f in backtest_output/reports/audit_sector_*.csv; do
+            if [ -f "$f" ]; then
+              echo ""
+              echo "  $f:"
+              cat "$f"
+            fi
+          done
+          echo ""
+          echo "────────────────────────────────────────"
           echo "  Drift detection (nếu mode=drift)"
           echo "────────────────────────────────────────"
           for f in backtest_output/reports/drift_*.csv; do
@@ -285,7 +317,7 @@ jobs:
 
       # ── Cache dataset (chỉ quick/full build mới — không ghi đè khi audit/eval/drift) ─
       - name: Save dataset cache
-        if: ${{ (github.event.inputs.mode == 'quick' || github.event.inputs.mode == 'full') && success() }}
+        if: ${{ (github.event.inputs.mode == 'quick' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'sector') && success() }}
         uses: actions/cache/save@v4
         with:
           path: backtest_output/dataset.parquet
