@@ -48,6 +48,9 @@ from datetime import datetime, timezone, timedelta
 from utils.cache import save_json, load_json
 from utils.helpers import now_ict
 from utils.news_sentiment import score_sentiment
+from utils.news_tagging import build_context, aggregate, TICKER_BOOST
+from utils.sector_topics import TOPIC_DECAY
+from utils.sector_map import sector_name
 from utils.industry_keywords import (
     INDUSTRY_KEYWORDS, MACRO_KEYWORDS,
     NEWS_TYPE_KEYWORDS, EFFECTIVE_DATE_PATTERNS,
@@ -617,7 +620,11 @@ def _update_history(new_articles: list) -> list:
                 eff = _parse_time(art["effective_date"])
                 if eff:
                     days_after = (now - eff).total_seconds() / 86400
-                    return days_after <= 3
+                    # v5 FIX: chặn 2 đầu — điều kiện cũ (days_after <= 3)
+                    # vô tình giữ VĨNH VIỄN bài có effective_date xa trong
+                    # tương lai (days_after âm sâu vẫn <= 3). Chỉ giữ bài
+                    # sắp hiệu lực trong 7 ngày hoặc vừa hiệu lực ≤ 3 ngày.
+                    return -7 <= days_after <= 3
             return False
         return True
 
@@ -667,135 +674,103 @@ def _is_index_fresh(art: dict, now: datetime, today_urls: set[str]) -> bool:
     return age_days <= INDEX_WINDOW_DAYS
 
 
-def _build_today_index(all_articles: list,
-                       ticker_patterns: dict,
-                       name_to_sym: dict,
-                       name_patterns: dict) -> dict:
+def _build_today_index(all_articles: list, ctx: dict) -> dict:
     """
-    Pre-compute scores by industry, symbol, macro — SCHEMA 2 (2026-07-19).
+    SCHEMA 3 (2026-07-24) — Phương án 3 qua utils/news_tagging.
 
-    Encode giữ contract consumer (build_news_scores):
-      file_score = CENTER + component
-      component  = clamp(mean(weighted_sentiment), ±CAP)
-        symbol   : CENTER 2.0, CAP ±3.0 (ticker match boost ×1.5 trong ws)
-        industry : CENTER 2.0, CAP ±1.5 (mean ws × 0.5)
-        macro    : CENTER 1.0, CAP ±0.5 (mean contrib × 0.5)
-    Consumer trừ CENTER → symbol ±3 + industry ±1.5 + macro ±0.5 = tổng ±5.
+    THAY ĐỔI so với schema 2:
+      - symbol_mentions tính từ news_tagging.aggregate(): gồm điểm ĐÍCH DANH
+        (ticker ×1.5 / tên công ty ×1.0) + điểm CHỦ ĐỀ nhóm hẹp (×0.6).
+        → mã không nhắc tên vẫn nhận điểm nếu bài khớp từ khóa chủ đề ngành
+          hẹp (VD tin "kim cương" → PNJ).
+      - by_industry GIỮ TRUNG TÍNH (mọi ngành = IND_CENTER) → consumer đọc
+        ra 0. Điểm ngành ICB cũ đã bỏ: news_score giờ CHỈ phản ánh tin về
+        chính mã, không "ăn ké" điểm ngành (chốt 24/07).
+      - macro GIỮ TRUNG TÍNH (= MAC_CENTER) → consumer đọc ra 0. Macro là
+        hằng số cắt ngang, vô dụng cho xếp hạng mã (bằng chứng what-if 24/07:
+        100% flip decision đến từ hằng số macro, 0% từ tin thật).
+      - THÊM sector_heat: nhiệt độ 5 nhóm ngành RỘNG (nhánh song song, CHƯA
+        nối scoring — để sẵn cho dashboard).
 
-    Recompute raw_sentiment bằng engine MỚI cho mọi bài (kể cả history cũ
-    còn điểm từ engine đếm-từ) để đồng nhất thang.
+    Contract encode symbol_mentions GIỮ NGUYÊN: score = SYM_CENTER + clamp(
+    aggregate, ±SYM_CAP) → consumer build_news_scores không đổi, KHÔNG bump
+    SCORING_VERSION.
+
+    Recompute sentiment + decay bằng engine mới cho MỌI bài (đồng nhất thang).
     """
     now = now_ict()
 
-    # Recompute sentiment (engine mới) + macro + decay cho TẤT CẢ bài
     for art in all_articles:
         text = f"{art.get('title','')} {art.get('short_description','')}"
         art["raw_sentiment"] = score_sentiment(text)
-        art["macro_score"] = _score_macro(text, art.get("matched_industries", []))
-        art["time_decay"] = _impact_decay(art, now)
+        art["time_decay"]    = _impact_decay(art, now)
+        # weighted_sentiment vẫn giữ để metrics/top articles dùng
         art["weighted_sentiment"] = round(
-            art["raw_sentiment"]
-            * art.get("source_weight", 1.0)
-            * art["time_decay"], 4
-        )
+            art["raw_sentiment"] * art.get("source_weight", 1.0)
+            * art["time_decay"], 4)
 
-    def _encode(values: list[float], center: float, cap: float,
-                scale: float = 1.0) -> float:
-        if not values:
-            return round(center, 2)
-        avg  = sum(values) / len(values) * scale
-        comp = max(-cap, min(cap, avg))
-        return round(center + comp, 2)
+    # ── Định tuyến + gộp qua news_tagging ──
+    agg = aggregate(all_articles, ctx)
+    sym_scores   = agg["symbol_score"]       # {sym: điểm thô đã gộp mean}
+    sym_articles = agg["symbol_articles"]    # {sym: [{title,source,val,kind}]}
+    heat_raw     = agg["sector_heat"]        # {sector: {score, n}}
 
-    def _top_articles(tuples: list[tuple], n: int = 3) -> list[dict]:
-        sorted_t  = sorted(tuples, key=lambda x: abs(x[0]), reverse=True)
-        seen_urls = set()
-        result    = []
-        for contrib, art in sorted_t:
-            url = art.get("url", "")
-            if url in seen_urls:
-                continue
-            seen_urls.add(url)
-            result.append({
-                "title"         : (art.get("title") or "")[:80],
-                "source"        : art.get("source", ""),
-                "time"          : str(art.get("publish_time", ""))[:16],
-                "news_type"     : art.get("news_type", "immediate"),
-                "effective_date": art.get("effective_date"),
-                "industries"    : art.get("matched_industries", []),
-                "contribution"  : round(contrib, 3),
-            })
-            if len(result) >= n:
-                break
-        return result
+    n_direct = sum(1 for arts in sym_articles.values()
+                   for a in arts if a["kind"] == "direct")
+    n_topic  = sum(1 for arts in sym_articles.values()
+                   for a in arts if a["kind"] == "topic")
+    log.info(f"  Tagging: {len(sym_scores)} mã có điểm "
+             f"({n_direct} lượt đích danh, {n_topic} lượt chủ đề ×{TOPIC_DECAY})")
 
-    # ── By industry ──
-    industry_tuples: dict[str, list[tuple]] = {}
-    for art in all_articles:
-        ws = art.get("weighted_sentiment", 0.0)
-        for ind in art.get("matched_industries", []):
-            industry_tuples.setdefault(ind, []).append((ws, art))
+    def _clamp_center(raw: float, center: float, cap: float) -> float:
+        return round(center + max(-cap, min(cap, raw)), 2)
 
-    by_industry = {}
-    for ind, tuples in industry_tuples.items():
-        vals = [v for v, _ in tuples]
-        by_industry[ind] = {
-            "score"         : _encode(vals, IND_CENTER, IND_CAP, scale=0.5),
-            "article_count" : len(tuples),
-            "delayed_count" : sum(1 for _, a in tuples
-                                  if a.get("news_type") == "delayed"),
-            "top_articles"  : _top_articles(tuples, n=3),
-        }
-
-    # ── Macro ──
-    macro_tuples = [
-        (art.get("macro_score", 0) * art.get("time_decay", 0.5), art)
-        for art in all_articles
-        if art.get("macro_score", 0) != 0
-    ]
-    macro_vals = [v for v, _ in macro_tuples]
-    macro = {
-        "score"        : _encode(macro_vals, MAC_CENTER, MAC_CAP, scale=0.5),
-        "article_count": len(macro_tuples),
-        "top_articles" : _top_articles(macro_tuples, n=3),
-    }
-    log.info(f"  Macro: {len(macro_tuples)} articles tagged "
-             f"(after MACRO_CONTEXT filter)")
-
-    # ── Symbol mentions (universe-restricted, v2) ──
-    symbol_tuples: dict[str, list[tuple]] = {}
-    n_via_ticker = 0
-    n_via_name   = 0
-
-    for art in all_articles:
-        ws = art.get("weighted_sentiment", 0.0)
-        via_ticker, via_name = _match_symbols(
-            art, ticker_patterns, name_to_sym, name_patterns)
-        for sym in via_ticker:
-            symbol_tuples.setdefault(sym, []).append((ws * 1.5, art))
-            n_via_ticker += 1
-        for sym in via_name:
-            symbol_tuples.setdefault(sym, []).append((ws, art))
-            n_via_name += 1
-
-    log.info(f"  Symbol matches: {n_via_ticker} via ticker, "
-             f"{n_via_name} via company name")
-
+    # ── symbol_mentions (schema 3) ──
     symbol_mentions = {}
-    for sym, tuples in symbol_tuples.items():
-        vals = [v for v, _ in tuples]
+    for sym, raw in sym_scores.items():
+        arts = sym_articles.get(sym, [])
+        kinds = {a["kind"] for a in arts}
+        top = sorted(arts, key=lambda a: abs(a["val"]), reverse=True)[:3]
         symbol_mentions[sym] = {
-            "score"        : _encode(vals, SYM_CENTER, SYM_CAP),
-            "article_count": len(tuples),
-            "top_articles" : _top_articles(tuples, n=3),
+            "score"        : _clamp_center(raw, SYM_CENTER, SYM_CAP),
+            "article_count": len(arts),
+            "match_kind"   : "direct" if "direct" in kinds
+                             else ("topic" if "topic" in kinds else "none"),
+            "top_articles" : [
+                {"title": a["title"], "source": a["source"],
+                 "contribution": round(a["val"], 3), "kind": a["kind"]}
+                for a in top
+            ],
         }
+
+    # ── by_industry TRUNG TÍNH (điểm ngành ICB bỏ khỏi news_score) ──
+    by_industry: dict[str, dict] = {}
+
+    # ── macro TRUNG TÍNH (hằng số cắt ngang bỏ khỏi news_score) ──
+    macro = {"score": round(MAC_CENTER, 2), "article_count": 0, "top_articles": []}
+
+    # ── sector_heat: nhiệt độ nhóm RỘNG (song song, chưa nối scoring) ──
+    sector_heat = {}
+    for sector, d in heat_raw.items():
+        sector_heat[sector] = {
+            "name" : sector_name(sector),
+            "score": round(d["score"], 3),   # điểm thô (chưa encode), để hiển thị
+            "n"    : d["n"],
+        }
+    if sector_heat:
+        hot = sorted(sector_heat.items(), key=lambda kv: abs(kv[1]["score"]),
+                     reverse=True)[:3]
+        log.info("  Sector heat (nhóm rộng): "
+                 + " | ".join(f"{v['name']} {v['score']:+.2f}({v['n']})"
+                              for _, v in hot))
 
     return {
-        "schema"         : 2,
+        "schema"         : 3,
         "generated_at"   : now.strftime("%Y-%m-%d %H:%M:%S"),
-        "by_industry"    : by_industry,
+        "by_industry"    : by_industry,     # rỗng → consumer đọc ra 0
         "symbol_mentions": symbol_mentions,
-        "macro"          : macro,
+        "macro"          : macro,           # trung tính → consumer đọc ra 0
+        "sector_heat"    : sector_heat,     # MỚI, chưa nối scoring
     }
 
 
@@ -927,8 +902,23 @@ def run():
         for name in name_to_sym
     }
 
-    # 3. Relevance filter (2026-07-19): bài không match gì → loại khỏi
-    #    history + index (raw.json vẫn giữ đủ)
+    # Context cho news_tagging (schema 3) — build 1 lần, dùng cho index
+    tag_ctx = build_context(match_symbols_set, industry_map)
+
+    # 3. Relevance filter (2026-07-19; +topic 2026-07-24): bài không liên
+    #    quan gì → loại khỏi history + index (raw.json vẫn giữ đủ). Giữ nếu:
+    #    (a) có ngành ICB / macro (cũ), (b) nhắc mã universe, HOẶC
+    #    (c) khớp từ khóa CHỦ ĐỀ/nhiệt độ ngành (news_tagging) — để tin kiểu
+    #        "kim cương" (không nhắc PNJ, không tag ICB) vẫn sống.
+    from utils.sector_topics import SECTOR_TOPICS, SECTOR_HEAT_KEYWORDS
+    _all_topic_phrases = [p for ps in SECTOR_TOPICS.values() for p in ps] + \
+                         [p for ps in SECTOR_HEAT_KEYWORDS.values() for p in ps]
+
+    def _matches_topic(art: dict) -> bool:
+        t = f"{art.get('title','')} {art.get('short_description','')} " \
+            f"{art.get('tags','')}".lower()
+        return any(p in t for p in _all_topic_phrases)
+
     kept = []
     for art in deduped:
         if art["matched_industries"] or art["macro_score"] != 0:
@@ -936,7 +926,7 @@ def run():
             continue
         via_ticker, via_name = _match_symbols(
             art, ticker_patterns, name_to_sym, name_patterns)
-        if via_ticker or via_name:
+        if via_ticker or via_name or _matches_topic(art):
             kept.append(art)
     log.info(f"  Relevance filter: giữ {len(kept)}/{len(deduped)} bài")
 
@@ -960,17 +950,17 @@ def run():
     log.info(f"  Freshness window ≤{INDEX_WINDOW_DAYS}d: "
              f"giữ {len(merged)}/{n_before} bài cho index")
 
-    # 5. Index (schema 2)
-    log.info("  Building today index (schema 2)...")
-    today_index = _build_today_index(
-        merged, ticker_patterns, name_to_sym, name_patterns)
+    # 5. Index (schema 3 — news_tagging / Phương án 3)
+    log.info("  Building today index (schema 3, news_tagging)...")
+    today_index = _build_today_index(merged, tag_ctx)
 
     save_json("news/today_index.json", today_index)
     save_json("news_today_index.json", today_index)
 
-    n_ind = len(today_index["by_industry"])
-    n_sym = len(today_index["symbol_mentions"])
-    log.info(f"  Index: {n_ind} industries, {n_sym} symbols mentioned")
+    n_sym  = len(today_index["symbol_mentions"])
+    n_heat = len(today_index.get("sector_heat", {}))
+    log.info(f"  Index: {n_sym} mã có điểm, {n_heat} nhóm ngành có nhiệt độ "
+             f"(by_industry & macro trung tính = 0)")
 
     # 6. Metrics
     _log_metrics(deduped, kept, today_index, universe)
