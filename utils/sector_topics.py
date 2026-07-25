@@ -177,10 +177,61 @@ SECTOR_TOPICS: dict[str, list[str]] = {
 }
 
 
+# ─── TỪ KHÓA NHIỆT ĐỘ NGÀNH cho nhóm RỘNG ───────────────────────────────────
+# Tách riêng với SECTOR_TOPICS: các cụm này CHỈ dùng để đo "nhiệt độ ngành"
+# (nhánh song song), KHÔNG rót xuống điểm từng mã → có thể rộng hơn một chút
+# mà không sợ gán nhầm mã. Vẫn giữ nguyên tắc không xung đột với SECTOR_TOPICS.
+SECTOR_HEAT_KEYWORDS: dict[str, list[str]] = {
+    "ngan_hang": [
+        "ngành ngân hàng", "hệ thống ngân hàng", "tăng trưởng tín dụng",
+        "room tín dụng", "lãi suất huy động", "lãi suất cho vay", "nợ xấu",
+        "nim ngân hàng", "thông tư ngân hàng", "nhnn", "basel",
+        "tái cơ cấu ngân hàng",
+    ],
+    "chung_khoan": [
+        "công ty chứng khoán", "ngành chứng khoán", "dư nợ margin",
+        "thanh khoản thị trường", "nâng hạng thị trường", "ftse",
+        "hệ thống krx", "phí giao dịch chứng khoán", "tự doanh",
+    ],
+    "bat_dong_san": [
+        "thị trường bất động sản", "ngành bất động sản", "luật đất đai",
+        "luật nhà ở", "luật kinh doanh bất động sản", "bảng giá đất",
+        "tháo gỡ pháp lý dự án", "trái phiếu bất động sản",
+        "tồn kho bất động sản", "gói tín dụng nhà ở",
+    ],
+    "xay_dung_vat_lieu": [
+        "đầu tư công", "giải ngân đầu tư công", "cao tốc bắc nam",
+        "vật liệu xây dựng", "giá xi măng", "giá vật liệu",
+        "sân bay long thành", "vành đai", "gói thầu xây lắp",
+    ],
+    "thuc_pham": [
+        "ngành thực phẩm", "hàng tiêu dùng nhanh", "sức mua tiêu dùng",
+        "an toàn thực phẩm", "giá lương thực", "xuất khẩu nông sản",
+    ],
+}
+
+
 # ─── API ────────────────────────────────────────────────────────────────────
 
 def topics_of(sector_key: str) -> list[str]:
     return list(SECTOR_TOPICS.get(sector_key, []))
+
+
+def heat_keywords_of(sector_key: str) -> list[str]:
+    return list(SECTOR_HEAT_KEYWORDS.get(sector_key, []))
+
+
+def match_heat(text: str) -> dict[str, list[str]]:
+    """Dò text → {wide_sector_key: [cụm heat khớp]} cho nhiệt độ ngành."""
+    if not text:
+        return {}
+    t = text.lower()
+    hits: dict[str, list[str]] = {}
+    for sector, phrases in SECTOR_HEAT_KEYWORDS.items():
+        matched = [p for p in phrases if p in t]
+        if matched:
+            hits[sector] = matched
+    return hits
 
 
 def match_sectors(text: str) -> dict[str, list[str]]:
@@ -211,7 +262,15 @@ def validate(sector_keys: set[str] | None = None) -> dict:
     dup_in_sector: dict[str, list[str]] = {}
     empty_lists: list[str] = []
 
+    # Gộp cả SECTOR_TOPICS và SECTOR_HEAT_KEYWORDS vào 1 không gian kiểm
+    # xung đột — không cụm nào được thuộc 2 nhóm khác nhau (dù topic hay heat)
+    combined = {}
     for sector, phrases in SECTOR_TOPICS.items():
+        combined.setdefault(sector, []).extend(phrases)
+    for sector, phrases in SECTOR_HEAT_KEYWORDS.items():
+        combined.setdefault(sector, []).extend(phrases)
+
+    for sector, phrases in combined.items():
         if not phrases:
             empty_lists.append(sector)
         seen = set()
@@ -221,16 +280,19 @@ def validate(sector_keys: set[str] | None = None) -> dict:
             seen.add(p)
             phrase_owners.setdefault(p, []).append(sector)
 
-    cross = {p: owners for p, owners in phrase_owners.items() if len(owners) > 1}
+    cross = {p: owners for p, owners in phrase_owners.items() if len(set(owners)) > 1}
 
     out = {
         "n_sectors_with_topics": len(SECTOR_TOPICS),
-        "n_phrases": sum(len(v) for v in SECTOR_TOPICS.values()),
+        "n_sectors_with_heat": len(SECTOR_HEAT_KEYWORDS),
+        "n_phrases": sum(len(v) for v in SECTOR_TOPICS.values())
+                     + sum(len(v) for v in SECTOR_HEAT_KEYWORDS.values()),
         "cross_conflicts": cross,
         "dup_in_sector": dup_in_sector,
         "empty_lists": empty_lists,
         "unknown_sectors": [],
     }
     if sector_keys is not None:
-        out["unknown_sectors"] = sorted(set(SECTOR_TOPICS) - set(sector_keys))
+        all_secs = set(SECTOR_TOPICS) | set(SECTOR_HEAT_KEYWORDS)
+        out["unknown_sectors"] = sorted(all_secs - set(sector_keys))
     return out
