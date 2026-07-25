@@ -238,12 +238,15 @@ def aggregate(articles: list[dict], ctx: dict) -> dict:
     """
     Gộp toàn bộ bài → điểm news theo mã + nhiệt độ ngành rộng.
 
-    symbol_score[sym] = mean(mọi đóng góp direct + topic cho sym)
-      (đích danh và chủ đề của CÁC BÀI KHÁC NHAU đều tính; cùng 1 bài thì
-       R1 đã chặn đếm 2 lần)
-    Dùng MEAN thay vì sum để 1 mã bị nhắc nhiều lần không phình vô hạn;
-    biên độ do caller clamp.
+    QUAN TRỌNG (schema 3): ĐỊNH TUYẾN tách khỏi CHẤM ĐIỂM. Một mã được định
+    tuyến tới (có bài nhắc đích danh HOẶC khớp chủ đề ngành hẹp) sẽ LUÔN có
+    mặt trong symbol_score — kể cả khi điểm = 0 vì sentiment chưa bắt được
+    hướng. Lý do: dashboard/cảnh báo cần biết "mã X đang có tin" độc lập với
+    hướng. (Bằng chứng: tin khủng hoảng PNJ bị engine chấm 0 — nhưng PNJ VẪN
+    phải nổi lên là "có tin bất thường".)
 
+    symbol_score[sym] = mean(mọi đóng góp direct + topic của các BÀI KHÁC
+    NHAU cho sym). Cùng 1 bài không đếm 2 lần (R1 đã chặn).
     sector_heat[sector] = {"score": mean, "n": số bài}
     """
     sym_contribs: dict[str, list[float]] = {}
