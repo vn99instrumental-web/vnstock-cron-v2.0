@@ -102,10 +102,7 @@ jobs:
               echo "  $pkg: NOT INSTALLED ⚠️"
             fi
           done
-          
-      - name: Install RSS deps
-        run: /opt/vnstock/.venv/bin/pip install feedparser beautifulsoup4 lxml requests
-        
+           
       - name: Run single script
         if: ${{ github.event.inputs.script != '' }}
         env:
