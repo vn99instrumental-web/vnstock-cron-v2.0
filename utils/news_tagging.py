@@ -260,12 +260,14 @@ def aggregate(articles: list[dict], ctx: dict) -> dict:
             sym_articles.setdefault(sym, []).append(
                 {"title": (art.get("title") or "")[:80],
                  "source": art.get("source", ""),
+                 "url": art.get("url", ""),
                  "val": val, "kind": "direct"})
         for sym, val in tagged["symbol_topic"].items():
             sym_contribs.setdefault(sym, []).append(val)
             sym_articles.setdefault(sym, []).append(
                 {"title": (art.get("title") or "")[:80],
                  "source": art.get("source", ""),
+                 "url": art.get("url", ""),
                  "val": val, "kind": "topic"})
         for sector, val in tagged["sector_heat"].items():
             heat_contribs.setdefault(sector, []).append(val)
