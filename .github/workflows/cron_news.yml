@@ -1,22 +1,28 @@
-name: cron_news
+name: VNStock News
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Thu thập tin (5 nguồn RSS) → output/news/*.json → commit.
-# KÍCH HOẠT BẰNG n8n, CHẠY TRƯỚC cron_intraday (Hoang tự canh giờ trong n8n
-# để không đụng commit với intraday).
+# ══════════════════════════════════════════════════════════════════════════
+# NEWS (RSS-only, 2026-07-27) — workflow NHẸ, Python hệ thống.
 #
-# 2 cách n8n gọi:
-#   (A) workflow_dispatch  : POST .../actions/workflows/cron_news.yml/dispatches
-#   (B) repository_dispatch: POST .../dispatches  body {"event_type":"news"}
+# Vì đã bỏ hẳn vnstock_news, step_news_daily.py KHÔNG còn cần venv sponsor
+# (/opt/vnstock/.venv). Chỉ cần: pandas + feedparser + beautifulsoup4 +
+# lxml + requests. → bỏ toàn bộ cache/installer venv (tránh sự cố venv
+# thiếu pip), chạy nhanh hơn nhiều.
 #
-# Workflow ĐỘC LẬP, NHẸ: không dùng venv sponsor, không cài vnstock_*.
-# ─────────────────────────────────────────────────────────────────────────────
+# TRIGGER: n8n gọi workflow_dispatch (hoặc repository_dispatch 'news') lúc
+# 08:00 ICT, TRƯỚC cron_daily / intraday.
+#   POST .../actions/workflows/cron_news.yml/dispatches   body {"ref":"main"}
+#
+# dry_run=true  → chạy scripts/run_news_daily_dry.py (kèm DECODE), KHÔNG commit
+# dry_run=false → chạy steps/step_news_daily.py rồi commit output/news/*
+#
+# news_score hiện weight = 0 → workflow này fail cũng không ảnh hưởng tín hiệu.
+# ══════════════════════════════════════════════════════════════════════════
 
 on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Chỉ chạy thử, KHÔNG commit (để test crawl)"
+        description: "Chạy thử KHÔNG commit (kèm DECODE điểm mã)"
         type: boolean
         default: false
   repository_dispatch:
@@ -25,56 +31,66 @@ on:
 permissions:
   contents: write
 
-# Cùng group với intraday nếu muốn KHÓA CỨNG không chạy chồng (xem README).
-# Hiện tại chỉ news dùng group này; rebase+retry ở bước commit là lưới an toàn chính.
 concurrency:
-  group: output-writer
+  group: vnstock-news
   cancel-in-progress: false
 
 jobs:
-  news:
+  run:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
         with:
-          python-version: "3.12"
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install deps (RSS only)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps (RSS-only — không cần venv sponsor)
         run: |
           python -m pip install --upgrade pip
           pip install pandas feedparser beautifulsoup4 lxml requests
 
-      - name: Collect news
-        run: python steps/step_news_collect.py
+      # ── DRY RUN: crawl + build index + DECODE, KHÔNG commit ──
+      - name: Run news (dry)
+        if: ${{ inputs.dry_run == true }}
+        run: python scripts/run_news_daily_dry.py
 
-      - name: Commit output
+      # ── PRODUCTION: crawl + build index thật ──
+      - name: Run news
+        if: ${{ inputs.dry_run != true }}
+        run: python steps/step_news_daily.py
+
+      # ── COMMIT (chỉ khi KHÔNG dry_run) — per-path, chỉ file news ──
+      - name: Commit news output
         if: ${{ inputs.dry_run != true }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/
+
+          git add \
+            output/news/raw.json \
+            output/news/history.json \
+            output/news/today_index.json \
+            output/news_raw.json \
+            output/news_history.json \
+            output/news_today_index.json \
+            2>/dev/null || true
+
           if git diff --staged --quiet; then
-            echo "Không có thay đổi — bỏ qua commit."
+            echo "No changes to commit — skipping."
             exit 0
           fi
-          git commit -m "news: $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git commit -m "news: RSS crawl + index $(date -u +'%Y-%m-%d %H:%M') UTC"
+
           pushed=0
           for i in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push; then
-              echo "✅ pushed (lần $i)"; pushed=1; break
+              echo "pushed (attempt $i)"; pushed=1; break
             fi
-            echo "⚠️ push lần $i lỗi — thử lại..."
-            sleep $((RANDOM % 5 + 3))
+            echo "push attempt $i failed — retrying..."; sleep $((RANDOM % 5 + 3))
           done
-          if [ "$pushed" -ne 1 ]; then
-            echo "❌ push thất bại sau 5 lần"; exit 1
-          fi
-
-      - name: Dry-run note
-        if: ${{ inputs.dry_run == true }}
-        run: echo "DRY RUN — đã tạo file trong output/ nhưng KHÔNG commit."
+          if [ "$pushed" -ne 1 ]; then echo "push failed after 5 attempts"; exit 1; fi
