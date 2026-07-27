@@ -683,6 +683,7 @@ def _build_today_index(all_articles: list, ctx: dict) -> dict:
                              else ("topic" if "topic" in kinds else "none"),
             "top_articles" : [
                 {"title": a["title"], "source": a["source"],
+                 "url": a.get("url", ""),
                  "contribution": round(a["val"], 3), "kind": a["kind"]}
                 for a in top
             ],
