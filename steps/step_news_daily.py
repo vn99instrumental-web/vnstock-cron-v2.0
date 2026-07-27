@@ -47,6 +47,8 @@ from datetime import datetime, timezone, timedelta
 
 from utils.cache import save_json, load_json
 from utils.helpers import now_ict
+from utils import news_rss                              # [RSS] đọc RSS thay vnstock_news
+from utils.news_sources import SOURCES as _RSS_SOURCES  # [RSS] 5 nguồn RSS
 from utils.news_sentiment import score_sentiment
 from utils.news_tagging import build_context, aggregate, TICKER_BOOST
 from utils.sector_topics import TOPIC_DECAY
@@ -64,22 +66,12 @@ logging.basicConfig(
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 
-FINANCE_SITES = [
-    ("baodautu",               1.2),
-    ("vietstock",              1.3),
-    ("thoibaotaichinhvietnam", 1.1),
-    ("cafebiz",                1.0),
-    ("znews",                  1.0),
-    ("vietnamnet",             1.0),
-    ("tuoitre",                1.0),
-    ("vnexpress",              1.0),
-    ("dantri",                 0.9),
-    ("thanhnien",              0.9),
-    ("tienphong",              0.9),
-    ("nld",                    0.9),
-    ("petrotimes",             1.0),
-    ("nhandan",                0.8),
-]
+# [RSS] Nguồn tin = RSS THUẦN (utils/news_sources.py). ĐÃ BỎ HẲN vnstock_news.
+#       Thêm/bớt nguồn → sửa utils/news_sources.py, KHÔNG sửa file này.
+FINANCE_SITES  = [(s["name"], s["weight"]) for s in _RSS_SOURCES]
+_FEEDS_BY_NAME = {s["name"]: s["feeds"] for s in _RSS_SOURCES}
+_MAX_BODY_FETCH   = 60      # trần fetch body/lần run (bài RSS mô tả rỗng)
+_body_fetch_count = [0]     # đếm dùng chung trong 1 lần run (reset đầu run())
 
 LIMIT_PER_FEED = 30
 HISTORY_DAYS   = 30
@@ -511,81 +503,34 @@ def _enrich_article(art: dict, site_name: str, source_weight: float,
     }
 
 
-# ─── Crawl layers ────────────────────────────────────────────────────────────
-
-def _try_unified_crawler(site_name: str) -> list | None:
-    try:
-        from vnstock_news import Crawler
-        crawler = Crawler(site_name=site_name)
-        raw = crawler.get_articles(limit=LIMIT_PER_FEED)
-        if not isinstance(raw, list):
-            try:
-                raw = raw.to_dict("records")
-            except Exception:
-                raw = []
-        return raw if raw else None
-    except Exception as e:
-        log.debug(f"  {site_name}: Layer 1 (unified) error: {e}")
-        return None
-
-
-def _try_manual_rss(site_name: str) -> list | None:
-    if site_name not in _RSS_FALLBACK_URLS:
-        return None
-
-    try:
-        from vnstock_news.core.rss import RSS
-    except Exception as e:
-        log.warning(f"  {site_name}: Layer 2 import RSS failed: {e}")
-        return None
-
-    for rss_url in _RSS_FALLBACK_URLS[site_name]:
-        try:
-            rss = RSS(rss_url=rss_url, description_format='text')
-            items = rss.fetch()
-            if items and isinstance(items, list) and len(items) > 0:
-                log.info(f"  {site_name}: Layer 2 RSS {rss_url} returned "
-                         f"{len(items)} items")
-                return items
-        except Exception as e:
-            log.debug(f"  {site_name}: RSS {rss_url} failed: {e}")
-            continue
-
-    return None
-
+# ─── Crawl layer (RSS-only) ──────────────────────────────────────────────────
 
 def _crawl_site(site_name: str, source_weight: float) -> list[dict]:
-    raw_articles = None
-    layer_used   = None
-
-    raw_articles = _try_unified_crawler(site_name)
-    if raw_articles:
-        layer_used = "L1 unified"
-
-    if not raw_articles:
-        raw_articles = _try_manual_rss(site_name)
-        if raw_articles:
-            layer_used = "L2 manual RSS"
-
-    if not raw_articles:
-        log.warning(f"  ⚠️ {site_name} failed: all layers exhausted "
-                    f"(check RSS config or update vnstock_news)")
+    """Crawl 1 nguồn qua RSS (bỏ hẳn vnstock_news). Trả bài ĐÃ enrich."""
+    feeds = _FEEDS_BY_NAME.get(site_name, [])
+    if not feeds:
+        log.warning(f"  ⚠️ {site_name}: không có feed RSS khai báo")
         return []
 
+    now = now_ict()
     enriched = []
-    now      = now_ict()
-    for art in raw_articles[:LIMIT_PER_FEED]:
-        if not isinstance(art, dict):
-            continue
-        try:
-            enriched.append(_enrich_article(art, site_name, source_weight, now))
-        except Exception as e:
-            log.debug(f"  {site_name}: enrich article failed: {e}")
-            continue
+    for url in feeds:
+        for raw in news_rss.fetch_feed(url, site_name, LIMIT_PER_FEED):
+            # mô tả rỗng → fetch body (có trần _MAX_BODY_FETCH cho cả run)
+            if news_rss.needs_body(raw.get("short_description", "")):
+                if _body_fetch_count[0] < _MAX_BODY_FETCH:
+                    body = news_rss.fetch_body(raw.get("url", ""))
+                    if body:
+                        raw["short_description"] = body
+                        _body_fetch_count[0] += 1
+            try:
+                enriched.append(_enrich_article(raw, site_name, source_weight, now))
+            except Exception as e:
+                log.debug(f"  {site_name}: enrich fail: {e}")
 
     tagged  = sum(1 for a in enriched if a["matched_industries"])
     delayed = sum(1 for a in enriched if a["news_type"] == "delayed")
-    log.info(f"  ✅ {site_name} ({layer_used}): {len(enriched)} articles, "
+    log.info(f"  ✅ {site_name} (RSS): {len(enriched)} bài, "
              f"{tagged} tagged, {delayed} delayed")
     return enriched
 
@@ -848,8 +793,8 @@ def _log_vnstock_news_version():
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 def run():
-    log.info("=== step_news_daily: START (news restart v2) ===")
-    _log_vnstock_news_version()
+    log.info("=== step_news_daily: START (RSS-only crawl) ===")
+    _body_fetch_count[0] = 0          # [RSS] reset đếm fetch body mỗi run
 
     # 1. Crawl
     all_articles: list[dict] = []
