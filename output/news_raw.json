@@ -1232,7 +1232,7 @@
     ],
     "raw_sentiment": 0.0,
     "macro_score": 0.0,
-    "time_decay": 1.0,
+    "time_decay": 0.85,
     "weighted_sentiment": 0.0
   },
   {
@@ -1449,8 +1449,8 @@
     ],
     "raw_sentiment": -2.0,
     "macro_score": 0.0,
-    "time_decay": 0.7,
-    "weighted_sentiment": -1.82
+    "time_decay": 0.55,
+    "weighted_sentiment": -1.43
   },
   {
     "url": "https://cafef.vn/mua-vi-ky-vong-ban-vi-so-hai-188260726073254145.chn",
@@ -1783,8 +1783,8 @@
     "matched_industries": [],
     "raw_sentiment": -1.0,
     "macro_score": 0.0,
-    "time_decay": 1.0,
-    "weighted_sentiment": -1.3
+    "time_decay": 0.85,
+    "weighted_sentiment": -1.105
   },
   {
     "url": "http://vietstock.vn/2026/07/2707-doc-gi-truoc-gio-giao-dich-chung-khoan-830-1471261.htm",
@@ -2020,8 +2020,8 @@
     ],
     "raw_sentiment": 1.0,
     "macro_score": 0.0,
-    "time_decay": 0.6,
-    "weighted_sentiment": 0.78
+    "time_decay": 0.4,
+    "weighted_sentiment": 0.52
   },
   {
     "url": "http://vietstock.vn/2026/07/top-co-phieu-dang-chu-y-dau-phien-2407-830-1470295.htm",
@@ -3140,6 +3140,23 @@
     "weighted_sentiment": 1.04
   },
   {
+    "url": "https://vneconomy.vn/my-va-iran-ngung-chien-trong-luc-oman-thuc-day-dam-phan-ve-eo-bien-hormuz.htm",
+    "title": "Mỹ và Iran ngừng chiến trong lúc Oman thúc đẩy đàm phán về eo biển Hormuz",
+    "short_description": "Các cuộc tấn công tạm lắng trong bối cảnh giới chức Iran và Oman gặp nhau vào cuối tuần để tìm giải pháp khôi phục hoạt động hàng hải qua eo biển Hormuz...",
+    "publish_time": "2026-07-27 02:07:51",
+    "category": "Thế giới",
+    "tags": "Thế giới",
+    "source": "vneconomy",
+    "source_weight": 1.1,
+    "news_type": "immediate",
+    "effective_date": null,
+    "matched_industries": [],
+    "raw_sentiment": 0.0,
+    "macro_score": 0.0,
+    "time_decay": 1.0,
+    "weighted_sentiment": 0.0
+  },
+  {
     "url": "https://vneconomy.vn/to-chuc-trong-nuoc-khong-con-luc-do-trong-tuan-qua-dong-tien-ca-nhan-manh-len.htm",
     "title": "Tổ chức trong nước không còn lực đỡ trong tuần qua, dòng tiền cá nhân mạnh lên",
     "short_description": "Lực đỡ của thị trường trong tuần 30 rất yếu và phân tán. Nhà đầu tư tổ chức trong nước bán ròng 5.573,6 tỷ đồng; tính riêng giao dịch khớp lệnh, họ mua ròng 141,2 tỷ đồng.",
@@ -3234,7 +3251,7 @@
     ],
     "raw_sentiment": 0.0,
     "macro_score": 0.0,
-    "time_decay": 0.4,
+    "time_decay": 0.2,
     "weighted_sentiment": 0.0
   },
   {
@@ -3712,26 +3729,6 @@
     "macro_score": 0.0,
     "time_decay": 0.2,
     "weighted_sentiment": 0.44
-  },
-  {
-    "url": "https://vneconomy.vn/blog-chung-khoan-giai-doan-nghien-nat-tai-khoan.htm",
-    "title": "Blog chứng khoán: Giai đoạn “nghiền nát” tài khoản",
-    "short_description": "Tốc độ giảm chóng mặt hôm nay gợi nhớ lại phiên ngày 9/3 vừa qua khi nhịp ép cuối đi vào giai đoạn kinh hoàng nhất. Nhà đầu tư nội lẫn ngoại đang tranh nhau thoát ra và khi tiền chỉ chấp nhận chờ giá rất thấp, biên độ giảm mở rộng là điều tất yếu.",
-    "publish_time": "2026-07-22 09:22:45",
-    "category": "Chứng khoán",
-    "tags": "Chứng khoán",
-    "source": "vneconomy",
-    "source_weight": 1.1,
-    "news_type": "immediate",
-    "effective_date": null,
-    "matched_industries": [
-      "Dịch vụ tài chính",
-      "Công nghệ Thông tin"
-    ],
-    "raw_sentiment": -1.0,
-    "macro_score": 0.0,
-    "time_decay": 0.2,
-    "weighted_sentiment": -0.22
   },
   {
     "url": "https://vneconomy.vn/don-doc-tap-chi-kinh-te-viet-nam-so-30-2026.htm",
