@@ -65,6 +65,17 @@ CHANGELOG:
                      CHỈ passthrough hiển thị — KHÔNG đụng scoring math/caps/weights/
                      total_score → KHÔNG bump SCORING_VERSION (giữ "v2.3") để
                      forward-validation buckets không bị tách oan.
+  2026-07-27 — TẮT NEWS khỏi scoring: cơ chế tin tức đã tách thành track riêng
+                     (dashboard đọc thẳng news index). Scoring CHỈ chấm chỉ báo
+                     kỹ thuật + cơ bản. _score_base ép news_score=0.0/evidence=[],
+                     bỏ "news" khỏi confluence nội bộ (11→10 nhóm) & khỏi tổng nội bộ;
+                     run() ngừng đọc news index + build_news_scores (news_scores={}).
+                     Cột news_* GIỮ trong output ở giá trị trung tính (0/rỗng) →
+                     dashboard/recorder không vỡ. Đồng thời DIỆT crash KeyError:'time'
+                     (news schema 3 đã bỏ trường 'time' trong top_articles).
+                     HIỂN THỊ-ONLY: news vốn đã weight 0 (không có trong SCORING_WEIGHTS/
+                     GROUP_CAPS) → total_score/decision KHÔNG đổi → KHÔNG bump
+                     SCORING_VERSION (giữ "v2.3"); forward-validation KHÔNG reset.
 """
 # FORK V2F: đọc v2f_deep_raw + v2f_order_flow + v2f_ranking + context/news/industry_map (dùng chung) → ghi v2f_signals.{json,csv}.
 import math
@@ -637,28 +648,14 @@ def _score_base(row: dict, context: dict, news_scores: dict,
         }.get(regime, regime)
         add("context", pts, f"Market {market}+{regime_vn}")
 
-    # ── NEWS (max ±5) — symmetric ──
-    ns         = news_scores.get(sym, {})
-    news_score = float(ns.get("total", 0.0))
-    news_score = round(max(-5.0, min(5.0, news_score)), 2)
-    if news_score >= 3:    news_label = "News VERY_POS"
-    elif news_score >= 1:  news_label = "News POS"
-    elif news_score > -1:  news_label = "News NEUTRAL"
-    elif news_score > -3:  news_label = "News NEG"
-    else:                  news_label = "News VERY_NEG"
-    evidence    = ns.get("evidence", [])
-    top_article = evidence[0] if evidence else None
-    if top_article:
-        eff_hint = ""
-        if top_article.get("news_type") == "delayed" and top_article.get("effective_date"):
-            eff_hint = f" eff:{top_article['effective_date']}"
-        art_hint = (f"[{top_article['title'][:40]}..."
-                    f" · {top_article['source']}"
-                    f" · {top_article['time'][11:16]}"
-                    f"{eff_hint}]")
-    else:
-        art_hint = "[no news]"
-    sigs.append(f"{news_label} {'+' if news_score > 0 else ''}{news_score} {art_hint}")
+    # ── NEWS — TẮT khỏi scoring (2026-07-27) ──
+    # Tin tức đã tách thành track riêng (dashboard đọc thẳng news index).
+    # Scoring CHỈ chấm chỉ báo kỹ thuật + cơ bản. Ép trung tính (0/rỗng) để
+    # cột news_* trong output vẫn tồn tại → dashboard/recorder không vỡ.
+    # KHÔNG đọc news_scores, KHÔNG in dòng news vào signals.
+    # HIỂN THỊ-ONLY: news vốn đã weight 0 → total_score/decision KHÔNG đổi.
+    news_score = 0.0
+    evidence   = []
 
     # ── Apply caps ──
     trend_score       = max(-30, min(30, s.get("trend",       0)))
@@ -680,13 +677,13 @@ def _score_base(row: dict, context: dict, news_scores: dict,
         "volume": volume_score, "volatility": volatility_score,
         "order_flow": order_flow_score, "depth": depth_score, "ff": ff_score,
         "fundamental": fundamental_score, "cf": cf_score,
-        "growth": growth_score, "news": news_score_final,
+        "growth": growth_score,
     }
     SIGNAL_THRESHOLD_PCT = 0.30
     _BASE_CAPS = {
         "trend": 30, "momentum": 23, "volume": 20, "volatility": 5,
         "order_flow": 10, "depth": 5, "ff": 20, "fundamental": 20,
-        "cf": 10, "growth": 10, "news": 5,
+        "cf": 10, "growth": 10,
     }
     positive_groups = 0
     negative_groups = 0
@@ -699,20 +696,20 @@ def _score_base(row: dict, context: dict, news_scores: dict,
     confluence_bonus = 0
     confluence_label = ""
     if positive_groups >= 7:
-        confluence_bonus = 10;  confluence_label = f"CONFLUENCE strong bull ({positive_groups}/11 groups)"
+        confluence_bonus = 10;  confluence_label = f"CONFLUENCE strong bull ({positive_groups}/10 groups)"
     elif positive_groups >= 5:
-        confluence_bonus = 5;   confluence_label = f"CONFLUENCE bull ({positive_groups}/11 groups)"
+        confluence_bonus = 5;   confluence_label = f"CONFLUENCE bull ({positive_groups}/10 groups)"
     elif negative_groups >= 7:
-        confluence_bonus = -10; confluence_label = f"CONFLUENCE strong bear ({negative_groups}/11 groups)"
+        confluence_bonus = -10; confluence_label = f"CONFLUENCE strong bear ({negative_groups}/10 groups)"
     elif negative_groups >= 5:
-        confluence_bonus = -5;  confluence_label = f"CONFLUENCE bear ({negative_groups}/11 groups)"
+        confluence_bonus = -5;  confluence_label = f"CONFLUENCE bear ({negative_groups}/10 groups)"
     if confluence_bonus != 0:
         sigs.append(f"{confluence_label} {'+' if confluence_bonus > 0 else ''}{confluence_bonus}")
 
     # ── Totals (V2 sẽ overwrite total/decision/confidence/pattern_flags) ──
     total = (trend_score + momentum_score + volume_score + volatility_score
              + order_flow_score + depth_score + ff_score + fundamental_score
-             + cf_score + growth_score + context_score + news_score_final
+             + cf_score + growth_score + context_score
              + confluence_bonus)
     tech_score = (trend_score + momentum_score + volume_score
                   + volatility_score + order_flow_score)
@@ -756,9 +753,9 @@ def _score_base(row: dict, context: dict, news_scores: dict,
         "confluence_bonus"    : confluence_bonus,
         "tech_score"          : tech_score,
         "fund_score"          : fund_score,
-        "news_industry"       : ns.get("industry", 0.0),
-        "news_mention"        : ns.get("mention",  0.0),
-        "news_macro"          : ns.get("macro",    0.0),
+        "news_industry"       : 0.0,
+        "news_mention"        : 0.0,
+        "news_macro"          : 0.0,
         "news_evidence"       : evidence,
         "total_score"         : total,
         "decision"            : decision,
@@ -1770,7 +1767,6 @@ def run():
 
     deep_raw     = load_json("v2f_deep_raw.json")
     context_list = load_json("market/context.json") or load_json("context.json")
-    today_index  = load_json("news/today_index.json") or load_json("news_today_index.json")
     order_flow   = load_json("v2f_order_flow.json")
 
     if not deep_raw:
@@ -1804,11 +1800,10 @@ def run():
     else:
         log.warning("v2f_ranking.json/ranking.json not found — chg_pct_1d/chg_abs_vnd sẽ = None")
 
-    symbols_with_industry = [
-        {"symbol": r["symbol"], "icb_name": r.get("industry", "")}
-        for r in deep_raw
-    ]
-    news_scores = build_news_scores(today_index or {}, symbols_with_industry)
+    # News TẮT khỏi scoring (2026-07-27): không đọc news index / build_news_scores.
+    # Truyền dict rỗng → news_* trong output = trung tính (0/rỗng).
+    news_scores = {}
+    log.info("News: TẮT khỏi scoring (đã tách track riêng) — news_* = trung tính")
 
     log.info(f"Scoring {len(deep_raw)} symbols...")
 
