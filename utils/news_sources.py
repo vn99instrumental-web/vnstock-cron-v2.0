@@ -1,19 +1,24 @@
 """
-utils/news_sources.py — Khai báo 5 nguồn tin chứng khoán (RSS-only)
+utils/news_sources.py — Khai báo nguồn tin chứng khoán (RSS-only)
 ====================================================================
 Thay việc crawl qua package vnstock_news. Mỗi nguồn khai báo:
   - name   : tên hiển thị (dùng làm 'source' trong mỗi bài)
   - weight : trọng số nguồn (dùng cho weighted_sentiment; SCORING để sau)
   - feeds  : list URL RSS (một nguồn có thể có nhiều feed chuyên mục)
 
-QUY TẮC (đã chốt):
+QUY TẮC:
   - A3: chỉ PHÁT HIỆN bài qua RSS (KHÔNG cào trang mục HTML)
-  - Feed nào chết (404/timeout) → news_rss tự bỏ qua + log, không chặn feed khác
+  - Feed nào chết (404/timeout/rỗng) → news_rss tự bỏ qua + log, không chặn
   - Thêm/bớt nguồn = sửa DUY NHẤT file này
 
-Trạng thái feed (kiểm chứng 2026-07):
-  [OK]    đã xác nhận hoạt động thực tế
-  [PROBE] feed đoán theo cấu trúc site — nếu chết sẽ tự bị bỏ qua (xem log)
+Kiểm chứng THỰC TẾ trên GitHub runner (dry-run 2026-07-27):
+  ✅ cafef      — 3 feed sống, 90 bài, 100% có mô tả
+  ✅ vietstock  — 3 feed sống, 70 bài (kể cả giao dịch nội bộ)
+  ✅ vneconomy  — 2 feed sống, 60 bài
+  ❌ baodautu             — feed RSS rỗng (channel không có <item>) → BỎ
+  ❌ thitruongtaichinh    — timeout ~40s từ runner GitHub → BỎ
+  → 3 nguồn trên đã phủ 56/130 mã universe. Muốn thêm nguồn: verify feed
+    có <item> rồi mới thêm vào đây (tránh feed rỗng/timeout làm chậm run).
 """
 
 SOURCES: list[dict] = [
@@ -21,42 +26,26 @@ SOURCES: list[dict] = [
         "name": "cafef",
         "weight": 1.3,
         "feeds": [
-            "https://cafef.vn/thi-truong-chung-khoan.rss",   # [OK]
-            "https://cafef.vn/doanh-nghiep.rss",             # [PROBE] chuẩn CafeF
-            "https://cafef.vn/tai-chinh-ngan-hang.rss",      # [PROBE] chuẩn CafeF
+            "https://cafef.vn/thi-truong-chung-khoan.rss",
+            "https://cafef.vn/doanh-nghiep.rss",
+            "https://cafef.vn/tai-chinh-ngan-hang.rss",
         ],
     },
     {
         "name": "vietstock",
         "weight": 1.3,
         "feeds": [
-            "https://vietstock.vn/830/chung-khoan/co-phieu.rss",         # [OK]
-            "https://vietstock.vn/739/chung-khoan/giao-dich-noi-bo.rss", # [OK]
-            "https://vietstock.vn/737/doanh-nghiep.rss",                 # [PROBE]
+            "https://vietstock.vn/830/chung-khoan/co-phieu.rss",
+            "https://vietstock.vn/739/chung-khoan/giao-dich-noi-bo.rss",
+            "https://vietstock.vn/737/doanh-nghiep.rss",
         ],
     },
     {
         "name": "vneconomy",
         "weight": 1.1,
         "feeds": [
-            "https://vneconomy.vn/chung-khoan.rss",   # [OK]
-            "https://vneconomy.vn/tai-chinh.rss",     # [PROBE]
-        ],
-    },
-    {
-        "name": "baodautu",
-        "weight": 1.2,
-        "feeds": [
-            "https://baodautu.vn/rss/tai-chinh-chung-khoan.rss",  # [PROBE] chuyên CK
-            "https://baodautu.vn/rss/doanh-nghiep.rss",           # [PROBE]
-            "https://baodautu.vn/rss/tin-moi-nhat.rss",           # [OK] fallback tổng
-        ],
-    },
-    {
-        "name": "thitruongtaichinh",
-        "weight": 1.0,
-        "feeds": [
-            "https://thitruongtaichinh.kinhtedothi.vn/rss/chung-khoan-182.rss",  # [OK]
+            "https://vneconomy.vn/chung-khoan.rss",
+            "https://vneconomy.vn/tai-chinh.rss",
         ],
     },
 ]
