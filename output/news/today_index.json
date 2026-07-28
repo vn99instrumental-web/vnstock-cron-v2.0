@@ -1,8 +1,36 @@
 {
   "schema": 3,
-  "generated_at": "2026-07-28 11:05:33",
+  "generated_at": "2026-07-28 13:05:41",
   "by_industry": {},
   "symbol_mentions": {
+    "PNJ": {
+      "score": 1.87,
+      "article_count": 49,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Giá vàng miếng, vàng nhẫn trơn sáng 28/7 giảm mạnh tại Bảo Tín Minh Châu, Bảo Tí",
+          "source": "cafef",
+          "url": "https://cafef.vn/gia-vang-mieng-vang-nhan-tron-sang-28-7-giam-manh-tai-bao-tin-minh-chau-bao-tin-manh-hai-doji-pnj-sjc-188260728083630357.chn",
+          "contribution": -3.315,
+          "kind": "direct"
+        },
+        {
+          "title": "PNJ ngược dòng thị trường, tăng trần lên 32,900 đồng/cp, thanh khoản tiếp tục bù",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/pnj-nguoc-dong-thi-truong-tang-tran-len-32900-dongcp-thanh-khoan-tiep-tuc-bung-no-hon-320-ty-830-1471546.htm",
+          "contribution": 1.56,
+          "kind": "direct"
+        },
+        {
+          "title": "Giá vàng miếng SJC giảm hơn 6 triệu đồng/lượng trong một tuần",
+          "source": "cafef",
+          "url": "https://cafef.vn/gia-vang-mieng-sjc-giam-hon-6-trieu-dong-luong-trong-mot-tuan-188260726091146067.chn",
+          "contribution": -0.858,
+          "kind": "topic"
+        }
+      ]
+    },
     "HCM": {
       "score": 1.99,
       "article_count": 14,
@@ -31,37 +59,9 @@
         }
       ]
     },
-    "PNJ": {
-      "score": 1.88,
-      "article_count": 47,
-      "match_kind": "direct",
-      "top_articles": [
-        {
-          "title": "Giá vàng miếng, vàng nhẫn trơn sáng 28/7 giảm mạnh tại Bảo Tín Minh Châu, Bảo Tí",
-          "source": "cafef",
-          "url": "https://cafef.vn/gia-vang-mieng-vang-nhan-tron-sang-28-7-giam-manh-tai-bao-tin-minh-chau-bao-tin-manh-hai-doji-pnj-sjc-188260728083630357.chn",
-          "contribution": -3.315,
-          "kind": "direct"
-        },
-        {
-          "title": "PNJ ngược dòng thị trường, tăng trần lên 32,900 đồng/cp, thanh khoản tiếp tục bù",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/pnj-nguoc-dong-thi-truong-tang-tran-len-32900-dongcp-thanh-khoan-tiep-tuc-bung-no-hon-320-ty-830-1471546.htm",
-          "contribution": 1.56,
-          "kind": "direct"
-        },
-        {
-          "title": "Giá vàng miếng SJC giảm hơn 6 triệu đồng/lượng trong một tuần",
-          "source": "cafef",
-          "url": "https://cafef.vn/gia-vang-mieng-sjc-giam-hon-6-trieu-dong-luong-trong-mot-tuan-188260726091146067.chn",
-          "contribution": -0.858,
-          "kind": "topic"
-        }
-      ]
-    },
     "FPT": {
-      "score": 2.39,
-      "article_count": 12,
+      "score": 2.46,
+      "article_count": 14,
       "match_kind": "direct",
       "top_articles": [
         {
@@ -79,10 +79,10 @@
           "kind": "direct"
         },
         {
-          "title": "Cập nhật BCTC quý 2/2026 sáng ngày 28/7: Một doanh nghiệp có mức tăng trưởng LNT",
+          "title": "Cập nhật BCTC quý 2/2026 chiều ngày 28/7: Viglacera, Vosco, VietABank... công bố",
           "source": "cafef",
           "url": "https://cafef.vn/cap-nhat-bctc-quy-2-2026-sang-ngay-28-7-mot-doanh-nghiep-co-muc-tang-truong-lntt-hon-9500-188260727233547085.chn",
-          "contribution": 2.535,
+          "contribution": 1.95,
           "kind": "direct"
         }
       ]
@@ -227,34 +227,6 @@
         }
       ]
     },
-    "VIX": {
-      "score": 2.26,
-      "article_count": 3,
-      "match_kind": "direct",
-      "top_articles": [
-        {
-          "title": "Công ty chứng khoán ồ ạt tăng vốn",
-          "source": "cafef",
-          "url": "https://cafef.vn/cong-ty-chung-khoan-o-at-tang-von-18826072716132883.chn",
-          "contribution": 0.78,
-          "kind": "direct"
-        },
-        {
-          "title": "Chứng khoán VIX sắp trả cổ tức",
-          "source": "cafef",
-          "url": "https://cafef.vn/chung-khoan-vix-sap-tra-co-tuc-188260725003656591.chn",
-          "contribution": 0.0,
-          "kind": "direct"
-        },
-        {
-          "title": "Nhịp đập Thị trường 27/07: Dòng tiền phân hóa mạnh giữa ngân hàng và bất động sả",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/nhip-dap-thi-truong-2707-dong-tien-phan-hoa-manh-giua-ngan-hang-va-bat-dong-san-1636-1471318.htm",
-          "contribution": 0.0,
-          "kind": "direct"
-        }
-      ]
-    },
     "SSI": {
       "score": 1.09,
       "article_count": 3,
@@ -283,29 +255,92 @@
         }
       ]
     },
-    "PC1": {
-      "score": 2.03,
-      "article_count": 11,
+    "VIX": {
+      "score": 2.26,
+      "article_count": 3,
       "match_kind": "direct",
       "top_articles": [
         {
-          "title": "Profile đỉnh của chuyên viên tài chính vừa trở thành Chủ tịch PC1 ở tuổi 27: Tốt",
-          "source": "cafebiz",
-          "url": "https://cafebiz.vn/profile-dinh-cua-chuyen-vien-tai-chinh-vua-tro-thanh-chu-tich-pc1-o-tuoi-27-tot-nghiep-dai-hoc-tai-my-tung-lam-tai-kpmg-va-vietcap-176260724163739964.chn",
-          "contribution": 0.3,
+          "title": "Công ty chứng khoán ồ ạt tăng vốn",
+          "source": "cafef",
+          "url": "https://cafef.vn/cong-ty-chung-khoan-o-at-tang-von-18826072716132883.chn",
+          "contribution": 0.78,
           "kind": "direct"
         },
         {
-          "title": "PC1 có Tổng Giám đốc mới sinh năm 1991",
+          "title": "Chứng khoán VIX sắp trả cổ tức",
           "source": "cafef",
-          "url": "https://cafef.vn/pc1-co-tong-giam-doc-moi-sinh-nam-1991-188260727145546387.chn",
+          "url": "https://cafef.vn/chung-khoan-vix-sap-tra-co-tuc-188260725003656591.chn",
           "contribution": 0.0,
           "kind": "direct"
         },
         {
-          "title": "PC1 tiếp tục 'thay máu' dàn lãnh đạo: Bổ nhiệm Tổng Giám đốc và kế toán trưởng S",
+          "title": "Nhịp đập Thị trường 27/07: Dòng tiền phân hóa mạnh giữa ngân hàng và bất động sả",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/nhip-dap-thi-truong-2707-dong-tien-phan-hoa-manh-giua-ngan-hang-va-bat-dong-san-1636-1471318.htm",
+          "contribution": 0.0,
+          "kind": "direct"
+        }
+      ]
+    },
+    "HAG": {
+      "score": 0.7,
+      "article_count": 1,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Được Bộ Tài chính xóa nợ, HAGL của bầu Đức báo lãi quý II tăng gấp 2,2 lần",
           "source": "cafef",
-          "url": "https://cafef.vn/pc1-tiep-tuc-thay-mau-dan-lanh-dao-bo-nhiem-tong-giam-doc-va-ke-toan-truong-sn-1991-sau-khi-co-nu-chu-tich-27-tuoi-188260727152305142.chn",
+          "url": "https://cafef.vn/duoc-bo-tai-chinh-xoa-no-hagl-cua-bau-duc-bao-lai-quy-ii-tang-gap-22-lan-188260728120340128.chn",
+          "contribution": -1.3,
+          "kind": "direct"
+        }
+      ]
+    },
+    "HPG": {
+      "score": 1.48,
+      "article_count": 2,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Tin vui cho Hòa Phát và một 'người bạn' thép",
+          "source": "cafef",
+          "url": "https://cafef.vn/tin-vui-cho-hoa-phat-va-mot-nguoi-ban-thep-188260728115606961.chn",
+          "contribution": -1.04,
+          "kind": "direct"
+        },
+        {
+          "title": "Theo dấu dòng tiền cá mập 24/07: Khối ngoại xả mạnh PNJ, tự doanh bán ròng HPG",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/theo-dau-dong-tien-ca-map-2407-khoi-ngoai-xa-manh-pnj-tu-doanh-ban-rong-hpg-830-1471039.htm",
+          "contribution": 0.0,
+          "kind": "direct"
+        }
+      ]
+    },
+    "VCI": {
+      "score": 2.26,
+      "article_count": 3,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Môi giới và cho vay tích cực, VCI tăng lãi 36% trong quý 2",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/moi-gioi-va-cho-vay-tich-cuc-vci-tang-lai-36-trong-quy-2-737-1471007.htm",
+          "contribution": 0.78,
+          "kind": "direct"
+        },
+        {
+          "title": "Sau khi vợ thoái sạch vốn khỏi Vietcap, ông Tô Hải muốn mua hơn 31 triệu cổ phiế",
+          "source": "cafef",
+          "url": "https://cafef.vn/sau-khi-vo-thoai-sach-von-khoi-vietcap-ong-to-hai-muon-mua-hon-31-trieu-co-phieu-188260728113333206.chn",
+          "contribution": 0.0,
+          "kind": "direct"
+        },
+        {
+          "title": "Những bức ảnh đang gây sốt của nữ Chủ tịch PC1 sinh năm 1999",
+          "source": "cafebiz",
+          "url": "https://cafebiz.vn/nhung-buc-anh-dang-gay-sot-cua-nu-chu-tich-pc1-sinh-nam-1999-176260724163408692.chn",
           "contribution": 0.0,
           "kind": "direct"
         }
@@ -361,21 +396,21 @@
       ]
     },
     "VIB": {
-      "score": 2.58,
+      "score": 2.39,
       "article_count": 4,
       "match_kind": "direct",
       "top_articles": [
         {
-          "title": "VIB báo lãi trước thuế 5,180 tỷ đồng, tài sản vượt 580 nghìn tỷ trong 6 tháng",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/vib-bao-lai-truoc-thue-5180-ty-dong-tai-san-vuot-580-nghin-ty-trong-6-thang-737-1471333.htm",
-          "contribution": 1.56,
-          "kind": "direct"
-        },
-        {
           "title": "VIB: Lợi nhuận trước thuế đạt hơn 5.180 tỷ đồng, tổng tài sản vượt 580 nghìn tỷ ",
           "source": "cafef",
           "url": "https://cafef.vn/vib-loi-nhuan-truoc-thue-dat-hon-5180-ty-dong-tong-tai-san-vuot-580-nghin-ty-dong-trong-6-thang-dau-nam-2026-188260727100730195.chn",
+          "contribution": 0.78,
+          "kind": "direct"
+        },
+        {
+          "title": "VIB báo lãi trước thuế 5,180 tỷ đồng, tài sản vượt 580 nghìn tỷ trong 6 tháng",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/vib-bao-lai-truoc-thue-5180-ty-dong-tai-san-vuot-580-nghin-ty-trong-6-thang-737-1471333.htm",
           "contribution": 0.78,
           "kind": "direct"
         },
@@ -472,6 +507,34 @@
         }
       ]
     },
+    "PC1": {
+      "score": 2.03,
+      "article_count": 11,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Profile đỉnh của chuyên viên tài chính vừa trở thành Chủ tịch PC1 ở tuổi 27: Tốt",
+          "source": "cafebiz",
+          "url": "https://cafebiz.vn/profile-dinh-cua-chuyen-vien-tai-chinh-vua-tro-thanh-chu-tich-pc1-o-tuoi-27-tot-nghiep-dai-hoc-tai-my-tung-lam-tai-kpmg-va-vietcap-176260724163739964.chn",
+          "contribution": 0.3,
+          "kind": "direct"
+        },
+        {
+          "title": "PC1 tiếp tục 'thay máu' dàn lãnh đạo: Bổ nhiệm Tổng Giám đốc và kế toán trưởng S",
+          "source": "cafef",
+          "url": "https://cafef.vn/pc1-tiep-tuc-thay-mau-dan-lanh-dao-bo-nhiem-tong-giam-doc-va-ke-toan-truong-sn-1991-sau-khi-co-nu-chu-tich-27-tuoi-188260727152305142.chn",
+          "contribution": 0.0,
+          "kind": "direct"
+        },
+        {
+          "title": "Cổ đông lớn vừa chi cả nghìn tỷ để gom lập tức có hành động mới sau khi PC1 có t",
+          "source": "cafef",
+          "url": "https://cafef.vn/cii-len-tieng-lan-thu-2-ve-viec-tang-ty-le-so-huu-tai-cong-ty-do-ba-trinh-khanh-linh-sn-1999-lam-chu-tich-188260727114834858.chn",
+          "contribution": 0.0,
+          "kind": "direct"
+        }
+      ]
+    },
     "CII": {
       "score": 2.0,
       "article_count": 4,
@@ -521,6 +584,62 @@
         }
       ]
     },
+    "TCB": {
+      "score": 2.85,
+      "article_count": 9,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Bứt phá lợi nhuận quý 2, Techcombank dùng AI làm đòn bẩy cho chu kỳ chiến lược m",
+          "source": "cafef",
+          "url": "https://cafef.vn/but-pha-loi-nhuan-quy-2-techcombank-dung-ai-lam-don-bay-cho-chu-ky-chien-luoc-moi-188260728112101242.chn",
+          "contribution": 3.12,
+          "kind": "direct"
+        },
+        {
+          "title": "Bứt phá lợi nhuận quý 2, Techcombank dùng công nghệ AI làm đòn bẩy cho chu kỳ ch",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/but-pha-loi-nhuan-quy-2-techcombank-dung-cong-nghe-ai-lam-don-bay-cho-chu-ky-chien-luoc-moi-737-1471423.htm",
+          "contribution": 3.12,
+          "kind": "direct"
+        },
+        {
+          "title": "Techcom Life củng cố vốn điều lệ lên 4.300 tỷ đồng và tăng tốc chiến lược AI-Fir",
+          "source": "cafef",
+          "url": "https://cafef.vn/techcom-life-cung-co-von-dieu-le-len-4300-ty-dong-va-tang-toc-chien-luoc-ai-first-188260727192937423.chn",
+          "contribution": 0.91,
+          "kind": "direct"
+        }
+      ]
+    },
+    "CMG": {
+      "score": 2.72,
+      "article_count": 7,
+      "match_kind": "topic",
+      "top_articles": [
+        {
+          "title": "Bứt phá lợi nhuận quý 2, Techcombank dùng AI làm đòn bẩy cho chu kỳ chiến lược m",
+          "source": "cafef",
+          "url": "https://cafef.vn/but-pha-loi-nhuan-quy-2-techcombank-dung-ai-lam-don-bay-cho-chu-ky-chien-luoc-moi-188260728112101242.chn",
+          "contribution": 1.872,
+          "kind": "topic"
+        },
+        {
+          "title": "Bứt phá lợi nhuận quý 2, Techcombank dùng công nghệ AI làm đòn bẩy cho chu kỳ ch",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/but-pha-loi-nhuan-quy-2-techcombank-dung-cong-nghe-ai-lam-don-bay-cho-chu-ky-chien-luoc-moi-737-1471423.htm",
+          "contribution": 1.872,
+          "kind": "topic"
+        },
+        {
+          "title": "VietABank tăng trưởng vững chắc, thúc đẩy hội nhập quốc tế và phát triển bền vữn",
+          "source": "cafef",
+          "url": "https://cafef.vn/vietabank-tang-truong-vung-chac-thuc-day-hoi-nhap-quoc-te-va-phat-trien-ben-vung-188260727111000835.chn",
+          "contribution": 0.624,
+          "kind": "topic"
+        }
+      ]
+    },
     "LPB": {
       "score": 2.52,
       "article_count": 5,
@@ -546,34 +665,6 @@
           "url": "https://cafef.vn/ba-pham-thu-huong-mua-hon-148-trieu-co-phieu-lpb-cung-ong-pham-nhat-vuong-nam-gan-10-von-lpbank-18826072708524071.chn",
           "contribution": 0.0,
           "kind": "direct"
-        }
-      ]
-    },
-    "CMG": {
-      "score": 2.52,
-      "article_count": 6,
-      "match_kind": "topic",
-      "top_articles": [
-        {
-          "title": "Bứt phá lợi nhuận quý 2, Techcombank dùng công nghệ AI làm đòn bẩy cho chu kỳ ch",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/but-pha-loi-nhuan-quy-2-techcombank-dung-cong-nghe-ai-lam-don-bay-cho-chu-ky-chien-luoc-moi-737-1471423.htm",
-          "contribution": 1.872,
-          "kind": "topic"
-        },
-        {
-          "title": "VietABank tăng trưởng vững chắc, thúc đẩy hội nhập quốc tế và phát triển bền vữn",
-          "source": "cafef",
-          "url": "https://cafef.vn/vietabank-tang-truong-vung-chac-thuc-day-hoi-nhap-quoc-te-va-phat-trien-ben-vung-188260727111000835.chn",
-          "contribution": 0.624,
-          "kind": "topic"
-        },
-        {
-          "title": "100 ngày tăng tốc chuyển đổi số của ngành ngân hàng",
-          "source": "cafef",
-          "url": "https://cafef.vn/100-ngay-tang-toc-chuyen-doi-so-cua-nganh-ngan-hang-18826072616011742.chn",
-          "contribution": 0.429,
-          "kind": "topic"
         }
       ]
     },
@@ -717,34 +808,6 @@
         }
       ]
     },
-    "TCB": {
-      "score": 2.57,
-      "article_count": 8,
-      "match_kind": "direct",
-      "top_articles": [
-        {
-          "title": "Bứt phá lợi nhuận quý 2, Techcombank dùng công nghệ AI làm đòn bẩy cho chu kỳ ch",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/but-pha-loi-nhuan-quy-2-techcombank-dung-cong-nghe-ai-lam-don-bay-cho-chu-ky-chien-luoc-moi-737-1471423.htm",
-          "contribution": 3.12,
-          "kind": "direct"
-        },
-        {
-          "title": "Techcom Life củng cố vốn điều lệ lên 4.300 tỷ đồng và tăng tốc chiến lược AI-Fir",
-          "source": "cafef",
-          "url": "https://cafef.vn/techcom-life-cung-co-von-dieu-le-len-4300-ty-dong-va-tang-toc-chien-luoc-ai-first-188260727192937423.chn",
-          "contribution": 0.91,
-          "kind": "direct"
-        },
-        {
-          "title": "Chân dung tân Chủ tịch Eximbank: Là tiến sĩ kỹ thuật hạt nhân tại Mỹ, ghi dấu ấn",
-          "source": "cafef",
-          "url": "https://cafef.vn/chan-dung-tan-chu-tich-eximbank-la-tien-si-ky-thuat-hat-nhan-tai-my-ghi-dau-an-tai-techcombank-trong-giai-doan-tang-truong-bung-no-188260726175155725.chn",
-          "contribution": 0.52,
-          "kind": "direct"
-        }
-      ]
-    },
     "VND": {
       "score": 1.92,
       "article_count": 5,
@@ -801,16 +864,37 @@
         }
       ]
     },
-    "EIB": {
-      "score": 2.1,
-      "article_count": 5,
+    "MSN": {
+      "score": 2.19,
+      "article_count": 2,
       "match_kind": "direct",
       "top_articles": [
         {
-          "title": "Chân dung tân Chủ tịch Eximbank: Là tiến sĩ kỹ thuật hạt nhân tại Mỹ, ghi dấu ấn",
-          "source": "cafef",
-          "url": "https://cafef.vn/chan-dung-tan-chu-tich-eximbank-la-tien-si-ky-thuat-hat-nhan-tai-my-ghi-dau-an-tai-techcombank-trong-giai-doan-tang-truong-bung-no-188260726175155725.chn",
-          "contribution": 0.52,
+          "title": "Masan lãi kỷ lục 3,800 tỷ trong quý 2, gấp 2.3 lần cùng kỳ",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/masan-lai-ky-luc-3800-ty-trong-quy-2-gap-23-lan-cung-ky-737-1471321.htm",
+          "contribution": 0.39,
+          "kind": "direct"
+        },
+        {
+          "title": "Ngày 28/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/ngay-28072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471751.htm",
+          "contribution": 0.0,
+          "kind": "direct"
+        }
+      ]
+    },
+    "OCB": {
+      "score": 2.44,
+      "article_count": 3,
+      "match_kind": "direct",
+      "top_articles": [
+        {
+          "title": "Flexi Savings: Giải pháp tiền gửi linh hoạt, sinh lời mỗi ngày từ OCB",
+          "source": "vneconomy",
+          "url": "https://vneconomy.vn/flexi-savings-giai-phap-tien-gui-linh-hoat-sinh-loi-moi-ngay-tu-ocb.htm",
+          "contribution": 1.32,
           "kind": "direct"
         },
         {
@@ -857,50 +941,29 @@
         }
       ]
     },
-    "OCB": {
-      "score": 2.44,
-      "article_count": 3,
+    "BSR": {
+      "score": 2.21,
+      "article_count": 6,
       "match_kind": "direct",
       "top_articles": [
         {
-          "title": "Flexi Savings: Giải pháp tiền gửi linh hoạt, sinh lời mỗi ngày từ OCB",
+          "title": "BSR lập kỷ lục sản lượng và doanh thu trong 6 tháng năm 2026",
           "source": "vneconomy",
-          "url": "https://vneconomy.vn/flexi-savings-giai-phap-tien-gui-linh-hoat-sinh-loi-moi-ngay-tu-ocb.htm",
-          "contribution": 1.32,
+          "url": "https://vneconomy.vn/bsr-lap-ky-luc-san-luong-va-doanh-thu-trong-6-thang-nam-2026.htm",
+          "contribution": 0.66,
+          "kind": "direct"
+        },
+        {
+          "title": "BSR đẩy mạnh đầu tư hướng đến mục tiêu top 8 doanh nghiệp lọc hóa dầu hàng đầu k",
+          "source": "petrotimes",
+          "url": "https://petrovietnam.petrotimes.vn/bsr-day-manh-dau-tu-huong-den-muc-tieu-top-8-doanh-nghiep-loc-hoa-dau-hang-dau-khu-vuc-743769.html",
+          "contribution": 0.6,
           "kind": "direct"
         },
         {
           "title": "Ngày 28/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/ngay-28072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471751.htm",
-          "contribution": 0.0,
-          "kind": "direct"
-        },
-        {
-          "title": "Tuần 27-31/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/tuan-27-31072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471188.htm",
-          "contribution": 0.0,
-          "kind": "direct"
-        }
-      ]
-    },
-    "PAN": {
-      "score": 2.0,
-      "article_count": 2,
-      "match_kind": "direct",
-      "top_articles": [
-        {
-          "title": "Ngày 28/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/ngay-28072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471751.htm",
-          "contribution": 0.0,
-          "kind": "direct"
-        },
-        {
-          "title": "Tuần 27-31/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/tuan-27-31072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471188.htm",
           "contribution": 0.0,
           "kind": "direct"
         }
@@ -934,18 +997,11 @@
         }
       ]
     },
-    "BSR": {
-      "score": 2.12,
-      "article_count": 5,
+    "PAN": {
+      "score": 2.0,
+      "article_count": 2,
       "match_kind": "direct",
       "top_articles": [
-        {
-          "title": "BSR đẩy mạnh đầu tư hướng đến mục tiêu top 8 doanh nghiệp lọc hóa dầu hàng đầu k",
-          "source": "petrotimes",
-          "url": "https://petrovietnam.petrotimes.vn/bsr-day-manh-dau-tu-huong-den-muc-tieu-top-8-doanh-nghiep-loc-hoa-dau-hang-dau-khu-vuc-743769.html",
-          "contribution": 0.6,
-          "kind": "direct"
-        },
         {
           "title": "Ngày 28/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
           "source": "vietstock",
@@ -962,22 +1018,29 @@
         }
       ]
     },
-    "MSN": {
-      "score": 2.39,
-      "article_count": 2,
+    "EIB": {
+      "score": 2.1,
+      "article_count": 5,
       "match_kind": "direct",
       "top_articles": [
         {
-          "title": "Masan lãi kỷ lục 3,800 tỷ trong quý 2, gấp 2.3 lần cùng kỳ",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/masan-lai-ky-luc-3800-ty-trong-quy-2-gap-23-lan-cung-ky-737-1471321.htm",
-          "contribution": 0.78,
+          "title": "Chân dung tân Chủ tịch Eximbank: Là tiến sĩ kỹ thuật hạt nhân tại Mỹ, ghi dấu ấn",
+          "source": "cafef",
+          "url": "https://cafef.vn/chan-dung-tan-chu-tich-eximbank-la-tien-si-ky-thuat-hat-nhan-tai-my-ghi-dau-an-tai-techcombank-trong-giai-doan-tang-truong-bung-no-188260726175155725.chn",
+          "contribution": 0.52,
           "kind": "direct"
         },
         {
           "title": "Ngày 28/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/ngay-28072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471751.htm",
+          "contribution": 0.0,
+          "kind": "direct"
+        },
+        {
+          "title": "Tuần 27-31/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
+          "source": "vietstock",
+          "url": "http://vietstock.vn/2026/07/tuan-27-31072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471188.htm",
           "contribution": 0.0,
           "kind": "direct"
         }
@@ -992,20 +1055,6 @@
           "title": "Tuần 27-31/07/2026: 10 cổ phiếu nóng dưới góc nhìn PTKT của Vietstock",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/tuan-27-31072026-10-co-phieu-nong-duoi-goc-nhin-ptkt-cua-vietstock-585-1471188.htm",
-          "contribution": 0.0,
-          "kind": "direct"
-        }
-      ]
-    },
-    "HPG": {
-      "score": 2.0,
-      "article_count": 1,
-      "match_kind": "direct",
-      "top_articles": [
-        {
-          "title": "Theo dấu dòng tiền cá mập 24/07: Khối ngoại xả mạnh PNJ, tự doanh bán ròng HPG",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/theo-dau-dong-tien-ca-map-2407-khoi-ngoai-xa-manh-pnj-tu-doanh-ban-rong-hpg-830-1471039.htm",
           "contribution": 0.0,
           "kind": "direct"
         }
@@ -1040,7 +1089,7 @@
       ]
     },
     "FTS": {
-      "score": 1.22,
+      "score": 1.61,
       "article_count": 1,
       "match_kind": "direct",
       "top_articles": [
@@ -1048,13 +1097,13 @@
           "title": "TCM giảm sâu, FPTS bán giải chấp cổ phiếu của Thành viên HĐQT",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/tcm-giam-sau-fpts-ban-giai-chap-co-phieu-cua-thanh-vien-hdqt-739-1471327.htm",
-          "contribution": -0.78,
+          "contribution": -0.39,
           "kind": "direct"
         }
       ]
     },
     "TNG": {
-      "score": 2.16,
+      "score": 2.19,
       "article_count": 4,
       "match_kind": "direct",
       "top_articles": [
@@ -1069,7 +1118,7 @@
           "title": "TCM giảm sâu, FPTS bán giải chấp cổ phiếu của Thành viên HĐQT",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/tcm-giam-sau-fpts-ban-giai-chap-co-phieu-cua-thanh-vien-hdqt-739-1471327.htm",
-          "contribution": -0.312,
+          "contribution": -0.156,
           "kind": "topic"
         },
         {
@@ -1159,7 +1208,7 @@
       ]
     },
     "NT2": {
-      "score": 2.12,
+      "score": 2.06,
       "article_count": 5,
       "match_kind": "topic",
       "top_articles": [
@@ -1167,7 +1216,7 @@
           "title": "Vĩnh Sơn - Sông Hinh lãi đậm nhờ giá điện",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/vinh-son-song-hinh-lai-dam-nho-gia-dien-737-1471326.htm",
-          "contribution": 0.624,
+          "contribution": 0.312,
           "kind": "topic"
         },
         {
@@ -1187,7 +1236,7 @@
       ]
     },
     "POW": {
-      "score": 2.37,
+      "score": 2.32,
       "article_count": 6,
       "match_kind": "direct",
       "top_articles": [
@@ -1202,7 +1251,7 @@
           "title": "Vĩnh Sơn - Sông Hinh lãi đậm nhờ giá điện",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/vinh-son-song-hinh-lai-dam-nho-gia-dien-737-1471326.htm",
-          "contribution": 0.624,
+          "contribution": 0.312,
           "kind": "topic"
         },
         {
@@ -1215,7 +1264,7 @@
       ]
     },
     "REE": {
-      "score": 2.12,
+      "score": 2.06,
       "article_count": 5,
       "match_kind": "topic",
       "top_articles": [
@@ -1223,7 +1272,7 @@
           "title": "Vĩnh Sơn - Sông Hinh lãi đậm nhờ giá điện",
           "source": "vietstock",
           "url": "http://vietstock.vn/2026/07/vinh-son-song-hinh-lai-dam-nho-gia-dien-737-1471326.htm",
-          "contribution": 0.624,
+          "contribution": 0.312,
           "kind": "topic"
         },
         {
@@ -1239,27 +1288,6 @@
           "url": "https://kinhtexaydung.petrotimes.vn/gia-lai-hai-nha-dau-tu-thuc-hien-du-an-nha-may-dien-gio-ia-hla-gan-1600-ty-dong-743766.html",
           "contribution": 0.0,
           "kind": "topic"
-        }
-      ]
-    },
-    "VCI": {
-      "score": 2.39,
-      "article_count": 2,
-      "match_kind": "direct",
-      "top_articles": [
-        {
-          "title": "Môi giới và cho vay tích cực, VCI tăng lãi 36% trong quý 2",
-          "source": "vietstock",
-          "url": "http://vietstock.vn/2026/07/moi-gioi-va-cho-vay-tich-cuc-vci-tang-lai-36-trong-quy-2-737-1471007.htm",
-          "contribution": 0.78,
-          "kind": "direct"
-        },
-        {
-          "title": "Những bức ảnh đang gây sốt của nữ Chủ tịch PC1 sinh năm 1999",
-          "source": "cafebiz",
-          "url": "https://cafebiz.vn/nhung-buc-anh-dang-gay-sot-cua-nu-chu-tich-pc1-sinh-nam-1999-176260724163408692.chn",
-          "contribution": 0.0,
-          "kind": "direct"
         }
       ]
     },
@@ -1548,8 +1576,8 @@
     },
     "ngan_hang": {
       "name": "Ngân hàng",
-      "score": 0.228,
-      "n": 15
+      "score": 0.213,
+      "n": 16
     },
     "bat_dong_san": {
       "name": "Bất động sản (nhà ở, thương mại, khu công nghiệp)",
