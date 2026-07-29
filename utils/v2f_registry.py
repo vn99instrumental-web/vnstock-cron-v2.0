@@ -180,3 +180,34 @@ if __name__ == "__main__":
     for hz in ("trade", "hold"):
         print(f"[{hz}] caps auto:", factor_caps(hz),
               "| signals:", [s[0] for s in active_signals(hz)])
+      
+# ══════════════════════════════════════════════════════════════════════
+# GATE MATRIX (V4 / RCEG) — điều kiện theo REGIME.  V3 KHÔNG đọc phần này
+# (V3 dùng thẳng FACTOR_WEIGHTS) → thêm khối này KHÔNG ảnh hưởng V3.
+# gate ∈ [0,1] = hệ số nhân lên weight của factor theo regime hiện tại.
+# CHỈ ô ĐÃ ĐO mới đặt khác 1.0; ô "inherited" giữ 1.0 chờ Phase A đo.
+# ⚠️ Đổi bất kỳ số nào trong GATE → bump GATE_VERSION (ghi vào ledger v4).
+# ══════════════════════════════════════════════════════════════════════
+GATE_VERSION = 1
+REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
+_REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
+
+# thứ tự cột = REGIMES ở trên
+GATE = {
+    #                 UP    SIDE  DOWN  DEEP  UNKNOWN   # nguồn
+    "mean_reversion": (0.0,  0.0,  1.0,  1.0,  0.0),    # measured B1 (29/07); kinh tế chờ
+    "breakout":       (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "fundamental":    (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "growth":         (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "context":        (1.0,  1.0,  1.0,  1.0,  1.0),    # đã regime-aware nội bộ
+}
+
+
+def gate_for(factor: str, regime: str) -> float:
+    """Hệ số gate của 1 factor theo regime. Factor/regime lạ → 1.0 (an toàn:
+    không tự ý tắt cái chưa khai báo)."""
+    row = GATE.get(factor)
+    if not row:
+        return 1.0
+    return row[_REGIME_IDX.get(regime, _REGIME_IDX["UNKNOWN"])]
