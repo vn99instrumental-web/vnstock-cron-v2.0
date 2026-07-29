@@ -155,7 +155,26 @@ jobs:
           /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v3.py
 
       # ──────────────────────────────────────────────────────────────────
-      # COMMIT — add v2f_* output + 2 ledger (v2f_predictions + _v3 shadow)
+      # SHADOW V4 (RCEG) — regime-conditional scoring, chạy SAU v3, đọc lại
+      # v2f_signals.json + context.json (ZERO API thêm). Dùng chung trade levels
+      # v2.3 (agnostic) nên KHÔNG cần step price_levels_v4.
+      # Hysteresis: state ở output/v2f_v4_regime_state.json (PHẢI commit để persist).
+      # continue-on-error: v4 crash KHÔNG được chặn pipeline.
+      # ──────────────────────────────────────────────────────────────────
+      - name: Step Scoring V4 (shadow RCEG, gate theo regime)
+        continue-on-error: true
+        run: |
+          /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v4.py
+
+      - name: Step Record Predictions V4 (shadow#2 ledger)
+        continue-on-error: true
+        env:
+          FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
+        run: |
+          /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v4.py
+
+      # ──────────────────────────────────────────────────────────────────
+      # COMMIT — add v2f_* output + 3 ledger (v2f_predictions + _v3 + _v4 shadow)
       # KHÔNG đụng output của track v2 cũ. Push retry + rebase để tránh race với
       # workflow v2 (mặc dù file khác tên, branch main vẫn có thể đụng ref).
       # ──────────────────────────────────────────────────────────────────
@@ -181,7 +200,10 @@ jobs:
             output/history/v2f_predictions/ \
             output/v2f_signals_v3.json \
             output/v2f_trade_levels_v3.json \
-            output/history/v2f_predictions_v3/ ; do
+            output/history/v2f_predictions_v3/ \
+            output/v2f_signals_v4.json \
+            output/v2f_v4_regime_state.json \
+            output/history/v2f_predictions_v4/ ; do
             git add "$p" 2>/dev/null || true
           done
 
