@@ -12,6 +12,10 @@ on:
         description: 'Ep ghi predictions ke ca ngoai gio (de test)'
         type: boolean
         default: false
+      v4_backfill:
+        description: 'CHI chay 2 step V4 tren data da commit (khong snapshot/API)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -23,6 +27,8 @@ concurrency:
 
 jobs:
   run:
+    # Bỏ qua job full-chain khi chỉ muốn backfill V4 (dispatch + v4_backfill=true).
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.v4_backfill) }}
     runs-on: ubuntu-latest
     timeout-minutes: 40   # V2F xử lý ~100 mã (≈2.5× v2) → nới timeout
 
@@ -229,3 +235,85 @@ jobs:
             echo "❌ push failed after 5 attempts"
             exit 1
           fi
+
+  # ══════════════════════════════════════════════════════════════════════
+  # JOB PHỤ — chỉ chạy tay (workflow_dispatch) để BACKFILL V4 trên dữ liệu
+  # đã commit (v2f_signals.json + context.json của phiên gần nhất). KHÔNG
+  # snapshot, KHÔNG gọi API. Dùng khi muốn ghi ledger V4 cho 1 phiên cũ mà
+  # không chạy lại cả chuỗi intraday.
+  # Kích hoạt: Actions → workflow này → Run workflow → tick "v4_backfill".
+  # ══════════════════════════════════════════════════════════════════════
+  v4_backfill:
+    # Chỉ chạy khi dispatch tay VÀ tick v4_backfill=true (lịch tự động bỏ qua).
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.v4_backfill }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: vnstock-intraday-v2f      # cùng group với job run → không push chồng
+      cancel-in-progress: false
+    env:
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE:    en
+      HOME:                /home/runner
+      MPLCONFIGDIR:        /home/runner/.config/matplotlib
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+
+      - name: Restore vnstock cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
+
+      - name: Verify venv
+        run: |
+          VENV_PY="/opt/vnstock/.venv/bin/python"
+          [ -x "$VENV_PY" ] || { echo "Venv miss — chay cron_daily truoc"; exit 1; }
+          echo "Venv OK: $($VENV_PY --version)"
+
+      # Chạy đúng 2 step V4 trên data ĐÃ CÓ trong output/ (zero API)
+      - name: Step Scoring V4 (backfill trên data cũ)
+        run: /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v4.py
+
+      - name: Step Record Predictions V4 (backfill)
+        env:
+          FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
+        run: /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v4.py
+
+      - name: Commit V4 output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in \
+            output/v2f_signals_v4.json \
+            output/v2f_v4_regime_state.json \
+            output/history/v2f_predictions_v4/ ; do
+            git add "$p" 2>/dev/null || true
+          done
+          if git diff --staged --quiet; then
+            echo "No changes to commit — skipping."; exit 0
+          fi
+          git commit -m "data[v2f_v4 backfill]: $(date +'%Y-%m-%d %H:%M') ICT"
+          pushed=0
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "pushed (attempt $i)"; pushed=1; break
+            fi
+            echo "push attempt $i failed — retrying..."; sleep $((RANDOM % 5 + 3))
+          done
+          [ "$pushed" -eq 1 ] || { echo "push failed after 5 attempts"; exit 1; }
