@@ -313,12 +313,20 @@ def run_a1(report, hi):
             r = daily_ic(sub, sig, ret)
             gap, _ = quintile_gap(sub, sig, ret)
             extra = ""
-            if rg == "UPTREND":
+            both_pos = None
+            h1, h2 = (None, None)
+            if rg in ("UPTREND", "SIDEWAYS"):     # cả 2 regime "ALIVE" cần soi 2 nửa
                 h1, h2 = time_split(r["series"])
                 if h1 and h2:
-                    extra = f"  [2 nửa: {h1['ic']:+.3f}/{h2['ic']:+.3f}]"
+                    both_pos = (h1["ic"] > 0 and h2["ic"] > 0)
+                    conf = "✓2nửa" if both_pos else "✗FLIP"
+                    extra = (f"  [2 nửa: {h1['ic']:+.3f}(n{h1['n_days']})/"
+                             f"{h2['ic']:+.3f}(n{h2['n_days']}) {conf}]")
             rows[rg] = {"ic": r["ic"], "t": r["t"], "n_days": r["n_days"],
-                        "gap": gap, "verdict": verdict_bucket(r)}
+                        "gap": gap, "verdict": verdict_bucket(r),
+                        "h1_ic": (h1["ic"] if h1 else None),
+                        "h2_ic": (h2["ic"] if h2 else None),
+                        "both_pos": both_pos}
             log.info(f"    {rg:<11}{r['ic']:>+9.4f}{r['t']:>+7.2f}{r['n_days']:>6}"
                      f"{gap:>+9.3f}  {rows[rg]['verdict']}{extra}")
         out[sig] = rows
@@ -453,44 +461,93 @@ def run_probe_ff(report):
 
 
 # ═══════════════════════════ GATE v2 ĐỀ XUẤT ═══════════════════════════
+def _breakout_alive(a1, regime, need_both_halves):
+    """Đếm tín hiệu breakout SỐNG trong regime: verdict ALIVE + gap vượt phí +
+    (nếu need_both_halves) dương CẢ 2 nửa. Trả (list qua, list ALIVE-nhưng-flip)."""
+    passed, flip = [], []
+    for sig in ("dist_52w", "ema_align", "supertrend_dir", "adx_dir"):
+        v = a1.get(sig, {}).get(regime, {})
+        if v.get("verdict") != "ALIVE":
+            continue
+        gap_ok = (not np.isnan(v.get("gap", np.nan))) and abs(v["gap"]) > COST_A1_HI
+        if not gap_ok:
+            continue
+        if need_both_halves and v.get("both_pos") is False:
+            flip.append(sig)
+        else:
+            passed.append(sig)
+    return passed, flip
+
+
 def suggest_gate(report):
-    log.info(f"\n{'█'*72}\n  GATE v2 ĐỀ XUẤT (theo luật đăng ký trước — mục 4 thiết kế)\n{'█'*72}")
+    log.info(f"\n{'█'*72}\n  GATE v2 ĐỀ XUẤT (luật đăng ký trước + XÁC NHẬN 2 NỬA)\n{'█'*72}")
     a1 = report.get("A1", {}); a2 = report.get("A2", {}); a4 = report.get("A4", {})
 
-    # breakout ở UPTREND: nhìn dist_52w + ema_align + supertrend_dir
-    up_alive = []
-    for sig in ("dist_52w", "ema_align", "supertrend_dir", "adx_dir"):
-        v = a1.get(sig, {}).get("UPTREND", {})
-        if v.get("verdict") == "ALIVE" and not np.isnan(v.get("gap", np.nan)) and abs(v["gap"]) > COST_A1_HI:
-            up_alive.append(sig)
-    if up_alive:
-        log.info(f"  • UPTREND: trend SỐNG + vượt phí ({up_alive}) → NÊN nâng breakout gate UP "
-                 "và cân nhắc TÁI NHẬP adx/supertrend vào registry (Phase B).")
-        up_verdict = "edge"
-    elif any(a1.get(s, {}).get("UPTREND", {}).get("verdict") == "ALIVE" for s in TREND_SIGS):
-        log.info("  • UPTREND: trend SỐNG nhưng KHÔNG vượt phí → giữ cho screening, KHÔNG phát lệnh.")
-        up_verdict = "screening"
+    # ── SIDEWAYS breakout (phát hiện chính) ──
+    sw_pass, sw_flip = _breakout_alive(a1, "SIDEWAYS", need_both_halves=True)
+    if len(sw_pass) >= 2:
+        g_break_side = 1.0
+        log.info(f"  • SIDEWAYS: breakout SỐNG + vượt phí + dương 2 nửa ({sw_pass}) "
+                 f"→ gate breakout SIDEWAYS = 1.0 (bằng chứng vững nhất bảng).")
+    elif sw_pass:
+        g_break_side = 1.0
+        log.info(f"  • SIDEWAYS: chỉ {sw_pass} qua đủ chuẩn (số ít) → gate=1.0 nhưng theo dõi.")
     else:
-        log.info("  • UPTREND: trend KHÔNG sống → xác nhận Cách B (V4 im lặng khi uptrend) là đáp án cuối.")
+        g_break_side = 0.5
+        log.info(f"  • SIDEWAYS: breakout chưa qua 2-nửa (flip: {sw_flip}) → tạm 0.5, chờ thêm.")
+
+    # ── UPTREND breakout ──
+    up_pass, up_flip = _breakout_alive(a1, "UPTREND", need_both_halves=True)
+    if up_pass:
+        g_break_up = 1.0
+        log.info(f"  • UPTREND: {up_pass} qua CẢ 2 nửa → gate UP = 1.0.")
+        up_verdict = "edge"
+    elif up_flip:
+        g_break_up = 0.5
+        log.info(f"  • UPTREND: {up_flip} ALIVE nhưng CHỈ dương nửa sau (chưa chắc) "
+                 f"→ gate UP = 0.5 (nửa liều, không nhồi).")
+        up_verdict = "half"
+    else:
+        g_break_up = 0.5
+        log.info("  • UPTREND: không tín hiệu trend nào qua 2 nửa → gate UP = 0.5 (dist_52w "
+                 "vốn đã trong V3, giữ nửa liều); uptrend gần như im lặng (Cách B).")
         up_verdict = "silent"
 
-    # MR-down
-    if a2.get("exploitable"):
-        log.info(f"  • MR-down: gap {a2['gap']:+.3f}% > {COST_A2}% → 'phát lệnh được'. Giữ gate DOWN/DEEP=1.")
-    else:
-        g = a2.get("gap")
-        log.info(f"  • MR-down: gap {g:+.3f}% ≤ {COST_A2}% → giữ gate=1 cho SCREENING, "
-                 "decision đánh dấu size thận trọng (Phase B).")
+    # ── DOWN breakout: tắt nếu trend âm rõ (t≤-2) ──
+    down_neg = all((a1.get(s, {}).get("DOWNTREND", {}).get("t") or 0) <= -2
+                   for s in ("ema_align", "adx_dir", "trend_mom"))
+    g_break_down = 0.0 if down_neg else 1.0
+    log.info(f"  • DOWN/DEEP: breakout {'ÂM rõ → gate = 0.0 (đối xứng MR)' if down_neg else 'chưa rõ → giữ 1.0'}.")
 
-    # hysteresis
-    if a4.get("need_hysteresis"):
-        log.info(f"  • Regime: {a4['pct_short']:.0f}% run ngắn → THÊM hysteresis 2 phiên.")
-    else:
-        log.info("  • Regime: ít whipsaw → KHÔNG cần hysteresis (đỡ 1 tham số).")
+    # ── MR-down ──
+    mr_ok = a2.get("exploitable")
+    log.info(f"  • MR-down: gap {a2.get('gap'):+.3f}% "
+             f"{'> ' if mr_ok else '≤ '}{COST_A2}% → "
+             f"{'PHÁT LỆNH được, gate DOWN/DEEP=1.0' if mr_ok else 'chỉ screening'}.")
 
-    report["gate_v2_suggestion"] = {"uptrend": up_verdict,
-                                    "mr_down_exploitable": a2.get("exploitable"),
-                                    "hysteresis": a4.get("need_hysteresis")}
+    # ── hysteresis ──
+    hyst = a4.get("need_hysteresis")
+    log.info(f"  • Regime: {a4.get('pct_short',0):.0f}% run ngắn → "
+             f"{'THÊM hysteresis 2 phiên' if hyst else 'không cần hysteresis'}.")
+
+    # ── in ma trận GATE v2 cụ thể ──
+    log.info(f"\n  ┌─ MA TRẬN GATE v2 ĐỀ XUẤT ─────────────────────────────")
+    log.info(f"  │ {'factor':<15}{'UP':>6}{'SIDE':>6}{'DOWN':>6}{'DEEP':>6}")
+    log.info(f"  │ {'mean_reversion':<15}{0.0:>6}{0.0:>6}"
+             f"{(1.0 if mr_ok else 1.0):>6}{(1.0 if mr_ok else 1.0):>6}   ← A2")
+    log.info(f"  │ {'breakout':<15}{g_break_up:>6}{g_break_side:>6}"
+             f"{g_break_down:>6}{g_break_down:>6}   ← A1")
+    log.info(f"  │ {'flow/fund/growth':<15}{1.0:>6}{1.0:>6}{1.0:>6}{1.0:>6}   inherited (A3 trống)")
+    log.info(f"  └────────────────────────────────────────────────────────")
+
+    report["gate_v2_suggestion"] = {
+        "mean_reversion": {"UPTREND": 0.0, "SIDEWAYS": 0.0,
+                           "DOWNTREND": 1.0, "DEEP_DOWN": 1.0},
+        "breakout": {"UPTREND": g_break_up, "SIDEWAYS": g_break_side,
+                     "DOWNTREND": g_break_down, "DEEP_DOWN": g_break_down},
+        "uptrend_verdict": up_verdict, "mr_down_exploitable": mr_ok,
+        "hysteresis": hyst,
+        "sideways_breakout_pass": sw_pass, "sideways_breakout_flip": sw_flip}
     log.info(f"{'█'*72}")
 
 
