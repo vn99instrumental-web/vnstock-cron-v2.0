@@ -182,21 +182,30 @@ if __name__ == "__main__":
               "| signals:", [s[0] for s in active_signals(hz)])
       
 # ══════════════════════════════════════════════════════════════════════
-# GATE MATRIX (V4 / RCEG) — điều kiện theo REGIME.  V3 KHÔNG đọc phần này
-# (V3 dùng thẳng FACTOR_WEIGHTS) → thêm khối này KHÔNG ảnh hưởng V3.
+# GATE MATRIX v2 (V4 / RCEG) — điều kiện theo REGIME.  V3 KHÔNG đọc phần này.
+# THAY khối GATE v1 đã dán trước đó bằng khối này (GATE_VERSION 1 → 2).
 # gate ∈ [0,1] = hệ số nhân lên weight của factor theo regime hiện tại.
-# CHỈ ô ĐÃ ĐO mới đặt khác 1.0; ô "inherited" giữ 1.0 chờ Phase A đo.
-# ⚠️ Đổi bất kỳ số nào trong GATE → bump GATE_VERSION (ghi vào ledger v4).
+#
+# CĂN CỨ (Phase A, đo trên tier liquid, log 2026-07-29):
+#   mean_reversion: A2 gap +1.30% > phí 0.5% → DOWN/DEEP = 1.0 (phát lệnh được);
+#                   UP/SIDEWAYS = 0 (IC ≈0/âm — đã đo B1).
+#   breakout      : A1 SIDEWAYS 3 tín hiệu dương CẢ 2 nửa (dist_52w/supertrend/
+#                   adx_dir) nhưng nửa đầu yếu + mẫu 43 ngày → 0.7 (thận trọng,
+#                   chờ forward nâng lên 1.0); UPTREND chỉ dist_52w & ✗FLIP → 0.5
+#                   nửa liều; DOWN/DEEP trend âm rõ (t≤-2) → 0.0.
+#   flow/fund/growth/context: inherited-pending (A3 trống — chờ forward/backfill FF).
+#   UNKNOWN       : bảo thủ (MR tắt; breakout nửa liều) — dùng khi API VNINDEX fail.
+# ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (ghi vào ledger v4).
 # ══════════════════════════════════════════════════════════════════════
-GATE_VERSION = 1
+GATE_VERSION = 2
 REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
 _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 
 # thứ tự cột = REGIMES ở trên
 GATE = {
     #                 UP    SIDE  DOWN  DEEP  UNKNOWN   # nguồn
-    "mean_reversion": (0.0,  0.0,  1.0,  1.0,  0.0),    # measured B1 (29/07); kinh tế chờ
-    "breakout":       (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "mean_reversion": (0.0,  0.0,  1.0,  1.0,  0.0),    # A2 measured
+    "breakout":       (0.5,  0.7,  0.0,  0.0,  0.5),    # A1 measured
     "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "fundamental":    (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "growth":         (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
