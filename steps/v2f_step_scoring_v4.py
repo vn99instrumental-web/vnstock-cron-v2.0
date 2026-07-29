@@ -41,6 +41,7 @@ os.environ["MPLCONFIGDIR"]        = "/home/runner/.config/matplotlib"
 
 import logging
 import traceback
+from datetime import datetime
 from collections import Counter
 
 from utils.cache import load_json, save_json
@@ -58,10 +59,12 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.0"
+SCORING_VERSION = "v4.1"          # +gate v2 (breakout theo regime) + hysteresis
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
+REGIME_STATE    = "v2f_v4_regime_state.json"   # state hysteresis (persist qua output/)
+HYST_SESSIONS   = 2               # regime mới phải giữ ≥2 PHIÊN mới đổi gate (A4)
 
 _VALID_REGIMES = set(REGIMES)
 
@@ -73,19 +76,67 @@ def _resolve_regime(ctx: dict, row: dict) -> str:
     return r if r in _VALID_REGIMES else "UNKNOWN"
 
 
+def _run_date(ctx: dict, rows: list) -> str:
+    st = ctx.get("_snap_time") or (rows[0].get("snap_time") if rows else None)
+    return str(st)[:10] if st else datetime.now().strftime("%Y-%m-%d")
+
+
+def _apply_hysteresis(raw: str, run_date: str):
+    """Regime dùng để gate chỉ đổi khi regime THÔ giữ ≥HYST_SESSIONS phiên
+    (đếm theo NGÀY, không theo lần chạy intraday). Chống whipsaw (A4: 50% run
+    ≤2 phiên). Trả (effective_regime, status_str). State lưu ở output/.
+    UNKNOWN không bao giờ được "chốt" thành effective — giữ regime cũ cho an toàn."""
+    st = load_json(REGIME_STATE) or {}
+    eff = st.get("effective_regime")
+
+    if eff is None:                                   # bootstrap lần đầu
+        eff0 = raw if raw != "UNKNOWN" else "UNKNOWN"
+        save_json(REGIME_STATE, {"effective_regime": eff0,
+                                 "candidate": None, "candidate_dates": []})
+        return eff0, "bootstrap"
+
+    if raw == "UNKNOWN":                               # không rõ regime → giữ cũ
+        return eff, f"raw=UNKNOWN → giữ {eff}"
+
+    if raw == eff:                                     # xác nhận lại → huỷ candidate
+        if st.get("candidate"):
+            st["candidate"] = None
+            st["candidate_dates"] = []
+            save_json(REGIME_STATE, st)
+        return eff, "stable"
+
+    # raw != eff: đếm số PHIÊN (ngày) candidate đã giữ
+    if st.get("candidate") == raw:
+        dates = sorted(set(st.get("candidate_dates", [])) | {run_date})
+        if len(dates) >= HYST_SESSIONS:               # đủ phiên → chuyển gate
+            save_json(REGIME_STATE, {"effective_regime": raw,
+                                     "candidate": None, "candidate_dates": []})
+            return raw, f"CHUYỂN → {raw} (đủ {len(dates)} phiên)"
+        st["candidate_dates"] = dates
+        save_json(REGIME_STATE, st)
+        return eff, f"pending {raw} {len(dates)}/{HYST_SESSIONS} → giữ {eff}"
+
+    # candidate mới
+    st["candidate"] = raw
+    st["candidate_dates"] = [run_date]
+    save_json(REGIME_STATE, st)
+    return eff, f"candidate mới {raw} 1/{HYST_SESSIONS} → giữ {eff}"
+
+
 # ══════════════════════════════════════════════════════════════════════
 # CORE — chấm 1 symbol, 2 khung, CÓ gate theo regime
 # ══════════════════════════════════════════════════════════════════════
 
 def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
-                    regime: str) -> dict:
+                    regime: str, regime_raw: str = None) -> dict:
     # passthrough data thô (bỏ field scoring của v2.3) — giống V3
     out = {k: v for k, v in row.items() if not _is_v23_scoring_field(k)}
     out.update({
         "scoring_version":  SCORING_VERSION,
         "registry_version": REGISTRY_VERSION,
         "gate_version":     GATE_VERSION,
-        "_regime":          regime,
+        "_regime":          regime,                    # regime HIỆU LỰC (sau hysteresis)
+        "_regime_raw":      regime_raw or regime,       # regime THÔ (trước hysteresis)
     })
 
     sig_labels = []
@@ -180,18 +231,28 @@ def run():
     if rows and isinstance(rows[0], dict) and rows[0].get("snap_time"):
         ctx["_snap_time"] = rows[0]["snap_time"]
 
-    regime = _resolve_regime(ctx, rows[0] if rows else {})
-    gates  = {f: gate_for(f, regime) for f in FACTORS}
-    off    = [f for f in FACTORS if gates[f] == 0.0]
-    log.info(f"[V4] regime={regime} | gates={gates}")
+    # regime là thuộc tính THỊ TRƯỜNG → resolve MỘT LẦN cho cả run
+    raw_regime = _resolve_regime(ctx, rows[0] if rows else {})
+    run_date   = _run_date(ctx, rows)
+    regime, hyst_status = _apply_hysteresis(raw_regime, run_date)   # regime hiệu lực
+
+    gates = {f: gate_for(f, regime) for f in FACTORS}
+    off   = [f for f in FACTORS if gates[f] == 0.0]
+    half  = [f for f in FACTORS if 0.0 < gates[f] < 1.0]
+    log.info(f"[V4] regime thô={raw_regime} → hiệu lực={regime} "
+             f"(hysteresis: {hyst_status}) | date={run_date}")
+    log.info(f"[V4] gates={gates}")
     if off:
-        log.info(f"[V4] factor TẮT theo regime: {off} (Cách B → điểm co lại)")
+        log.info(f"[V4] factor TẮT: {off} (Cách B → điểm co lại)")
+    if half:
+        log.info(f"[V4] factor NỬA LIỀU: " +
+                 ", ".join(f"{f}={gates[f]}" for f in half))
 
     out_rows, n_err = [], 0
     for row in rows:
         try:
-            rg = _resolve_regime(ctx, row)     # regime thường đồng nhất cả run
-            out_rows.append(score_symbol_v4(row, ctx, caps, actives, rg))
+            out_rows.append(score_symbol_v4(row, ctx, caps, actives,
+                                            regime, raw_regime))
         except Exception:
             n_err += 1
             log.warning(f"  skip {row.get('symbol')}:\n{traceback.format_exc()}")
@@ -200,7 +261,7 @@ def run():
 
     dec = Counter(r.get("decision") for r in out_rows)
     log.info(f"Đã chấm {len(out_rows)}/{len(rows)} mã (lỗi {n_err}) → {SIGNALS_OUT}")
-    log.info(f"Decisions (trade, regime={regime}): {dict(dec)}")
+    log.info(f"Decisions (trade, regime hiệu lực={regime}): {dict(dec)}")
     if out_rows:
         top_h = sorted(out_rows, key=lambda r: r.get("score_hold") or -999,
                        reverse=True)[:5]
