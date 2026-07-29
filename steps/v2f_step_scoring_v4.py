@@ -206,7 +206,83 @@ def run():
                        reverse=True)[:5]
         log.info("Top-5 score_hold: " + ", ".join(
             f"{r['symbol']}={r.get('score_hold')}" for r in top_h))
+
+    # Báo cáo dry-run IN THẲNG LOG (debug.yml không commit output/) — bọc
+    # try để không bao giờ chặn run chính.
+    try:
+        _log_compare_and_whatif(out_rows, ctx, caps, actives, regime)
+    except Exception:
+        log.warning("dry-run report lỗi (bỏ qua):\n" + traceback.format_exc())
+
     log.info("=== SCORING V4 (RCEG SHADOW#2) DONE ===")
+
+
+# ══════════════════════════════════════════════════════════════════════
+# DRY-RUN REPORT — in vào log để đối chiếu (không cần file / không sửa yaml)
+# ══════════════════════════════════════════════════════════════════════
+
+_MR_SIG_KEYS = ("s_willr_mr", "s_bb_mr", "s_overext_ema", "s_rs_reversal")
+
+
+def _mr_contrib(row: dict) -> int:
+    return sum(int(row.get(k) or 0) for k in _MR_SIG_KEYS)
+
+
+def _log_compare_and_whatif(out_rows, ctx, caps, actives, regime):
+    by_sym = {r.get("symbol"): r for r in out_rows}
+
+    # (1) V4 vs V3 — nếu v2f_signals_v3.json có sẵn (do intraday commit)
+    v3 = load_json("v2f_signals_v3.json")
+    if v3:
+        v3map = {r.get("symbol"): r for r in v3}
+        diffs = []
+        for sym, r4 in by_sym.items():
+            r3 = v3map.get(sym)
+            if not r3:
+                continue
+            s3 = r3.get("score_trade")
+            s4 = r4.get("score_trade")
+            if s3 is None or s4 is None:
+                continue
+            diffs.append((sym, s3, s4, s4 - s3,
+                          r3.get("decision"), r4.get("decision")))
+        n_changed_dec = sum(1 for d in diffs if d[4] != d[5])
+        log.info(f"\n{'─'*76}\n  V4 vs V3 (regime={regime}) — {len(diffs)} mã khớp, "
+                 f"{n_changed_dec} mã ĐỔI decision")
+        log.info(f"{'sym':<8}{'V3':>8}{'V4':>8}{'Δ':>8}  {'dec V3 → V4'}")
+        log.info("─" * 76)
+        for sym, s3, s4, d, d3, d4 in sorted(
+                diffs, key=lambda x: abs(x[3]), reverse=True)[:12]:
+            mark = "  ← đổi" if d3 != d4 else ""
+            log.info(f"{sym:<8}{s3:>+8.2f}{s4:>+8.2f}{d:>+8.2f}  "
+                     f"{str(d3):<11}→ {d4}{mark}")
+        if regime in ("DOWNTREND", "DEEP_DOWN"):
+            log.info("  (regime GIẢM → MR bật ở cả V3 lẫn V4 → Δ≈0 là ĐÚNG)")
+    else:
+        log.info("  (chưa có v2f_signals_v3.json để so — bỏ qua phần V4 vs V3)")
+
+    # (2) WHAT-IF: tính lại điểm dưới CẢ 4 regime cho ~8 mã có MR mạnh nhất
+    #     → thấy trực tiếp gate làm điểm đổi bao nhiêu khi MR tắt/bật.
+    picks = sorted(out_rows, key=lambda r: abs(_mr_contrib(r)),
+                   reverse=True)[:8]
+    rmap = {r.get("symbol"): r for r in load_json(SIGNALS_IN) or []}
+    scan = ["UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN"]
+    log.info(f"\n{'─'*76}\n  WHAT-IF score_trade theo regime (8 mã MR mạnh nhất)\n"
+             f"  → cột UP/SIDE = MR TẮT ; DOWN/DEEP = MR BẬT\n{'─'*76}")
+    log.info(f"{'sym':<8}{'MRcontrib':>10}" + "".join(f"{r[:8]:>11}" for r in scan))
+    log.info("─" * 76)
+    for r4 in picks:
+        sym = r4.get("symbol")
+        raw = rmap.get(sym)
+        if not raw:
+            continue
+        cells = ""
+        for rg in scan:
+            sc = score_symbol_v4(raw, ctx, caps, actives, rg).get("score_trade")
+            cells += f"{sc:>+11.2f}" if sc is not None else f"{'n/a':>11}"
+        log.info(f"{sym:<8}{_mr_contrib(r4):>+10d}{cells}")
+    log.info("  (chênh giữa UP và DOWN chính là phần MR đóng góp — bị gate cắt "
+             "khi uptrend)")
 
 
 if __name__ == "__main__":
