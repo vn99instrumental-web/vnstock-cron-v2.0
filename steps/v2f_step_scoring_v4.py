@@ -318,7 +318,12 @@ def _log_compare_and_whatif(out_rows, ctx, caps, actives, regime):
             log.info(f"{sym:<8}{s3:>+8.2f}{s4:>+8.2f}{d:>+8.2f}  "
                      f"{str(d3):<11}→ {d4}{mark}")
         if regime in ("DOWNTREND", "DEEP_DOWN"):
-            log.info("  (regime GIẢM → MR bật ở cả V3 lẫn V4 → Δ≈0 là ĐÚNG)")
+            log.info("  (regime GIẢM: MR bật ở CẢ V3 lẫn V4; V4 khác V3 do TẮT "
+                     "breakout — A1 đo breakout anti-predictive trong down (t≤-2), "
+                     "nên V4 bỏ lực cản giảm giá sai này. Δ dương là ĐÚNG kỳ vọng.)")
+        elif regime in ("UPTREND", "SIDEWAYS"):
+            log.info("  (regime này: MR TẮT + breakout nửa liều → V4 khác V3 ở CẢ "
+                     "MR lẫn breakout. Δ phản ánh 2 thay đổi cộng lại.)")
     else:
         log.info("  (chưa có v2f_signals_v3.json để so — bỏ qua phần V4 vs V3)")
 
