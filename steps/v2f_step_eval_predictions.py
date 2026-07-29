@@ -88,6 +88,8 @@ TRACKS = [
      "history/v2f_outcomes_hold",    "v2.3-prod"),
     ("history/v2f_predictions_v3", "history/v2f_outcomes_v3",
      "history/v2f_outcomes_v3_hold", "v3-shadow"),
+    ("history/v2f_predictions_v4", "history/v2f_outcomes_v4",
+     "history/v2f_outcomes_v4_hold", "v4-shadow"),
 ]
 
 TRADE_BARS = int(os.getenv("EVAL_HORIZON_BARS", "10"))
