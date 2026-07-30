@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-27T09:38:02.402953+07:00",
+  "generated_at": "2026-07-30T11:32:04.087819+07:00",
   "schema_version": 8,
   "ttl_days": 3,
   "count": 428,
@@ -56,7 +56,7 @@
     },
     "VND": {
       "symbol": "VND",
-      "fetched_at": "2026-07-27T09:35:10.104214+07:00",
+      "fetched_at": "2026-07-30T11:29:42.591277+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 17.69,
@@ -429,7 +429,7 @@
     },
     "GEE": {
       "symbol": "GEE",
-      "fetched_at": "2026-07-27T09:32:27.400605+07:00",
+      "fetched_at": "2026-07-30T11:27:14.120977+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.46,
@@ -492,7 +492,7 @@
     },
     "VHM": {
       "symbol": "VHM",
-      "fetched_at": "2026-07-27T09:34:56.117959+07:00",
+      "fetched_at": "2026-07-30T11:29:26.763796+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.38,
@@ -655,7 +655,7 @@
     },
     "YBC": {
       "symbol": "YBC",
-      "fetched_at": "2026-07-27T09:37:09.968402+07:00",
+      "fetched_at": "2026-07-30T11:31:17.196297+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": -1.17,
@@ -718,7 +718,7 @@
     },
     "YBM": {
       "symbol": "YBM",
-      "fetched_at": "2026-07-27T09:37:02.171758+07:00",
+      "fetched_at": "2026-07-30T11:31:17.011558+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 5.47,
@@ -781,7 +781,7 @@
     },
     "YEG": {
       "symbol": "YEG",
-      "fetched_at": "2026-07-27T09:37:01.022401+07:00",
+      "fetched_at": "2026-07-30T11:31:16.687191+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 27.16,
@@ -844,7 +844,7 @@
     },
     "YTC": {
       "symbol": "YTC",
-      "fetched_at": "2026-07-27T09:37:00.063702+07:00",
+      "fetched_at": "2026-07-30T11:31:16.334228+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 0.0,
@@ -1207,21 +1207,21 @@
     },
     "WTC": {
       "symbol": "WTC",
-      "fetched_at": "2026-07-27T09:37:11.300538+07:00",
+      "fetched_at": "2026-07-30T11:31:25.749104+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 167.61,
-        "pb": 0.56,
-        "roe": 1.25,
+        "pe": 23.01,
+        "pb": 0.61,
+        "roe": 1.92,
         "roa": 0.0,
-        "eps": 57.87,
-        "bvps": 17323.0,
-        "beta": 0.36,
-        "div_yield": 11.0,
-        "gross_margin": 7.63,
-        "net_margin": 1.05,
-        "quick_ratio": 2.04,
-        "interest_cov": 1.36,
+        "eps": 451.95,
+        "bvps": 17001.0,
+        "beta": 0.38,
+        "div_yield": 10.0,
+        "gross_margin": 7.97,
+        "net_margin": 0.91,
+        "quick_ratio": 0.49,
+        "interest_cov": 1.52,
         "ev_ebitda": 0.0
       },
       "income": {
@@ -1237,12 +1237,12 @@
         "net_profit_year": 11393526.0
       },
       "balance": {
-        "total_assets": 1288766163.0,
-        "equity": 303149846.0,
-        "total_liab": 985616316.0,
-        "short_debt": 229586376.0,
-        "long_debt": 685960727.0,
-        "debt_to_equity": 3.251
+        "total_assets": 1411101959.0,
+        "equity": 297525708.0,
+        "total_liab": 1113576251.0,
+        "short_debt": 302613839.0,
+        "long_debt": 705514896.0,
+        "debt_to_equity": 3.743
       },
       "cashflow": {
         "cf_operating": 45201265.0,
@@ -1259,53 +1259,53 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": -3,
+        "fundamental": 5,
         "cashflow": 10,
         "growth": 0,
-        "total": 7,
+        "total": 15,
         "max": 38
       }
     },
     "WSB": {
       "symbol": "WSB",
-      "fetched_at": "2026-07-27T09:37:12.971571+07:00",
+      "fetched_at": "2026-07-30T11:31:26.169974+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 8.31,
-        "pb": 1.04,
-        "roe": 3.17,
-        "roa": 10.26,
-        "eps": 6748.34,
-        "bvps": 54149.0,
-        "beta": 0.76,
-        "div_yield": 9.0,
-        "gross_margin": 11.8,
-        "net_margin": 10.33,
-        "quick_ratio": 3.55,
+        "pe": 10.72,
+        "pb": 1.31,
+        "roe": 2.95,
+        "roa": 10.17,
+        "eps": 6662.78,
+        "bvps": 54550.0,
+        "beta": 0.77,
+        "div_yield": 7.000000000000001,
+        "gross_margin": 12.01,
+        "net_margin": 11.39,
+        "quick_ratio": 3.07,
         "interest_cov": 0.0,
         "ev_ebitda": 0.0
       },
       "income": {
-        "revenue": 279748366.0,
-        "gross_profit": 34887285.0,
-        "net_profit": 32482297.0,
-        "operating_profit": 35909829.0,
-        "eps": 2130.0,
-        "rev_growth_qoq": 0.1679,
-        "profit_growth_qoq": 0.8661,
-        "rev_growth_yoy": 0.1679,
-        "profit_growth_yoy": 0.8661,
+        "revenue": 202082497.0,
+        "gross_profit": 24266177.0,
+        "net_profit": 23015932.0,
+        "operating_profit": 25648334.0,
+        "eps": 1477.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 97850984.0
       },
       "balance": {
-        "total_assets": 936331340.0,
-        "equity": 785154336.0,
-        "total_liab": 151177004.0,
+        "total_assets": 970645341.0,
+        "equity": 790977440.0,
+        "total_liab": 179667901.0,
         "short_debt": null,
         "long_debt": null,
-        "debt_to_equity": 0.193
+        "debt_to_equity": 0.227
       },
       "cashflow": {
         "cf_operating": 105222305.0,
@@ -1322,18 +1322,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 10,
+        "fundamental": 7,
         "cashflow": 10,
-        "growth": 8,
-        "total": 28,
+        "growth": -2,
+        "total": 15,
         "max": 38
       }
     },
     "WSS": {
       "symbol": "WSS",
-      "fetched_at": "2026-07-27T09:37:12.360184+07:00",
+      "fetched_at": "2026-07-30T11:31:25.974843+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 8.9,
@@ -1387,7 +1387,7 @@
     },
     "WCS": {
       "symbol": "WCS",
-      "fetched_at": "2026-07-27T09:37:20.223986+07:00",
+      "fetched_at": "2026-07-30T11:31:26.191274+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.47,
@@ -1450,7 +1450,7 @@
     },
     "VXT": {
       "symbol": "VXT",
-      "fetched_at": "2026-07-27T09:37:21.839145+07:00",
+      "fetched_at": "2026-07-30T11:31:34.531541+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 45.43,
@@ -1513,7 +1513,7 @@
     },
     "VXB": {
       "symbol": "VXB",
-      "fetched_at": "2026-07-27T09:37:22.642685+07:00",
+      "fetched_at": "2026-07-30T11:31:35.277190+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 89.44,
@@ -1576,7 +1576,7 @@
     },
     "VVS": {
       "symbol": "VVS",
-      "fetched_at": "2026-07-27T09:37:32.914601+07:00",
+      "fetched_at": "2026-07-30T11:31:43.625686+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 4.93,
@@ -1639,7 +1639,7 @@
     },
     "VVN": {
       "symbol": "VVN",
-      "fetched_at": "2026-07-27T09:37:36.381050+07:00",
+      "fetched_at": "2026-07-30T11:31:45.097329+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": -0.26,
@@ -1702,7 +1702,7 @@
     },
     "VUA": {
       "symbol": "VUA",
-      "fetched_at": "2026-07-27T09:37:40.731068+07:00",
+      "fetched_at": "2026-07-30T11:31:45.152209+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": -33.99,
@@ -1762,7 +1762,7 @@
     },
     "VTZ": {
       "symbol": "VTZ",
-      "fetched_at": "2026-07-27T09:37:42.506914+07:00",
+      "fetched_at": "2026-07-30T11:31:51.875899+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 24.6,
@@ -1825,7 +1825,7 @@
     },
     "VTX": {
       "symbol": "VTX",
-      "fetched_at": "2026-07-27T09:37:42.849758+07:00",
+      "fetched_at": "2026-07-30T11:31:52.660113+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": -4.39,
@@ -1888,7 +1888,7 @@
     },
     "VTV": {
       "symbol": "VTV",
-      "fetched_at": "2026-07-27T09:37:47.337049+07:00",
+      "fetched_at": "2026-07-30T11:31:53.364767+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 154.56,
@@ -1951,7 +1951,7 @@
     },
     "VTS": {
       "symbol": "VTS",
-      "fetched_at": "2026-07-27T09:37:51.721755+07:00",
+      "fetched_at": "2026-07-30T11:31:53.885511+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": -1.03,
@@ -2132,7 +2132,7 @@
     },
     "VTP": {
       "symbol": "VTP",
-      "fetched_at": "2026-07-27T09:35:30.821597+07:00",
+      "fetched_at": "2026-07-30T11:29:55.814821+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 29.51,
@@ -3305,7 +3305,7 @@
     },
     "VSC": {
       "symbol": "VSC",
-      "fetched_at": "2026-07-27T09:35:30.815685+07:00",
+      "fetched_at": "2026-07-30T11:29:52.475578+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 19.7,
@@ -3486,42 +3486,42 @@
     },
     "VRE": {
       "symbol": "VRE",
-      "fetched_at": "2026-07-27T09:35:23.233974+07:00",
+      "fetched_at": "2026-07-30T11:29:52.213806+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 11.86,
-        "pb": 1.58,
-        "roe": 5.65,
-        "roa": 10.89,
-        "eps": 2836.72,
-        "bvps": 21286.0,
-        "beta": 1.59,
+        "pe": 14.97,
+        "pb": 1.6,
+        "roe": 3.05,
+        "roa": 8.45,
+        "eps": 2144.25,
+        "bvps": 20116.0,
+        "beta": 1.19,
         "div_yield": 0.0,
-        "gross_margin": 52.35,
-        "net_margin": 114.99,
-        "quick_ratio": 1.49,
-        "interest_cov": 19.02,
-        "ev_ebitda": 0.0
+        "gross_margin": 50.51,
+        "net_margin": 61.15,
+        "quick_ratio": 1.62,
+        "interest_cov": 11.03,
+        "ev_ebitda": 39.63
       },
       "income": {
-        "revenue": 2142630000.0,
-        "gross_profit": 1182311000.0,
-        "net_profit": 1233261000.0,
-        "operating_profit": 1428329000.0,
+        "revenue": 2251000000.0,
+        "gross_profit": 1137026000.0,
+        "net_profit": 1376430000.0,
+        "operating_profit": 1448223000.0,
         "eps": null,
-        "rev_growth_qoq": 0.0053,
-        "profit_growth_qoq": 0.0474,
-        "rev_growth_yoy": 0.0053,
-        "profit_growth_yoy": 0.0474,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 6445924000.0
       },
       "balance": {
-        "total_assets": 61279149000.0,
-        "equity": 48368203000.0,
-        "total_liab": 12910946000.0,
-        "short_debt": 20626000.0,
-        "long_debt": 6380455000.0,
-        "debt_to_equity": 0.267
+        "total_assets": 61264693000.0,
+        "equity": 45709728000.0,
+        "total_liab": 15554965000.0,
+        "short_debt": 21875000.0,
+        "long_debt": 6383723000.0,
+        "debt_to_equity": 0.34
       },
       "cashflow": {
         "cf_operating": -3262205000.0,
@@ -3538,12 +3538,12 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 10,
+        "fundamental": 7,
         "cashflow": -10,
-        "growth": 2,
-        "total": 2,
+        "growth": -2,
+        "total": -5,
         "max": 38
       }
     },
@@ -3798,7 +3798,7 @@
     },
     "VPL": {
       "symbol": "VPL",
-      "fetched_at": "2026-07-27T09:35:20.340521+07:00",
+      "fetched_at": "2026-07-30T11:29:51.833842+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 149.63,
@@ -3861,7 +3861,7 @@
     },
     "VPI": {
       "symbol": "VPI",
-      "fetched_at": "2026-07-27T09:35:16.554172+07:00",
+      "fetched_at": "2026-07-30T11:29:46.108189+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 46.85,
@@ -4168,7 +4168,7 @@
     },
     "VPB": {
       "symbol": "VPB",
-      "fetched_at": "2026-07-27T09:35:16.171153+07:00",
+      "fetched_at": "2026-07-30T11:29:43.602624+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.95,
@@ -4792,7 +4792,7 @@
     },
     "VNM": {
       "symbol": "VNM",
-      "fetched_at": "2026-07-27T09:35:13.568627+07:00",
+      "fetched_at": "2026-07-30T11:29:43.447978+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.59,
@@ -6231,7 +6231,7 @@
     },
     "VJC": {
       "symbol": "VJC",
-      "fetched_at": "2026-07-27T09:35:06.337383+07:00",
+      "fetched_at": "2026-07-30T11:29:37.325767+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 54.93,
@@ -6294,7 +6294,7 @@
     },
     "VIX": {
       "symbol": "VIX",
-      "fetched_at": "2026-07-27T09:35:06.224742+07:00",
+      "fetched_at": "2026-07-30T11:29:34.270259+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.58,
@@ -6910,7 +6910,7 @@
     },
     "VIC": {
       "symbol": "VIC",
-      "fetched_at": "2026-07-27T09:35:03.996734+07:00",
+      "fetched_at": "2026-07-30T11:29:33.894345+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 49.13,
@@ -6973,16 +6973,16 @@
     },
     "VIB": {
       "symbol": "VIB",
-      "fetched_at": "2026-07-27T09:35:00.231548+07:00",
+      "fetched_at": "2026-07-30T11:29:33.052229+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 7.65,
-        "pb": 1.29,
-        "roe": 3.58,
-        "roa": 1.37,
-        "eps": 2319.29,
-        "bvps": 13779.28,
-        "beta": 0.92,
+        "pe": 7.97,
+        "pb": 1.5,
+        "roe": 3.66,
+        "roa": 1.47,
+        "eps": 2495.74,
+        "bvps": 13296.03,
+        "beta": 0.99,
         "div_yield": 4.0,
         "gross_margin": null,
         "net_margin": null,
@@ -7005,7 +7005,7 @@
       "balance": {
         "total_assets": null,
         "equity": null,
-        "total_liab": 509193702000.0,
+        "total_liab": 498299905000.0,
         "short_debt": null,
         "long_debt": null
       },
@@ -7022,7 +7022,7 @@
         "growth_available": false,
         "incomplete": true
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
         "fundamental": 10,
         "cashflow": 5,
@@ -7411,7 +7411,7 @@
     },
     "VHC": {
       "symbol": "VHC",
-      "fetched_at": "2026-07-27T09:34:53.376462+07:00",
+      "fetched_at": "2026-07-30T11:29:25.392940+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.35,
@@ -7978,42 +7978,42 @@
     },
     "VGC": {
       "symbol": "VGC",
-      "fetched_at": "2026-07-27T09:34:52.779248+07:00",
+      "fetched_at": "2026-07-30T11:29:24.150872+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 13.37,
-        "pb": 1.63,
-        "roe": 4.92,
-        "roa": 5.53,
-        "eps": 3130.03,
-        "bvps": 25738.0,
-        "beta": 1.06,
-        "div_yield": 5.0,
-        "gross_margin": 33.03,
-        "net_margin": 16.06,
-        "quick_ratio": 0.76,
-        "interest_cov": 15.19,
-        "ev_ebitda": 7.97
+        "pe": 18.47,
+        "pb": 2.36,
+        "roe": 0.85,
+        "roa": 5.55,
+        "eps": 3091.16,
+        "bvps": 24179.0,
+        "beta": 1.11,
+        "div_yield": 2.0,
+        "gross_margin": 21.26,
+        "net_margin": 3.62,
+        "quick_ratio": 0.61,
+        "interest_cov": 3.82,
+        "ev_ebitda": 11.86
       },
       "income": {
-        "revenue": 3240085358.0,
-        "gross_profit": 1147343111.0,
-        "net_profit": 438322918.0,
-        "operating_profit": 700489784.0,
+        "revenue": 3253977599.0,
+        "gross_profit": 691648746.0,
+        "net_profit": 92236204.0,
+        "operating_profit": 181276593.0,
         "eps": null,
-        "rev_growth_qoq": 0.135,
-        "profit_growth_qoq": 0.367,
-        "rev_growth_yoy": 0.135,
-        "profit_growth_yoy": 0.367,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 1403242275.0
       },
       "balance": {
-        "total_assets": 26440901589.0,
-        "equity": 11571170112.0,
-        "total_liab": 14869731477.0,
-        "short_debt": 2713004905.0,
-        "long_debt": 2872392766.0,
-        "debt_to_equity": 1.285
+        "total_assets": 25624141340.0,
+        "equity": 10873170005.0,
+        "total_liab": 14750971335.0,
+        "short_debt": 2666206683.0,
+        "long_debt": 2254562392.0,
+        "debt_to_equity": 1.357
       },
       "cashflow": {
         "cf_operating": 3339074764.0,
@@ -8030,18 +8030,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 7,
+        "fundamental": 0,
         "cashflow": 10,
-        "growth": 8,
-        "total": 25,
+        "growth": -2,
+        "total": 8,
         "max": 38
       }
     },
     "VFS": {
       "symbol": "VFS",
-      "fetched_at": "2026-07-27T09:36:58.443615+07:00",
+      "fetched_at": "2026-07-30T11:31:07.618932+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.25,
@@ -8427,7 +8427,7 @@
     },
     "GEX": {
       "symbol": "GEX",
-      "fetched_at": "2026-07-27T09:32:28.812663+07:00",
+      "fetched_at": "2026-07-30T11:27:16.141079+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 25.08,
@@ -9167,11 +9167,11 @@
     },
     "VW3": {
       "symbol": "VW3",
-      "fetched_at": "2026-07-27T09:37:31.495826+07:00",
+      "fetched_at": "2026-07-30T11:31:42.772036+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": -2.9127347611,
-        "pb": 0.461426116,
+        "pe": -3.2211419711,
+        "pb": 0.5102829989,
         "roe": -14.30218687,
         "roa": -5.3616395,
         "eps": null,
@@ -9182,7 +9182,7 @@
         "net_margin": -16.369040130000002,
         "quick_ratio": 1.1399124313,
         "interest_cov": null,
-        "ev_ebitda": -0.543450666
+        "ev_ebitda": -0.9142703931
       },
       "income": {
         "net_profit_year": -5836439.0
@@ -9261,7 +9261,7 @@
     },
     "VXP": {
       "symbol": "VXP",
-      "fetched_at": "2026-07-27T09:37:22.579863+07:00",
+      "fetched_at": "2026-07-30T11:31:34.886666+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 281.0915199615,
@@ -9308,7 +9308,7 @@
     },
     "VWS": {
       "symbol": "VWS",
-      "fetched_at": "2026-07-27T09:37:29.851127+07:00",
+      "fetched_at": "2026-07-30T11:31:35.311255+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 32.4771729218,
@@ -10037,7 +10037,7 @@
     },
     "NLG": {
       "symbol": "NLG",
-      "fetched_at": "2026-07-27T09:33:32.345107+07:00",
+      "fetched_at": "2026-07-30T11:28:10.141666+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 16.72,
@@ -10152,7 +10152,7 @@
     },
     "KDH": {
       "symbol": "KDH",
-      "fetched_at": "2026-07-27T09:33:10.179502+07:00",
+      "fetched_at": "2026-07-30T11:27:51.398324+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 31.63,
@@ -10475,7 +10475,7 @@
     },
     "PVT": {
       "symbol": "PVT",
-      "fetched_at": "2026-07-27T09:34:04.049762+07:00",
+      "fetched_at": "2026-07-30T11:28:36.952112+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 7.24,
@@ -10538,7 +10538,7 @@
     },
     "PVD": {
       "symbol": "PVD",
-      "fetched_at": "2026-07-27T09:34:03.929791+07:00",
+      "fetched_at": "2026-07-30T11:28:36.948518+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 15.28,
@@ -10601,7 +10601,7 @@
     },
     "PLX": {
       "symbol": "PLX",
-      "fetched_at": "2026-07-27T09:33:54.468538+07:00",
+      "fetched_at": "2026-07-30T11:28:28.152185+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 17.16,
@@ -10664,7 +10664,7 @@
     },
     "BSR": {
       "symbol": "BSR",
-      "fetched_at": "2026-07-27T09:31:17.541635+07:00",
+      "fetched_at": "2026-07-30T11:26:16.865058+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 10.46,
@@ -10831,7 +10831,7 @@
     },
     "SSB": {
       "symbol": "SSB",
-      "fetched_at": "2026-07-27T09:34:23.363238+07:00",
+      "fetched_at": "2026-07-30T11:28:57.035883+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 8.89,
@@ -10891,7 +10891,7 @@
     },
     "ACB": {
       "symbol": "ACB",
-      "fetched_at": "2026-07-27T09:31:04.952043+07:00",
+      "fetched_at": "2026-07-30T11:26:06.058160+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.84,
@@ -10951,7 +10951,7 @@
     },
     "PC1": {
       "symbol": "PC1",
-      "fetched_at": "2026-07-27T09:33:44.085281+07:00",
+      "fetched_at": "2026-07-30T11:28:26.131599+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 7.79,
@@ -11014,42 +11014,42 @@
     },
     "PAN": {
       "symbol": "PAN",
-      "fetched_at": "2026-07-27T09:33:43.675132+07:00",
+      "fetched_at": "2026-07-30T11:28:19.864624+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 8.47,
-        "pb": 0.63,
-        "roe": 3.04,
-        "roa": 3.36,
-        "eps": 3222.65,
-        "bvps": 43488.0,
-        "beta": 0.73,
+        "pe": 10.38,
+        "pb": 0.76,
+        "roe": 1.77,
+        "roa": 2.88,
+        "eps": 3039.88,
+        "bvps": 41434.0,
+        "beta": 1.05,
         "div_yield": 2.0,
-        "gross_margin": 20.54,
-        "net_margin": 10.42,
-        "quick_ratio": 1.23,
-        "interest_cov": 8.24,
-        "ev_ebitda": 10.17
+        "gross_margin": 19.76,
+        "net_margin": 5.18,
+        "quick_ratio": 1.07,
+        "interest_cov": 4.42,
+        "ev_ebitda": 18.74
       },
       "income": {
-        "revenue": 4064494453.0,
-        "gross_profit": 777834145.0,
-        "net_profit": 139991382.0,
-        "operating_profit": 310824897.0,
-        "eps": 670.0,
-        "rev_growth_qoq": -0.0134,
-        "profit_growth_qoq": 0.3002,
-        "rev_growth_yoy": -0.0134,
-        "profit_growth_yoy": 0.3002,
+        "revenue": 5138101339.0,
+        "gross_profit": 1015146581.0,
+        "net_profit": 156192901.0,
+        "operating_profit": 304016460.0,
+        "eps": 748.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 672664976.0
       },
       "balance": {
-        "total_assets": 15707095008.0,
-        "equity": 9084319624.0,
-        "total_liab": 6622775384.0,
-        "short_debt": 3343507836.0,
-        "long_debt": 465203702.0,
-        "debt_to_equity": 0.729
+        "total_assets": 17886620495.0,
+        "equity": 8655344229.0,
+        "total_liab": 9231276266.0,
+        "short_debt": 5900566005.0,
+        "long_debt": 511711884.0,
+        "debt_to_equity": 1.067
       },
       "cashflow": {
         "cf_operating": 9054816926.0,
@@ -11066,12 +11066,12 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 12,
+        "fundamental": 9,
         "cashflow": 10,
-        "growth": 4,
-        "total": 26,
+        "growth": -2,
+        "total": 17,
         "max": 38
       }
     },
@@ -11134,7 +11134,7 @@
     },
     "PDR": {
       "symbol": "PDR",
-      "fetched_at": "2026-07-27T09:33:51.324021+07:00",
+      "fetched_at": "2026-07-30T11:28:26.140566+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 33.78,
@@ -11308,7 +11308,7 @@
     },
     "DXG": {
       "symbol": "DXG",
-      "fetched_at": "2026-07-27T09:32:02.440199+07:00",
+      "fetched_at": "2026-07-30T11:26:56.439137+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 68.41,
@@ -11542,7 +11542,7 @@
     },
     "CTS": {
       "symbol": "CTS",
-      "fetched_at": "2026-07-27T09:31:44.197089+07:00",
+      "fetched_at": "2026-07-30T11:26:36.492028+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.09,
@@ -11716,7 +11716,7 @@
     },
     "PHR": {
       "symbol": "PHR",
-      "fetched_at": "2026-07-27T09:33:52.312152+07:00",
+      "fetched_at": "2026-07-30T11:28:27.945394+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 15.46,
@@ -12007,7 +12007,7 @@
     },
     "POW": {
       "symbol": "POW",
-      "fetched_at": "2026-07-27T09:34:01.995919+07:00",
+      "fetched_at": "2026-07-30T11:28:36.928601+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.86,
@@ -12070,7 +12070,7 @@
     },
     "OCB": {
       "symbol": "OCB",
-      "fetched_at": "2026-07-27T09:33:42.744903+07:00",
+      "fetched_at": "2026-07-30T11:28:19.284842+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 7.5,
@@ -12242,7 +12242,7 @@
     },
     "KDC": {
       "symbol": "KDC",
-      "fetched_at": "2026-07-27T09:33:08.435905+07:00",
+      "fetched_at": "2026-07-30T11:27:50.248027+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 27.13,
@@ -12380,7 +12380,7 @@
     },
     "DXS": {
       "symbol": "DXS",
-      "fetched_at": "2026-07-27T09:32:07.813522+07:00",
+      "fetched_at": "2026-07-30T11:26:56.920806+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 14.08,
@@ -12443,7 +12443,7 @@
     },
     "NT2": {
       "symbol": "NT2",
-      "fetched_at": "2026-07-27T09:33:33.336324+07:00",
+      "fetched_at": "2026-07-30T11:28:13.971708+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 10.5,
@@ -12721,7 +12721,7 @@
     },
     "GAS": {
       "symbol": "GAS",
-      "fetched_at": "2026-07-27T09:32:25.835476+07:00",
+      "fetched_at": "2026-07-30T11:27:13.096467+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 14.98,
@@ -12847,7 +12847,7 @@
     },
     "SZC": {
       "symbol": "SZC",
-      "fetched_at": "2026-07-27T09:34:32.876264+07:00",
+      "fetched_at": "2026-07-30T11:29:07.820196+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 19.2,
@@ -12910,42 +12910,42 @@
     },
     "BWE": {
       "symbol": "BWE",
-      "fetched_at": "2026-07-27T09:31:28.270654+07:00",
+      "fetched_at": "2026-07-30T11:26:26.058046+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 10.59,
-        "pb": 1.66,
-        "roe": 4.51,
-        "roa": 6.53,
-        "eps": 4477.88,
-        "bvps": 28603.0,
-        "beta": 0.38,
+        "pe": 12.51,
+        "pb": 1.78,
+        "roe": 4.56,
+        "roa": 5.74,
+        "eps": 3875.95,
+        "bvps": 27280.0,
+        "beta": 0.45,
         "div_yield": 3.0,
-        "gross_margin": 37.14,
-        "net_margin": 20.09,
-        "quick_ratio": 1.01,
-        "interest_cov": 4.17,
-        "ev_ebitda": 15.93
+        "gross_margin": 55.6,
+        "net_margin": 31.06,
+        "quick_ratio": 0.86,
+        "interest_cov": 4.36,
+        "ev_ebitda": 15.61
       },
       "income": {
-        "revenue": 1325415589.0,
-        "gross_profit": 508614468.0,
-        "net_profit": 295445861.0,
-        "operating_profit": 322039750.0,
-        "eps": 1115.0,
-        "rev_growth_qoq": 0.4345,
-        "profit_growth_qoq": 1.0021,
-        "rev_growth_yoy": 0.4345,
-        "profit_growth_yoy": 1.0021,
+        "revenue": 903417770.0,
+        "gross_profit": 502293010.0,
+        "net_profit": 264370511.0,
+        "operating_profit": 339979148.0,
+        "eps": 998.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 991038668.0
       },
       "balance": {
-        "total_assets": 15150292560.0,
-        "equity": 6290666930.0,
-        "total_liab": 8859625630.0,
-        "short_debt": 2004141092.0,
-        "long_debt": 5066102622.0,
-        "debt_to_equity": 1.408
+        "total_assets": 14907472232.0,
+        "equity": 5999675657.0,
+        "total_liab": 8907796574.0,
+        "short_debt": 2116682076.0,
+        "long_debt": 4973507768.0,
+        "debt_to_equity": 1.485
       },
       "cashflow": {
         "cf_operating": 1088372266.0,
@@ -12962,18 +12962,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
         "fundamental": 7,
         "cashflow": 10,
-        "growth": 10,
-        "total": 27,
+        "growth": -2,
+        "total": 15,
         "max": 38
       }
     },
     "NAB": {
       "symbol": "NAB",
-      "fetched_at": "2026-07-27T09:33:29.255943+07:00",
+      "fetched_at": "2026-07-30T11:28:08.063713+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 5.16,
@@ -13088,7 +13088,7 @@
     },
     "BAF": {
       "symbol": "BAF",
-      "fetched_at": "2026-07-27T09:31:04.954658+07:00",
+      "fetched_at": "2026-07-30T11:26:06.060835+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 130.74,
@@ -13151,7 +13151,7 @@
     },
     "ANV": {
       "symbol": "ANV",
-      "fetched_at": "2026-07-27T09:31:04.953466+07:00",
+      "fetched_at": "2026-07-30T11:26:06.059656+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.54,
@@ -13214,7 +13214,7 @@
     },
     "BCM": {
       "symbol": "BCM",
-      "fetched_at": "2026-07-27T09:31:04.955804+07:00",
+      "fetched_at": "2026-07-30T11:26:06.062033+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 18.38,
@@ -13277,7 +13277,7 @@
     },
     "BID": {
       "symbol": "BID",
-      "fetched_at": "2026-07-27T09:31:15.656183+07:00",
+      "fetched_at": "2026-07-30T11:26:16.839543+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.09,
@@ -13337,7 +13337,7 @@
     },
     "BMP": {
       "symbol": "BMP",
-      "fetched_at": "2026-07-27T09:31:15.660493+07:00",
+      "fetched_at": "2026-07-30T11:26:16.842875+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.8,
@@ -13400,7 +13400,7 @@
     },
     "BSI": {
       "symbol": "BSI",
-      "fetched_at": "2026-07-27T09:31:16.102329+07:00",
+      "fetched_at": "2026-07-30T11:26:16.853237+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 21.84,
@@ -13460,7 +13460,7 @@
     },
     "CII": {
       "symbol": "CII",
-      "fetched_at": "2026-07-27T09:31:28.274181+07:00",
+      "fetched_at": "2026-07-30T11:26:26.996007+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 170.93,
@@ -13523,7 +13523,7 @@
     },
     "CTD": {
       "symbol": "CTD",
-      "fetched_at": "2026-07-27T09:31:37.211325+07:00",
+      "fetched_at": "2026-07-30T11:26:35.057767+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.47,
@@ -13586,7 +13586,7 @@
     },
     "CMG": {
       "symbol": "CMG",
-      "fetched_at": "2026-07-27T09:31:30.261429+07:00",
+      "fetched_at": "2026-07-30T11:26:27.310035+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 18.76,
@@ -13649,7 +13649,7 @@
     },
     "BVH": {
       "symbol": "BVH",
-      "fetched_at": "2026-07-27T09:31:26.514485+07:00",
+      "fetched_at": "2026-07-30T11:26:25.841910+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 14.16,
@@ -13709,42 +13709,42 @@
     },
     "CTR": {
       "symbol": "CTR",
-      "fetched_at": "2026-07-27T09:31:40.633469+07:00",
+      "fetched_at": "2026-07-30T11:26:36.473685+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 16.27,
-        "pb": 4.72,
-        "roe": 7.76,
-        "roa": 7.62,
-        "eps": 5241.85,
-        "bvps": 18086.0,
-        "beta": 1.02,
+        "pe": 16.58,
+        "pb": 4.54,
+        "roe": 8.14,
+        "roa": 7.79,
+        "eps": 5169.64,
+        "bvps": 18872.0,
+        "beta": 1.25,
         "div_yield": 3.0,
-        "gross_margin": 7.46,
-        "net_margin": 4.1,
-        "quick_ratio": 1.11,
-        "interest_cov": 8.66,
+        "gross_margin": 6.24,
+        "net_margin": 4.26,
+        "quick_ratio": 1.13,
+        "interest_cov": 9.85,
         "ev_ebitda": 0.0
       },
       "income": {
-        "revenue": 3235913722.0,
-        "gross_profit": 234117891.0,
-        "net_profit": 144983990.0,
-        "operating_profit": 179644604.0,
-        "eps": 1267.0,
-        "rev_growth_qoq": 0.1817,
-        "profit_growth_qoq": 0.1913,
-        "rev_growth_yoy": 0.1817,
-        "profit_growth_yoy": 0.1913,
+        "revenue": 3965175719.0,
+        "gross_profit": 247534754.0,
+        "net_profit": 168940075.0,
+        "operating_profit": 208184780.0,
+        "eps": 1476.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 599717126.0
       },
       "balance": {
-        "total_assets": 8185325320.0,
-        "equity": 2068772359.0,
-        "total_liab": 6116552960.0,
-        "short_debt": 1760320373.0,
-        "long_debt": 502591431.0,
-        "debt_to_equity": 2.957
+        "total_assets": 7782911299.0,
+        "equity": 2158733292.0,
+        "total_liab": 5624178007.0,
+        "short_debt": 1213453047.0,
+        "long_debt": 544011899.0,
+        "debt_to_equity": 2.605
       },
       "cashflow": {
         "cf_operating": 1455415537.0,
@@ -13761,53 +13761,53 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
         "fundamental": 0,
         "cashflow": 10,
-        "growth": 6,
-        "total": 16,
+        "growth": -2,
+        "total": 8,
         "max": 38
       }
     },
     "DBC": {
       "symbol": "DBC",
-      "fetched_at": "2026-07-27T09:31:49.376946+07:00",
+      "fetched_at": "2026-07-30T11:26:43.747978+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 6.34,
-        "pb": 1.29,
-        "roe": 1.86,
-        "roa": 9.96,
-        "eps": 4265.85,
-        "bvps": 20966.0,
-        "beta": 1.17,
+        "pe": 5.8,
+        "pb": 1.32,
+        "roe": 4.43,
+        "roa": 10.89,
+        "eps": 4698.43,
+        "bvps": 20580.0,
+        "beta": 1.26,
         "div_yield": 0.0,
-        "gross_margin": 12.13,
-        "net_margin": 3.98,
-        "quick_ratio": 0.47,
-        "interest_cov": 3.91,
-        "ev_ebitda": 19.35
+        "gross_margin": 13.47,
+        "net_margin": 7.08,
+        "quick_ratio": 0.56,
+        "interest_cov": 6.85,
+        "ev_ebitda": 15.62
       },
       "income": {
-        "revenue": 3820095843.0,
-        "gross_profit": 825063690.0,
-        "net_profit": 506971329.0,
-        "operating_profit": 532492080.0,
-        "eps": 1515.0,
-        "rev_growth_qoq": 0.0584,
-        "profit_growth_qoq": -0.0025,
-        "rev_growth_yoy": 0.0584,
-        "profit_growth_yoy": -0.0025,
+        "revenue": 4841245769.0,
+        "gross_profit": 652166188.0,
+        "net_profit": 342955569.0,
+        "operating_profit": 361938267.0,
+        "eps": 1025.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 1506767999.0
       },
       "balance": {
-        "total_assets": 15976734904.0,
-        "equity": 8069062499.0,
-        "total_liab": 7907672406.0,
-        "short_debt": 4770217750.0,
-        "long_debt": 1106441454.0,
-        "debt_to_equity": 0.98
+        "total_assets": 15561866475.0,
+        "equity": 7920481866.0,
+        "total_liab": 7641384610.0,
+        "short_debt": 4788257470.0,
+        "long_debt": 1022249176.0,
+        "debt_to_equity": 0.965
       },
       "cashflow": {
         "cf_operating": 1292366416.0,
@@ -13824,18 +13824,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
         "fundamental": 10,
         "cashflow": 5,
-        "growth": 0,
-        "total": 15,
+        "growth": -2,
+        "total": 13,
         "max": 38
       }
     },
     "CTG": {
       "symbol": "CTG",
-      "fetched_at": "2026-07-27T09:31:39.204258+07:00",
+      "fetched_at": "2026-07-30T11:26:35.068008+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 5.55,
@@ -13895,7 +13895,7 @@
     },
     "DIG": {
       "symbol": "DIG",
-      "fetched_at": "2026-07-27T09:31:56.505078+07:00",
+      "fetched_at": "2026-07-30T11:26:47.471549+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 16.34,
@@ -13958,7 +13958,7 @@
     },
     "DPM": {
       "symbol": "DPM",
-      "fetched_at": "2026-07-27T09:32:01.098453+07:00",
+      "fetched_at": "2026-07-30T11:26:53.063878+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 10.03,
@@ -14021,42 +14021,42 @@
     },
     "DGW": {
       "symbol": "DGW",
-      "fetched_at": "2026-07-27T09:31:51.396218+07:00",
+      "fetched_at": "2026-07-30T11:26:47.344490+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 15.63,
-        "pb": 2.48,
-        "roe": 4.72,
-        "roa": 5.98,
-        "eps": 2495.9,
-        "bvps": 15701.0,
-        "beta": 1.25,
+        "pe": 17.06,
+        "pb": 2.74,
+        "roe": 5.19,
+        "roa": 6.23,
+        "eps": 2415.26,
+        "bvps": 15016.0,
+        "beta": 1.45,
         "div_yield": 1.0,
-        "gross_margin": 8.67,
-        "net_margin": 2.02,
-        "quick_ratio": 0.81,
-        "interest_cov": 6.3,
+        "gross_margin": 8.8,
+        "net_margin": 2.28,
+        "quick_ratio": 0.95,
+        "interest_cov": 4.91,
         "ev_ebitda": 0.0
       },
       "income": {
-        "revenue": 5731443019.0,
-        "gross_profit": 487328160.0,
-        "net_profit": 115750633.0,
-        "operating_profit": 140848467.0,
-        "eps": 528.0,
-        "rev_growth_qoq": 0.0384,
-        "profit_growth_qoq": 0.0931,
-        "rev_growth_yoy": 0.0384,
-        "profit_growth_yoy": 0.0931,
+        "revenue": 7390637383.0,
+        "gross_profit": 650563172.0,
+        "net_profit": 166440415.0,
+        "operating_profit": 177973302.0,
+        "eps": 759.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 547331237.0
       },
       "balance": {
-        "total_assets": 11256852733.0,
-        "equity": 3472469714.0,
-        "total_liab": 7784383019.0,
-        "short_debt": 2899171034.0,
+        "total_assets": 9216082516.0,
+        "equity": 3290930866.0,
+        "total_liab": 5925151650.0,
+        "short_debt": 3182236397.0,
         "long_debt": null,
-        "debt_to_equity": 2.242
+        "debt_to_equity": 1.8
       },
       "cashflow": {
         "cf_operating": -42388529.0,
@@ -14073,53 +14073,53 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 3,
         "cashflow": -10,
-        "growth": 2,
-        "total": -8,
+        "growth": -2,
+        "total": -9,
         "max": 38
       }
     },
     "DCM": {
       "symbol": "DCM",
-      "fetched_at": "2026-07-27T09:31:51.389393+07:00",
+      "fetched_at": "2026-07-30T11:26:43.988925+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 8.95,
-        "pb": 1.61,
-        "roe": 3.66,
-        "roa": 11.18,
-        "eps": 3652.8,
-        "bvps": 20288.0,
-        "beta": 1.03,
-        "div_yield": 6.0,
-        "gross_margin": 27.65,
-        "net_margin": 8.6,
-        "quick_ratio": 1.61,
-        "interest_cov": 25.34,
-        "ev_ebitda": 20.07
+        "pe": 10.77,
+        "pb": 1.86,
+        "roe": 3.15,
+        "roa": 10.87,
+        "eps": 3449.28,
+        "bvps": 19936.0,
+        "beta": 1.26,
+        "div_yield": 5.0,
+        "gross_margin": 21.98,
+        "net_margin": 10.98,
+        "quick_ratio": 1.76,
+        "interest_cov": 20.94,
+        "ev_ebitda": 27.15
       },
       "income": {
-        "revenue": 6037272335.0,
-        "gross_profit": 1201910442.0,
-        "net_profit": 804673606.0,
-        "operating_profit": 892089140.0,
-        "eps": 1474.0,
-        "rev_growth_qoq": 0.7722,
-        "profit_growth_qoq": 0.9559,
-        "rev_growth_yoy": 0.7722,
-        "profit_growth_yoy": 0.9559,
+        "revenue": 2988230261.0,
+        "gross_profit": 656733027.0,
+        "net_profit": 327687758.0,
+        "operating_profit": 378879211.0,
+        "eps": 574.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 1959812434.0
       },
       "balance": {
-        "total_assets": 17645135058.0,
-        "equity": 10740373219.0,
-        "total_liab": 6904761838.0,
-        "short_debt": 2225615950.0,
-        "long_debt": 56800885.0,
-        "debt_to_equity": 0.643
+        "total_assets": 16505617050.0,
+        "equity": 10554306133.0,
+        "total_liab": 5951310916.0,
+        "short_debt": 1921478112.0,
+        "long_debt": 72273589.0,
+        "debt_to_equity": 0.564
       },
       "cashflow": {
         "cf_operating": -775841653.0,
@@ -14136,18 +14136,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 10,
+        "fundamental": 7,
         "cashflow": -10,
-        "growth": 10,
-        "total": 10,
+        "growth": -2,
+        "total": -5,
         "max": 38
       }
     },
     "EIB": {
       "symbol": "EIB",
-      "fetched_at": "2026-07-27T09:32:11.623547+07:00",
+      "fetched_at": "2026-07-30T11:27:02.122445+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 34.9,
@@ -14207,7 +14207,7 @@
     },
     "DSE": {
       "symbol": "DSE",
-      "fetched_at": "2026-07-27T09:32:02.424615+07:00",
+      "fetched_at": "2026-07-30T11:26:53.420069+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 32.82,
@@ -14267,7 +14267,7 @@
     },
     "EVF": {
       "symbol": "EVF",
-      "fetched_at": "2026-07-27T09:32:14.950462+07:00",
+      "fetched_at": "2026-07-30T11:27:03.607886+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.6,
@@ -14327,7 +14327,7 @@
     },
     "FRT": {
       "symbol": "FRT",
-      "fetched_at": "2026-07-27T09:32:17.851015+07:00",
+      "fetched_at": "2026-07-30T11:27:05.880566+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 28.2,
@@ -14390,42 +14390,42 @@
     },
     "FPT": {
       "symbol": "FPT",
-      "fetched_at": "2026-07-27T09:32:17.083118+07:00",
+      "fetched_at": "2026-07-30T11:27:04.735698+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 15.92,
-        "pb": 3.73,
-        "roe": 5.78,
-        "roa": 11.48,
-        "eps": 6016.81,
-        "bvps": 25682.0,
-        "beta": 0.64,
+        "pe": 15.53,
+        "pb": 3.7,
+        "roe": 5.89,
+        "roa": 11.54,
+        "eps": 5988.42,
+        "bvps": 25141.0,
+        "beta": 0.88,
         "div_yield": 2.0,
-        "gross_margin": 34.88,
-        "net_margin": 14.77,
-        "quick_ratio": 1.35,
-        "interest_cov": 17.9,
-        "ev_ebitda": 29.69
+        "gross_margin": 37.89,
+        "net_margin": 16.87,
+        "quick_ratio": 1.42,
+        "interest_cov": 15.45,
+        "ev_ebitda": 29.68
       },
       "income": {
-        "revenue": 16624713040.0,
-        "gross_profit": 6021040043.0,
-        "net_profit": 2257433265.0,
-        "operating_profit": 3129379259.0,
-        "eps": 1529.0,
-        "rev_growth_qoq": 0.0353,
-        "profit_growth_qoq": 0.0382,
-        "rev_growth_yoy": 0.0353,
-        "profit_growth_yoy": 0.0382,
+        "revenue": 17204521225.0,
+        "gross_profit": 6518866479.0,
+        "net_profit": 2434841435.0,
+        "operating_profit": 3346375733.0,
+        "eps": 1036.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 9376127630.0
       },
       "balance": {
-        "total_assets": 88089621780.0,
-        "equity": 43751466293.0,
-        "total_liab": 44338155487.0,
-        "short_debt": 19169697498.0,
-        "long_debt": 1903789988.0,
-        "debt_to_equity": 1.013
+        "total_assets": 82738304931.0,
+        "equity": 42830523910.0,
+        "total_liab": 39907781020.0,
+        "short_debt": 16906417105.0,
+        "long_debt": 2681435422.0,
+        "debt_to_equity": 0.932
       },
       "cashflow": {
         "cf_operating": 10136043916.0,
@@ -14442,18 +14442,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
         "fundamental": 0,
         "cashflow": 10,
-        "growth": 2,
-        "total": 12,
+        "growth": -2,
+        "total": 8,
         "max": 38
       }
     },
     "FTS": {
       "symbol": "FTS",
-      "fetched_at": "2026-07-27T09:32:21.969504+07:00",
+      "fetched_at": "2026-07-30T11:27:11.543673+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 26.51,
@@ -14513,7 +14513,7 @@
     },
     "GMD": {
       "symbol": "GMD",
-      "fetched_at": "2026-07-27T09:32:33.003920+07:00",
+      "fetched_at": "2026-07-30T11:27:21.643865+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 15.51,
@@ -14576,7 +14576,7 @@
     },
     "GVR": {
       "symbol": "GVR",
-      "fetched_at": "2026-07-27T09:32:39.022452+07:00",
+      "fetched_at": "2026-07-30T11:27:22.852014+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 19.1,
@@ -14639,42 +14639,42 @@
     },
     "HAG": {
       "symbol": "HAG",
-      "fetched_at": "2026-07-27T09:32:39.575301+07:00",
+      "fetched_at": "2026-07-30T11:27:24.631471+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 9.2,
-        "pb": 1.57,
-        "roe": 6.38,
-        "roa": 8.13,
-        "eps": 1907.98,
-        "bvps": 11192.0,
-        "beta": 0.92,
+        "pe": 11.97,
+        "pb": 1.3,
+        "roe": 3.52,
+        "roa": 5.79,
+        "eps": 1361.53,
+        "bvps": 12563.0,
+        "beta": 0.73,
         "div_yield": 0.0,
-        "gross_margin": 30.82,
-        "net_margin": 50.66,
-        "quick_ratio": 0.79,
-        "interest_cov": -0.03,
-        "ev_ebitda": 45.74
+        "gross_margin": 40.22,
+        "net_margin": 22.8,
+        "quick_ratio": 0.94,
+        "interest_cov": 3.12,
+        "ev_ebitda": 23.87
       },
       "income": {
-        "revenue": 2329411705.0,
-        "gross_profit": 887648561.0,
-        "net_profit": 483037159.0,
-        "operating_profit": 525896862.0,
-        "eps": 457.0,
-        "rev_growth_qoq": 0.6883,
-        "profit_growth_qoq": 0.4178,
-        "rev_growth_yoy": 0.6883,
-        "profit_growth_yoy": 0.4178,
+        "revenue": 1895404577.0,
+        "gross_profit": 762353793.0,
+        "net_profit": 415963585.0,
+        "operating_profit": 499237735.0,
+        "eps": 392.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 2122808772.0
       },
       "balance": {
-        "total_assets": 26892470553.0,
-        "equity": 14184637581.0,
-        "total_liab": 12707832972.0,
-        "short_debt": 6208195624.0,
-        "long_debt": 1693342718.0,
-        "debt_to_equity": 0.896
+        "total_assets": 27743911994.0,
+        "equity": 13284071186.0,
+        "total_liab": 14459840808.0,
+        "short_debt": 6256559446.0,
+        "long_debt": 2114736058.0,
+        "debt_to_equity": 1.089
       },
       "cashflow": {
         "cf_operating": 940458059.0,
@@ -14691,18 +14691,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
-        "fundamental": 13,
+        "fundamental": 7,
         "cashflow": 0,
-        "growth": 10,
-        "total": 23,
+        "growth": -2,
+        "total": 5,
         "max": 38
       }
     },
     "HDB": {
       "symbol": "HDB",
-      "fetched_at": "2026-07-27T09:32:44.279583+07:00",
+      "fetched_at": "2026-07-30T11:27:30.181890+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.39,
@@ -14762,7 +14762,7 @@
     },
     "HCM": {
       "symbol": "HCM",
-      "fetched_at": "2026-07-27T09:32:40.456104+07:00",
+      "fetched_at": "2026-07-30T11:27:26.097981+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 17.67,
@@ -14822,7 +14822,7 @@
     },
     "HDC": {
       "symbol": "HDC",
-      "fetched_at": "2026-07-27T09:32:49.086170+07:00",
+      "fetched_at": "2026-07-30T11:27:32.623253+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.39,
@@ -14885,7 +14885,7 @@
     },
     "HDG": {
       "symbol": "HDG",
-      "fetched_at": "2026-07-27T09:32:50.168009+07:00",
+      "fetched_at": "2026-07-30T11:27:34.399682+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.78,
@@ -14948,7 +14948,7 @@
     },
     "HHV": {
       "symbol": "HHV",
-      "fetched_at": "2026-07-27T09:32:50.763920+07:00",
+      "fetched_at": "2026-07-30T11:27:36.273118+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 10.42,
@@ -15011,42 +15011,42 @@
     },
     "HSG": {
       "symbol": "HSG",
-      "fetched_at": "2026-07-27T09:32:58.725285+07:00",
+      "fetched_at": "2026-07-30T11:27:41.950533+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 14.72,
-        "pb": 0.81,
-        "roe": 0.55,
-        "roa": 3.27,
-        "eps": 1008.57,
-        "bvps": 18320.0,
-        "beta": 1.03,
+        "pe": 25.71,
+        "pb": 1.05,
+        "roe": 2.43,
+        "roa": 2.41,
+        "eps": 739.08,
+        "bvps": 18126.0,
+        "beta": 1.35,
         "div_yield": 3.0,
-        "gross_margin": 11.2,
-        "net_margin": 0.74,
-        "quick_ratio": 0.42,
-        "interest_cov": 2.85,
+        "gross_margin": 12.75,
+        "net_margin": 2.88,
+        "quick_ratio": 0.56,
+        "interest_cov": 7.82,
         "ev_ebitda": 0.0
       },
       "income": {
-        "revenue": 9509181798.0,
-        "gross_profit": 1212886792.0,
-        "net_profit": 273775396.0,
-        "operating_profit": 254712196.0,
+        "revenue": 8356617953.0,
+        "gross_profit": 1020972149.0,
+        "net_profit": 84697300.0,
+        "operating_profit": 91247486.0,
         "eps": null,
-        "rev_growth_qoq": 0.0,
-        "profit_growth_qoq": 0.0,
-        "rev_growth_yoy": 0.0,
-        "profit_growth_yoy": 0.0,
+        "rev_growth_qoq": -0.0032,
+        "profit_growth_qoq": 0.3573,
+        "rev_growth_yoy": null,
+        "profit_growth_yoy": null,
         "net_profit_year": 735018776.0
       },
       "balance": {
-        "total_assets": 21058290984.0,
-        "equity": 11376307848.0,
-        "total_liab": 9681983136.0,
-        "short_debt": 6143207254.0,
+        "total_assets": 19139652761.0,
+        "equity": 11255635965.0,
+        "total_liab": 7884016796.0,
+        "short_debt": 4630410999.0,
         "long_debt": null,
-        "debt_to_equity": 0.851
+        "debt_to_equity": 0.7
       },
       "cashflow": {
         "cf_operating": 3685175431.0,
@@ -15063,18 +15063,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q2",
+      "period": "2026-Q3",
       "finance_score": {
-        "fundamental": 9,
+        "fundamental": -5,
         "cashflow": 10,
-        "growth": -2,
-        "total": 17,
+        "growth": 4,
+        "total": 9,
         "max": 38
       }
     },
     "HPG": {
       "symbol": "HPG",
-      "fetched_at": "2026-07-27T09:32:53.677165+07:00",
+      "fetched_at": "2026-07-30T11:27:40.022547+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.98,
@@ -15137,7 +15137,7 @@
     },
     "HT1": {
       "symbol": "HT1",
-      "fetched_at": "2026-07-27T09:33:00.453067+07:00",
+      "fetched_at": "2026-07-30T11:27:43.009313+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 30.7,
@@ -15200,7 +15200,7 @@
     },
     "IMP": {
       "symbol": "IMP",
-      "fetched_at": "2026-07-27T09:33:03.011849+07:00",
+      "fetched_at": "2026-07-30T11:27:44.928361+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 22.49,
@@ -15263,7 +15263,7 @@
     },
     "KBC": {
       "symbol": "KBC",
-      "fetched_at": "2026-07-27T09:33:03.277517+07:00",
+      "fetched_at": "2026-07-30T11:27:48.366588+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 14.0,
@@ -15326,7 +15326,7 @@
     },
     "KOS": {
       "symbol": "KOS",
-      "fetched_at": "2026-07-27T09:33:12.702413+07:00",
+      "fetched_at": "2026-07-30T11:27:53.217554+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 452.27,
@@ -15389,7 +15389,7 @@
     },
     "LPB": {
       "symbol": "LPB",
-      "fetched_at": "2026-07-27T09:33:12.890642+07:00",
+      "fetched_at": "2026-07-30T11:27:57.123519+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.69,
@@ -15449,7 +15449,7 @@
     },
     "MBB": {
       "symbol": "MBB",
-      "fetched_at": "2026-07-27T09:33:19.793592+07:00",
+      "fetched_at": "2026-07-30T11:27:59.974024+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.36,
@@ -15509,42 +15509,42 @@
     },
     "MSN": {
       "symbol": "MSN",
-      "fetched_at": "2026-07-27T09:33:22.248470+07:00",
+      "fetched_at": "2026-07-30T11:28:01.867259+07:00",
       "schema_version": 8,
       "ratio": {
-        "pe": 27.94,
-        "pb": 2.6,
-        "roe": 3.35,
-        "roa": 3.18,
-        "eps": 2756.2,
-        "bvps": 29647.0,
-        "beta": 1.07,
+        "pe": 35.78,
+        "pb": 2.87,
+        "roe": 2.86,
+        "roa": 2.48,
+        "eps": 2264.03,
+        "bvps": 28263.0,
+        "beta": 1.24,
         "div_yield": 0.0,
-        "gross_margin": 31.21,
-        "net_margin": 9.87,
-        "quick_ratio": 0.62,
-        "interest_cov": 3.17,
-        "ev_ebitda": 29.38
+        "gross_margin": 30.44,
+        "net_margin": 8.82,
+        "quick_ratio": 0.58,
+        "interest_cov": 2.28,
+        "ev_ebitda": 27.0
       },
       "income": {
-        "revenue": 18315140000.0,
-        "gross_profit": 5689428000.0,
-        "net_profit": 1032192000.0,
-        "operating_profit": 1624535000.0,
-        "eps": 682.0,
-        "rev_growth_qoq": -0.0308,
-        "profit_growth_qoq": 1.6231,
-        "rev_growth_yoy": -0.0308,
-        "profit_growth_yoy": 1.6231,
+        "revenue": 21163826000.0,
+        "gross_profit": 6441502000.0,
+        "net_profit": 1208655000.0,
+        "operating_profit": 2135503000.0,
+        "eps": 795.0,
+        "rev_growth_qoq": 0.0,
+        "profit_growth_qoq": 0.0,
+        "rev_growth_yoy": 0.0,
+        "profit_growth_yoy": 0.0,
         "net_profit_year": 4108306000.0
       },
       "balance": {
-        "total_assets": 128963171000.0,
-        "equity": 45078644000.0,
-        "total_liab": 83884527000.0,
-        "short_debt": 24330984000.0,
-        "long_debt": 40546194000.0,
-        "debt_to_equity": 1.861
+        "total_assets": 121351209000.0,
+        "equity": 42973152000.0,
+        "total_liab": 78378057000.0,
+        "short_debt": 23925026000.0,
+        "long_debt": 37009316000.0,
+        "debt_to_equity": 1.824
       },
       "cashflow": {
         "cf_operating": 1369570000.0,
@@ -15561,18 +15561,18 @@
         "growth_available": true,
         "incomplete": false
       },
-      "period": "2026-Q1",
+      "period": "2026-Q2",
       "finance_score": {
         "fundamental": -8,
         "cashflow": 0,
-        "growth": 4,
-        "total": -4,
+        "growth": -2,
+        "total": -10,
         "max": 38
       }
     },
     "MSB": {
       "symbol": "MSB",
-      "fetched_at": "2026-07-27T09:33:19.811234+07:00",
+      "fetched_at": "2026-07-30T11:28:00.585949+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.02,
@@ -15632,7 +15632,7 @@
     },
     "MWG": {
       "symbol": "MWG",
-      "fetched_at": "2026-07-27T09:33:22.303265+07:00",
+      "fetched_at": "2026-07-30T11:28:05.292537+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 18.51,
@@ -15695,7 +15695,7 @@
     },
     "NKG": {
       "symbol": "NKG",
-      "fetched_at": "2026-07-27T09:33:30.468160+07:00",
+      "fetched_at": "2026-07-30T11:28:09.301003+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 32.27,
@@ -15758,7 +15758,7 @@
     },
     "NVL": {
       "symbol": "NVL",
-      "fetched_at": "2026-07-27T09:33:41.488009+07:00",
+      "fetched_at": "2026-07-30T11:28:17.337487+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 15.47,
@@ -15821,7 +15821,7 @@
     },
     "PNJ": {
       "symbol": "PNJ",
-      "fetched_at": "2026-07-27T09:33:57.226572+07:00",
+      "fetched_at": "2026-07-30T11:28:35.797560+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.59,
@@ -15884,7 +15884,7 @@
     },
     "REE": {
       "symbol": "REE",
-      "fetched_at": "2026-07-27T09:34:06.802423+07:00",
+      "fetched_at": "2026-07-30T11:28:45.881261+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.16,
@@ -15947,7 +15947,7 @@
     },
     "SAB": {
       "symbol": "SAB",
-      "fetched_at": "2026-07-27T09:34:12.004060+07:00",
+      "fetched_at": "2026-07-30T11:28:46.786741+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.4,
@@ -16010,7 +16010,7 @@
     },
     "SBT": {
       "symbol": "SBT",
-      "fetched_at": "2026-07-27T09:34:13.750300+07:00",
+      "fetched_at": "2026-07-30T11:28:46.982187+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.44,
@@ -16073,7 +16073,7 @@
     },
     "SCS": {
       "symbol": "SCS",
-      "fetched_at": "2026-07-27T09:34:13.828865+07:00",
+      "fetched_at": "2026-07-30T11:28:48.565884+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 8.27,
@@ -16136,7 +16136,7 @@
     },
     "SHB": {
       "symbol": "SHB",
-      "fetched_at": "2026-07-27T09:34:16.869592+07:00",
+      "fetched_at": "2026-07-30T11:28:54.706914+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 5.67,
@@ -16196,7 +16196,7 @@
     },
     "SIP": {
       "symbol": "SIP",
-      "fetched_at": "2026-07-27T09:34:21.588325+07:00",
+      "fetched_at": "2026-07-30T11:28:56.307990+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 8.53,
@@ -16259,7 +16259,7 @@
     },
     "SJS": {
       "symbol": "SJS",
-      "fetched_at": "2026-07-27T09:34:23.326574+07:00",
+      "fetched_at": "2026-07-30T11:28:57.017516+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 38.28,
@@ -16322,7 +16322,7 @@
     },
     "STB": {
       "symbol": "STB",
-      "fetched_at": "2026-07-27T09:34:32.719297+07:00",
+      "fetched_at": "2026-07-30T11:29:06.514335+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 18.41,
@@ -16382,7 +16382,7 @@
     },
     "SSI": {
       "symbol": "SSI",
-      "fetched_at": "2026-07-27T09:34:26.256223+07:00",
+      "fetched_at": "2026-07-30T11:29:03.663330+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 20.17,
@@ -16442,7 +16442,7 @@
     },
     "TCB": {
       "symbol": "TCB",
-      "fetched_at": "2026-07-27T09:34:34.223361+07:00",
+      "fetched_at": "2026-07-30T11:29:08.721441+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.16,
@@ -16502,7 +16502,7 @@
     },
     "TCH": {
       "symbol": "TCH",
-      "fetched_at": "2026-07-27T09:34:39.057944+07:00",
+      "fetched_at": "2026-07-30T11:29:13.940509+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 46.56,
@@ -16565,7 +16565,7 @@
     },
     "TPB": {
       "symbol": "TPB",
-      "fetched_at": "2026-07-27T09:34:43.181273+07:00",
+      "fetched_at": "2026-07-30T11:29:15.286961+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.16,
@@ -16625,7 +16625,7 @@
     },
     "VCB": {
       "symbol": "VCB",
-      "fetched_at": "2026-07-27T09:34:43.302032+07:00",
+      "fetched_at": "2026-07-30T11:29:16.829243+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.66,
@@ -16685,7 +16685,7 @@
     },
     "VCG": {
       "symbol": "VCG",
-      "fetched_at": "2026-07-27T09:34:44.691597+07:00",
+      "fetched_at": "2026-07-30T11:29:17.037836+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 3.53,
@@ -16748,7 +16748,7 @@
     },
     "CAP": {
       "symbol": "CAP",
-      "fetched_at": "2026-07-27T09:35:37.965044+07:00",
+      "fetched_at": "2026-07-30T11:30:01.405378+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 24.28,
@@ -16811,7 +16811,7 @@
     },
     "VCI": {
       "symbol": "VCI",
-      "fetched_at": "2026-07-27T09:34:49.774866+07:00",
+      "fetched_at": "2026-07-30T11:29:22.186200+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 27.26,
@@ -16871,7 +16871,7 @@
     },
     "BVS": {
       "symbol": "BVS",
-      "fetched_at": "2026-07-27T09:35:33.879859+07:00",
+      "fetched_at": "2026-07-30T11:30:01.032815+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.89,
@@ -16925,7 +16925,7 @@
     },
     "CEO": {
       "symbol": "CEO",
-      "fetched_at": "2026-07-27T09:35:40.449406+07:00",
+      "fetched_at": "2026-07-30T11:30:04.207549+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 63.96,
@@ -16988,7 +16988,7 @@
     },
     "DTD": {
       "symbol": "DTD",
-      "fetched_at": "2026-07-27T09:35:45.281398+07:00",
+      "fetched_at": "2026-07-30T11:30:09.610583+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 3.99,
@@ -17051,7 +17051,7 @@
     },
     "DP3": {
       "symbol": "DP3",
-      "fetched_at": "2026-07-27T09:35:42.492966+07:00",
+      "fetched_at": "2026-07-30T11:30:04.414839+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 8.91,
@@ -17114,7 +17114,7 @@
     },
     "DVM": {
       "symbol": "DVM",
-      "fetched_at": "2026-07-27T09:35:50.387858+07:00",
+      "fetched_at": "2026-07-30T11:30:12.499142+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.62,
@@ -17169,7 +17169,7 @@
     },
     "DXP": {
       "symbol": "DXP",
-      "fetched_at": "2026-07-27T09:35:55.658189+07:00",
+      "fetched_at": "2026-07-30T11:30:12.699470+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 5.52,
@@ -17232,7 +17232,7 @@
     },
     "HUT": {
       "symbol": "HUT",
-      "fetched_at": "2026-07-27T09:35:56.337489+07:00",
+      "fetched_at": "2026-07-30T11:30:12.737447+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 33.58,
@@ -17295,7 +17295,7 @@
     },
     "IDC": {
       "symbol": "IDC",
-      "fetched_at": "2026-07-27T09:35:58.476529+07:00",
+      "fetched_at": "2026-07-30T11:30:18.038797+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.46,
@@ -17358,7 +17358,7 @@
     },
     "IDV": {
       "symbol": "IDV",
-      "fetched_at": "2026-07-27T09:36:03.074055+07:00",
+      "fetched_at": "2026-07-30T11:30:20.897673+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 11.09,
@@ -17421,7 +17421,7 @@
     },
     "L14": {
       "symbol": "L14",
-      "fetched_at": "2026-07-27T09:36:06.112392+07:00",
+      "fetched_at": "2026-07-30T11:30:22.155588+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 49.51,
@@ -17484,7 +17484,7 @@
     },
     "L18": {
       "symbol": "L18",
-      "fetched_at": "2026-07-27T09:36:07.419409+07:00",
+      "fetched_at": "2026-07-30T11:30:22.158741+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.81,
@@ -17547,7 +17547,7 @@
     },
     "LAS": {
       "symbol": "LAS",
-      "fetched_at": "2026-07-27T09:36:09.856314+07:00",
+      "fetched_at": "2026-07-30T11:30:27.176675+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 12.83,
@@ -17610,7 +17610,7 @@
     },
     "LHC": {
       "symbol": "LHC",
-      "fetched_at": "2026-07-27T09:36:14.730166+07:00",
+      "fetched_at": "2026-07-30T11:30:29.357106+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 13.63,
@@ -17673,7 +17673,7 @@
     },
     "MBS": {
       "symbol": "MBS",
-      "fetched_at": "2026-07-27T09:36:16.378614+07:00",
+      "fetched_at": "2026-07-30T11:30:30.488094+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 19.66,
@@ -17733,7 +17733,7 @@
     },
     "NTP": {
       "symbol": "NTP",
-      "fetched_at": "2026-07-27T09:36:19.639996+07:00",
+      "fetched_at": "2026-07-30T11:30:35.481298+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 8.9,
@@ -17796,7 +17796,7 @@
     },
     "NDN": {
       "symbol": "NDN",
-      "fetched_at": "2026-07-27T09:36:19.630376+07:00",
+      "fetched_at": "2026-07-30T11:30:31.126877+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.52,
@@ -17859,7 +17859,7 @@
     },
     "PLC": {
       "symbol": "PLC",
-      "fetched_at": "2026-07-27T09:36:24.387672+07:00",
+      "fetched_at": "2026-07-30T11:30:37.691368+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 144.19,
@@ -17922,7 +17922,7 @@
     },
     "PSD": {
       "symbol": "PSD",
-      "fetched_at": "2026-07-27T09:36:27.017706+07:00",
+      "fetched_at": "2026-07-30T11:30:39.239707+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.07,
@@ -17985,7 +17985,7 @@
     },
     "PVB": {
       "symbol": "PVB",
-      "fetched_at": "2026-07-27T09:36:29.649790+07:00",
+      "fetched_at": "2026-07-30T11:30:39.478104+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 14.91,
@@ -18048,7 +18048,7 @@
     },
     "PVC": {
       "symbol": "PVC",
-      "fetched_at": "2026-07-27T09:36:30.565308+07:00",
+      "fetched_at": "2026-07-30T11:30:45.955763+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 33.95,
@@ -18111,7 +18111,7 @@
     },
     "PVS": {
       "symbol": "PVS",
-      "fetched_at": "2026-07-27T09:36:34.537576+07:00",
+      "fetched_at": "2026-07-30T11:30:46.053589+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.01,
@@ -18174,7 +18174,7 @@
     },
     "SHS": {
       "symbol": "SHS",
-      "fetched_at": "2026-07-27T09:36:37.424884+07:00",
+      "fetched_at": "2026-07-30T11:30:53.223632+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 15.98,
@@ -18234,7 +18234,7 @@
     },
     "SLS": {
       "symbol": "SLS",
-      "fetched_at": "2026-07-27T09:36:39.341171+07:00",
+      "fetched_at": "2026-07-30T11:30:56.318195+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.54,
@@ -18297,7 +18297,7 @@
     },
     "TMB": {
       "symbol": "TMB",
-      "fetched_at": "2026-07-27T09:36:40.906184+07:00",
+      "fetched_at": "2026-07-30T11:30:56.886307+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 10.88,
@@ -18360,7 +18360,7 @@
     },
     "TNG": {
       "symbol": "TNG",
-      "fetched_at": "2026-07-27T09:36:44.044269+07:00",
+      "fetched_at": "2026-07-30T11:30:56.902139+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 6.87,
@@ -18423,7 +18423,7 @@
     },
     "TVD": {
       "symbol": "TVD",
-      "fetched_at": "2026-07-27T09:36:47.934448+07:00",
+      "fetched_at": "2026-07-30T11:31:05.240866+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 3.48,
@@ -18486,7 +18486,7 @@
     },
     "VC3": {
       "symbol": "VC3",
-      "fetched_at": "2026-07-27T09:36:49.418987+07:00",
+      "fetched_at": "2026-07-30T11:31:06.360217+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 30.84,
@@ -18549,7 +18549,7 @@
     },
     "VCS": {
       "symbol": "VCS",
-      "fetched_at": "2026-07-27T09:36:50.967479+07:00",
+      "fetched_at": "2026-07-30T11:31:07.398848+07:00",
       "schema_version": 8,
       "ratio": {
         "pe": 9.86,
