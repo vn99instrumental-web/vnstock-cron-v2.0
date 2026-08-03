@@ -1,5 +1,5 @@
 """
-diag_regime_v3.py — Việc 1: kiểm tra MÔ TẢ classifier regime v3 trên
+diag_regime_v42.py — Việc 1: kiểm tra MÔ TẢ classifier regime v4.2 trên
 lịch sử VNINDEX (24 tháng). READ-ONLY, chạy qua debug.yml.
 
 ĐÂY KHÔNG PHẢI BACKTEST LỢI NHUẬN. Dataset backtest đã cạn (37 test) —
@@ -43,7 +43,7 @@ from vnstock_data import Quote
 
 from utils.helpers import safe_run, now_ict
 from utils.cache import save_json
-from utils.regime_v3 import classify_v3, apply_hysteresis
+from utils.regime_v42 import classify_regime, apply_hysteresis
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
@@ -101,7 +101,7 @@ def build_series(df: pd.DataFrame) -> pd.DataFrame:
         e200 = None if pd.isna(r["ema200"]) else float(r["ema200"])
         c5   = None if pd.isna(r["c5"])     else float(r["c5"])
         c20  = None if pd.isna(r["c20"])    else float(r["c20"])
-        v3 = classify_v3(float(r["close"]), float(r["ema50"]), e200, c5, c20)
+        cand = classify_regime(float(r["close"]), float(r["ema50"]), e200, c5, c20)
         rows.append({
             "date": r["time"].strftime("%Y-%m-%d"),
             "close": round(float(r["close"]), 2),
@@ -109,8 +109,8 @@ def build_series(df: pd.DataFrame) -> pd.DataFrame:
             "c20": None if c20 is None else round(c20, 2),
             "v2": classify_v2(float(r["close"]), float(r["ema50"]),
                               e200, c5, c20),
-            "v3_raw": v3["regime_raw"],
-            "crash": v3["crash_rule"],
+            "v3_raw": cand["regime_raw"],
+            "crash": cand["crash_rule"],
         })
     out = pd.DataFrame(rows)
 
@@ -288,8 +288,8 @@ def main():
         "acceptance": ac, "n_pass": n_pass, "verdict_pass": bool(verdict),
         "last_30_sessions": ser.tail(30).to_dict("records"),
     }
-    save_json("diag/regime_v3_report.json", report)
-    log.info("Report saved → output/diag/regime_v3_report.json")
+    save_json("diag/regime_v42_report.json", report)
+    log.info("Report saved → output/diag/regime_v42_report.json")
 
 
 if __name__ == "__main__":
