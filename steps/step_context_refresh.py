@@ -40,6 +40,7 @@ from vnstock_data import Quote
 
 from utils.helpers import now_ict, safe_run
 from utils.cache import load_json, save_json, save_csv
+from utils.regime_v3 import shadow_update
 
 logging.basicConfig(
     level=logging.INFO,
@@ -59,6 +60,11 @@ REALTIME_FIELDS = {
     "vnindex_chg_20d",
     "market_regime",
     "updated_at",
+    # ── SHADOW V4.1 (2026-08-03) — display/log only, KHÔNG vào scoring ──
+    "market_regime_v3",
+    "market_regime_v3_raw",
+    "regime_v3_pending",
+    "regime_display_hint",
 }
 
 
@@ -189,6 +195,24 @@ if __name__ == "__main__":
         # Overwrite đúng REALTIME_FIELDS, giữ nguyên PE/PB/valuation
         for field, value in trend.items():
             record[field] = value
+
+        # ── SHADOW V4.1 (2026-08-03): regime v3 song song, chỉ ghi
+        #    field hiển thị + append market/regime_v3_log.json.
+        #    Scoring/gate V4 vẫn đọc market_regime (v2) — KHÔNG đổi. ──
+        try:
+            shadow = shadow_update(trend)
+            for field, value in shadow.items():
+                record[field] = value
+            if shadow:
+                log.info(
+                    f"🔎 SHADOW v3: raw={shadow['market_regime_v3_raw']} "
+                    f"eff={shadow['market_regime_v3']} "
+                    f"pending={shadow['regime_v3_pending']} "
+                    f"| hint: {shadow['regime_display_hint']}"
+                )
+        except Exception as e:
+            log.warning(f"Shadow regime v3 failed (non-fatal): {e}")
+
         record["updated_at"] = now_ict().strftime("%Y-%m-%d %H:%M")
         log.info(
             f"✅ Context refreshed — "
