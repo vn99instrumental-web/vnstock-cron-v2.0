@@ -94,10 +94,16 @@ TRACKS = [
 
 TRADE_BARS = int(os.getenv("EVAL_HORIZON_BARS", "10"))
 HOLD_BARS  = int(os.getenv("HOLD_HORIZON_BARS", "20"))
+# Sub-horizon 10 phiên cho khung HOLD (2026-08-02): ghi outcome hold SỚM ở 10
+# phiên → sổ *_hold10 đầy ngay để calibrate score_hold/rank_fund_grp mà không
+# phải đợi đủ 20 phiên. Ghi vào SỔ RIÊNG (subdir +"10") → dedup pred_id riêng,
+# KHÔNG va chạm sổ hold-20d (mỗi pred_id chấm đúng 1 lần/sổ). Không đụng scoring.
+HOLD10_BARS = int(os.getenv("HOLD10_HORIZON_BARS", "10"))
 MONTHS_BACK = int(os.getenv("EVAL_MONTHS_BACK", "1"))
 
-RET_H_TRADE = [1, 3, 5, 10]
-RET_H_HOLD  = [10, 20]
+RET_H_TRADE  = [1, 3, 5, 10]
+RET_H_HOLD   = [10, 20]
+RET_H_HOLD10 = [5, 10]
 
 FETCH_BUFFER_DAYS = 12
 FLAT_R_THRESHOLD  = 0.15   # |realized_R| dưới ngưỡng & không chạm tp/sl → FLAT
@@ -396,8 +402,8 @@ def evaluate_one(pred: dict, bars: list[dict],
 def main():
     log.info("=" * 60)
     log.info("  EVAL PREDICTIONS V2F — trọng tài 2 sổ × 2 khung")
-    log.info(f"  TRADE ≥{TRADE_BARS} phiên | HOLD ≥{HOLD_BARS} phiên | "
-             f"months={_months_window()}")
+    log.info(f"  TRADE ≥{TRADE_BARS} | HOLD ≥{HOLD_BARS} | "
+             f"HOLD10 ≥{HOLD10_BARS} phiên | months={_months_window()}")
     log.info("=" * 60)
     months = _months_window()
 
@@ -411,9 +417,13 @@ def main():
             log.info(f"[{label}] ledger trống/chưa tồn tại — skip")
             continue
 
+        # Sổ hold10 = sổ hold + hậu tố "10" (subdir riêng, dedup riêng)
+        out_hold10 = out_hold + "10"
+
         for out_sub, min_bars, ret_hs, lens in (
-                (out_trade, TRADE_BARS, RET_H_TRADE, "trade"),
-                (out_hold,  HOLD_BARS,  RET_H_HOLD,  "hold")):
+                (out_trade,  TRADE_BARS,  RET_H_TRADE,  "trade"),
+                (out_hold,   HOLD_BARS,   RET_H_HOLD,   "hold"),
+                (out_hold10, HOLD10_BARS, RET_H_HOLD10, "hold")):
             done = set()
             for m in months:
                 for o in _read_jsonl(_path(out_sub, m)):
@@ -422,7 +432,9 @@ def main():
             pend = [p for p in preds
                     if p.get("pred_id") and p["pred_id"] not in done
                     and p.get("symbol") and p.get("signal_date")]
-            log.info(f"[{label}/{lens}] preds={len(preds)} "
+            # Log theo tên sổ (phân biệt hold vs hold10 cho rõ)
+            book = out_sub.split("/")[-1]
+            log.info(f"[{label}/{book}] preds={len(preds)} "
                      f"đã chấm={len(done)} pending={len(pend)}")
             for p in pend:
                 jobs.append((p, out_sub, min_bars, ret_hs, lens, label))
@@ -474,7 +486,9 @@ def main():
                 n_open += 1
                 continue
             outcomes[(out_sub, _month_of(pred["signal_date"]))].append(out)
-            stats[f"closed_{lens}"] += 1
+            # hold10 đếm riêng (cùng lens="hold" nhưng sổ khác)
+            _tag = "hold10" if out_sub.endswith("hold10") else lens
+            stats[f"closed_{_tag}"] += 1
             n_ok += 1
 
         # ── Patch A: flush NGAY sau mỗi mã (chống mất trắng khi timeout) ──
@@ -491,7 +505,8 @@ def main():
 
     log.info("─" * 50)
     log.info(f"Đã chấm (đóng)  : trade={stats['closed_trade']} "
-             f"hold={stats['closed_hold']} (tổng {total})")
+             f"hold={stats['closed_hold']} hold10={stats['closed_hold10']} "
+             f"(tổng {total})")
     log.info(f"Để OPEN         : immature={stats['immature']} "
              f"no_anchor={stats['no_anchor']} bad_t0={stats['bad_t0']} "
              f"fetch_empty={stats['fetch_empty']}")
