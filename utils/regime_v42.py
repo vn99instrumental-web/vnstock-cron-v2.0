@@ -1,12 +1,12 @@
 """
-utils/regime_v3.py — Market Regime v3 (SHADOW cho V4.1)
+utils/regime_v42.py — Market Regime v4.2 candidate (SHADOW)
 ========================================================
-MỘT NGUỒN LOGIC DUY NHẤT cho regime v3. step3_context.py,
-step_context_refresh.py và scripts/diag_regime_v3.py đều import từ đây
+MỘT NGUỒN LOGIC DUY NHẤT cho regime v4.2 (candidate). step3_context.py,
+step_context_refresh.py và scripts/diag_regime_v42.py đều import từ đây
 → không bao giờ lệch nhau (fix luôn cái smell duplicate logic v2 ở 2 file).
 
 TRẠNG THÁI: SHADOW-ONLY. Không module scoring nào được import gate từ đây
-cho tới khi shadow validation pass (sau 06/08/2026). market_regime (v2)
+cho tới khi shadow validation pass (sau 06/08/2026). market_regime (đang dùng)
 vẫn là nguồn duy nhất cho scoring/gate V4 production.
 
 ═══════════════════════════════════════════════════════════════════════
@@ -14,7 +14,7 @@ THIẾT KẾ (pre-registered 2026-08-03 — KHÔNG chỉnh ngưỡng sau khi ch�
 ═══════════════════════════════════════════════════════════════════════
 Vấn đề v2: DEEP_DOWN chỉ đo VỊ TRÍ (dưới 2 EMA), mù momentum.
   → 03/08/2026: VNINDEX +1.16%/1d, +5.21%/5d nhưng vẫn dán DEEP_DOWN.
-Fix v3: 2 chiều VỊ TRÍ × ĐÀ, thêm state RECOVERY (hồi từ vùng yếu).
+Fix (v4.2 candidate): 2 chiều VỊ TRÍ × ĐÀ, thêm state RECOVERY (hồi từ vùng yếu).
 
 Phân loại (đánh giá THEO THỨ TỰ, khớp đầu tiên thắng):
   1. DEEP_DOWN : (dưới cả 2 EMA VÀ chg_5d ≤ 0)  HOẶC  chg_20d ≤ −8
@@ -101,17 +101,17 @@ CONTEXT_MATRIX_V41_PROPOSED = {
                   "DOWNTREND": -4, "DEEP_DOWN": -5},
 }
 
-# Cảnh báo hiển thị kèm BUY/STRONG BUY khi regime v3 = RECOVERY
+# Cảnh báo hiển thị kèm BUY/STRONG BUY khi regime v4.2 = RECOVERY
 # (KHÔNG đổi ngưỡng 80/40/−15/−40 — walk-forward đã chứng minh tuning
 #  ngưỡng/trọng số không thắng coin flip. Regime tác động qua gate,
 #  còn đây chỉ là flag hiển thị.)
 RECOVERY_BUY_WARNING = "song hoi chua xac nhan dao chieu"
 
 
-def classify_v3(close: float, ema50: float, ema200: float | None,
-                chg_5d: float | None, chg_20d: float | None) -> dict:
+def classify_regime(close: float, ema50: float, ema200: float | None,
+                    chg_5d: float | None, chg_20d: float | None) -> dict:
     """
-    Phân loại regime v3 RAW (chưa hysteresis) từ snapshot 1 thời điểm.
+    Phân loại regime v4.2 RAW (chưa hysteresis) từ snapshot 1 thời điểm.
     Pure function — không I/O, dùng chung cho production + diagnostic.
     Trả {"regime_raw": str, "reason": str}.
     """
@@ -128,7 +128,7 @@ def classify_v3(close: float, ema50: float, ema200: float | None,
                 "crash_rule": crash}
     if (not above_50) and c5 >= TH_RECOVERY_C5:
         return {"regime_raw": "RECOVERY",
-                "reason": f"duoi EMA50 & c5={c5:+.2f}>=+3",
+                "reason": f"duoi EMA50 & c5={c5:+.2f}>=+2",
                 "crash_rule": False}
     if (not above_50) and (c20 <= TH_DOWN_C20 or c5 <= TH_DOWN_C5):
         return {"regime_raw": "DOWNTREND",
@@ -179,20 +179,20 @@ def apply_hysteresis(raw: str, crash_rule: bool,
 # SHADOW UPDATE — dùng chung cho step3_context + step_context_refresh
 # (I/O qua utils.cache; log commit mỗi run → user review được từng run)
 # ─────────────────────────────────────────────────────────────────────
-SHADOW_LOG_PATH = "market/regime_v3_log.json"
+SHADOW_LOG_PATH = "market/regime_v42_log.json"
 SHADOW_LOG_CAP  = 600   # ~3 tháng × 7 run/ngày, đủ review + hysteresis
 
 
 def shadow_update(trend: dict) -> dict:
     """
     Nhận dict trend (từ _vnindex_trend/_fetch_vnindex_trend), tính regime
-    v3 shadow + hysteresis từ log đã lưu, append log, trả các field shadow
+    ứng viên v4.2 + hysteresis từ log đã lưu, append log, trả các field shadow
     để merge vào context record. KHÔNG đụng market_regime (v2) production.
 
     Trả:
-      market_regime_v3      — state hiệu lực (sau hysteresis)
-      market_regime_v3_raw  — state raw phiên/run hiện tại
-      regime_v3_pending     — state chờ xác nhận (None nếu không)
+      market_regime_v42      — state hiệu lực (sau hysteresis)
+      market_regime_v42_raw  — state raw phiên/run hiện tại
+      regime_v42_pending     — state chờ xác nhận (None nếu không)
       regime_display_hint   — chuỗi hiển thị cho dashboard (Option 1)
     """
     from utils.cache import load_json, save_json
@@ -206,53 +206,54 @@ def shadow_update(trend: dict) -> dict:
     c5   = trend.get("vnindex_chg_5d")
     c20  = trend.get("vnindex_chg_20d")
 
-    v3 = classify_v3(float(close), float(e50),
-                     None if e200 is None else float(e200), c5, c20)
+    cand = classify_regime(float(close), float(e50),
+                           None if e200 is None else float(e200), c5, c20)
 
     # ── đọc log để lấy state hysteresis ──
     logdata = load_json(SHADOW_LOG_PATH)
     if not isinstance(logdata, list):
         logdata = []
     today = now_ict().strftime("%Y-%m-%d")
-    prev_effective = logdata[-1]["v3_eff"] if logdata else None
+    prev_effective = logdata[-1]["eff"] if logdata else None
     prev_session_raw = None
     for entry in reversed(logdata):
         if entry.get("date") != today:
-            prev_session_raw = entry.get("v3_raw")
+            prev_session_raw = entry.get("raw")
             break
 
-    h = apply_hysteresis(v3["regime_raw"], v3.get("crash_rule", False),
+    h = apply_hysteresis(cand["regime_raw"], cand.get("crash_rule", False),
                          prev_effective, prev_session_raw)
 
-    # ── display hint (Option 1): nhãn V4 + đà 5 phiên + nhãn V4.1 ──
-    v2_label = trend.get("market_regime", "UNKNOWN")
+    # ── display hint (Option 1): regime đang dùng + đà 5 phiên + nhãn v4.2 ──
+    now_label = trend.get("market_regime", "UNKNOWN")
     momo = ""
     if c5 is not None:
         momo = (f" · hồi {c5:+.1f}%/5p" if c5 > 0
                 else f" · {c5:+.1f}%/5p")
-    hint = f"{v2_label}{momo}"
-    if h["regime_effective"] != v2_label:
-        hint += f" | V4.1: {h['regime_effective']}"
+    hint = f"{now_label}{momo}"
+    if h["regime_effective"] != now_label:
+        hint += f" | v4.2: {h['regime_effective']}"
     if h["pending"]:
         hint += f" (chờ xác nhận {h['pending']})"
 
-    # ── append log (cap) ──
+    # ── append log (cap). Key: regime_now = regime đang chạy production;
+    #    raw/eff = ứng viên v4.2 (thô / sau hysteresis). ──
     logdata.append({
         "date": today,
         "time": now_ict().strftime("%H:%M"),
         "close": close, "c5": c5, "c20": c20,
-        "v2": v2_label,
-        "v3_raw": v3["regime_raw"],
-        "v3_eff": h["regime_effective"],
+        "regime_now": now_label,
+        "raw": cand["regime_raw"],
+        "eff": h["regime_effective"],
         "pending": h["pending"],
         "note": h["note"],
-        "reason": v3["reason"],
+        "reason": cand["reason"],
     })
     save_json(SHADOW_LOG_PATH, logdata[-SHADOW_LOG_CAP:])
 
     return {
-        "market_regime_v3"     : h["regime_effective"],
-        "market_regime_v3_raw" : v3["regime_raw"],
-        "regime_v3_pending"    : h["pending"],
-        "regime_display_hint"  : hint,
+        "market_regime_v42"     : h["regime_effective"],
+        "market_regime_v42_raw" : cand["regime_raw"],
+        "regime_v42_pending"    : h["pending"],
+        "regime_display_hint"   : hint,
     }
