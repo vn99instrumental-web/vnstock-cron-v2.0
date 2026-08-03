@@ -48,7 +48,7 @@
   {
     "symbol": "BAF",
     "exchange": "HSX",
-    "decision": "NEUTRAL",
+    "decision": "SELL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 30.55,
@@ -94,7 +94,7 @@
   {
     "symbol": "BID",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 38.25,
@@ -163,7 +163,7 @@
   {
     "symbol": "BSR",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 25.5,
@@ -278,7 +278,7 @@
   {
     "symbol": "CEO",
     "exchange": "HNX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 12.0,
@@ -324,7 +324,7 @@
   {
     "symbol": "CMG",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 25.6,
@@ -370,7 +370,7 @@
   {
     "symbol": "CTG",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 31.8,
@@ -393,7 +393,7 @@
   {
     "symbol": "CTR",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 74.3,
@@ -508,7 +508,7 @@
   {
     "symbol": "DIG",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 10.6,
@@ -646,7 +646,7 @@
   {
     "symbol": "DXG",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 10.85,
@@ -738,7 +738,7 @@
   {
     "symbol": "FPT",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 71.7,
@@ -784,7 +784,7 @@
   {
     "symbol": "FTS",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 22.1,
@@ -853,7 +853,7 @@
   {
     "symbol": "GEX",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 23.35,
@@ -1198,8 +1198,8 @@
   {
     "symbol": "KDC",
     "exchange": "HSX",
-    "decision": "SELL",
-    "confidence": "LOW",
+    "decision": "STRONG SELL",
+    "confidence": "MEDIUM",
     "entry_style": "PULLBACK",
     "price": 52.0,
     "entry": 51.4,
@@ -1267,7 +1267,7 @@
   {
     "symbol": "L14",
     "exchange": "HNX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 18.2,
@@ -1589,7 +1589,7 @@
   {
     "symbol": "NLG",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 21.7,
@@ -2164,8 +2164,8 @@
   {
     "symbol": "SJS",
     "exchange": "HSX",
-    "decision": "STRONG SELL",
-    "confidence": "MEDIUM",
+    "decision": "SELL",
+    "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 47.15,
     "entry": 46.8,
@@ -2279,7 +2279,7 @@
   {
     "symbol": "TAL",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 23.8,
@@ -2302,7 +2302,7 @@
   {
     "symbol": "TCB",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 29.95,
@@ -2532,7 +2532,7 @@
   {
     "symbol": "VCI",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 21.75,
@@ -2601,7 +2601,7 @@
   {
     "symbol": "VFS",
     "exchange": "HNX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 9.8,
@@ -2739,7 +2739,7 @@
   {
     "symbol": "VIX",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 13.4,
@@ -2785,7 +2785,7 @@
   {
     "symbol": "VND",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 16.85,
@@ -2923,7 +2923,7 @@
   {
     "symbol": "VRE",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 25.2,
@@ -2969,7 +2969,7 @@
   {
     "symbol": "VTP",
     "exchange": "HSX",
-    "decision": "SELL",
+    "decision": "NEUTRAL",
     "confidence": "LOW",
     "entry_style": "PULLBACK",
     "price": 49.05,
