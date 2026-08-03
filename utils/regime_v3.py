@@ -20,7 +20,7 @@ Phân loại (đánh giá THEO THỨ TỰ, khớp đầu tiên thắng):
   1. DEEP_DOWN : (dưới cả 2 EMA VÀ chg_5d ≤ 0)  HOẶC  chg_20d ≤ −8
                  (crash-rule ưu tiên: −8%/20d mà bật 3 ngày vẫn là bear-
                   market rally dễ fail → risk trumps recovery)
-  2. RECOVERY  : dưới EMA50 VÀ chg_5d ≥ +3
+  2. RECOVERY  : dưới EMA50 VÀ chg_5d ≥ +2  (revised 08-03: +3→+2)
   3. DOWNTREND : dưới EMA50 VÀ (chg_20d ≤ −2 HOẶC chg_5d ≤ −3)
   4. UPTREND   : trên cả 2 EMA VÀ chg_20d > 0
   5. SIDEWAYS  : còn lại
@@ -62,7 +62,13 @@ from __future__ import annotations
 # ─────────────────────────────────────────────────────────────────────
 TH_CRASH_20D     = -8.0   # chg_20d ≤ −8  → DEEP_DOWN ngay (crash rule)
 TH_DEEP_C5       =  0.0   # dưới 2 EMA + chg_5d ≤ 0 → DEEP_DOWN
-TH_RECOVERY_C5   =  3.0   # dưới EMA50 + chg_5d ≥ +3 → RECOVERY
+TH_RECOVERY_C5   =  2.0   # dưới EMA50 + chg_5d ≥ +2 → RECOVERY
+                          # REVISION 2026-08-03 (1 lần, có ghi chép):
+                          # +3 → +2. Căn cứ EPISODE-SPECIFIC (không fit
+                          # AC): cú hồi 07/2026 đo được chạy +2.17→+2.66
+                          # →+2.95% suốt 3 phiên trước khi vượt +3, nên
+                          # +3 bỏ lỡ đúng đoạn hồi. +2 bắt đúng đoạn đó.
+                          # Vẫn buộc dưới EMA50 → không fire trong uptrend.
 TH_DOWN_C20      = -2.0   # DOWNTREND leg 1
 TH_DOWN_C5       = -3.0   # DOWNTREND leg 2
 CONFIRM_SESSIONS =  2     # hysteresis: 2 phiên liên tiếp xác nhận
