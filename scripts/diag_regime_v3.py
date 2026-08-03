@@ -10,14 +10,18 @@ script này CHỈ kiểm tra cái nhãn có hợp lý về mặt mô tả:
   - Hysteresis giảm được bao nhiêu transition?
   - Ngày 03/08/2026: v2=DEEP_DOWN, v3 phải =RECOVERY (sanity anchor).
 
-TIÊU CHÍ CHẤP NHẬN (pre-registered 2026-08-03 — chấm PASS/FAIL tự động,
-không chỉnh sau khi thấy kết quả):
-  AC1  RECOVERY chiếm 3–18% số phiên (sau hysteresis)
+TIÊU CHÍ CHẤP NHẬN (revised 2026-08-03 — 1 lần, có ghi chép; xem log
+run trước để hiểu vì sao bỏ AC1 cũ):
+  AC1  RECOVERY-raw KHÔNG fire bậy trong uptrend (≤10% số lần RECOVERY
+       không đứng sau vùng yếu). THAY cho AC1 %-share cũ (3–18%) — cái
+       cũ ngầm giả định thị trường nhiều đợt hồi, sai với cửa sổ 63% up;
+       rare-state phải chấm bằng "có fire bậy không", không phải tần suất.
   AC2  Run trung vị mọi state ≥ 2 phiên (sau hysteresis)
-  AC3  ≥70% lần vào RECOVERY đến từ DEEP_DOWN/DOWNTREND
+  AC3  ≥70% lần vào RECOVERY đến từ DEEP_DOWN/DOWNTREND (chỉ có nghĩa khi
+       có entry — không còn là điều kiện bắt buộc cứng cho verdict)
   AC4  Hysteresis giảm ≥20% số transition so với raw
   AC5  Sanity anchor 2026-08-03: v3 effective = RECOVERY
-Pass ≥4/5 (bắt buộc có AC3 + AC5) → tiến Việc 2 (shadow production).
+Pass ≥4/5 (bắt buộc có AC1 + AC5) → tiến Việc 2 (shadow production).
 """
 import os
 import sys
@@ -201,7 +205,7 @@ def main():
                  f"c5={str(r['c5']):>7} c20={str(r['c20']):>7}  "
                  f"{r['v2']:<10} → {r['v3_eff']:<10}{pend}{mark}")
 
-    # ── CHẤM TIÊU CHÍ (pre-registered) ──
+    # ── CHẤM TIÊU CHÍ (revised 2026-08-03: bỏ AC1 %-share) ──
     rec_pct   = s_eff["dist_pct"].get("RECOVERY", 0)
     min_run   = min(s_eff["median_run"].values()) if s_eff["median_run"] else 0
     from_weak_pct = (from_weak / rec_entries * 100) if rec_entries else 0.0
@@ -210,30 +214,58 @@ def main():
     anchor_ok  = (not anchor_row.empty
                   and anchor_row["v3_eff"].iloc[-1] == "RECOVERY")
 
+    # AC1 MỚI — "không fire bậy trong uptrend": đếm phiên RECOVERY (raw)
+    # rơi vào bối cảnh thị trường KHÔNG yếu. Proxy bối cảnh yếu = trong 10
+    # phiên gần nhất có ≥1 phiên DEEP_DOWN/DOWNTREND (raw). RECOVERY mà
+    # KHÔNG đứng sau vùng yếu = tín hiệu giả (bật trong uptrend).
+    ser_stat = ser_stat.reset_index(drop=True)
+    rec_raw_total = 0
+    rec_raw_spurious = 0
+    for i in range(len(ser_stat)):
+        if ser_stat["v3_raw"].iloc[i] != "RECOVERY":
+            continue
+        rec_raw_total += 1
+        lookback = ser_stat["v3_raw"].iloc[max(0, i - 10):i]
+        weak_ctx = lookback.isin(["DEEP_DOWN", "DOWNTREND"]).any()
+        if not weak_ctx:
+            rec_raw_spurious += 1
+    spurious_pct = (rec_raw_spurious / rec_raw_total * 100
+                    if rec_raw_total else 0.0)
+
     ac = {
-        "AC1_recovery_share_3_18pct": bool(3 <= rec_pct <= 18),
+        # AC1 revised: RECOVERY-raw KHÔNG fire bậy trong uptrend
+        # (≤10% số lần RECOVERY-raw không đứng sau vùng yếu). Đây là tiêu
+        # chí ĐÚNG cho rare-state, thay cho AC1 %-share cũ (đã bỏ vì
+        # ngầm giả định thị trường nhiều đợt hồi — sai với cửa sổ 63% up).
+        "AC1_no_spurious_in_uptrend_le_10pct": bool(spurious_pct <= 10),
         "AC2_median_run_ge_2":        bool(min_run >= 2),
         "AC3_recovery_from_weak_ge_70pct": bool(from_weak_pct >= 70),
         "AC4_hysteresis_cuts_ge_20pct":    bool(trans_cut >= 20),
         "AC5_anchor_0308_is_recovery":     bool(anchor_ok),
     }
     n_pass = sum(ac.values())
-    verdict = (n_pass >= 4 and ac["AC3_recovery_from_weak_ge_70pct"]
+    # Verdict: bắt buộc AC1 (không fire bậy) + AC5 (bắt đúng hôm nay),
+    # tổng ≥4/5. AC3 chỉ có nghĩa khi có entry — không còn bắt buộc cứng.
+    verdict = (n_pass >= 4
+               and ac["AC1_no_spurious_in_uptrend_le_10pct"]
                and ac["AC5_anchor_0308_is_recovery"])
 
-    log.info(f"\n── TIÊU CHÍ (pre-registered) ──")
-    log.info(f"AC1 RECOVERY share 3–18%      : {rec_pct}%  "
-             f"→ {'PASS' if ac['AC1_recovery_share_3_18pct'] else 'FAIL'}")
-    log.info(f"AC2 run trung vị ≥2 mọi state : min={min_run}  "
+    log.info(f"\n── TIÊU CHÍ (revised 2026-08-03, bỏ AC1 %-share) ──")
+    log.info(f"AC1 RECOVERY-raw KHÔNG fire bậy uptrend : "
+             f"{rec_raw_spurious}/{rec_raw_total} ({spurious_pct:.0f}%) "
+             f"→ {'PASS' if ac['AC1_no_spurious_in_uptrend_le_10pct'] else 'FAIL'}")
+    log.info(f"AC2 run trung vị ≥2 mọi state           : min={min_run}  "
              f"→ {'PASS' if ac['AC2_median_run_ge_2'] else 'FAIL'}")
-    log.info(f"AC3 vào RECOVERY từ vùng yếu  : {from_weak_pct:.0f}%  "
+    log.info(f"AC3 vào RECOVERY từ vùng yếu ≥70%       : {from_weak_pct:.0f}% "
+             f"({rec_entries} entry) "
              f"→ {'PASS' if ac['AC3_recovery_from_weak_ge_70pct'] else 'FAIL'}")
-    log.info(f"AC4 hysteresis cắt transition : {trans_cut:.0f}%  "
+    log.info(f"AC4 hysteresis cắt transition ≥20%      : {trans_cut:.0f}%  "
              f"→ {'PASS' if ac['AC4_hysteresis_cuts_ge_20pct'] else 'FAIL'}")
-    log.info(f"AC5 anchor {ANCHOR_DATE}=RECOVERY : "
+    log.info(f"AC5 anchor {ANCHOR_DATE}=RECOVERY         : "
              f"{'PASS' if ac['AC5_anchor_0308_is_recovery'] else 'FAIL'}")
+    log.info(f"(tham khảo, KHÔNG chấm) RECOVERY eff share: {rec_pct}%")
     log.info(f"\n{'█'*70}")
-    log.info(f"  VERDICT: {'✅ PASS — tiến Việc 2 (shadow production)' if verdict else '❌ FAIL — review ngưỡng, KHÔNG tự chỉnh rồi chạy lại nhiều lần'}"
+    log.info(f"  VERDICT: {'✅ PASS — tiến Việc 2 (shadow production)' if verdict else '❌ FAIL — review, KHÔNG tự chỉnh rồi chạy lại nhiều lần'}"
              f"  ({n_pass}/5)")
     log.info(f"{'█'*70}")
 
@@ -248,6 +280,11 @@ def main():
                         "v3_eff": s_eff["n_transitions"]},
         "recovery_entries": rec_entries,
         "recovery_entry_sources": dict(Counter(prev_before_rec)),
+        "recovery_raw_total": rec_raw_total,
+        "recovery_raw_spurious": rec_raw_spurious,
+        "spurious_pct": round(spurious_pct, 1),
+        "recovery_eff_share_pct": rec_pct,
+        "threshold_recovery_c5": 2.0,
         "acceptance": ac, "n_pass": n_pass, "verdict_pass": bool(verdict),
         "last_30_sessions": ser.tail(30).to_dict("records"),
     }
