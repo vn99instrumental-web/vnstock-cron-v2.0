@@ -28,6 +28,7 @@ from vnstock_data import Analytics, Reference, Quote
 
 from utils.helpers import now_ict, last_trading_date, safe_run
 from utils.cache import save_json, save_csv
+from utils.regime_v3 import shadow_update
 
 logging.basicConfig(
     level=logging.INFO,
@@ -310,6 +311,18 @@ def get_market_context() -> list:
         "vnindex_chg_20d"  : trend.get("vnindex_chg_20d"),
         "updated_at"       : now_ict().strftime("%Y-%m-%d %H:%M"),
     }
+
+    # ── SHADOW V4.1 (2026-08-03): regime v3 song song — display/log
+    #    only. Scoring V4 vẫn đọc market_regime (v2). ──
+    if trend:
+        try:
+            shadow = shadow_update(trend)
+            rec.update(shadow)
+            if shadow:
+                log.info(f"🔎 SHADOW v3: {shadow.get('regime_display_hint')}")
+        except Exception as e:
+            log.warning(f"Shadow regime v3 failed (non-fatal): {e}")
+
     return [rec]
 
 # =====================================================
