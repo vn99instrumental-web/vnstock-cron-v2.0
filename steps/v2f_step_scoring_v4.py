@@ -128,7 +128,8 @@ def _apply_hysteresis(raw: str, run_date: str):
 # ══════════════════════════════════════════════════════════════════════
 
 def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
-                    regime: str, regime_raw: str = None) -> dict:
+                    regime: str, regime_raw: str = None,
+                    regime_v42: str = "UNKNOWN") -> dict:
     # passthrough data thô (bỏ field scoring của v2.3) — giống V3
     out = {k: v for k, v in row.items() if not _is_v23_scoring_field(k)}
     out.update({
@@ -201,6 +202,20 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
         else:
             out["score_hold"] = round(max(-100.0, min(100.0, pre_total)), 2)
 
+    # ── LỚP CỜ RECOVERY (v4.2) — chạy SAU khi decision/điểm đã chốt ──
+    #    KHÔNG đổi score_trade/score_hold/decision. Chỉ:
+    #      • dán cờ recovery_warn + thông điệp
+    #      • hạ confidence: cap ở MEDIUM (BUY trong RECOVERY không bao giờ HIGH)
+    #    → "update của v4": thấy điểm ngoặt nhưng chỉ cảnh báo, chưa đổi điểm.
+    out["regime_v42"]    = regime_v42
+    out["recovery_warn"] = False
+    out["warn_msg"]      = ""
+    if regime_v42 == "RECOVERY" and out.get("decision") in ("BUY", "STRONG BUY"):
+        out["recovery_warn"] = True
+        out["warn_msg"]      = "sóng hồi chưa xác nhận đảo chiều"
+        if out.get("confidence") == "HIGH":
+            out["confidence"] = "MEDIUM"
+
     out["signals"] = " | ".join(sig_labels)
     return out
 
@@ -236,12 +251,22 @@ def run():
     run_date   = _run_date(ctx, rows)
     regime, hyst_status = _apply_hysteresis(raw_regime, run_date)   # regime hiệu lực
 
+    # regime v4.2 (RECOVERY-aware) — CHỈ dùng để DÁN CỜ CẢNH BÁO lên BUY,
+    # KHÔNG đổi gate/điểm/decision. Detection do step3_context/step_context_refresh
+    # ghi sẵn vào context.json (market_regime_v42). Đây là "update của v4":
+    # v4 nhìn thấy điểm ngoặt của v4.2 nhưng chỉ cảnh báo, chưa cho đổi điểm.
+    regime_v42 = (ctx.get("market_regime_v42")
+                  or ctx.get("market_regime") or "UNKNOWN")
+
     gates = {f: gate_for(f, regime) for f in FACTORS}
     off   = [f for f in FACTORS if gates[f] == 0.0]
     half  = [f for f in FACTORS if 0.0 < gates[f] < 1.0]
     log.info(f"[V4] regime thô={raw_regime} → hiệu lực={regime} "
              f"(hysteresis: {hyst_status}) | date={run_date}")
     log.info(f"[V4] gates={gates}")
+    if regime_v42 == "RECOVERY":
+        log.info("[V4] regime_v42=RECOVERY → dán cờ cảnh báo lên BUY "
+                 "(KHÔNG đổi điểm/decision)")
     if off:
         log.info(f"[V4] factor TẮT: {off} (Cách B → điểm co lại)")
     if half:
@@ -252,7 +277,7 @@ def run():
     for row in rows:
         try:
             out_rows.append(score_symbol_v4(row, ctx, caps, actives,
-                                            regime, raw_regime))
+                                            regime, raw_regime, regime_v42))
         except Exception:
             n_err += 1
             log.warning(f"  skip {row.get('symbol')}:\n{traceback.format_exc()}")
