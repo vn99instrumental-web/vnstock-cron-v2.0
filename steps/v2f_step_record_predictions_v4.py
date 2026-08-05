@@ -144,6 +144,10 @@ def run():
             "regime"          : sig.get("_regime"),        # regime hiệu lực (sau hysteresis)
             "regime_raw"      : sig.get("_regime_raw"),    # regime thô (trước hysteresis)
             "gates"           : sig.get("_gates"),         # dict factor→hệ số gate
+            # ── Cờ RECOVERY (v4.2) — đánh dấu vĩnh viễn BUY nào rơi ngày điểm ngoặt ──
+            "regime_v42"      : sig.get("regime_v42"),     # regime RECOVERY-aware
+            "recovery_warn"   : sig.get("recovery_warn"),  # True = BUY trong RECOVERY
+            "warn_msg"        : sig.get("warn_msg"),
 
             "price"           : sig.get("price"),
             "industry"        : sig.get("industry"),
