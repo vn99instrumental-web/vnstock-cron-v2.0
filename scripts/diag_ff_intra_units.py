@@ -16,7 +16,7 @@ import logging, math
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("diag_ff_units")
 
-from vnstock.explorer.vci import Trading
+from vnstock_data import Trading  # gói sponsor — cùng pattern với utils/ff_intraday.py
 
 SYMS = ["HPG", "VCB", "VIC"]
 
