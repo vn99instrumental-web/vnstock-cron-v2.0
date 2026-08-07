@@ -971,6 +971,33 @@ if __name__ == "__main__":
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
 
+    # ── FF-INTRADAY (SHADOW) — khối ngoại TRONG PHIÊN / tổng GTGD ──────────
+    # price_board 1 lệnh bulk (verified 2026-08-07) → gắn ff_intra_* metadata.
+    # KHÔNG vào scoring (cap=0) — chỉ để ghi ledger đối chiếu outcome sau.
+    # Fail-soft: lỗi → bỏ qua, KHÔNG chặn pipeline.
+    try:
+        from utils.ff_intraday import (fetch_intraday_ff, session_fraction,
+                                        score_ff_intra)
+        _ffi_syms = [r.get("symbol") for r in all_deep_rows if r.get("symbol")]
+        _ffi_map  = fetch_intraday_ff(_ffi_syms)
+        _ffi_frac = session_fraction(now_ict())
+        _ffi_n = 0
+        for r in all_deep_rows:
+            d = _ffi_map.get(r.get("symbol"))
+            if not d:
+                continue
+            r["ff_intra_net"]   = d.get("ff_intra_net")
+            r["ff_intra_gtgd"]  = d.get("ff_intra_gtgd")
+            r["ff_intra_ratio"] = d.get("ff_intra_ratio")
+            r["ff_intra_frac"]  = _ffi_frac
+            _pts, _ = score_ff_intra(d.get("ff_intra_ratio"), _ffi_frac)
+            r["ff_intra_pts"]   = _pts
+            _ffi_n += 1
+        log.info(f"FF-intraday (shadow): {_ffi_n}/{len(all_deep_rows)} mã có ratio "
+                 f"(frac={_ffi_frac})")
+    except Exception as _ffi_e:
+        log.warning(f"FF-intraday shadow skip (không chặn pipeline): {_ffi_e}")
+
     # ── B (2026-06-17): GỘP GHI TA CACHE 1 LẦN ở MAIN (an toàn race) ──
     # Mỗi thread get_ta chỉ flag _should_cache=True; MAIN gom tất cả ở đây và
     # ghi 1 lệnh save_json duy nhất → an toàn 100% với mọi mức concurrent.
