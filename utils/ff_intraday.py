@@ -3,12 +3,17 @@
 """
 utils/ff_intraday.py — Khối ngoại TRONG PHIÊN / tổng GTGD  (SHADOW factor)
 =========================================================================
-Nguồn: Trading(VCI).price_board(list) — verified 2026-08-07 (diag_intraday_foreign):
-  match.foreign_buy_value  / match.foreign_sell_value → net ngoại tích luỹ TRONG phiên
-  match.accumulated_value                             → tổng GTGD trong phiên (mẫu số)
+Nguồn: Trading(source="VCI").price_board(list) — verified 2026-08-07 (diag_ff_intra_units):
+  match.foreign_buy_value / match.foreign_sell_value → net ngoại tích luỹ TRONG phiên
+      ĐƠN VỊ: ĐỒNG (VND). Xác nhận: buy_value/buy_volume ≈ giá cp (HPG 22.029 ~ 22.100…).
+  match.accumulated_value                            → tổng GTGD trong phiên (mẫu số)
+      ĐƠN VỊ: TRIỆU ĐỒNG. Xác nhận: (accumulated_volume×price)/accumulated_value ≈ 1.0e6
+      cho HPG/VCB/VIC (1.001.883 / 1.008.849 / 998.230). → phải ×1e6 để ra VND.
   (foreign_trade CŨ = EOD T-1; đây là REALTIME — đã verify Δ≠0 giữa 2 lần gọi cách 45s.)
 
-Công thức:  r = (foreign_buy_value - foreign_sell_value) / accumulated_value
+Công thức:  r = (foreign_buy_value − foreign_sell_value) / (accumulated_value × 1e6)
+Guard đơn vị: |net| ≤ tổng GTGD (ngoại là tập con của tổng khớp) → |r|>1 là BẤT KHẢ
+             → coi là lỗi đơn vị/dữ liệu, trả None (không ghi ledger rác).
 
 TRẠNG THÁI = SHADOW. score_ff_intra() chỉ để GHI ledger đối chiếu outcome sau —
 ngưỡng X + cap ở đây là PRE-REGISTER (chưa tối ưu), CHƯA vào quyết định.
@@ -26,6 +31,9 @@ DEADBAND  = 0.02    # |r| < 2%  → coi như cân bằng (0)
 X_MOD     = 0.03    # |r| ≥ 3%  → vừa
 X_STRONG  = 0.08    # |r| ≥ 8%  → mạnh
 CAP       = 4       # trần shadow (nhỏ; cap thật do IC hold-out quyết)
+
+# Đơn vị: accumulated_value (price_board VCI) ở TRIỆU đồng → nhân để ra VND.
+GTGD_UNIT_TO_VND = 1_000_000
 
 
 def session_fraction(now) -> float | None:
@@ -69,7 +77,8 @@ def _col(cols, suffix):
 def fetch_intraday_ff(symbols, chunk: int = 50) -> dict:
     """Trả {sym: {ff_intra_net, ff_intra_gtgd, ff_intra_ratio}} từ price_board bulk.
     1 lệnh / chunk (mặc định 50 mã) → toàn universe ~3 lệnh, tốn quota không đáng kể.
-    Lỗi/rỗng → bỏ qua mã đó (fail-soft), không raise."""
+    Lỗi/rỗng → bỏ qua mã đó (fail-soft), không raise.
+    ff_intra_gtgd trả về đã ở ĐỒNG (VND) — đã ×1e6 từ accumulated_value (triệu đồng)."""
     from vnstock_data import Trading
 
     out: dict = {}
@@ -100,13 +109,16 @@ def fetch_intraday_ff(symbols, chunk: int = 50) -> dict:
         for _, row in df.iterrows():
             try:
                 sym  = str(row.get(c_sym))
-                fbv  = float(row.get(c_fbv)  or 0)
-                fsv  = float(row.get(c_fsv)  or 0)
-                gtgd = float(row.get(c_gtgd) or 0)
+                fbv  = float(row.get(c_fbv)  or 0)                       # VND
+                fsv  = float(row.get(c_fsv)  or 0)                       # VND
+                gtgd = float(row.get(c_gtgd) or 0) * GTGD_UNIT_TO_VND    # triệu → VND
             except (TypeError, ValueError):
                 continue
             net   = fbv - fsv
             ratio = (net / gtgd) if gtgd > 0 else None
+            # Guard đơn vị: |net| ≤ tổng GTGD → |r|>1 bất khả → lỗi đơn vị/dữ liệu → bỏ.
+            if ratio is not None and abs(ratio) > 1.0:
+                ratio = None
             out[sym] = {
                 "ff_intra_net":   round(net, 0),
                 "ff_intra_gtgd":  round(gtgd, 0),
