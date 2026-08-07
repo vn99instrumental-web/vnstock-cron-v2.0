@@ -6,7 +6,7 @@ Thay đổi so với step_snapshot.py: output filenames có suffix _v2 + FF sour
 
 Sync từ step_snapshot.py:
   2026-06-02 — FIX bb_position (Bug #11)
-  2026-06-11 — v2 fork: output deep_raw_v2.json / ranking_v2.json
+  2026-06-11 — v2 fork: output v2f_deep_raw.json / v2f_ranking.json
 
 Thay đổi RIÊNG của v2 (không có trong v3):
   2026-06-16 — SWITCH FF source CafeF → VCI cho net values.
@@ -31,6 +31,7 @@ MAINTAINER: Khi step_snapshot.py cập nhật logic → copy lại toàn bộ
 body vào đây, giữ nguyên MAIN block cuối với filenames _v2 VÀ
 giữ nguyên block get_flow() đã switch sang VCI.
 """
+# FORK V2F (full-VN100, monitor cả rổ): I/O dùng prefix v2f_*; universe lấy từ utils.v2f_universe.build_v2f_universe (lấy đủ 100 mã).
 import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -62,7 +63,7 @@ from utils.formatter import clean_for_export, fmt_money_bil
 # 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
 from utils.vci_throttle import vci_safe_run, throttle, is_blocked
 # 2026-06-21: VN100 universe (VN100 → recompute gainer/loser → top X) — V2 only.
-from utils.universe_v2 import build_vn100_universe
+from utils.v2f_universe import build_v2f_universe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -93,7 +94,7 @@ FF_FIELDS = [
 # =====================================================
 # 2026-06-21: Universe chuyển từ "top 10 gainer + 10 loser TOÀN thị trường"
 # sang "VN100 → tính lại gainer/loser TRONG rổ → top X mỗi phía".
-# Logic gom về utils/universe_v2.build_vn100_universe() (standalone, V2-only).
+# Logic gom về utils/universe_v2.build_v2f_universe() (standalone, V2-only).
 # get_ranking() cũ (TopStock VNINDEX limit=10) đã bỏ.
 
 # =====================================================
@@ -800,6 +801,8 @@ def build_one(symbol: str, group: str, market_open: bool,
             **{k: v for k, v in finance.items() if k != "symbol"},
             "industry": ind_row.get("icb_name", ""),
             "icb_code": ind_row.get("icb_code", ""),
+            "organ_short_name": ind_row.get("organ_short_name", "") or "",
+            "organ_name"      : ind_row.get("organ_name", "") or "",
         }
 
         # ── PRICE FALLBACK CHAIN (2026-06-17) ──────────────────────────
@@ -914,12 +917,12 @@ if __name__ == "__main__":
     # symbol_jobs : [(symbol, "GAINER"/"LOSER")] cho pass 2 (TA / FF / depth)
     # ranking_rows: schema price_change_percent_1d / price_change_1d /
     #               accumulated_value → scoring._attach_daily_change đọc trực tiếp.
-    symbol_jobs, ranking_rows = build_vn100_universe()
+    symbol_jobs, ranking_rows = build_v2f_universe()
     if not symbol_jobs:
         log.error("Universe rỗng (VN100/TopStock fail) — dừng, không có mã để chấm.")
         sys.exit(1)
 
-    # Enrich exchange + date cho ranking_v2.json (parity schema cũ + dashboard)
+    # Enrich exchange + date cho v2f_ranking.json (parity schema cũ + dashboard)
     _today_rank = today_str()
     for _r in ranking_rows:
         _r["exchange"] = get_exchange(_r["symbol"])
@@ -968,6 +971,33 @@ if __name__ == "__main__":
     log.info("=== DATA QUALITY: FF validation ===")
     all_deep_rows = validate_ff_data(all_deep_rows)
 
+    # ── FF-INTRADAY (SHADOW) — khối ngoại TRONG PHIÊN / tổng GTGD ──────────
+    # price_board 1 lệnh bulk (verified 2026-08-07) → gắn ff_intra_* metadata.
+    # KHÔNG vào scoring (cap=0) — chỉ để ghi ledger đối chiếu outcome sau.
+    # Fail-soft: lỗi → bỏ qua, KHÔNG chặn pipeline.
+    try:
+        from utils.ff_intraday import (fetch_intraday_ff, session_fraction,
+                                        score_ff_intra)
+        _ffi_syms = [r.get("symbol") for r in all_deep_rows if r.get("symbol")]
+        _ffi_map  = fetch_intraday_ff(_ffi_syms)
+        _ffi_frac = session_fraction(now_ict())
+        _ffi_n = 0
+        for r in all_deep_rows:
+            d = _ffi_map.get(r.get("symbol"))
+            if not d:
+                continue
+            r["ff_intra_net"]   = d.get("ff_intra_net")
+            r["ff_intra_gtgd"]  = d.get("ff_intra_gtgd")
+            r["ff_intra_ratio"] = d.get("ff_intra_ratio")
+            r["ff_intra_frac"]  = _ffi_frac
+            _pts, _ = score_ff_intra(d.get("ff_intra_ratio"), _ffi_frac)
+            r["ff_intra_pts"]   = _pts
+            _ffi_n += 1
+        log.info(f"FF-intraday (shadow): {_ffi_n}/{len(all_deep_rows)} mã có ratio "
+                 f"(frac={_ffi_frac})")
+    except Exception as _ffi_e:
+        log.warning(f"FF-intraday shadow skip (không chặn pipeline): {_ffi_e}")
+
     # ── B (2026-06-17): GỘP GHI TA CACHE 1 LẦN ở MAIN (an toàn race) ──
     # Mỗi thread get_ta chỉ flag _should_cache=True; MAIN gom tất cả ở đây và
     # ghi 1 lệnh save_json duy nhất → an toàn 100% với mọi mức concurrent.
@@ -1011,18 +1041,18 @@ if __name__ == "__main__":
     # ── V2: output filenames có suffix _v2 ──
     if ranking_rows:
         df_rank_all = pd.DataFrame(ranking_rows)
-        save_json("ranking_v2.json", ranking_rows)
-        save_csv("ranking_v2.csv",   clean_for_export(df_rank_all))
-        log.info(f"Saved ranking_v2.json ({len(ranking_rows)} rows)")
+        save_json("v2f_ranking.json", ranking_rows)
+        save_csv("v2f_ranking.csv",   clean_for_export(df_rank_all))
+        log.info(f"Saved v2f_ranking.json ({len(ranking_rows)} rows)")
 
     if all_deep_rows:
         df_deep = pd.DataFrame(all_deep_rows)
-        save_json("deep_raw_v2.json", df_deep.to_dict(orient="records"))
+        save_json("v2f_deep_raw.json", df_deep.to_dict(orient="records"))
         df_export = df_deep.drop(columns=["_ohlcv_5d"], errors="ignore")
         df_clean  = clean_for_export(df_export)
-        save_json("deep_v2.json", df_clean.to_dict(orient="records"))
-        save_csv("deep_v2.csv",   df_clean)
-        log.info(f"Saved deep_raw_v2.json ({len(df_deep)} rows, "
+        save_json("v2f_deep.json", df_clean.to_dict(orient="records"))
+        save_csv("v2f_deep.csv",   df_clean)
+        log.info(f"Saved v2f_deep_raw.json ({len(df_deep)} rows, "
                  f"{len(df_deep.columns)} cols)")
 
     log.info("=== SNAPSHOT V2 DONE ===")
