@@ -284,6 +284,7 @@ table.dtbl tr[data-sym]:hover{background:#0f2436}
         <th class="col-md">Chốt lời</th>
         <th class="col-md">Cắt lỗ</th>
         <th>R:R</th>
+        <th class="col-md">🌐 NN phiên</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
@@ -631,6 +632,7 @@ function rowHtml(d){
     + '<td class="rnum col-md" style="color:var(--buy)">'+tp+'</td>'
     + '<td class="rnum col-md" style="color:var(--sell)">'+sl+'</td>'
     + '<td class="rnum">'+rr+'</td>'
+    + '<td class="rnum col-md" style="text-align:right">' + (d.ff_intra_ratio!=null ? '<span style="color:'+(d.ff_intra_ratio>0?'#34c26e':(d.ff_intra_ratio<0?'#e86030':'#8aa7bd'))+'">'+(d.ff_intra_ratio*100).toFixed(1)+'%</span>' : '—') + '</td>'
     + '</tr>';
 }
 
