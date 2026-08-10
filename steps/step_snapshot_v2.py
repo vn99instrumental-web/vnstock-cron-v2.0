@@ -977,7 +977,7 @@ if __name__ == "__main__":
     # Fail-soft: lỗi → bỏ qua, KHÔNG chặn pipeline.
     try:
         from utils.ff_intraday import (fetch_intraday_ff, session_fraction,
-                                        score_ff_intra)
+                                        score_ff_intra, ff_intra_flag)
         _ffi_syms = [r.get("symbol") for r in all_deep_rows if r.get("symbol")]
         _ffi_map  = fetch_intraday_ff(_ffi_syms)
         _ffi_frac = session_fraction(now_ict())
@@ -992,6 +992,13 @@ if __name__ == "__main__":
             r["ff_intra_frac"]  = _ffi_frac
             _pts, _ = score_ff_intra(d.get("ff_intra_ratio"), _ffi_frac)
             r["ff_intra_pts"]   = _pts
+            # Cờ "NN gom mạnh" (PRE-REGISTER) — metadata mọi engine thấy;
+            # chỉ V4 cộng ff_intra_flag_pts vào score_trade (S2).
+            _flag, _flag_pts = ff_intra_flag(d.get("ff_intra_net"),
+                                             d.get("ff_intra_ratio"), _ffi_frac)
+            r["ff_intra_strong_buy"]  = (_flag == 1)
+            r["ff_intra_strong_sell"] = (_flag == -1)
+            r["ff_intra_flag_pts"]    = _flag_pts
             _ffi_n += 1
         log.info(f"FF-intraday (shadow): {_ffi_n}/{len(all_deep_rows)} mã có ratio "
                  f"(frac={_ffi_frac})")
