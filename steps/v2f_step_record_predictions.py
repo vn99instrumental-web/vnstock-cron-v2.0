@@ -187,6 +187,8 @@ def run():
             "ff_intra_ratio" : sig.get("ff_intra_ratio"),
             "ff_intra_frac"  : sig.get("ff_intra_frac"),
             "ff_intra_pts"   : sig.get("ff_intra_pts"),
+            "ff_intra_net"      : sig.get("ff_intra_net"),
+            "ff_intra_flag_pts" : sig.get("ff_intra_flag_pts"),
             "rank_cf_grp"     : sig.get("rank_cf_grp"),
             "rank_growth_grp" : sig.get("rank_growth_grp"),
             "adtv_bil"        : sig.get("adtv_bil"),
