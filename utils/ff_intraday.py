@@ -32,6 +32,12 @@ X_MOD     = 0.03    # |r| ≥ 3%  → vừa
 X_STRONG  = 0.08    # |r| ≥ 8%  → mạnh
 CAP       = 4       # trần shadow (nhỏ; cap thật do IC hold-out quyết)
 
+# ── Cờ "NN gom mạnh" (PRE-REGISTER, dùng cho HIGHLIGHT + cộng điểm V4) ──────
+# Cố định, KHÔNG fit data. 3 điều kiện: mua ròng + đủ đậm (%) + tiền thật (tỷ).
+FLAG_X       = 0.08       # |net/GTGD| ≥ 8%   (độ áp đảo so với dòng tiền mã)
+FLAG_NET_VND = 10e9       # |net| ≥ 10 tỷ     (tiền thật — cửa lọc thanh khoản)
+FLAG_CAP     = 3          # điểm cộng/trừ khi cờ bật (chỉ V4)
+
 # Đơn vị: accumulated_value (price_board VCI) ở TRIỆU đồng → nhân để ra VND.
 GTGD_UNIT_TO_VND = 1_000_000
 
@@ -140,3 +146,18 @@ def score_ff_intra(ratio, frac):
     elif a >= X_MOD:    pts = 2 * sign            # ±2
     else:               pts = 1 * sign            # ±1 (giữa deadband và X_mod)
     return pts, f"FFintra r={ratio:+.1%} f={frac:.2f} {pts:+d}"
+
+
+def ff_intra_flag(net, ratio, frac):
+    """Cờ "NN gom mạnh" (PRE-REGISTER). Trả (flag, pts):
+      flag = +1 (NN mua mạnh) / -1 (NN bán mạnh) / 0
+      pts  = flag * FLAG_CAP   (±3 / 0)  — CHỈ V4 cộng số này vào score_trade.
+    3 điều kiện phải cùng đúng: đúng chiều + |ratio|≥FLAG_X + |net|≥FLAG_NET_VND,
+    và phiên đã trôi ≥ FRAC_GATE (mẫu số đủ tin). Đối xứng mua/bán."""
+    if net is None or ratio is None or frac is None or frac < FRAC_GATE:
+        return 0, 0
+    if net > 0 and ratio >= FLAG_X and net >= FLAG_NET_VND:
+        return 1, FLAG_CAP
+    if net < 0 and ratio <= -FLAG_X and abs(net) >= FLAG_NET_VND:
+        return -1, -FLAG_CAP
+    return 0, 0
