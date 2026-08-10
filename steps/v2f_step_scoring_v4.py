@@ -59,7 +59,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.1"          # +gate v2 (breakout theo regime) + hysteresis
+SCORING_VERSION = "v4.2"          # +gate v2 + hysteresis + FF-intraday flag (NN gom mạnh, ±3, TRADE-only)
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -189,6 +189,15 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                     aligned += 1
             bonus = CONFLUENCE_BONUS * sgn if aligned >= 2 else 0
             total = max(-100.0, min(100.0, pre_total + bonus))
+            # ── FF-intraday "NN gom mạnh" (V4 ONLY, PRE-REGISTER 8%/10 tỷ, cap ±3) ──
+            #    Chỉ tác động TRADE (tín hiệu trong phiên, không dính HOLD).
+            #    ff_intra_flag_pts do snapshot gắn (±3/0). Đọc từ row để chắc không bị
+            #    lớp lọc field loại bỏ. V2.3/V3 KHÔNG cộng — chỉ V4.
+            ffi_pts = row.get("ff_intra_flag_pts") or 0
+            if ffi_pts:
+                total = max(-100.0, min(100.0, total + ffi_pts))
+                sig_labels.append(f"🌐 NN gom mạnh {ffi_pts:+d}")
+            out["ff_intra_flag_pts"]     = ffi_pts
             out["confluence_bonus"]      = bonus
             out["n_supergroups_aligned"] = aligned
             out["score_trade"]           = round(total, 2)
