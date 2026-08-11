@@ -45,6 +45,7 @@ from datetime import datetime
 from collections import Counter
 
 from utils.cache import load_json, save_json
+from utils.of_buy_pressure import buy_pressure_pts
 from utils.v2f_registry import (REGISTRY_VERSION, FACTORS, FACTOR_WEIGHTS,
                                 THRESHOLDS, CONFLUENCE_BONUS,
                                 CONFLUENCE_MIN_NORM, SIGNALS,
@@ -59,7 +60,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.2"          # +gate v2 + hysteresis + FF-intraday flag (NN gom mạnh, ±3, TRADE-only)
+SCORING_VERSION = "v4.3"          # +OF buy-pressure flag (khớp lệnh, ±4, TRADE-only) | trước: v4.2 gate v2+hysteresis+FF-intraday
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -198,6 +199,15 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                 total = max(-100.0, min(100.0, total + ffi_pts))
                 sig_labels.append(f"🌐 NN gom mạnh {ffi_pts:+d}")
             out["ff_intra_flag_pts"]     = ffi_pts
+            # ── OF buy-pressure (khớp lệnh: buy_ratio SỐ LỆNH + cổng KL/tần suất) ──
+            #    Cap nhỏ ±4, TRADE-only. PRE-REGISTER / INDICATIVE (fit 1 cung macro).
+            #    Đọc _of_* từ row (V2.3 đã gắn). KL & tần suất chỉ làm CỔNG, không cộng.
+            bp_pts = buy_pressure_pts(row.get("_of_buy_count"), row.get("_of_sell_count"),
+                                      row.get("_of_total_trades"), row.get("vol_ma_ratio"))
+            if bp_pts:
+                total = max(-100.0, min(100.0, total + bp_pts))
+                sig_labels.append(f"💧 Áp lực mua khớp {bp_pts:+d}")
+            out["of_bp_pts"]             = bp_pts
             out["confluence_bonus"]      = bonus
             out["n_supergroups_aligned"] = aligned
             out["score_trade"]           = round(total, 2)
