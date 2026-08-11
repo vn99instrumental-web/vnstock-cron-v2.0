@@ -94,7 +94,6 @@ from utils.helpers   import now_ict, today_str
 from utils.cache     import load_json, save_json, save_csv
 from utils.v2f_industry_groups import compute_group_ranks   # ghi thầm 22/07
 from utils.formatter import clean_for_export
-from utils.of_buy_pressure import buy_pressure_pts
 
 logging.basicConfig(
     level=logging.INFO,
@@ -106,7 +105,7 @@ log = logging.getLogger(__name__)
 # V2 CONFIG
 # =====================================================
 
-SCORING_VERSION = "v2.4"   # +OF buy-pressure flag (khớp lệnh, ±4) | trước: v2.3 FIX 4 lỗi điểm (FF dead-band+gộp, trend thuần TF, ff_room guard, div yield)
+SCORING_VERSION = "v2.3"   # FIX 4 lỗi điểm: FF dead-band+gộp, trend thuần TF, ff_room guard, div yield
 
 # Cap cho từng group — extended caps cho groups có chỉ số mới
 GROUP_CAPS = {
@@ -715,17 +714,6 @@ def _score_base(row: dict, context: dict, news_scores: dict,
     tech_score = (trend_score + momentum_score + volume_score
                   + volatility_score + order_flow_score)
     fund_score = fundamental_score + cf_score + growth_score
-
-    # ── OF buy-pressure (khớp lệnh: buy_ratio SỐ LỆNH + cổng KL/tần suất) ──
-    #    Cap nhỏ ±4. PRE-REGISTER / INDICATIVE (fit 1 cung macro, cần OOS).
-    #    Đọc summary của chính symbol từ order_flow_map; KL & tần suất chỉ làm CỔNG.
-    _of_bp = (order_flow_map.get(sym, {}) or {}).get("summary", {})
-    of_bp_pts = buy_pressure_pts(_of_bp.get("buy_count"), _of_bp.get("sell_count"),
-                                 _of_bp.get("total_trades"), row.get("vol_ma_ratio"))
-    if of_bp_pts:
-        total = max(-100.0, min(100.0, total + of_bp_pts))
-        sigs.append(f"OF áp lực mua khớp {'+' if of_bp_pts > 0 else ''}{of_bp_pts}")
-    s["of_bp_pts"] = of_bp_pts
 
     if   total >= 80:  decision = "STRONG BUY"
     elif total >= 40:  decision = "BUY"
