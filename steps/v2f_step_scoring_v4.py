@@ -60,7 +60,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.3"          # +OF buy-pressure flag (khớp lệnh, ±4, TRADE-only) | trước: v4.2 gate v2+hysteresis+FF-intraday
+SCORING_VERSION = "v4.4"          # +3 tín hiệu V4-only: trend_st(±4)+depth_wall(±3)+cf_core(±3), weight trade chỉnh nhẹ | trước: v4.3 OF buy-pressure
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -125,6 +125,114 @@ def _apply_hysteresis(raw: str, run_date: str):
 
 
 # ══════════════════════════════════════════════════════════════════════
+# V4-EXTRA SIGNALS (v4.4) — CHỈ V4, KHÔNG đụng registry chung (V3 giữ baseline)
+# 3 tín hiệu bổ sung, đặt vào factor HOST để thừa hưởng gate ĐÃ ĐO:
+#   trend_st   → breakout    (thuận-đà: gate up/side BẬT, down TẮT — đúng bản chất)
+#   depth_wall → flow        (vi cấu trúc, gate 1.0; TRADE-only — tường lệnh chỉ
+#                             có nghĩa trong phiên)
+#   cf_core    → fundamental (dòng tiền thực, gate 1.0, cả 2 khung)
+# Cap host tự nới (+span). Weight TRADE chỉnh nhẹ (breakout 0.08→0.12) cho trend
+# có tiếng nói khung ngắn; HOLD giữ nguyên. Tổng weight vẫn = 1.0.
+# ══════════════════════════════════════════════════════════════════════
+
+def _f(x):
+    try:
+        return float(x) if x is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def sc_trend_st(row):
+    """Trend-following = Supertrend (hướng) × ADX (độ mạnh). MỘT đại diện sạch —
+    KHÔNG add cả cụm ema/macd/roc (cộng-tuyến r=0.87-0.94). span ±4."""
+    p, st, adx = _f(row.get("price")), _f(row.get("supertrend")), _f(row.get("adx"))
+    if not p or not st:
+        return 0
+    up = p > st
+    s = 2 if up else -2
+    if adx is not None:
+        if   adx >= 25: s = 4 if up else -4    # trend rõ → full
+        elif adx <  18: s = 1 if up else -1    # phẳng → dè dặt
+    return max(-4, min(4, s))
+
+
+# Ngưỡng band tường/avg-trade — bám phân bố thật toàn sàn (p50≈41, p75≈107,
+# p90≈227). Sửa DUY NHẤT dòng này để tinh chỉnh band về sau.
+# LƯU Ý: đổi band = scoring math thay đổi → PHẢI bump SCORING_VERSION (reset
+# bucket forward-validation). Hằng số chỉ giúp sửa gọn, không miễn bump.
+_DEPTH_BANDS = (40, 100, 250)   # (ngưỡng band1, band2, band3)
+
+
+def _wall_band(ratio):
+    b1, b2, b3 = _DEPTH_BANDS
+    if   ratio >= b3: return 3
+    elif ratio >= b2: return 2
+    elif ratio >= b1: return 1
+    return 0
+
+
+def sc_depth_wall(row):
+    """Tường bid/ask so với KL TB mỗi lệnh khớp (_of_avg_size): đỡ dưới dày → +,
+    chặn trên dày → −. Chuẩn hoá theo avg trade → tự thích ứng từng mã. Chỉ xét
+    mức giá trong ±2% quanh giá hiện tại. span ±3, TRADE-only.
+    (bid_price/ask_price đơn vị VND → chia 1000 để so với price nghìn-đồng.)"""
+    avg = _f(row.get("_of_avg_size"))
+    p   = _f(row.get("price"))
+    if not avg or avg <= 0 or not p:
+        return 0
+    lo, hi = p * 0.98, p * 1.02
+    bid_w = ask_w = 0.0
+    for i in (1, 2, 3):
+        bp, bv = _f(row.get(f"bid_price_{i}")), _f(row.get(f"bid_vol_{i}"))
+        if bp and bv and lo <= bp / 1000 <= hi:
+            bid_w = max(bid_w, bv)
+        ap, av = _f(row.get(f"ask_price_{i}")), _f(row.get(f"ask_vol_{i}"))
+        if ap and av and lo <= ap / 1000 <= hi:
+            ask_w = max(ask_w, av)
+    s = _wall_band(bid_w / avg) - _wall_band(ask_w / avg)
+    return max(-3, min(3, s))
+
+
+def sc_cf_core(row):
+    """Dòng tiền HĐKD (cf_score v2.3, sector-aware, max ±10) renorm ±3. Bổ khuyết
+    cho PE/PB/ROE — tiền thực vs lợi nhuận kế toán."""
+    cf = _f(row.get("cf_score"))
+    if cf is None:
+        return 0
+    cf = max(-10.0, min(10.0, cf))
+    return int(round(cf / 10.0 * 3))
+
+
+# (sid, factor, fn, span, horizons) — KHÔNG vào SIGNALS chung
+V4_EXTRA = [
+    ("trend_st",   "breakout",    "sc_trend_st",   4, ("trade", "hold")),
+    ("depth_wall", "flow",        "sc_depth_wall", 3, ("trade",)),
+    ("cf_core",    "fundamental", "sc_cf_core",    3, ("trade", "hold")),
+]
+_V4_FN = {"sc_trend_st": sc_trend_st, "sc_depth_wall": sc_depth_wall,
+          "sc_cf_core": sc_cf_core}
+_V4_LABEL = {"trend_st": "📈 Trend(ST)", "depth_wall": "🧱 Tường bid/ask",
+             "cf_core": "💵 Dòng tiền"}
+
+# Weight TRADE V4-only (breakout ↑ cho trend hiện diện; tổng = 1.0). HOLD = registry.
+_W_TRADE_V4 = {"mean_reversion": 0.27, "breakout": 0.12, "flow": 0.25,
+               "fundamental": 0.20, "growth": 0.10, "context": 0.06}
+assert abs(sum(_W_TRADE_V4.values()) - 1.0) < 1e-9
+
+
+def _weight(hz, f):
+    return _W_TRADE_V4[f] if hz == "trade" else FACTOR_WEIGHTS[hz][f]
+
+
+def _augment_caps(caps):
+    """Nới cap host factor theo span V4-extra (để norm không bão hoà quá sớm)."""
+    for _sid, factor, _fn, span, horizons in V4_EXTRA:
+        for hz in horizons:
+            caps[hz][factor] = caps[hz].get(factor, 0) + span
+    return caps
+
+
+# ══════════════════════════════════════════════════════════════════════
 # CORE — chấm 1 symbol, 2 khung, CÓ gate theo regime
 # ══════════════════════════════════════════════════════════════════════
 
@@ -158,6 +266,19 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
         if label:
             sig_labels.append(label)
 
+    # ── V4-EXTRA (v4.4): tín hiệu chỉ-V4, tính 1 lần, tiêm vào factor host ──
+    for xsid, _xfac, xfn, xspan, _xhz in V4_EXTRA:
+        try:
+            xs = _V4_FN[xfn](row)
+        except Exception as e:
+            log.warning(f"  {row.get('symbol')}: V4-extra {xsid} lỗi — {e}")
+            xs = 0
+        xs = max(-xspan, min(xspan, xs))
+        sig_scores[xsid] = xs
+        out[f"s_{xsid}"] = xs
+        if xs:
+            sig_labels.append(f"{_V4_LABEL.get(xsid, xsid)} {xs:+d}")
+
     # gate theo regime cho từng factor (cùng regime cho mọi factor trong run)
     gates = {f: gate_for(f, regime) for f in FACTORS}
     out["_gates"] = dict(gates)
@@ -166,6 +287,9 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
         f_raw = {f: 0 for f in FACTORS}
         for sid, factor, fn, span, horizons, status, source, _, _ in actives[hz]:
             f_raw[factor] += sig_scores.get(sid, 0)
+        for xsid, xfac, _xfn, _xspan, xhz in V4_EXTRA:   # V4-extra vào host factor
+            if hz in xhz:
+                f_raw[xfac] += sig_scores.get(xsid, 0)
 
         f_norm, weighted = {}, 0.0
         for f in FACTORS:
@@ -173,7 +297,7 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
             n = max(-1.0, min(1.0, f_raw[f] / cap)) if cap > 0 else 0.0
             f_norm[f] = n
             # CÁCH B: gate × weight × norm, KHÔNG renorm mẫu số → điểm co lại
-            weighted += FACTOR_WEIGHTS[hz][f] * gates[f] * n
+            weighted += _weight(hz, f) * gates[f] * n
             out[f"{hz}_{f}_raw"]  = f_raw[f]
             out[f"{hz}_{f}_norm"] = round(n, 4)
         pre_total = weighted * 100
@@ -183,8 +307,8 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
             aligned = 0
             for name, fs in SUPERGROUPS.items():
                 # confluence dùng weight ĐÃ gate → không đếm factor đã tắt
-                wsum = sum(FACTOR_WEIGHTS[hz][f] * gates[f] for f in fs)
-                sn = (sum(FACTOR_WEIGHTS[hz][f] * gates[f] * f_norm[f]
+                wsum = sum(_weight(hz, f) * gates[f] for f in fs)
+                sn = (sum(_weight(hz, f) * gates[f] * f_norm[f]
                           for f in fs) / wsum) if wsum else 0
                 if sn * sgn >= CONFLUENCE_MIN_NORM:
                     aligned += 1
@@ -249,6 +373,7 @@ def run():
     validate_registry()
     caps    = {hz: factor_caps(hz) for hz in ("trade", "hold")}
     actives = {hz: active_signals(hz) for hz in ("trade", "hold")}
+    caps = _augment_caps(caps)   # V4.4: nới cap host factor cho 3 tín hiệu mới
 
     rows = load_json(SIGNALS_IN)
     if not rows:
