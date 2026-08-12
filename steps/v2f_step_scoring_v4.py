@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.5"          # +regime BREADTH-AWARE (blend index+breadth, lấy bên bi quan) | trước: v4.4 (+3 tín hiệu trend/depth/cf)
+SCORING_VERSION = "v4.6"          # +ngưỡng decision CO THEO REGIME (thr×W_reg, Option A) | trước: v4.5 regime breadth-aware
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -377,12 +377,26 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
             out["n_supergroups_aligned"] = aligned
             out["score_trade"]           = round(total, 2)
             out["total_score"]           = out["score_trade"]   # recorder compat
+            # ── V4.6: ngưỡng decision CO THEO REGIME (Option A, full-scaling) ──
+            #    Điểm thô score_trade GIỮ NGUYÊN — chỉ dời cột mốc quyết định.
+            #    W_reg = Σ(weight × gate) khung trade = tổng trọng số CÒN SỐNG.
+            #    Gate tắt factor → trần điểm co còn ±(W×100); ngưỡng ×W để "một
+            #    điểm BUY = mức nghiêng bullish cố định" ở MỌI regime. Tính runtime
+            #    từ gates hiện hành → đổi gate/weight thì ngưỡng tự khớp, khỏi sửa 2 chỗ.
+            #    Extras (confluence/ffi/of_bp) GIỮ tuyệt đối, KHÔNG scale — để không
+            #    phá pre-register magnitude của các tín hiệu đó (side-effect: chúng
+            #    "đấm" mạnh hơn trong regime mỏng; forward-test sẽ bắt được).
+            w_reg = sum(_weight("trade", f) * gates[f] for f in FACTORS)
+            w_reg = w_reg if w_reg > 1e-9 else 1.0      # phòng chia 0 (thực tế ≥0.61)
+            out["_w_regime"] = round(w_reg, 4)
             for cut, name in THRESHOLDS:
-                if cut is None or total >= cut:
+                cut_s = None if cut is None else cut * w_reg
+                if cut_s is None or total >= cut_s:
                     out["decision"] = name
                     break
-            out["confidence"] = ("HIGH" if aligned >= 2 and abs(total) >= 40
-                                 else "MEDIUM" if abs(total) >= 25 else "LOW")
+            hi_cut, md_cut = 40 * w_reg, 25 * w_reg     # confidence cũng co theo W
+            out["confidence"] = ("HIGH" if aligned >= 2 and abs(total) >= hi_cut
+                                 else "MEDIUM" if abs(total) >= md_cut else "LOW")
         else:
             out["score_hold"] = round(max(-100.0, min(100.0, pre_total)), 2)
 
