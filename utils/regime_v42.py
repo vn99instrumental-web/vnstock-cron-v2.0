@@ -257,3 +257,60 @@ def shadow_update(trend: dict) -> dict:
         "regime_v42_pending"    : h["pending"],
         "regime_display_hint"   : hint,
     }
+
+
+# ══════════════════════════════════════════════════════════════════════
+# V4.5 — REGIME BREADTH-AWARE (chống méo VNINDEX cap-weighted: vài mã lớn
+# kéo chỉ số trong khi đa số cổ phiếu yếu). Dùng LẠI NGUYÊN các ngưỡng TH_*
+# ở trên (calibrate-safe, KHÔNG thêm tham số mới) — chỉ thay input VNINDEX
+# bằng breadth của rổ: "mã trung vị trên/dưới EMA" thay cho "index trên/dưới".
+# ══════════════════════════════════════════════════════════════════════
+
+def classify_regime_breadth(share_50: float, share_200: float,
+                            med_c5: float | None, med_c20: float | None) -> dict:
+    """Phân loại regime từ BREADTH (dùng chung logic classify_regime).
+    share_50/200 = tỉ lệ mã có giá > EMA50/EMA200 (0..1). Ngưỡng 0.5 = 'mã
+    trung vị trên/dưới EMA' — bản sao breadth của boolean index.
+    med_c5/med_c20 = median % thay đổi 5d/20d của rổ."""
+    above_50  = share_50  >= 0.5
+    above_200 = share_200 >= 0.5
+    c5  = med_c5  if med_c5  is not None else 0.0
+    c20 = med_c20 if med_c20 is not None else 0.0
+    crash = c20 <= TH_CRASH_20D
+    if ((not above_50) and (not above_200) and c5 <= TH_DEEP_C5) or crash:
+        return {"regime_raw": "DEEP_DOWN",
+                "reason": ("breadth crash c20<=-8" if crash
+                           else "breadth duoi 2 EMA & c5<=0"),
+                "crash_rule": crash}
+    if (not above_50) and c5 >= TH_RECOVERY_C5:
+        return {"regime_raw": "RECOVERY",
+                "reason": f"breadth duoi EMA50 & c5={c5:+.2f}>=+2",
+                "crash_rule": False}
+    if (not above_50) and (c20 <= TH_DOWN_C20 or c5 <= TH_DOWN_C5):
+        return {"regime_raw": "DOWNTREND",
+                "reason": "breadth duoi EMA50 & momentum am",
+                "crash_rule": False}
+    if above_50 and above_200 and c20 > 0:
+        return {"regime_raw": "UPTREND",
+                "reason": "breadth tren 2 EMA & c20>0",
+                "crash_rule": False}
+    return {"regime_raw": "SIDEWAYS", "reason": "breadth con lai",
+            "crash_rule": False}
+
+
+# Thứ tự BI QUAN (dùng cho blend "lấy bên xấu hơn")
+REGIME_BEARISHNESS = {"UPTREND": 0, "SIDEWAYS": 1, "RECOVERY": 2,
+                      "DOWNTREND": 3, "DEEP_DOWN": 4}
+
+
+def more_bearish(a: str, b: str) -> str:
+    """Trả regime BI QUAN hơn trong 2 cái. UNKNOWN bị bỏ qua (lấy cái còn lại).
+    Dùng để blend index-regime với breadth-regime: KHÔNG BAO GIỜ lạc quan hơn
+    index → an toàn cho sàng lọc (tránh BUY sai khi index bị vài mã lớn che)."""
+    if a == "UNKNOWN":
+        return b
+    if b == "UNKNOWN":
+        return a
+    ra = REGIME_BEARISHNESS.get(a, 1)
+    rb = REGIME_BEARISHNESS.get(b, 1)
+    return a if ra >= rb else b
