@@ -46,6 +46,7 @@ from collections import Counter
 
 from utils.cache import load_json, save_json
 from utils.of_buy_pressure import buy_pressure_pts
+from utils.regime_v42 import classify_regime_breadth, more_bearish
 from utils.v2f_registry import (REGISTRY_VERSION, FACTORS, FACTOR_WEIGHTS,
                                 THRESHOLDS, CONFLUENCE_BONUS,
                                 CONFLUENCE_MIN_NORM, SIGNALS,
@@ -60,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.4"          # +3 tín hiệu V4-only: trend_st(±4)+depth_wall(±3)+cf_core(±3), weight trade chỉnh nhẹ | trước: v4.3 OF buy-pressure
+SCORING_VERSION = "v4.5"          # +regime BREADTH-AWARE (blend index+breadth, lấy bên bi quan) | trước: v4.4 (+3 tín hiệu trend/depth/cf)
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -122,6 +123,46 @@ def _apply_hysteresis(raw: str, run_date: str):
     st["candidate_dates"] = [run_date]
     save_json(REGIME_STATE, st)
     return eff, f"candidate mới {raw} 1/{HYST_SESSIONS} → giữ {eff}"
+
+
+# ══════════════════════════════════════════════════════════════════════
+# V4.5 — BREADTH của rổ (để phân loại regime breadth-aware)
+# ══════════════════════════════════════════════════════════════════════
+MIN_BREADTH_N = 30   # dưới ngưỡng này → không tin breadth, giữ index-regime
+
+
+def _compute_breadth(rows: list) -> dict:
+    """% mã trên EMA50/EMA200 + median %chg 5d/20d của rổ. Fail-soft."""
+    import statistics as _st
+    n = a50 = a200 = 0
+    r20, r5 = [], []
+    for r in rows:
+        p   = _f(r.get("price"))
+        e50 = _f(r.get("ema50"))
+        e200 = _f(r.get("ema200"))
+        if p and e50:
+            n += 1
+            if p > e50: a50 += 1
+            if e200 and p > e200: a200 += 1
+        rr = _f(r.get("return_20d"))
+        if rr is not None:
+            r20.append(rr)
+        o = r.get("_ohlcv_5d")
+        if isinstance(o, list) and len(o) >= 2:
+            try:
+                cn = o[-1].get("close") if isinstance(o[-1], dict) else o[-1][4]
+                c0 = o[0].get("close")  if isinstance(o[0], dict)  else o[0][4]
+                if c0:
+                    r5.append((float(cn) / float(c0) - 1.0) * 100.0)
+            except Exception:
+                pass
+    if n == 0:
+        return {"n": 0}
+    return {"n": n,
+            "share_50":  a50 / n,
+            "share_200": a200 / n,
+            "med_c20":   _st.median(r20) if r20 else None,
+            "med_c5":    _st.median(r5)  if r5  else None}
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -391,8 +432,17 @@ def run():
         ctx["_snap_time"] = rows[0]["snap_time"]
 
     # regime là thuộc tính THỊ TRƯỜNG → resolve MỘT LẦN cho cả run
-    raw_regime = _resolve_regime(ctx, rows[0] if rows else {})
+    index_raw  = _resolve_regime(ctx, rows[0] if rows else {})
     run_date   = _run_date(ctx, rows)
+    # ── V4.5: regime BREADTH-AWARE (chống méo index cap-weighted) ──
+    _brd = _compute_breadth(rows)
+    if _brd.get("n", 0) >= MIN_BREADTH_N:
+        breadth_raw = classify_regime_breadth(
+            _brd["share_50"], _brd["share_200"],
+            _brd["med_c5"], _brd["med_c20"])["regime_raw"]
+    else:
+        breadth_raw = "UNKNOWN"
+    raw_regime = more_bearish(index_raw, breadth_raw)   # lấy bên BI QUAN hơn
     regime, hyst_status = _apply_hysteresis(raw_regime, run_date)   # regime hiệu lực
 
     # regime v4.2 (RECOVERY-aware) — CHỈ dùng để DÁN CỜ CẢNH BÁO lên BUY,
@@ -425,6 +475,20 @@ def run():
         except Exception:
             n_err += 1
             log.warning(f"  skip {row.get('symbol')}:\n{traceback.format_exc()}")
+
+    # V4.5: gắn thông tin breadth-regime (market-wide) lên mọi row
+    _div = breadth_raw not in (index_raw, "UNKNOWN")
+    for _r in out_rows:
+        _r["_regime_index"]      = index_raw
+        _r["_regime_breadth"]    = breadth_raw
+        _r["_regime_blended"]    = raw_regime
+        _r["_breadth_pct_50"]    = round(_brd["share_50"] * 100, 1) if _brd.get("n") else None
+        _r["_breadth_pct_200"]   = round(_brd["share_200"] * 100, 1) if _brd.get("n") else None
+        _r["_regime_divergence"] = _div
+    log.info(f"[V4.5] regime index={index_raw} | breadth={breadth_raw}"
+             f" (>EMA50 {_brd.get('share_50', 0)*100:.0f}%, med20d="
+             f"{_brd.get('med_c20')}) → blended={raw_regime}"
+             + ("  ⚠ PHÂN KỲ" if _div else ""))
 
     save_json(SIGNALS_OUT, out_rows)
 
