@@ -277,6 +277,41 @@ def _augment_caps(caps):
 # CORE — chấm 1 symbol, 2 khung, CÓ gate theo regime
 # ══════════════════════════════════════════════════════════════════════
 
+# ── CONFIDENCE ĐỘC LẬP (v4.6c) — đo ĐỘ TIN của kết luận, KHÔNG dính độ mạnh alpha ──
+#    Trả (pct 0-100, nhãn). Hai trụ, cả hai độc lập với hướng/độ lớn score_trade:
+#      1) ĐỘ PHỦ DATA : data_missing (core/phụ), regime mù/phân kỳ, data cũ, lực khớp mỏng
+#      2) ĐỘ NHẤT QUÁN: các factor-norm cùng hướng hay giằng co (|Σ|/Σ|·|) — KHÔNG dùng
+#                       dấu/độ lớn của TỔNG điểm → không phải alpha nói lại lần hai.
+#    Thay công thức cũ (aligned & |total|) vốn chỉ phản chiếu độ mạnh alpha.
+CONF_HI, CONF_MD          = 80, 60   # ngưỡng nhãn — chọn từ phân bố rổ VN100+HNX30
+CONF_DISAGREE_MIN_GROSS   = 0.45     # dưới mức này = quá ít tín hiệu (đã tính sau gate) → không phạt
+CONF_DISAGREE_MAXPEN      = 35       # trừ tối đa khi các nhóm triệt tiêu nhau hoàn toàn
+
+def confidence_data_v4(row: dict) -> tuple:
+    s = 100.0
+    # 1) độ phủ data -----------------------------------------------------------
+    for m in (row.get("data_missing") or []):
+        if "Giá" in m and "(" not in m:  s -= 40     # mất giá gốc → gần vô giá trị
+        elif "(" in m:                   s -= 5      # phụ: fallback / cache / 52T-3M
+        else:                            s -= 18     # core: EMA/RSI/MACD/PE/EPS/FF5d/OHLCV5d/LựcKhớp
+    if row.get("_regime") == "UNKNOWN":  s -= 25     # thị trường không đọc được
+    if row.get("_regime_divergence"):    s -= 6      # index↔breadth phân kỳ (trừ NHẸ)
+    st = row.get("_ta_stale_days") or 0
+    if st > 0:                           s -= min(4 * st, 12)          # data cũ
+    if row.get("_of_distribution") == "INSUFFICIENT_DATA": s -= 5     # lực khớp mỏng
+    # 2) độ nhất quán giữa các nhóm CÒN SỐNG (nhân gate theo regime — khớp cách
+    #    confluence tính; factor đã tắt/nửa liều KHÔNG bị tính cãi nhau oan) ---------
+    gates = row.get("_gates") or {}
+    norms = [(gates.get(f, 1) or 0) * (row.get(f"trade_{f}_norm") or 0) for f in FACTORS]
+    gross = sum(abs(x) for x in norms)
+    if gross >= CONF_DISAGREE_MIN_GROSS:
+        agree = abs(sum(norms)) / gross              # 1=đồng thuận, 0=triệt tiêu
+        s -= (1 - agree) * CONF_DISAGREE_MAXPEN
+    pct = int(max(0.0, min(100.0, round(s))))
+    label = "HIGH" if pct >= CONF_HI else "MEDIUM" if pct >= CONF_MD else "LOW"
+    return pct, label
+
+
 def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                     regime: str, regime_raw: str = None,
                     regime_v42: str = "UNKNOWN") -> dict:
@@ -394,9 +429,13 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                 if cut_s is None or total >= cut_s:
                     out["decision"] = name
                     break
-            hi_cut, md_cut = 40 * w_reg, 25 * w_reg     # confidence cũng co theo W
-            out["confidence"] = ("HIGH" if aligned >= 2 and abs(total) >= hi_cut
-                                 else "MEDIUM" if abs(total) >= md_cut else "LOW")
+            # ── CONFIDENCE ĐỘC LẬP (Cách 1 — ghi đè công thức cũ aligned&|total|) ──
+            #    Tính SAU khi score_trade/decision đã chốt → KHÔNG đổi điểm/quyết định,
+            #    KHÔNG cần bump SCORING_VERSION, KHÔNG reset ledger. Xem confidence_data_v4().
+            cpct, clabel = confidence_data_v4(out)
+            out["confidence_pct"]    = cpct
+            out["confidence"]        = clabel
+            out["confidence_method"] = "data+consistency_v4.6c"
         else:
             out["score_hold"] = round(max(-100.0, min(100.0, pre_total)), 2)
 
@@ -412,7 +451,8 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
         out["recovery_warn"] = True
         out["warn_msg"]      = "sóng hồi chưa xác nhận đảo chiều"
         if out.get("confidence") == "HIGH":
-            out["confidence"] = "MEDIUM"
+            out["confidence"]     = "MEDIUM"
+            out["confidence_pct"] = min(out.get("confidence_pct", CONF_HI), CONF_HI - 1)
 
     out["signals"] = " | ".join(sig_labels)
     return out
