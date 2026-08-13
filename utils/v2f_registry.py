@@ -189,15 +189,29 @@ if __name__ == "__main__":
 # CĂN CỨ (Phase A, đo trên tier liquid, log 2026-07-29):
 #   mean_reversion: A2 gap +1.30% > phí 0.5% → DOWN/DEEP = 1.0 (phát lệnh được);
 #                   UP/SIDEWAYS = 0 (IC ≈0/âm — đã đo B1).
-#   breakout      : A1 SIDEWAYS 3 tín hiệu dương CẢ 2 nửa (dist_52w/supertrend/
-#                   adx_dir) nhưng nửa đầu yếu + mẫu 43 ngày → 0.7 (thận trọng,
-#                   chờ forward nâng lên 1.0); UPTREND chỉ dist_52w & ✗FLIP → 0.5
-#                   nửa liều; DOWN/DEEP trend âm rõ (t≤-2) → 0.0.
+#   breakout      : SIDEWAYS 0.7 (3 tín hiệu dương cả 2 nửa, mẫu mỏng → thận
+#                   trọng); UPTREND 0.5 (chỉ dist_52w & ✗FLIP → nửa liều).
+#                   DOWN/DEEP = 1.0 (v3, 2026-08-13): A1 backtest cũ ghi
+#                   anti-predictive (t≤-2) → gate 0; forward THẬT ĐẢO NGƯỢC.
 #   flow/fund/growth/context: inherited-pending (A3 trống — chờ forward/backfill FF).
 #   UNKNOWN       : bảo thủ (MR tắt; breakout nửa liều) — dùng khi API VNINDEX fail.
-# ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (ghi vào ledger v4).
+#
+# CHANGELOG GATE:
+#   v2 (2026-07-29) — Phase A: MR gated down-only; breakout tắt down (A1 backtest).
+#   v3 (2026-08-13) — breakout DOWN/DEEP 0.0 → 1.0. Bằng chứng FORWARD (join
+#       v2f_predictions→v2f_outcomes, ~18 phiên giảm 24/06–24/07, daily-last):
+#         • IC(breakout_norm → r5d) = +0.31 trong phiên giảm (DỰ BÁO ĐÚNG, KHÔNG
+#           anti); bỏ breakout làm IC điểm tổng xấu đi (−0.01 → −0.085).
+#         • V2.3 (không gate) giữ trend BẬT: trend_score IC +0.18, total_score
+#           IC +0.14, lệnh SELL đúng 74% trong down → lợi thế downtrend ĐẾN TỪ
+#           factor trend; V4 gate 0 = tự vứt đúng cái đó.
+#       A1 backtest (in-sample, đã cạn) bị forward phản bác → quy tắc 23/07:
+#       forward thắng. CHỈ đổi breakout; mean_reversion (forward IC −0.167, nên
+#       tắt down) để chu kỳ sau — kỷ luật 1 thay đổi/chu kỳ. Mẫu ~18 phiên giảm
+#       của MỘT nhịp → INDICATIVE (dưới guard 30 phiên), theo dõi forward tiếp.
+# ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (reset bucket forward-validation v4).
 # ══════════════════════════════════════════════════════════════════════
-GATE_VERSION = 2
+GATE_VERSION = 3
 REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
 _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 
@@ -205,7 +219,7 @@ _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 GATE = {
     #                 UP    SIDE  DOWN  DEEP  UNKNOWN   # nguồn
     "mean_reversion": (0.0,  0.0,  1.0,  1.0,  0.0),    # A2 measured
-    "breakout":       (0.5,  0.7,  0.0,  0.0,  0.5),    # A1 measured
+    "breakout":       (0.5,  0.7,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31)
     "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "fundamental":    (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "growth":         (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
