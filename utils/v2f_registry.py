@@ -187,8 +187,9 @@ if __name__ == "__main__":
 # gate ∈ [0,1] = hệ số nhân lên weight của factor theo regime hiện tại.
 #
 # CĂN CỨ (Phase A, đo trên tier liquid, log 2026-07-29):
-#   mean_reversion: A2 gap +1.30% > phí 0.5% → DOWN/DEEP = 1.0 (phát lệnh được);
-#                   UP/SIDEWAYS = 0 (IC ≈0/âm — đã đo B1).
+#   mean_reversion: TẮT MỌI regime (v4, 2026-08-13). UP/SIDEWAYS đã = 0 (IC≈0/âm,
+#                   B1); DOWN/DEEP 1.0→0.0 vì forward IC −0.167 (đỡ giá SAI trong
+#                   down). A2 backtest gap +1.30% bị forward phản bác.
 #   breakout      : SIDEWAYS 0.7 (3 tín hiệu dương cả 2 nửa, mẫu mỏng → thận
 #                   trọng); UPTREND 0.5 (chỉ dist_52w & ✗FLIP → nửa liều).
 #                   DOWN/DEEP = 1.0 (v3, 2026-08-13): A1 backtest cũ ghi
@@ -209,16 +210,21 @@ if __name__ == "__main__":
 #       forward thắng. CHỈ đổi breakout; mean_reversion (forward IC −0.167, nên
 #       tắt down) để chu kỳ sau — kỷ luật 1 thay đổi/chu kỳ. Mẫu ~18 phiên giảm
 #       của MỘT nhịp → INDICATIVE (dưới guard 30 phiên), theo dõi forward tiếp.
+#   v4 (2026-08-13) — mean_reversion DOWN/DEEP 1.0 → 0.0 (giờ MR TẮT MỌI regime).
+#       Forward IC(mr_norm → r5d) = −0.167 trong phiên giảm (đỡ giá sai). Cùng
+#       CHU KỲ với v3 theo yêu cầu người dùng — CHẤP NHẬN 2 thay đổi liền tay,
+#       cần đủ forward để tách đóng góp từng cái. Hệ quả (Cách B): DOWN w_regime
+#       1.0 → 0.73, ngưỡng decision co theo → SELL dễ chạm hơn (đúng ý trong down).
 # ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (reset bucket forward-validation v4).
 # ══════════════════════════════════════════════════════════════════════
-GATE_VERSION = 3
+GATE_VERSION = 4
 REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
 _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 
 # thứ tự cột = REGIMES ở trên
 GATE = {
     #                 UP    SIDE  DOWN  DEEP  UNKNOWN   # nguồn
-    "mean_reversion": (0.0,  0.0,  1.0,  1.0,  0.0),    # A2 measured
+    "mean_reversion": (0.0,  0.0,  0.0,  0.0,  0.0),    # v4: tắt mọi regime (forward IC −0.167)
     "breakout":       (0.5,  0.7,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31)
     "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "fundamental":    (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
