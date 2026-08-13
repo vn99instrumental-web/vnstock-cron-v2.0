@@ -94,6 +94,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .gc-GAINER{border-color:#0c4020;color:var(--buy);background:var(--buy-bg)}
 .gc-LOSER{border-color:var(--sell-bg);color:var(--sell);background:var(--sell-bg)}
 .v2tag{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:2px;border:1px solid #0d3555;background:#061220;color:var(--acc)}
+.qb-badge{display:inline-block;padding:1px 7px;border-radius:9px;font-size:9px;font-weight:800;letter-spacing:.5px;background:#f5c518;color:#1a1200;white-space:nowrap;line-height:1.4}
 .dq-chip{font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 6px;border-radius:2px;border:1px solid var(--sell);color:var(--sell);background:var(--sell-bg);cursor:help}
 .dq-chip.dq-stale{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
 .dq-warn{margin:6px 12px 0 17px;padding:6px 10px;border-radius:3px;background:#1a0800;border:1px solid var(--sell);font-size:11px;color:var(--sell);line-height:1.5}
@@ -436,6 +437,8 @@ function renderCard(d, idx) {
   const confCls = d.confidence==='HIGH'?'conf-HIGH':d.confidence==='LOW'?'conf-LOW':'conf-MED';
   const confHtml = d.confidence ? `<span class="conf-chip ${confCls}">${d.confidence}</span>` : '';
   const groupHtml = d.group ? `<span class="group-chip gc-${d.group}">${d.group}</span>` : '';
+  const isQuality = (d.decision === 'BUY' || d.decision === 'STRONG BUY') && parseFloat(d.ff_score||0) >= 5 && parseFloat(d.fundamental_score||0) >= 5;
+  const qualityHtml = isQuality ? '<span class="qb-badge" title="FF ≥ 5 và Cơ bản ≥ 5 — xác nhận kép">&#11088; QUALITY</span>' : '';
 
   const dq = buildDataQuality(d);
 
@@ -544,6 +547,7 @@ function renderCard(d, idx) {
       ${d.exchange?`<span class="ch-meta-sep">·</span><span>${d.exchange}</span>`:''}
       ${confHtml}
       ${groupHtml}
+      ${qualityHtml}
       ${dq.chip}
     </div>
   </div>
