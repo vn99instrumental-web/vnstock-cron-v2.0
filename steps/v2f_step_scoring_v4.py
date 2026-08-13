@@ -314,7 +314,8 @@ def confidence_data_v4(row: dict) -> tuple:
 
 def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                     regime: str, regime_raw: str = None,
-                    regime_v42: str = "UNKNOWN") -> dict:
+                    regime_v42: str = "UNKNOWN",
+                    regime_divergence: bool = False) -> dict:
     # passthrough data thô (bỏ field scoring của v2.3) — giống V3
     out = {k: v for k, v in row.items() if not _is_v23_scoring_field(k)}
     out.update({
@@ -323,6 +324,7 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
         "gate_version":     GATE_VERSION,
         "_regime":          regime,                    # regime HIỆU LỰC (sau hysteresis)
         "_regime_raw":      regime_raw or regime,       # regime THÔ (trước hysteresis)
+        "_regime_divergence": regime_divergence,        # V4.6 FIX: set TRƯỚC khi tính confidence
     })
 
     sig_labels = []
@@ -521,24 +523,31 @@ def run():
         log.info(f"[V4] factor NỬA LIỀU: " +
                  ", ".join(f"{f}={gates[f]}" for f in half))
 
+    # V4.6 FIX: divergence phải tính TRƯỚC vòng chấm để confidence_data_v4 dùng được.
+    #           (Trước đây gán sau vòng lặp → tại lúc tính confidence field chưa tồn
+    #            tại → nhánh "if row.get('_regime_divergence'): s -= 6" không bao giờ
+    #            chạy. Nay tính sớm + truyền vào score_symbol_v4.)
+    _div = breadth_raw not in (index_raw, "UNKNOWN")
+
     out_rows, n_err = [], 0
     for row in rows:
         try:
             out_rows.append(score_symbol_v4(row, ctx, caps, actives,
-                                            regime, raw_regime, regime_v42))
+                                            regime, raw_regime, regime_v42,
+                                            regime_divergence=_div))
         except Exception:
             n_err += 1
             log.warning(f"  skip {row.get('symbol')}:\n{traceback.format_exc()}")
 
-    # V4.5: gắn thông tin breadth-regime (market-wide) lên mọi row
-    _div = breadth_raw not in (index_raw, "UNKNOWN")
+    # V4.5: gắn thông tin breadth-regime (market-wide) lên mọi row.
+    # (_div đã tính TRƯỚC vòng lặp & truyền vào score_symbol_v4 để confidence dùng
+    #  được; _regime_divergence đã set trong score_symbol_v4 — KHÔNG set lại ở đây.)
     for _r in out_rows:
         _r["_regime_index"]      = index_raw
         _r["_regime_breadth"]    = breadth_raw
         _r["_regime_blended"]    = raw_regime
         _r["_breadth_pct_50"]    = round(_brd["share_50"] * 100, 1) if _brd.get("n") else None
         _r["_breadth_pct_200"]   = round(_brd["share_200"] * 100, 1) if _brd.get("n") else None
-        _r["_regime_divergence"] = _div
     log.info(f"[V4.5] regime index={index_raw} | breadth={breadth_raw}"
              f" (>EMA50 {_brd.get('share_50', 0)*100:.0f}%, med20d="
              f"{_brd.get('med_c20')}) → blended={raw_regime}"
