@@ -164,6 +164,11 @@ def run():
             "ff_intra_net"      : sig.get("ff_intra_net"),
             "ff_intra_flag_pts" : sig.get("ff_intra_flag_pts"),
             "of_bp_pts"         : sig.get("of_bp_pts"),
+            # Ư5 shadow (v4.7): fundamental so-trong-ngành — KHÔNG dùng ra quyết định,
+            # chỉ để forward-validate (so IC score_trade vs score_trade_altfund).
+            "score_trade_altfund" : sig.get("score_trade_altfund"),
+            "decision_altfund"    : sig.get("decision_altfund"),
+            "_alt_fund_pts"       : sig.get("_alt_fund_pts"),
             "rank_cf_grp"     : sig.get("rank_cf_grp"),
             "rank_growth_grp" : sig.get("rank_growth_grp"),
             "adtv_bil"        : sig.get("adtv_bil"),
