@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.6"          # +ngưỡng decision CO THEO REGIME (thr×W_reg, Option A) | trước: v4.5 regime breadth-aware
+SCORING_VERSION = "v4.7"          # Ư1 context=0 + Ư2 MR weight→flow/fund/brk/grw pro-rata + Ư3 extras co theo w_reg | trước: v4.6 ngưỡng co theo regime
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -255,9 +255,23 @@ _V4_FN = {"sc_trend_st": sc_trend_st, "sc_depth_wall": sc_depth_wall,
 _V4_LABEL = {"trend_st": "📈 Trend(ST)", "depth_wall": "🧱 Tường bid/ask",
              "cf_core": "💵 Dòng tiền"}
 
-# Weight TRADE V4-only (breakout ↑ cho trend hiện diện; tổng = 1.0). HOLD = registry.
-_W_TRADE_V4 = {"mean_reversion": 0.27, "breakout": 0.12, "flow": 0.25,
-               "fundamental": 0.20, "growth": 0.10, "context": 0.06}
+# Weight TRADE V4-only. HOLD = registry.
+# ── v4.7 (Ư1 + Ư2) ────────────────────────────────────────────────────────
+#   Ư1 — context = 0: sc_context là HẰNG SỐ cross-sectional (điểm định giá
+#        VNINDEX chung cả rổ) → mỗi phiên trừ ĐỀU mọi mã cùng một lượng, KHÔNG
+#        phân biệt mã tốt/xấu. Giữ trong per-stock scoring chỉ hạ trần chung +
+#        cản BUY vô ích. Bỏ khỏi khung trade (regime-context đã được phản ánh
+#        qua GATE rồi). sc_context vẫn tính → dùng cho hiển thị/hold, vô hại.
+#   Ư2 — mean_reversion = 0: GATE MR = 0.0 mọi regime (forward IC −0.167) →
+#        weight cũ 0.27 là "ngân sách chết" (luôn nhân gate 0). Trả 0.27 + 0.06
+#        (context) = 0.33 về các factor CÒN SỐNG theo tỷ lệ hiện có (pro-rata,
+#        KHÔNG nghiêng — chưa có forward để biện minh việc nghiêng). Weight giờ
+#        PHẢN ÁNH ĐÚNG cái đang quyết định điểm BUY: flow > fundamental >
+#        breakout > growth.
+#   ⚠ COUPLING: nếu sau này bật lại GATE mean_reversion, PHẢI tune lại bảng này
+#     (MR weight 0 → MR sẽ vẫn câm dù gate mở). Ghi chú để không quên.
+_W_TRADE_V4 = {"mean_reversion": 0.0,    "breakout": 0.1791, "flow": 0.3731,
+               "fundamental":    0.2985, "growth":   0.1493, "context": 0.0}
 assert abs(sum(_W_TRADE_V4.values()) - 1.0) < 1e-9
 
 
@@ -390,42 +404,38 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                           for f in fs) / wsum) if wsum else 0
                 if sn * sgn >= CONFLUENCE_MIN_NORM:
                     aligned += 1
+            # ── W_reg = Σ(weight × gate) khung trade = tổng trọng số CÒN SỐNG.
+            #    Tính SỚM (trước extras) vì v4.7 dùng nó để co cả extras lẫn ngưỡng.
+            w_reg = sum(_weight("trade", f) * gates[f] for f in FACTORS)
+            w_reg = w_reg if w_reg > 1e-9 else 1.0      # phòng chia 0
+            out["_w_regime"] = round(w_reg, 4)
+
             bonus = CONFLUENCE_BONUS * sgn if aligned >= 2 else 0
-            total = max(-100.0, min(100.0, pre_total + bonus))
-            # ── FF-intraday "NN gom mạnh" (V4 ONLY, PRE-REGISTER 8%/10 tỷ, cap ±3) ──
-            #    Chỉ tác động TRADE (tín hiệu trong phiên, không dính HOLD).
-            #    ff_intra_flag_pts do snapshot gắn (±3/0). Đọc từ row để chắc không bị
-            #    lớp lọc field loại bỏ. V2.3/V3 KHÔNG cộng — chỉ V4.
+            # ── FF-intraday "NN gom mạnh" (V4 ONLY, cap ±3) — snapshot gắn (±3/0). ──
             ffi_pts = row.get("ff_intra_flag_pts") or 0
-            if ffi_pts:
-                total = max(-100.0, min(100.0, total + ffi_pts))
-                sig_labels.append(f"🌐 NN gom mạnh {ffi_pts:+d}")
-            out["ff_intra_flag_pts"]     = ffi_pts
-            # ── OF buy-pressure (khớp lệnh: buy_ratio SỐ LỆNH + cổng KL/tần suất) ──
-            #    Cap nhỏ ±4, TRADE-only. PRE-REGISTER / INDICATIVE (fit 1 cung macro).
-            #    Đọc _of_* từ row (V2.3 đã gắn). KL & tần suất chỉ làm CỔNG, không cộng.
+            # ── OF buy-pressure (buy_ratio SỐ LỆNH + cổng KL/tần suất), cap ±4. ──
+            #    INDICATIVE (fit 1 cung macro). KL & tần suất chỉ làm CỔNG.
             bp_pts = buy_pressure_pts(row.get("_of_buy_count"), row.get("_of_sell_count"),
                                       row.get("_of_total_trades"), row.get("vol_ma_ratio"))
+            # ── v4.7 (Ư3): extras CO THEO w_reg ────────────────────────────────
+            #    Trước: extras cộng TUYỆT ĐỐI → trong regime mỏng (w_reg nhỏ) một
+            #    cờ ±4 "đấm" mạnh bất thường so với trần điểm đã co, tự đẩy mã qua
+            #    ngưỡng BUY. Nay nhân w_reg → "1 điểm thưởng = mức nghiêng bullish
+            #    cố định" ở MỌI regime, khớp đúng cách ngưỡng cũng ×w_reg.
+            extras = (bonus + ffi_pts + bp_pts) * w_reg
+            total = max(-100.0, min(100.0, pre_total + extras))
+            if ffi_pts:
+                sig_labels.append(f"🌐 NN gom mạnh {ffi_pts:+d}")
             if bp_pts:
-                total = max(-100.0, min(100.0, total + bp_pts))
                 sig_labels.append(f"💧 Áp lực mua khớp {bp_pts:+d}")
+            out["ff_intra_flag_pts"]     = ffi_pts
             out["of_bp_pts"]             = bp_pts
             out["confluence_bonus"]      = bonus
             out["n_supergroups_aligned"] = aligned
             out["score_trade"]           = round(total, 2)
             out["total_score"]           = out["score_trade"]   # recorder compat
-            # ── V4.6: ngưỡng decision CO THEO REGIME (Option A, full-scaling) ──
-            #    Điểm thô score_trade GIỮ NGUYÊN — chỉ dời cột mốc quyết định.
-            #    W_reg = Σ(weight × gate) khung trade = tổng trọng số CÒN SỐNG.
-            #    Gate tắt factor → trần điểm co còn ±(W×100); ngưỡng ×W để "một
-            #    điểm BUY = mức nghiêng bullish cố định" ở MỌI regime. Tính runtime
-            #    từ gates hiện hành → đổi gate/weight thì ngưỡng tự khớp, khỏi sửa 2 chỗ.
-            #    Extras (confluence/ffi/of_bp) GIỮ tuyệt đối, KHÔNG scale — để không
-            #    phá pre-register magnitude của các tín hiệu đó (side-effect: chúng
-            #    "đấm" mạnh hơn trong regime mỏng; forward-test sẽ bắt được).
-            w_reg = sum(_weight("trade", f) * gates[f] for f in FACTORS)
-            w_reg = w_reg if w_reg > 1e-9 else 1.0      # phòng chia 0 (thực tế ≥0.61)
-            out["_w_regime"] = round(w_reg, 4)
+            # ── ngưỡng decision CO THEO REGIME (Option A) — score_trade thô GIỮ NGUYÊN,
+            #    chỉ dời cột mốc quyết định theo w_reg. (v4.7: extras đã co cùng nhịp.)
             for cut, name in THRESHOLDS:
                 cut_s = None if cut is None else cut * w_reg
                 if cut_s is None or total >= cut_s:
@@ -438,6 +448,31 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
             out["confidence_pct"]    = cpct
             out["confidence"]        = clabel
             out["confidence_method"] = "data+consistency_v4.6c"
+            # ── Ư5 SHADOW (v4.7) — fundamental SO-TRONG-NGÀNH (rank_fund_grp) ──
+            #    Tính điểm fundamental THAY THẾ dùng rank_fund_grp (percentile 0..1
+            #    trong ngành) thay cho fund_core (PE tuyệt đối), GIỮ nguyên cf_core.
+            #    KHÔNG đổi score_trade/decision production — chỉ ghi field shadow để
+            #    forward-validate (join ledger, so IC vs bản production). Chuyển thật
+            #    CHỈ khi shadow thắng đủ dày (≥30 phiên) — kỷ luật forward-thắng.
+            rk = _f(row.get("rank_fund_grp"))
+            if rk is not None:
+                alt_pts  = max(-8, min(8, round((rk - 0.5) * 16)))   # 0..1 → ±8 (span fund_core)
+                cap_fund = caps["trade"].get("fundamental", 11) or 11
+                alt_raw  = alt_pts + sig_scores.get("cf_core", 0)     # thay fund_core, GIỮ cf_core
+                norm_alt = max(-1.0, min(1.0, alt_raw / cap_fund))
+                delta    = (_weight("trade", "fundamental") * gates["fundamental"]
+                            * (norm_alt - f_norm["fundamental"]) * 100)
+                sa = max(-100.0, min(100.0, pre_total + delta + extras))
+                out["_alt_fund_pts"]      = alt_pts
+                out["score_trade_altfund"] = round(sa, 2)
+                for cut, name in THRESHOLDS:
+                    if cut is None or sa >= cut * w_reg:
+                        out["decision_altfund"] = name
+                        break
+            else:
+                out["_alt_fund_pts"]       = None
+                out["score_trade_altfund"] = None
+                out["decision_altfund"]    = None
         else:
             out["score_hold"] = round(max(-100.0, min(100.0, pre_total)), 2)
 
