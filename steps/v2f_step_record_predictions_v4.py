@@ -169,6 +169,9 @@ def run():
             "score_trade_altfund" : sig.get("score_trade_altfund"),
             "decision_altfund"    : sig.get("decision_altfund"),
             "_alt_fund_pts"       : sig.get("_alt_fund_pts"),
+            # SHADOW ĐỐI CHỨNG MR-OFF (v4.8): production bật MR — forward so.
+            "score_trade_nomr"    : sig.get("score_trade_nomr"),
+            "decision_nomr"       : sig.get("decision_nomr"),
             "rank_cf_grp"     : sig.get("rank_cf_grp"),
             "rank_growth_grp" : sig.get("rank_growth_grp"),
             "adtv_bil"        : sig.get("adtv_bil"),
