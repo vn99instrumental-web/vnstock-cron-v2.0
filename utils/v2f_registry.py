@@ -217,15 +217,15 @@ if __name__ == "__main__":
 #       1.0 → 0.73, ngưỡng decision co theo → SELL dễ chạm hơn (đúng ý trong down).
 # ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (reset bucket forward-validation v4).
 # ══════════════════════════════════════════════════════════════════════
-GATE_VERSION = 4
+GATE_VERSION = 5
 REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
 _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 
 # thứ tự cột = REGIMES ở trên
 GATE = {
     #                 UP    SIDE  DOWN  DEEP  UNKNOWN   # nguồn
-    "mean_reversion": (0.0,  0.0,  0.0,  0.0,  0.0),    # v4: tắt mọi regime (forward IC −0.167)
-    "breakout":       (0.5,  0.7,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31)
+    "mean_reversion": (1.0,  1.0,  1.0,  1.0,  1.0),    # v5: BẬT LẠI mọi regime (quyết định vận hành 2026-08-16 — kiểm production thủ công; LƯU Ý file từng ghi forward IC −0.167, cần re-validate)
+    "breakout":       (0.5,  0.7,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31). UPTREND giữ 0.5: thử nâng 0.7 nhưng ngưỡng ×w_reg tự bù → không nới được BUY (sim 2026-08-16), revert.
     "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "fundamental":    (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
     "growth":         (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
