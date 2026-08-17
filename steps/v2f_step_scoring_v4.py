@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.7"          # Ư1 context=0 + Ư2 MR→flow/fund/brk/grw pro-rata + Ư3 extras co w_reg + EXTRAS-GUARD chiều mua (điểm lõi phải TỰ đạt ngưỡng, K=1.0) | GATE giữ v4 | trước: v4.6
+SCORING_VERSION = "v4.8"          # MR BẬT LẠI production (weight 0.27 + GATE mọi regime) + shadow đối chứng MR-off | Ư1 context=0, Ư3 extras co w_reg, extras-guard, Ư5 altfund shadow | GATE_VERSION 5 | trước: v4.7
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -256,22 +256,14 @@ _V4_LABEL = {"trend_st": "📈 Trend(ST)", "depth_wall": "🧱 Tường bid/ask"
              "cf_core": "💵 Dòng tiền"}
 
 # Weight TRADE V4-only. HOLD = registry.
-# ── v4.7 (Ư1 + Ư2) ────────────────────────────────────────────────────────
-#   Ư1 — context = 0: sc_context là HẰNG SỐ cross-sectional (điểm định giá
-#        VNINDEX chung cả rổ) → mỗi phiên trừ ĐỀU mọi mã cùng một lượng, KHÔNG
-#        phân biệt mã tốt/xấu. Giữ trong per-stock scoring chỉ hạ trần chung +
-#        cản BUY vô ích. Bỏ khỏi khung trade (regime-context đã được phản ánh
-#        qua GATE rồi). sc_context vẫn tính → dùng cho hiển thị/hold, vô hại.
-#   Ư2 — mean_reversion = 0: GATE MR = 0.0 mọi regime (forward IC −0.167) →
-#        weight cũ 0.27 là "ngân sách chết" (luôn nhân gate 0). Trả 0.27 + 0.06
-#        (context) = 0.33 về các factor CÒN SỐNG theo tỷ lệ hiện có (pro-rata,
-#        KHÔNG nghiêng — chưa có forward để biện minh việc nghiêng). Weight giờ
-#        PHẢN ÁNH ĐÚNG cái đang quyết định điểm BUY: flow > fundamental >
-#        breakout > growth.
-#   ⚠ COUPLING: nếu sau này bật lại GATE mean_reversion, PHẢI tune lại bảng này
-#     (MR weight 0 → MR sẽ vẫn câm dù gate mở). Ghi chú để không quên.
-_W_TRADE_V4 = {"mean_reversion": 0.0,    "breakout": 0.1791, "flow": 0.3731,
-               "fundamental":    0.2985, "growth":   0.1493, "context": 0.0}
+# ── v4.8 ──────────────────────────────────────────────────────────────────
+#   MR BẬT LẠI (quyết định vận hành 2026-08-16): weight 0.27 (tỷ trọng gốc v4.6)
+#   + GATE mean_reversion=1.0 mọi regime → MR đóng góp vào score_trade thật để
+#   kiểm thủ công. Factor sống co pro-rata giữ tổng=1. context vẫn = 0 (Ư1).
+#   ⚠ Đi ngược forward IC −0.167 đã ghi trong file → giữ 1 shadow ĐỐI CHỨNG
+#     "MR-off" (score_trade_nomr) để forward so, quyết giữ/tắt sau ≥30 phiên.
+_W_TRADE_V4 = {"mean_reversion": 0.27,   "breakout": 0.1307, "flow": 0.2724,
+               "fundamental":    0.2179, "growth":   0.1090, "context": 0.0}
 assert abs(sum(_W_TRADE_V4.values()) - 1.0) < 1e-9
 
 
@@ -486,6 +478,21 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                 out["_alt_fund_pts"]       = None
                 out["score_trade_altfund"] = None
                 out["decision_altfund"]    = None
+            # ── SHADOW ĐỐI CHỨNG MR-OFF (v4.8) — production giờ BẬT MR, shadow này
+            #    TẮT MR (gate=0) để forward so: production(MR-on) vs control(MR-off).
+            #    Dùng bộ weight KHÔNG-MR (0.33 chia sang factor sống), MR gate 0.
+            _WNOMR = {"mean_reversion": 0.0,    "breakout": 0.1791, "flow": 0.3731,
+                      "fundamental":    0.2985, "growth":   0.1493, "context": 0.0}
+            g_off = dict(gates); g_off["mean_reversion"] = 0.0
+            pre_off = sum(_WNOMR[f] * g_off[f] * f_norm[f] for f in FACTORS) * 100
+            w_off   = sum(_WNOMR[f] * g_off[f] for f in FACTORS) or 1.0
+            ex_off  = (bonus + ffi_pts + bp_pts) * w_off
+            sa_off  = max(-100.0, min(100.0, pre_off + ex_off))
+            out["score_trade_nomr"] = round(sa_off, 2)
+            for cut, name in THRESHOLDS:
+                if cut is None or sa_off >= cut * w_off:
+                    out["decision_nomr"] = name
+                    break
         else:
             out["score_hold"] = round(max(-100.0, min(100.0, pre_total)), 2)
 
