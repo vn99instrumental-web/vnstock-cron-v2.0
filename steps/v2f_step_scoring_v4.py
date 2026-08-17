@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.7"          # Ư1 context=0 + Ư2 MR weight→flow/fund/brk/grw pro-rata + Ư3 extras co theo w_reg | trước: v4.6 ngưỡng co theo regime
+SCORING_VERSION = "v4.7"          # Ư1 context=0 + Ư2 MR→flow/fund/brk/grw pro-rata + Ư3 extras co w_reg + EXTRAS-GUARD chiều mua (điểm lõi phải TỰ đạt ngưỡng, K=1.0) | GATE giữ v4 | trước: v4.6
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -441,6 +441,19 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                 if cut_s is None or total >= cut_s:
                     out["decision"] = name
                     break
+            # ── v4.7 EXTRAS-GUARD (chỉ CHIỀU MUA) ──────────────────────────────
+            #    extras (confluence/ffi/of_bp) là "gia vị", KHÔNG được tự tạo lệnh
+            #    BUY. Muốn BUY: điểm LÕI (pre_total, chưa cộng extras) phải TỰ đạt
+            #    ngưỡng (K=1.0); extras chỉ được NÂNG HẠNG (BUY→SB). Sinh ra sau khi
+            #    thấy DEEP_DOWN có ~34 mã BUY chỉ nhờ extras (of_bp mới INDICATIVE).
+            #    K=1.0 chặn đúng 50 mã extras-only toàn ledger (sim). KHÔNG đụng bán.
+            EXTRAS_GUARD_K = 1.0
+            if out["decision"] == "STRONG BUY" and pre_total < EXTRAS_GUARD_K * 50 * w_reg:
+                out["decision"] = "BUY"
+                out["_extras_guard"] = "SB→BUY"
+            if out["decision"] == "BUY" and pre_total < EXTRAS_GUARD_K * 25 * w_reg:
+                out["decision"] = "NEUTRAL"
+                out["_extras_guard"] = "BUY→NEUTRAL"
             # ── CONFIDENCE ĐỘC LẬP (Cách 1 — ghi đè công thức cũ aligned&|total|) ──
             #    Tính SAU khi score_trade/decision đã chốt → KHÔNG đổi điểm/quyết định,
             #    KHÔNG cần bump SCORING_VERSION, KHÔNG reset ledger. Xem confidence_data_v4().
