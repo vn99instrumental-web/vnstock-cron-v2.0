@@ -82,6 +82,17 @@ CHANGELOG:
     sub-signal D/E nhưng không lệch điểm.
     Đổi log: bỏ WARNING per-symbol (~150 dòng/daily), thay bằng 1 dòng INFO tổng
     cuối run. Vẫn cố fetch để khi lib khôi phục là có data ngay.
+
+  v11 (2026-08-18) — Protect cache from transient/overload API empties.
+    Diagnostic 130 symbols confirmed concurrent/high-load fetch can return EMPTY
+    while sequential retry recovers data for the same symbols.
+    Fix:
+      1. No finance data => fetch failure (None), NEVER infer non_stock.
+      2. has_data checks `is not None`, so legitimate zero values count as data.
+      3. Purge legacy `non_stock` entries for the authoritative stock universe
+         before scanning, forcing poisoned cache entries to be revalidated.
+      4. Failed refresh keeps last-known-good cache; a poisoned legacy entry that
+         was purged stays absent instead of blocking intraday lazy fetch for 90d.
 """
 import os
 import sys
@@ -184,13 +195,11 @@ def _is_stale(entry: dict) -> bool:
     if entry_version < SCHEMA_VERSION:
         return True
 
+    # v11: old `non_stock` entries may have been poisoned by transient API EMPTY.
+    # The scan universe itself is already stock-only, so never let this flag
+    # suppress a re-fetch for a current universe member.
     if entry.get("non_stock"):
-        try:
-            dt = datetime.fromisoformat(fetched_at)
-            age_days = (now_ict() - dt).total_seconds() / 86400
-            return age_days > 90
-        except Exception:
-            return True
+        return True
 
     if "finance_score" not in entry:
         return True
@@ -691,7 +700,7 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
                  f"= {result['cashflow']['cf_quality']}")
 
     # ── has_data check ──
-    has_data = any([
+    has_data = any(v is not None for v in [
         result["ratio"].get("pe"),
         result["ratio"].get("roe"),
         result["income"].get("revenue"),
@@ -700,13 +709,11 @@ def fetch_one(symbol: str, asset_type: str | None = None) -> dict | None:
         result["cashflow"].get("cf_operating"),
     ])
     if not has_data:
-        log.warning(f"  [{symbol}] no finance data — marking as non-stock")
-        return {
-            "symbol"        : symbol,
-            "non_stock"     : True,
-            "fetched_at"    : now_ict().isoformat(),
-            "schema_version": SCHEMA_VERSION,
-        }
+        log.warning(
+            f"  [{symbol}] no finance data — treating as fetch failure; "
+            "cache will not be overwritten"
+        )
+        return None
 
     # v7: finalize incomplete flag
     status = result["data_status"]
@@ -879,6 +886,21 @@ def run(extra_symbols: list[str] | None = None) -> dict:
 
     cache = load_cache()
 
+    # v11: The current universe comes from authoritative stock lists / stock-typed
+    # industry_map. Any legacy `non_stock` marker for these symbols is therefore
+    # invalid and must not block finance revalidation for 90 days.
+    legacy_non_stock_purged = 0
+    for sym in universe:
+        entry = cache.get(sym)
+        if entry and entry.get("non_stock"):
+            cache.pop(sym, None)
+            legacy_non_stock_purged += 1
+    if legacy_non_stock_purged:
+        log.warning(
+            f"Purged {legacy_non_stock_purged} legacy non_stock cache entries "
+            "for authoritative stock universe"
+        )
+
     to_fetch = []
     to_skip  = []
     for sym in universe:
@@ -895,7 +917,7 @@ def run(extra_symbols: list[str] | None = None) -> dict:
         return cache
 
     fetched_ok        = 0
-    fetched_non_stock = 0
+    ignored_non_stock = 0
     fetched_err       = 0
     fetched_vci_fb    = 0  # v7: count VCI fallback usage
 
@@ -914,13 +936,14 @@ def run(extra_symbols: list[str] | None = None) -> dict:
 
             if not result:
                 fetched_err += 1
-                log.warning(f"  ⚠️ {sym}: fetch returned None")
+                log.warning(f"  ⚠️ {sym}: fetch returned None; keeping last-known-good if present")
                 continue
 
+            # Defensive v11 guard: fetch_one no longer emits non_stock for no-data.
+            # If a future caller returns it unexpectedly, never poison this cache.
             if result.get("non_stock"):
-                cache[sym] = result
-                fetched_non_stock += 1
-                log.info(f"  ⏭️  {sym}: non-stock — cached 90d")
+                ignored_non_stock += 1
+                log.warning(f"  ⚠️ {sym}: unexpected non_stock result ignored; cache not overwritten")
                 continue
 
             cache[sym] = result
@@ -950,8 +973,9 @@ def run(extra_symbols: list[str] | None = None) -> dict:
 
     log.info(
         f"Done: {fetched_ok} ok ({fetched_vci_fb} via VCI fallback), "
-        f"{fetched_non_stock} non-stock, "
-        f"{fetched_err} failed, {len(to_skip)} from cache. "
+        f"{ignored_non_stock} unexpected non-stock ignored, "
+        f"{fetched_err} failed, {len(to_skip)} from cache, "
+        f"{legacy_non_stock_purged} legacy non-stock purged. "
         f"Total in cache: {len(cache)} symbols"
     )
     # v9: tổng kết balance_sheet (chi tiết bị silence ở fetch_one).
