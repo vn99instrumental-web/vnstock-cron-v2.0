@@ -1,8 +1,6 @@
 name: VNStock Daily
 
 on:
-  schedule:
-    - cron: '30 1 * * 1-5'    # 8h30 ICT (= 1:30 UTC)
   workflow_dispatch:
 
 # Đảm bảo bước "git push" luôn có quyền ghi, kể cả khi repo để
