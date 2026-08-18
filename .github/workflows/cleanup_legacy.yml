@@ -1,0 +1,169 @@
+name: Cleanup Legacy
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Chọn dry-run trước; chỉ dùng apply sau khi log đã OK"
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - apply
+      include_docs:
+        description: "Xóa thêm docs/index.html và docs/indexv2.html"
+        required: true
+        default: false
+        type: boolean
+
+# Cần quyền ghi để commit/push các file đã xóa về main.
+permissions:
+  contents: write
+
+# Không cho chạy 2 cleanup cùng lúc.
+concurrency:
+  group: cleanup-legacy
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Show cleanup plan
+        run: |
+          echo "Mode        : ${{ inputs.mode }}"
+          echo "Include docs: ${{ inputs.include_docs }}"
+          echo "Commit      : $(git rev-parse --short HEAD)"
+          echo ""
+          git status --short
+
+      # ────────────────────────────────────────────────────────────────
+      # DRY-RUN: chỉ kiểm tra và liệt kê, tuyệt đối không commit/push.
+      # ────────────────────────────────────────────────────────────────
+      - name: Dry-run legacy cleanup
+        if: ${{ inputs.mode == 'dry-run' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ARGS=()
+          if [[ "${{ inputs.include_docs }}" == "true" ]]; then
+            ARGS+=(--include-docs)
+          fi
+
+          python scripts/cleanup_legacy.py "${ARGS[@]}"
+
+          echo ""
+          echo "✅ DRY-RUN hoàn tất. Repo chưa bị thay đổi."
+          echo "Nếu log đúng, chạy lại workflow và chọn mode = apply."
+
+      # ────────────────────────────────────────────────────────────────
+      # APPLY: script xóa legacy trên runner. --no-backup vì đã backup
+      # repo thủ công trước khi chạy workflow này.
+      # ────────────────────────────────────────────────────────────────
+      - name: Apply legacy cleanup
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ARGS=(--apply --no-backup)
+          if [[ "${{ inputs.include_docs }}" == "true" ]]; then
+            ARGS+=(--include-docs)
+          fi
+
+          python scripts/cleanup_legacy.py "${ARGS[@]}"
+
+      # Kiểm tra lại các file V2F/shared mà cleanup_legacy.py đánh dấu PROTECTED.
+      - name: Verify protected files
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          protected=(
+            "steps/step_price_levels.py"
+            "steps/step_finance_scan.py"
+            "steps/step3_context.py"
+            "steps/step_news_daily.py"
+            "utils/news_rss.py"
+            "docs/indexv3.html"
+          )
+
+          failed=0
+          for f in "${protected[@]}"; do
+            if [[ -f "$f" ]]; then
+              echo "✅ KEEP: $f"
+            else
+              echo "❌ MISSING PROTECTED FILE: $f"
+              failed=1
+            fi
+          done
+
+          if [[ "$failed" -ne 0 ]]; then
+            echo "DỪNG: Có protected file bị mất. Không commit/push."
+            exit 1
+          fi
+
+      # Cleanup thành công mới xóa luôn script dùng một lần và chính workflow này.
+      - name: Remove one-time cleanup tools
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f scripts/cleanup_legacy.py
+          rm -f .github/workflows/cleanup_legacy.yml
+
+          echo "✅ Đã đánh dấu xóa cleanup script + cleanup workflow."
+
+      - name: Review changes before commit
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== git status ==="
+          git status --short
+          echo ""
+          echo "=== deleted files ==="
+          git diff --name-status
+
+      # Commit toàn bộ cleanup thành một commit duy nhất rồi push về main.
+      # Nếu main có commit mới trong lúc workflow chạy, rebase trước khi push;
+      # nếu có conflict thì job fail thay vì force-push.
+      - name: Commit and push cleanup
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Không có thay đổi để commit."
+            exit 0
+          fi
+
+          git commit -m "chore: remove legacy V1+V2"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+          echo ""
+          echo "✅ Cleanup đã được commit và push về main."
