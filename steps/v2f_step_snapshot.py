@@ -705,12 +705,12 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
     if not entry:
         log.info(f"  Finance cache miss: {symbol} — lazy fetch")
         try:
-            from steps.step_finance_scan import fetch_one
+            from steps.step_finance_scan_vci import fetch_one
             entry = fetch_one(symbol)
             if entry:
                 fin_cache[symbol] = entry
                 try:
-                    from steps.step_finance_scan import load_cache, save_cache
+                    from steps.step_finance_scan_vci import load_cache, save_cache
                     cache = load_cache()
                     cache[symbol] = entry
                     save_cache(cache)
