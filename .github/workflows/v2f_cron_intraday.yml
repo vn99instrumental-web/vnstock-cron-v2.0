@@ -4,14 +4,13 @@ name: VNStock Intraday V2F (full-VN100)
 # Lệch để: (1) tránh race khi 2 workflow cùng push main; (2) tách spike quota VCI;
 # (3) easy bisect khi đọc log Actions.
 on:
-  schedule:
-    - cron: '40 2 * * 1-5'   # 09:40 ICT
   workflow_dispatch:
     inputs:
       force_record:
         description: 'Ep ghi predictions ke ca ngoai gio (de test)'
         type: boolean
         default: false
+
       v4_backfill:
         description: 'CHI chay 2 step V4 tren data da commit (khong snapshot/API)'
         type: boolean
