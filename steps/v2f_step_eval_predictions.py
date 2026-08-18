@@ -86,8 +86,7 @@ SCHEMA_VERSION = 1
 TRACKS = [
     ("history/v2f_predictions",    "history/v2f_outcomes",
      "history/v2f_outcomes_hold",    "v2.3-prod"),
-    ("history/v2f_predictions_v3", "history/v2f_outcomes_v3",
-     "history/v2f_outcomes_v3_hold", "v3-shadow"),
+    # v3-shadow đã GỠ 2026-08-18 (dọn cùng cleanup_legacy.py — chỉ còn v2.3 + v4).
     ("history/v2f_predictions_v4", "history/v2f_outcomes_v4",
      "history/v2f_outcomes_v4_hold", "v4-shadow"),
 ]
