@@ -3,6 +3,10 @@ name: VNStock Intraday V2F (full-VN100)
 # Lệch v2 (09:30 ICT = 02:30 UTC) 10 phút → 09:40 ICT = 02:40 UTC.
 # Lệch để: (1) tránh race khi 2 workflow cùng push main; (2) tách spike quota VCI;
 # (3) easy bisect khi đọc log Actions.
+#
+# 2026-08-18: GỠ V3 shadow (chỉ còn v2.3 prod + V4). v2f_step_scoring_v3.py VẪN
+# nằm trong repo vì v4 import FN_TABLE/SUPERGROUPS từ nó — nhưng KHÔNG chạy như
+# 1 bước pipeline nữa. Ledger/output/dashboard v3 đã dọn bằng cleanup_legacy.py.
 on:
   workflow_dispatch:
     inputs:
@@ -51,7 +55,7 @@ jobs:
       # exit 1) nên circuit breaker trong vci_throttle KHÔNG kịp chạy
       # → chỉ có thể phòng ngừa trước, không chữa được sau.
       # Hậu quả run 09:50: xong 125/130 mã rồi mất trắng cả run
-      # (order_flow / scoring / price_levels / record / V3 đều không chạy).
+      # (order_flow / scoring / price_levels / record / V4 đều không chạy).
       #
       # 0.30s = 3,33 lệnh/giây = ~200 lệnh/phút ≈ 73% hạn mức.
       # Bước Snapshot: ~2,8 phút → ~4,2 phút (chậm hơn ~1,4 phút).
@@ -138,45 +142,25 @@ jobs:
           /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions.py
 
       # ──────────────────────────────────────────────────────────────────
-      # SHADOW V3 — registry scoring, chạy SAU v2.3, đọc lại output đã có
-      # (v2f_signals.json + context.json), ZERO API call thêm.
-      # continue-on-error: v3 crash KHÔNG được chặn pipeline v2.3.
-      # ──────────────────────────────────────────────────────────────────
-      - name: Step Scoring V3 (shadow registry)
-        continue-on-error: true
-        run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v3.py
-
-      - name: Step Price Levels V3 (levels riêng của shadow)
-        continue-on-error: true
-        run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_price_levels_v3.py
-
-      - name: Step Record Predictions V3 (shadow ledger)
-        continue-on-error: true
-        env:
-          FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
-        run: |
-          /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v3.py
-
-      # ──────────────────────────────────────────────────────────────────
-      # SHADOW V4 (RCEG) — regime-conditional scoring, chạy SAU v3, đọc lại
+      # V4 (RCEG) — regime-conditional scoring, chạy SAU v2.3, đọc lại
       # v2f_signals.json + context.json (ZERO API thêm). Dùng chung trade levels
-      # v2.3 (agnostic) nên KHÔNG cần step price_levels_v4.
-      # Hysteresis: state ở output/v2f_v4_regime_state.json (PHẢI commit để persist).
-      # continue-on-error: v4 crash KHÔNG được chặn pipeline.
+      # v2.3 (agnostic). Hysteresis: state ở output/v2f_v4_regime_state.json
+      # (PHẢI commit để persist). continue-on-error: v4 crash KHÔNG chặn pipeline.
+      #
+      # (V3 shadow đã GỠ 2026-08-18 — v2f_step_scoring_v3.py vẫn nằm trong repo
+      #  làm thư viện cho v4 import, nhưng không còn chạy như 1 bước ở đây.)
       # ──────────────────────────────────────────────────────────────────
-      - name: Step Scoring V4 (shadow RCEG, gate theo regime)
+      - name: Step Scoring V4 (RCEG, gate theo regime)
         continue-on-error: true
         run: |
           /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v4.py
 
-      - name: Step Price Levels V4 (shadow, độc lập v2.3)
+      - name: Step Price Levels V4 (độc lập v2.3)
         continue-on-error: true
         run: |
           /opt/vnstock/.venv/bin/python steps/v2f_step_price_levels_v4.py
 
-      - name: Step Record Predictions V4 (shadow#2 ledger)
+      - name: Step Record Predictions V4 (ledger v4)
         continue-on-error: true
         env:
           FORCE_RECORD: ${{ inputs.force_record && '1' || '' }}
@@ -184,9 +168,11 @@ jobs:
           /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v4.py
 
       # ──────────────────────────────────────────────────────────────────
-      # COMMIT — add v2f_* output + 3 ledger (v2f_predictions + _v3 + _v4 shadow)
+      # COMMIT — add v2f_* output + 2 ledger (v2f_predictions + _v4).
       # KHÔNG đụng output của track v2 cũ. Push retry + rebase để tránh race với
       # workflow v2 (mặc dù file khác tên, branch main vẫn có thể đụng ref).
+      # (Đã gỡ 3 path v3: v2f_signals_v3.json / v2f_trade_levels_v3.json /
+      #  history/v2f_predictions_v3/.)
       # ──────────────────────────────────────────────────────────────────
       - name: Commit V2F output
         run: |
@@ -194,8 +180,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # BUGFIX 05/07: git add 1 lệnh nhiều path → 1 path chưa tồn tại
-          # (vd file v3 khi shadow crash) làm FAIL TOÀN BỘ lệnh add → mất
-          # commit data v2.3. Add TỪNG path riêng, path thiếu chỉ mất mình nó.
+          # làm FAIL TOÀN BỘ lệnh add → mất commit data v2.3. Add TỪNG path riêng,
+          # path thiếu chỉ mất mình nó.
           for p in \
             output/v2f_deep_raw.json \
             output/v2f_deep.json \
@@ -208,9 +194,6 @@ jobs:
             output/v2f_trade_levels.json \
             output/v2f_trade_levels.csv \
             output/history/v2f_predictions/ \
-            output/v2f_signals_v3.json \
-            output/v2f_trade_levels_v3.json \
-            output/history/v2f_predictions_v3/ \
             output/v2f_signals_v4.json \
             output/v2f_trade_levels_v4.json \
             output/v2f_v4_regime_state.json \
