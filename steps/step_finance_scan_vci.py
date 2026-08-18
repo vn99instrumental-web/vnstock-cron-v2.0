@@ -16,7 +16,7 @@ Key design:
     so V2/V3/V4 downstream code does not need to change.
   - Empty finance response is a fetch failure, NEVER inferred as non_stock.
   - Last-known-good cache is preserved on refresh failure.
-  - Candidate writes output/finance/cache_vci_candidate.json only.
+  - Writes production output/finance/cache.json (VCI-only builder).
 """
 
 import os
@@ -58,8 +58,8 @@ EARNINGS_MONTHS = {1, 2, 4, 5, 7, 8, 10, 11}
 TTL_EARNINGS = 3
 TTL_NORMAL = 30
 
-# Candidate only: do not touch production cache until validated.
-CACHE_FILE = "finance/cache_vci_candidate.json"
+# Production cache (VCI-only builder replacing KBS-based step_finance_scan.py).
+CACHE_FILE = "finance/cache.json"
 SCHEMA_VERSION = 9
 SOURCE = "VCI"
 
@@ -225,8 +225,17 @@ def _long_rows(df: pd.DataFrame | None, ids: list[str]) -> pd.DataFrame:
         return work
     if "period" not in work.columns:
         work["period"] = ""
-    work["_period_key"] = work["period"].map(_period_key)
-    work = work.sort_values("_period_key", ascending=False)
+    # vnstock_data 3.2.8 trả 'period' kiểu Categorical. Series.map() trên
+    # Categorical với mapper trả tuple -> pandas dựng MultiIndex -> sort_values
+    # ném "NotImplementedError: isna is not defined for MultiIndex".
+    # Cách né: ép period về object, tách year/quarter thành 2 cột số vô hướng.
+    periods = work["period"].astype(object).tolist()
+    keys = [_period_key(p) for p in periods]
+    work["_period_year"] = [k[0] for k in keys]
+    work["_period_quarter"] = [k[1] for k in keys]
+    work = work.sort_values(
+        ["_period_year", "_period_quarter"], ascending=[False, False]
+    )
     return work
 
 
