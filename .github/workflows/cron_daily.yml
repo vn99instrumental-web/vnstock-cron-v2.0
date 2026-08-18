@@ -141,7 +141,7 @@ jobs:
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           source /opt/vnstock/.venv/bin/activate
-          python steps/step_finance_scan.py
+          python steps/step_finance_scan_vci.py
 
       # ──────────────────────────────────────────────────────────────────
       # [DISABLED 2026-06-17] News crawl — tạm tắt để tối ưu thời gian run.
