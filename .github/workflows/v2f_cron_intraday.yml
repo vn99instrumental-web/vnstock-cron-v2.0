@@ -65,6 +65,22 @@ jobs:
       VCI_MIN_INTERVAL:    "0.30"
       VCI_STEP_COOLDOWN:   "30"
 
+      # ──────────────────────────────────────────────────────────────
+      # 2026-08-19 (P0.1 + Option B) — Prefetch tape intraday dùng chung.
+      # Bước prefetch fetch intraday(10000) 1 lần/mã (song song, đã benchmark
+      # workers=3/0.35 → 0 lần 429, 100% completeness, ~48s so 167s đơn luồng);
+      # snapshot + order_flow đọc lại cache thay vì mỗi bên tự gọi.
+      # ROLLBACK TỨC THÌ: đặt PREFETCH_ENABLED="0" → về hành vi cũ 100%,
+      #   snapshot/order_flow tự fetch live, không cần sửa/revert code.
+      # Nếu dính 429 khi song song: giảm PREFETCH_WORKERS "2" hoặc tăng
+      #   PREFETCH_INTERVAL "0.5".
+      # ──────────────────────────────────────────────────────────────
+      PREFETCH_ENABLED:       "1"
+      PREFETCH_WORKERS:       "3"
+      PREFETCH_INTERVAL:      "0.35"
+      PREFETCH_PAGESIZE:      "10000"
+      PREFETCH_POST_COOLDOWN: "5"
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -109,6 +125,18 @@ jobs:
       #   + dùng CHUNG context.json / news/today_index.json / finance/cache.json
       #   + ledger ledger riêng: output/history/v2f_predictions/
       # ──────────────────────────────────────────────────────────────────
+      # 2026-08-19 (P0.1): prefetch tape intraday dùng chung TRƯỚC snapshot.
+      # continue-on-error: prefetch hỏng KHÔNG chặn pipeline — snapshot/order_flow
+      # tự fallback fetch live (an toàn, chỉ chậm như cũ).
+      - name: Step Prefetch Intraday V2F (shared tape)
+        continue-on-error: true
+        env:
+          VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+        run: |
+          mkdir -p /home/runner/.config/matplotlib
+          /opt/vnstock/.venv/bin/python steps/v2f_step_prefetch_intraday.py
+
       - name: Step Snapshot V2F — Universe (full-VN100) + Ranking + Deep
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
