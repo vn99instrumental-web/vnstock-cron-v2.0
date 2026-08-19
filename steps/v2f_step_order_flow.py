@@ -43,6 +43,9 @@ from utils.helpers import (
 from utils.cache import load_json, save_json
 # 2026-06-18: throttle riêng cho VCI (fix 429) — KHÔNG đụng helpers.py (shared v3).
 from utils.vci_throttle import vci_safe_run, set_min_interval, is_blocked
+# 2026-08-19 (P0.1): tape intraday dùng chung từ bước prefetch. Cache miss/tắt →
+# tự fetch live (fallback an toàn). Rollback: env PREFETCH_ENABLED=0.
+from utils import intraday_cache
 
 logging.basicConfig(
     level=logging.INFO,
@@ -361,16 +364,26 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
         #   ích → tiết kiệm ~10 phút.
         _label = "intraday" if market_open else "intraday_eod"
         df_intra = None
-        for _att in range(3):
-            if is_blocked():   # kill switch đã bật → bỏ retry, không tốn API
-                break
-            df_intra = vci_safe_run(f"{_label} {symbol} (attempt {_att+1})",
-                       lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
-            if df_intra is not None and not df_intra.empty:
-                break
-            if is_blocked():   # lần gọi vừa rồi có thể đã bật kill switch
-                break
-            time.sleep(2.5 * (_att + 1) + random.uniform(0, 1.0))  # 2.5-3.5, 5-6, 7.5-8.5s
+
+        # 2026-08-19 (P0.1): ưu tiên tape prefetch dùng chung (bỏ fetch trùng +
+        # tận dụng song song hoá an toàn ở bước prefetch). Order flow cần TOÀN
+        # tape → dùng nguyên, không cắt.
+        _cached = intraday_cache.read_tape(symbol, today_str())
+        if _cached is not None and not _cached.empty:
+            df_intra = _cached
+
+        # Fallback: cache tắt/miss → fetch live như cũ (GIỮ NGUYÊN retry/backoff).
+        if df_intra is None:
+            for _att in range(3):
+                if is_blocked():   # kill switch đã bật → bỏ retry, không tốn API
+                    break
+                df_intra = vci_safe_run(f"{_label} {symbol} (attempt {_att+1})",
+                           lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
+                if df_intra is not None and not df_intra.empty:
+                    break
+                if is_blocked():   # lần gọi vừa rồi có thể đã bật kill switch
+                    break
+                time.sleep(2.5 * (_att + 1) + random.uniform(0, 1.0))  # 2.5-3.5, 5-6, 7.5-8.5s
 
         fetch_failed = (df_intra is None or df_intra.empty)
 
@@ -418,9 +431,14 @@ if __name__ == "__main__":
     set_min_interval(OF_MIN_INTERVAL)
 
     # 2026-06-18: cooldown cho quota VCI hồi sau burst của step_snapshot_v2.
-    if STEP_COOLDOWN > 0:
+    # 2026-08-19 (P0.1): khi prefetch BẬT, order_flow đọc cache → KHÔNG đấm API →
+    # không cần chờ quota hồi → bỏ cooldown (tiết kiệm ~30s). Rollback
+    # (PREFETCH_ENABLED=0) → order_flow fetch live → giữ cooldown như cũ.
+    if STEP_COOLDOWN > 0 and not intraday_cache.is_enabled():
         log.info(f"Cooldown {STEP_COOLDOWN}s (hồi quota VCI sau snapshot)...")
         time.sleep(STEP_COOLDOWN)
+    elif intraday_cache.is_enabled():
+        log.info("Prefetch BẬT → order_flow đọc cache, bỏ cooldown.")
 
     load_exchange_map()
 
