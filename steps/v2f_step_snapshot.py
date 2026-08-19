@@ -64,6 +64,9 @@ from utils.formatter import clean_for_export, fmt_money_bil
 from utils.vci_throttle import vci_safe_run, throttle, is_blocked
 # 2026-06-21: VN100 universe (VN100 → recompute gainer/loser → top X) — V2 only.
 from utils.v2f_universe import build_v2f_universe
+# 2026-08-19 (P0.1): tape intraday dùng chung từ bước prefetch. Cache miss/tắt →
+# tự fetch live (fallback an toàn). Rollback: env PREFETCH_ENABLED=0.
+from utils import intraday_cache
 
 logging.basicConfig(
     level=logging.INFO,
@@ -109,8 +112,17 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
     }
 
     if market_open:
-        df_intra = vci_safe_run(f"intraday {symbol}",
-            lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=200))
+        # 2026-08-19 (P0.1): ưu tiên tape prefetch dùng chung. Snapshot chỉ cần
+        # 200 lệnh gần nhất → cắt tail(200) từ tape 10000 (giữ NGUYÊN cách tính
+        # intra_buy_ratio: intraday() trả tăng dần theo thời gian, dòng cuối =
+        # giá hiện tại → tail(200).iloc[-1] y hệt intraday(page_size=200)).
+        df_intra = None
+        _cached = intraday_cache.read_tape(symbol, today_str())
+        if _cached is not None and not _cached.empty:
+            df_intra = _cached.tail(200).reset_index(drop=True)
+        if df_intra is None:   # cache tắt/miss → fetch live như cũ
+            df_intra = vci_safe_run(f"intraday {symbol}",
+                lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=200))
         if df_intra is not None and not df_intra.empty:
             df_intra["price"]  = pd.to_numeric(df_intra["price"],  errors="coerce")
             df_intra["volume"] = pd.to_numeric(df_intra["volume"], errors="coerce")
