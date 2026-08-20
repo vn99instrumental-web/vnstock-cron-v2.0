@@ -215,9 +215,28 @@ if __name__ == "__main__":
 #       CHU KỲ với v3 theo yêu cầu người dùng — CHẤP NHẬN 2 thay đổi liền tay,
 #       cần đủ forward để tách đóng góp từng cái. Hệ quả (Cách B): DOWN w_regime
 #       1.0 → 0.73, ngưỡng decision co theo → SELL dễ chạm hơn (đúng ý trong down).
+#   v6 (2026-08-20) — fundamental & growth: DOWN 1.0→0.8, DEEP 1.0→0.6 (UP/SIDE
+#       giữ 1.0). CĂN CỨ (đo trên file live 2026-08-20, DEEP_DOWN toàn rổ):
+#         • Refresh finance Q2 (tháng earnings, TTL=3) nạp lại fundamental sau 2
+#           phiên trống (08-17/18 fund_norm=0). fund_norm bật 0 → +0.366 (08-19)
+#           → +0.486 (08-20), 111/130 mã dương. Giá gần đứng yên → KHÔNG do PE co.
+#         • fundamental đóng +16.1đ/mã cho nhóm BUY (lớn nhất), growth +3.7đ; MR
+#           +9.2đ. fund+MR một mình = +25.3 ≥ ngưỡng 25 → tự tạo BUY dù breakout
+#           âm (−0.7đ, đúng chiều giảm) và breadth chỉ 21.5%.
+#         • DEEP_DOWN: mọi gate=1.0 → w_reg=1.0 → ngưỡng KHÔNG hạ; fundamental
+#           (gate 1.0 mọi regime) bơm BUY bất kể regime. Số BUY nhảy 0–8 (15 phiên
+#           trước) → 8 (08-19) → 21 (08-20). Bất thường THẬT.
+#         • Neo giá trị theo NGUYÊN TẮC (không fit đếm): g≤0.68 đảm bảo fund+growth
+#           đạt max (norm=+1) cũng KHÔNG tự vượt ngưỡng BUY — "originate-guard",
+#           chỉ nâng hạng chứ không tạo lệnh. Chọn 0.6 (biên nhẹ: max slow 19.6 <
+#           ngưỡng 21.7). Sim: BUY 21→7 (mức downtrend bình thường), SELL 7→8.
+#       ⚠️ CÙNG CHU KỲ chỉ 1 thay đổi (gate fund+growth, coi là 1 cụm slow-factor).
+#       Đổi PRODUCTION ngay (Đường 2) + shadow ngược gate=1.0 (score_trade_gate1 /
+#       decision_gate1) để forward so gated vs cũ. Cross-section 1 phiên là KHỞI
+#       ĐIỂM, forward IC ≥30 phiên mới là phán quyết (giữ/chỉnh mức gate).
 # ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (reset bucket forward-validation v4).
 # ══════════════════════════════════════════════════════════════════════
-GATE_VERSION = 5
+GATE_VERSION = 6
 REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
 _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 
@@ -227,8 +246,8 @@ GATE = {
     "mean_reversion": (1.0,  1.0,  1.0,  1.0,  1.0),    # v5: BẬT LẠI mọi regime (quyết định vận hành 2026-08-16 — kiểm production thủ công; LƯU Ý file từng ghi forward IC −0.167, cần re-validate)
     "breakout":       (0.5,  0.7,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31). UPTREND giữ 0.5: thử nâng 0.7 nhưng ngưỡng ×w_reg tự bù → không nới được BUY (sim 2026-08-16), revert.
     "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
-    "fundamental":    (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
-    "growth":         (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "fundamental":    (1.0,  1.0,  0.8,  0.6,  1.0),    # v6: gate DOWN/DEEP (2026-08-20) — chặn value-trap. Refresh Q2 làm fund_norm 0→+0.49 toàn rổ → 21 BUY trong DEEP_DOWN. 0.6 = "originate-guard": fund+growth max KHÔNG tự vượt ngưỡng BUY (g≤0.68). Sim cross-section: BUY 21→7, SELL ~không đổi.
+    "growth":         (1.0,  1.0,  0.8,  0.6,  1.0),    # v6: gate cùng nhịp fundamental — growth cũng là tín hiệu chậm, không time 1–5d; giữ tính chất originate-guard của cả cụm slow-factor.
     "context":        (1.0,  1.0,  1.0,  1.0,  1.0),    # đã regime-aware nội bộ
 }
 
