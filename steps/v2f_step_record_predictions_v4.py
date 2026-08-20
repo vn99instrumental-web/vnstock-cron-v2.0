@@ -172,6 +172,11 @@ def run():
             # SHADOW ĐỐI CHỨNG MR-OFF (v4.8): production bật MR — forward so.
             "score_trade_nomr"    : sig.get("score_trade_nomr"),
             "decision_nomr"       : sig.get("decision_nomr"),
+            # SHADOW NGƯỢC GATE-1 (v4.9): production GATE fund/growth ở DOWN/DEEP —
+            # bản này giữ gate=1.0 (hành vi cũ) để forward so gated vs cũ.
+            "score_trade_gate1"   : sig.get("score_trade_gate1"),
+            "decision_gate1"      : sig.get("decision_gate1"),
+            "_gate1_delta"        : sig.get("_gate1_delta"),
             "rank_cf_grp"     : sig.get("rank_cf_grp"),
             "rank_growth_grp" : sig.get("rank_growth_grp"),
             "adtv_bil"        : sig.get("adtv_bil"),
