@@ -745,7 +745,10 @@ def enrich_finance(symbol: str, fin_cache: dict) -> dict:
         "r_pb"              : r.get("pb"),
         "r_roe"             : r.get("roe"),
         "r_roa"             : r.get("roa"),
-        "r_eps"             : r.get("eps"),
+        # A2 lưới an toàn: nếu ratio EPS vẫn rỗng (lib đổi tên lần nữa), mượn EPS
+        # từ báo cáo KQKD (is_eps, taxonomy IS_BASIC_EPS) để Conf không bị phạt oan.
+        "r_eps"             : (r.get("eps") if r.get("eps") is not None
+                               else i.get("eps")),
         "r_bvps"            : r.get("bvps"),
         "r_beta"            : r.get("beta"),
         "r_div_yield"       : r.get("div_yield"),
