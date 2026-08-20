@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.8"          # MR BẬT LẠI production (weight 0.27 + GATE mọi regime) + shadow đối chứng MR-off | Ư1 context=0, Ư3 extras co w_reg, extras-guard, Ư5 altfund shadow | GATE_VERSION 5 | trước: v4.7
+SCORING_VERSION = "v4.9"          # GATE fund+growth DOWN 0.8 / DEEP 0.6 (Đường 2, chống value-trap) + shadow NGƯỢC gate=1.0 (score_trade_gate1/decision_gate1) để forward so gated vs cũ | GATE_VERSION 6 | giữ: MR-on, context=0, extras co w_reg, extras-guard, altfund shadow | trước: v4.8
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -496,6 +496,31 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                 if cut is None or sa_off >= cut * w_off:
                     out["decision_nomr"] = name
                     break
+            # ── SHADOW NGƯỢC GATE-1 (v4.9) — dựng lại HÀNH VI CŨ: fundamental &
+            #    growth gate=1.0 mọi regime (như trước v4.9). Production giờ GATE
+            #    chúng ở DOWN/DEEP → shadow này để forward so gated (production) vs
+            #    control (gate=1.0). Chỉ khác production đúng ở 2 gate đó; trong
+            #    UP/SIDE hai bản TRÙNG nhau (_gate1_delta≈0). Mirror đủ ngưỡng ×w
+            #    và extras-guard để tái tạo ĐÚNG quyết định cũ.
+            g_one = dict(gates)
+            g_one["fundamental"] = 1.0
+            g_one["growth"]      = 1.0
+            w_g1   = sum(_weight("trade", f) * g_one[f] for f in FACTORS) or 1.0
+            pre_g1 = sum(_weight("trade", f) * g_one[f] * f_norm[f] for f in FACTORS) * 100
+            ex_g1  = (bonus + ffi_pts + bp_pts) * w_g1
+            sa_g1  = max(-100.0, min(100.0, pre_g1 + ex_g1))
+            out["score_trade_gate1"] = round(sa_g1, 2)
+            out["_gate1_delta"]      = round(sa_g1 - out["score_trade"], 2)  # chênh do gate fund/growth
+            dec_g1 = "STRONG SELL"
+            for cut, name in THRESHOLDS:
+                if cut is None or sa_g1 >= cut * w_g1:
+                    dec_g1 = name
+                    break
+            if dec_g1 == "STRONG BUY" and pre_g1 < EXTRAS_GUARD_K * 50 * w_g1:
+                dec_g1 = "BUY"
+            if dec_g1 == "BUY" and pre_g1 < EXTRAS_GUARD_K * 25 * w_g1:
+                dec_g1 = "NEUTRAL"
+            out["decision_gate1"] = dec_g1
         else:
             out["score_hold"] = round(max(-100.0, min(100.0, pre_total)), 2)
 
