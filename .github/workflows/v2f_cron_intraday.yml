@@ -225,6 +225,7 @@ jobs:
             output/v2f_signals_v4.json \
             output/v2f_trade_levels_v4.json \
             output/v2f_v4_regime_state.json \
+            output/vnindex_live.json \
             output/history/v2f_predictions_v4/ ; do
             git add "$p" 2>/dev/null || true
           done
