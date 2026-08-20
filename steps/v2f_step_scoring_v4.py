@@ -308,7 +308,10 @@ def confidence_data_v4(row: dict) -> tuple:
     # 2) độ nhất quán giữa các nhóm CÒN SỐNG (nhân gate theo regime — khớp cách
     #    confluence tính; factor đã tắt/nửa liều KHÔNG bị tính cãi nhau oan) ---------
     gates = row.get("_gates") or {}
-    norms = [(gates.get(f, 1) or 0) * (row.get(f"trade_{f}_norm") or 0) for f in FACTORS]
+    # context bị loại khỏi trụ nhất quán: nó là HẰNG SỐ cross-sectional (-1.0 mọi mã)
+    # và weight trade đã = 0 → không được tính là "cãi nhau" làm tụt Conf oan.
+    norms = [(gates.get(f, 1) or 0) * (row.get(f"trade_{f}_norm") or 0)
+             for f in FACTORS if f != "context"]
     gross = sum(abs(x) for x in norms)
     if gross >= CONF_DISAGREE_MIN_GROSS:
         agree = abs(sum(norms)) / gross              # 1=đồng thuận, 0=triệt tiêu
