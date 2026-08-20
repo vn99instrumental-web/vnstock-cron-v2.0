@@ -495,6 +495,45 @@ def get_vnindex_return(history_length: str = "2M") -> dict:
             if close_5d > 0 and pd.notna(close_5d):
                 res["vnindex_return_5d"] = round(
                     (close_now / close_5d - 1) * 100, 2)
+        # ── LIVE level + Δ vs phiên liền trước (cho dashboard header) ──
+        # iloc[-1] = bar mới nhất: TRONG phiên = giá LIVE; NGOÀI phiên = đóng
+        #            cửa gần nhất. iloc[-2] = phiên hoàn tất liền trước → mốc so
+        #            sánh "hôm trước". Nhãn ngày (asof) đọc TỪ DATA (df['time']),
+        #            không theo đồng hồ → không lệch như context daily.
+        try:
+            _lvl  = close_now
+            _prev = float(df["close"].iloc[-2]) if len(df) >= 2 else None
+            _prev = _prev if (_prev is not None and pd.notna(_prev) and _prev > 0) else None
+            _asof = None
+            if "time" in df.columns:
+                try:
+                    _asof = pd.to_datetime(df["time"].iloc[-1]).strftime("%Y-%m-%d")
+                except Exception:
+                    _asof = None
+            _live = {
+                "level"      : round(_lvl, 2),
+                "prev_close" : round(_prev, 2) if _prev else None,
+                "chg_abs"    : round(_lvl - _prev, 2) if _prev else None,
+                "chg_pct"    : round((_lvl / _prev - 1) * 100, 2) if _prev else None,
+                "ret_5d"     : res.get("vnindex_return_5d"),
+                "ret_20d"    : res.get("vnindex_return_20d"),
+                "snap_time"  : now_ict().strftime("%H:%M"),
+                "asof_date"  : _asof or last_trading_date(),
+                "is_open"    : bool(is_market_open()),
+            }
+            # is_live = có phải giá TRONG phiên hôm nay không (bar mới nhất = hôm
+            # nay VÀ chợ đang mở). Dùng để dashboard chọn nhãn "trong phiên" vs
+            # "phiên trước / đã chốt".
+            _live["is_live"] = bool(_live["is_open"]
+                                    and _live["asof_date"] == last_trading_date())
+            res["vnindex_live"] = _live
+            save_json("vnindex_live.json", _live)
+            log.info(f"VNINDEX live: level={_live['level']} "
+                     f"Δ={_live['chg_abs']} ({_live['chg_pct']}%) "
+                     f"asof={_live['asof_date']} live={_live['is_live']}")
+        except Exception as _e:
+            log.warning(f"vnindex_live block error: {_e}")
+
         log.info(f"VNINDEX return_20d={res.get('vnindex_return_20d')} "
                  f"return_5d={res.get('vnindex_return_5d')}")
         return res
