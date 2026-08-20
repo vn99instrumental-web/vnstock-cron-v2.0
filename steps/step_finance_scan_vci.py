@@ -346,19 +346,36 @@ def _fetch_ratio_summary(symbol: str) -> tuple[dict, str]:
             return None
         return _num(row.get(col))
 
+    def get_any(cols):
+        # Thử lần lượt nhiều tên cột (alias). Sau migration vnstock 3.2.8, EPS/BVPS
+        # KHÔNG còn alias ngắn → phải gọi tên dài. Trả giá trị đầu tiên tìm được.
+        for c in cols:
+            if c in work.columns:
+                v = _num(row.get(c))
+                if v is not None:
+                    return v
+        return None
+
     ratio = {
         "pe": get("pe"),
         "pb": get("pb"),
         "roe": _pct(get("roe")),
         "roa": _pct(get("roa")),
-        "eps": get("eps"),
-        "bvps": get("bvps"),
-        "beta": get("beta"),
+        # 3.2.8: 'eps'/'bvps' cũ đã mất → tên chuẩn 'eps_co_ban' /
+        # 'gia_tri_so_sach_mot_co_phieu' (fallback KBS: trailing_eps / book_value_per_share_bvps)
+        "eps": get_any(["eps", "eps_co_ban", "trailing_eps"]),
+        "bvps": get_any(["bvps", "gia_tri_so_sach_mot_co_phieu",
+                         "book_value_per_share_bvps"]),
+        # beta cũng mất alias ngắn sau 3.2.8 → tên chuẩn 'he_so_beta' (KBS: beta)
+        "beta": get_any(["beta", "he_so_beta"]),
         "div_yield": _pct(get("dividend_yield")),
         "gross_margin": _pct(get("gross_margin")),
         "net_margin": _pct(get("after_tax_profit_margin")),
         "quick_ratio": get("quick_ratio"),
-        "interest_cov": get("interest_coverage"),
+        # LƯU Ý: 'interest coverage' ĐÃ BỊ XÓA khỏi schema ratio 3.2.8 (không phải đổi
+        # tên) → luôn None qua ratio_summary. Muốn có phải tự tính EBIT/chi phí lãi từ
+        # income. Giữ dòng này để tương thích key; đừng coi None ở đây là bug tên cột.
+        "interest_cov": get_any(["interest_coverage", "kha_nang_thanh_toan_lai_vay"]),
         "ev_ebitda": get("ev_to_ebitda"),
     }
 
