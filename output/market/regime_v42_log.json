@@ -453,5 +453,18 @@
     "pending": "RECOVERY",
     "note": "pending confirm (RECOVERY)",
     "reason": "duoi EMA50 & c5=+2.26>=+2"
+  },
+  {
+    "date": "2026-08-25",
+    "time": "09:02",
+    "close": 1788.78,
+    "c5": 3.55,
+    "c20": 7.18,
+    "regime_now": "UPTREND",
+    "raw": "UPTREND",
+    "eff": "DEEP_DOWN",
+    "pending": "UPTREND",
+    "note": "pending confirm (UPTREND)",
+    "reason": "tren 2 EMA & c20>0"
   }
 ]
