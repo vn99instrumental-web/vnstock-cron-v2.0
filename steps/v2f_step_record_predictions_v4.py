@@ -169,9 +169,16 @@ def run():
             "score_trade_altfund" : sig.get("score_trade_altfund"),
             "decision_altfund"    : sig.get("decision_altfund"),
             "_alt_fund_pts"       : sig.get("_alt_fund_pts"),
+            "_altfund_delta"      : sig.get("_altfund_delta"),     # v4.10: đối xứng _gate1_delta
             # SHADOW ĐỐI CHỨNG MR-OFF (v4.8): production bật MR — forward so.
             "score_trade_nomr"    : sig.get("score_trade_nomr"),
             "decision_nomr"       : sig.get("decision_nomr"),
+            "_nomr_delta"         : sig.get("_nomr_delta"),        # v4.10: đối xứng _gate1_delta
+            # SHADOW RANK CROSS-SECTIONAL (v4.10): fund+growth chấm theo hạng-trong-ngành
+            # thay ngưỡng tuyệt đối — forward so score_trade vs score_trade_rank.
+            "score_trade_rank"    : sig.get("score_trade_rank"),
+            "decision_rank"       : sig.get("decision_rank"),
+            "_rank_delta"         : sig.get("_rank_delta"),
             # SHADOW NGƯỢC GATE-1 (v4.9): production GATE fund/growth ở DOWN/DEEP —
             # bản này giữ gate=1.0 (hành vi cũ) để forward so gated vs cũ.
             "score_trade_gate1"   : sig.get("score_trade_gate1"),
