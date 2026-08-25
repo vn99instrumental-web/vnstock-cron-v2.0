@@ -62,6 +62,13 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger(__name__)
 
 SCORING_VERSION = "v4.9"          # GATE fund+growth DOWN 0.8 / DEEP 0.6 (Đường 2, chống value-trap) + shadow NGƯỢC gate=1.0 (score_trade_gate1/decision_gate1) để forward so gated vs cũ | GATE_VERSION 6 | giữ: MR-on, context=0, extras co w_reg, extras-guard, altfund shadow | trước: v4.8
+# ── v4.10 (shadow-only, CỐ Ý KHÔNG bump SCORING_VERSION — production score_trade/
+#    decision/score_hold KHÔNG đổi 1 ly → bucket forward v4.9 KHÔNG bị reset):
+#      + shadow RANK cross-sectional: score_trade_rank / decision_rank / _rank_delta
+#        (fundamental=rank_fund_grp, growth=rank_growth_grp; MR/breakout/flow giữ)
+#      + PARITY extras-guard cho nomr & altfund (trước chỉ production/gate1 có) →
+#        so-quyết-định sạch. Thêm _nomr_delta / _altfund_delta cho đối xứng với
+#        _gate1_delta. KHÔNG có thay đổi nào chạm điểm/quyết định PRODUCTION.
 SIGNALS_IN      = "v2f_signals.json"
 CONTEXT_FILE    = "context.json"
 SIGNALS_OUT     = "v2f_signals_v4.json"
@@ -470,17 +477,30 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
                 norm_alt = max(-1.0, min(1.0, alt_raw / cap_fund))
                 delta    = (_weight("trade", "fundamental") * gates["fundamental"]
                             * (norm_alt - f_norm["fundamental"]) * 100)
-                sa = max(-100.0, min(100.0, pre_total + delta + extras))
+                pre_alt  = pre_total + delta                          # lõi shadow (chưa extras) — cho guard
+                sa = max(-100.0, min(100.0, pre_alt + extras))
                 out["_alt_fund_pts"]      = alt_pts
                 out["score_trade_altfund"] = round(sa, 2)
+                out["_altfund_delta"]      = round(sa - out["score_trade"], 2)
+                dec_alt = "STRONG SELL"
                 for cut, name in THRESHOLDS:
                     if cut is None or sa >= cut * w_reg:
-                        out["decision_altfund"] = name
+                        dec_alt = name
                         break
+                # v4.10 PARITY: mirror extras-guard (như production/gate1). Trước đây
+                #   altfund KHÔNG có guard → decision_altfund lệch production vì lý do
+                #   không liên quan fundamental (extras-only BUY) → so-quyết-định bẩn.
+                #   Nay dùng CHUNG guard trên pre_alt → chỉ còn khác biệt do fundamental.
+                if dec_alt == "STRONG BUY" and pre_alt < EXTRAS_GUARD_K * 50 * w_reg:
+                    dec_alt = "BUY"
+                if dec_alt == "BUY" and pre_alt < EXTRAS_GUARD_K * 25 * w_reg:
+                    dec_alt = "NEUTRAL"
+                out["decision_altfund"] = dec_alt
             else:
                 out["_alt_fund_pts"]       = None
                 out["score_trade_altfund"] = None
                 out["decision_altfund"]    = None
+                out["_altfund_delta"]      = None
             # ── SHADOW ĐỐI CHỨNG MR-OFF (v4.8) — production giờ BẬT MR, shadow này
             #    TẮT MR (gate=0) để forward so: production(MR-on) vs control(MR-off).
             #    Dùng bộ weight KHÔNG-MR (0.33 chia sang factor sống), MR gate 0.
@@ -492,10 +512,58 @@ def score_symbol_v4(row: dict, ctx: dict, caps: dict, actives: dict,
             ex_off  = (bonus + ffi_pts + bp_pts) * w_off
             sa_off  = max(-100.0, min(100.0, pre_off + ex_off))
             out["score_trade_nomr"] = round(sa_off, 2)
+            out["_nomr_delta"]      = round(sa_off - out["score_trade"], 2)
+            dec_off = "STRONG SELL"
             for cut, name in THRESHOLDS:
                 if cut is None or sa_off >= cut * w_off:
-                    out["decision_nomr"] = name
+                    dec_off = name
                     break
+            # v4.10 PARITY: mirror extras-guard trên lõi nomr (pre_off, chưa extras).
+            if dec_off == "STRONG BUY" and pre_off < EXTRAS_GUARD_K * 50 * w_off:
+                dec_off = "BUY"
+            if dec_off == "BUY" and pre_off < EXTRAS_GUARD_K * 25 * w_off:
+                dec_off = "NEUTRAL"
+            out["decision_nomr"] = dec_off
+            # ── SHADOW RANK CROSS-SECTIONAL (v4.10) — CHẤM slow-factor theo HẠNG
+            #    TRONG NGÀNH (rank_*_grp) thay vì ngưỡng TUYỆT ĐỐI. Đổi 2 factor chậm:
+            #      fundamental → rank_fund_grp (lõi = altfund, GIỮ cf_core)
+            #      growth      → rank_growth_grp
+            #    MR / breakout / flow / context GIỮ NGUYÊN như production (chỉ swap
+            #    NORM của fund+growth, KHÔNG đụng gate). Mục đích: kiểm giả thuyết
+            #    khung-chuẩn — chấm tương đối miễn nhiễm cú DỊCH MẶT BẰNG CHUNG (VD
+            #    refresh Q2 làm fund_norm cả rổ +0.49 → BUY giả, chính là bệnh phải
+            #    vá bằng gate6). Rank luôn ~nửa rổ trên trung vị → không tự đẻ BUY
+            #    hàng loạt → về lý thuyết bỏ được gate tay fund/growth. KHÔNG đụng
+            #    production; forward ≥30 phiên mới xử. Decomposition:
+            #      _rank_delta                       = rank(fund+growth) vs production
+            #      _rank_delta − _altfund_delta      ≈ phần GROWTH-rank đóng góp riêng
+            rkf = _f(row.get("rank_fund_grp"))
+            rkg = _f(row.get("rank_growth_grp"))
+            d_fund = d_grow = 0.0
+            if rkf is not None:
+                _capf   = caps["trade"].get("fundamental", 11) or 11
+                _rawf   = max(-8, min(8, round((rkf - 0.5) * 16))) + sig_scores.get("cf_core", 0)
+                _nf     = max(-1.0, min(1.0, _rawf / _capf))
+                d_fund  = (_weight("trade", "fundamental") * gates["fundamental"]
+                           * (_nf - f_norm["fundamental"]) * 100)
+            if rkg is not None:
+                _ng     = max(-1.0, min(1.0, (rkg - 0.5) * 2))       # rank 0..1 → norm ±1
+                d_grow  = (_weight("trade", "growth") * gates["growth"]
+                           * (_ng - f_norm["growth"]) * 100)
+            pre_rk = pre_total + d_fund + d_grow                     # lõi rank (chưa extras)
+            sa_rk  = max(-100.0, min(100.0, pre_rk + extras))
+            out["score_trade_rank"] = round(sa_rk, 2)
+            out["_rank_delta"]      = round(sa_rk - out["score_trade"], 2)
+            dec_rk = "STRONG SELL"
+            for cut, name in THRESHOLDS:                              # w_reg: gate GIỮ như production
+                if cut is None or sa_rk >= cut * w_reg:
+                    dec_rk = name
+                    break
+            if dec_rk == "STRONG BUY" and pre_rk < EXTRAS_GUARD_K * 50 * w_reg:
+                dec_rk = "BUY"
+            if dec_rk == "BUY" and pre_rk < EXTRAS_GUARD_K * 25 * w_reg:
+                dec_rk = "NEUTRAL"
+            out["decision_rank"] = dec_rk
             # ── SHADOW NGƯỢC GATE-1 (v4.9) — dựng lại HÀNH VI CŨ: fundamental &
             #    growth gate=1.0 mọi regime (như trước v4.9). Production giờ GATE
             #    chúng ở DOWN/DEEP → shadow này để forward so gated (production) vs
