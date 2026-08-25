@@ -45,8 +45,8 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger("diag_regime_op2")
 
 # ── Ngưỡng neo lý thuyết đang cân nhắc (script sẽ đối chiếu với phân vị thật) ──
-TH_UP   = 1.3    # enter UPTREND / RECOVERY  (m2 >= TH_UP)
-TH_DOWN = -1.9   # enter DOWNTREND nhanh      (m2 <= TH_DOWN)
+TH_UP   = 1.3    # enter RECOVERY            (m2 >= TH_UP)  — UPTREND KHÔNG dùng m2 nữa
+TH_DOWN = -1.3   # enter DOWNTREND nhanh      (m2 <= TH_DOWN) — nới từ -1.9 (chỉ 5.7% phiên)
 
 HOUR_BUCKETS = [("sáng ≤10:30", 0, 630),
                 ("trưa 10:31–13:29", 631, 809),
@@ -84,8 +84,8 @@ def classify_op2(close, ema50, ema200, m2, c20):
         return "RECOVERY"
     if (not above_50) and (c20 <= -2 or m2 <= TH_DOWN):
         return "DOWNTREND"
-    if above_50 and above_200 and m2 >= TH_UP:
-        return "UPTREND"
+    if above_50 and above_200 and c20 > 0:   # ĐỔI: dùng đà-20-phiên, KHÔNG dùng m2
+        return "UPTREND"                       # (m2 đà-1-phiên làm UPTREND biến mất)
     return "SIDEWAYS"
 
 
