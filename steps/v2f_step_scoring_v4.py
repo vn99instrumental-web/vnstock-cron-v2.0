@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.9"          # GATE fund+growth DOWN 0.8 / DEEP 0.6 (Đường 2, chống value-trap) + shadow NGƯỢC gate=1.0 (score_trade_gate1/decision_gate1) để forward so gated vs cũ | GATE_VERSION 6 | giữ: MR-on, context=0, extras co w_reg, extras-guard, altfund shadow | trước: v4.8
+SCORING_VERSION = "v4.10"  # regime LIVE moi run (Op1: m2=hom qua+hom nay, dau-m2, +RECOVERY) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7 (cot RECOVERY). Bump -> reset forward bucket. Cu(v4.9):          # GATE fund+growth DOWN 0.8 / DEEP 0.6 (Đường 2, chống value-trap) + shadow NGƯỢC gate=1.0 (score_trade_gate1/decision_gate1) để forward so gated vs cũ | GATE_VERSION 6 | giữ: MR-on, context=0, extras co w_reg, extras-guard, altfund shadow | trước: v4.8
 # ── v4.10 (shadow-only, CỐ Ý KHÔNG bump SCORING_VERSION — production score_trade/
 #    decision/score_hold KHÔNG đổi 1 ly → bucket forward v4.9 KHÔNG bị reset):
 #      + shadow RANK cross-sectional: score_trade_rank / decision_rank / _rank_delta
@@ -90,46 +90,49 @@ def _run_date(ctx: dict, rows: list) -> str:
     return str(st)[:10] if st else datetime.now().strftime("%Y-%m-%d")
 
 
-def _apply_hysteresis(raw: str, run_date: str):
-    """Regime dùng để gate chỉ đổi khi regime THÔ giữ ≥HYST_SESSIONS phiên
-    (đếm theo NGÀY, không theo lần chạy intraday). Chống whipsaw (A4: 50% run
-    ≤2 phiên). Trả (effective_regime, status_str). State lưu ở output/.
-    UNKNOWN không bao giờ được "chốt" thành effective — giữ regime cũ cho an toàn."""
-    st = load_json(REGIME_STATE) or {}
+def _apply_hysteresis(raw: str, run_date: str | None = None):
+    """Regime dùng để gate chỉ đổi khi raw giữ >=HYST_RUNS RUN LIÊN TIẾP
+    (đếm theo LẦN CHẠY intraday, KHÔNG theo ngày) — để regime LIVE cập nhật
+    ngay trong phiên. run_date giữ trong chữ ký cho tương thích, không dùng.
+    Trả (effective_regime, status_str). State lưu ở output/. UNKNOWN không
+    bao giờ được chốt thành effective — giữ regime cũ cho an toàn."""
+    HYST_RUNS = 2
+    st  = load_json(REGIME_STATE) or {}
     eff = st.get("effective_regime")
 
     if eff is None:                                   # bootstrap lần đầu
         eff0 = raw if raw != "UNKNOWN" else "UNKNOWN"
         save_json(REGIME_STATE, {"effective_regime": eff0,
-                                 "candidate": None, "candidate_dates": []})
+                                 "candidate": None, "candidate_count": 0})
         return eff0, "bootstrap"
 
-    if raw == "UNKNOWN":                               # không rõ regime → giữ cũ
-        return eff, f"raw=UNKNOWN → giữ {eff}"
+    if raw == "UNKNOWN":                               # không rõ regime -> giữ cũ
+        return eff, f"raw=UNKNOWN -> giu {eff}"
 
-    if raw == eff:                                     # xác nhận lại → huỷ candidate
+    if raw == eff:                                     # xác nhận lại -> huỷ candidate
         if st.get("candidate"):
             st["candidate"] = None
-            st["candidate_dates"] = []
+            st["candidate_count"] = 0
             save_json(REGIME_STATE, st)
         return eff, "stable"
 
-    # raw != eff: đếm số PHIÊN (ngày) candidate đã giữ
+    # raw != eff: đếm số RUN LIÊN TIẾP candidate đã giữ
     if st.get("candidate") == raw:
-        dates = sorted(set(st.get("candidate_dates", [])) | {run_date})
-        if len(dates) >= HYST_SESSIONS:               # đủ phiên → chuyển gate
+        cnt = int(st.get("candidate_count") or 1) + 1
+        if cnt >= HYST_RUNS:                          # đủ run -> chuyển gate
             save_json(REGIME_STATE, {"effective_regime": raw,
-                                     "candidate": None, "candidate_dates": []})
-            return raw, f"CHUYỂN → {raw} (đủ {len(dates)} phiên)"
-        st["candidate_dates"] = dates
+                                     "candidate": None, "candidate_count": 0})
+            return raw, f"CHUYEN -> {raw} (du {cnt} run)"
+        st["candidate"] = raw
+        st["candidate_count"] = cnt
         save_json(REGIME_STATE, st)
-        return eff, f"pending {raw} {len(dates)}/{HYST_SESSIONS} → giữ {eff}"
+        return eff, f"pending {raw} {cnt}/{HYST_RUNS} run -> giu {eff}"
 
     # candidate mới
     st["candidate"] = raw
-    st["candidate_dates"] = [run_date]
+    st["candidate_count"] = 1
     save_json(REGIME_STATE, st)
-    return eff, f"candidate mới {raw} 1/{HYST_SESSIONS} → giữ {eff}"
+    return eff, f"candidate moi {raw} 1/{HYST_RUNS} run -> giu {eff}"
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -639,7 +642,12 @@ def run():
         ctx["_snap_time"] = rows[0]["snap_time"]
 
     # regime là thuộc tính THỊ TRƯỜNG → resolve MỘT LẦN cho cả run
-    index_raw  = _resolve_regime(ctx, rows[0] if rows else {})
+    # regime index: ƯU TIÊN market_regime_live (Op1 live mỗi run, ghi bởi
+    # snapshot vào vnindex_live.json) → thay market_regime đóng băng 1 lần/ngày.
+    # Fallback về _resolve_regime(ctx) nếu chưa có live (bootstrap / lỗi fetch).
+    _vlive = load_json("vnindex_live.json") or {}
+    _lreg  = str(_vlive.get("market_regime_live") or "").upper()
+    index_raw  = _lreg if _lreg in _VALID_REGIMES else _resolve_regime(ctx, rows[0] if rows else {})
     run_date   = _run_date(ctx, rows)
     # ── V4.5: regime BREADTH-AWARE (chống méo index cap-weighted) ──
     _brd = _compute_breadth(rows)
