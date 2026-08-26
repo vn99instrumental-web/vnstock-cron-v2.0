@@ -717,12 +717,13 @@ def get_flow(symbol: str) -> dict:
             try:
                 df_id[date_col] = pd.to_datetime(df_id[date_col], errors="coerce")
                 cutoff = pd.Timestamp.now() - pd.Timedelta(days=90)
-                df_90d = df_id[df_id[date_col] >= cutoff]
-                df_id  = df_90d if not df_90d.empty else df_id
+                # v4.12 FIX: CHI giu 90 ngay that. KHONG fallback ve giao dich cu
+                # (loi cu: 90d rong -> dung full 20 GD lich su cham nhu "(90d)").
+                df_id = df_id[df_id[date_col] >= cutoff]
             except Exception:
                 pass
 
-        action_col = "action_type" if "action_type" in df_id.columns else None
+        action_col = "action_type" if ("action_type" in df_id.columns and not df_id.empty) else None
         if action_col:
             buy_kw  = ["mua", "buy", "purchase", "acqui"]
             sell_kw = ["bán", "sell", "dispos", "transfer"]
@@ -734,9 +735,12 @@ def get_flow(symbol: str) -> dict:
             res["insider_count"]      = len(df_id)
             res["insider_latest"]     = str(df_id[action_col].iloc[0])
         else:
-            res["insider_count"]  = len(df_id)
+            # v4.12: 90d rong -> khong co insider gan day = 0 tin hieu (khong bia)
+            res["insider_count"]      = len(df_id)
+            res["insider_buy_count"]  = 0
+            res["insider_sell_count"] = 0
         res["insider_name"] = str(df_id["trader_name"].iloc[0]) \
-                              if "trader_name" in df_id.columns else None
+                              if ("trader_name" in df_id.columns and not df_id.empty) else None
 
     return res
 
