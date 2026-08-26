@@ -94,7 +94,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .gc-GAINER{border-color:#0c4020;color:var(--buy);background:var(--buy-bg)}
 .gc-LOSER{border-color:var(--sell-bg);color:var(--sell);background:var(--sell-bg)}
 .v2tag{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:2px;border:1px solid #0d3555;background:#061220;color:var(--acc)}
-.qb-badge{display:inline-block;padding:1px 7px;border-radius:9px;font-size:9px;font-weight:800;letter-spacing:.5px;background:#f5c518;color:#1a1200;white-space:nowrap;line-height:1.4}
+.qb-star{display:inline-block;margin-left:5px;font-size:14px;line-height:1;vertical-align:-1px;cursor:help;filter:drop-shadow(0 0 3px rgba(245,197,24,.45))}
 .dq-chip{font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 6px;border-radius:2px;border:1px solid var(--sell);color:var(--sell);background:var(--sell-bg);cursor:help}
 .dq-chip.dq-stale{border-color:var(--neu);color:var(--neu);background:var(--neu-bg)}
 .dq-warn{margin:6px 12px 0 17px;padding:6px 10px;border-radius:3px;background:#1a0800;border:1px solid var(--sell);font-size:11px;color:var(--sell);line-height:1.5}
@@ -265,6 +265,7 @@ table.dtbl tr[data-sym]:hover{background:#0f2436}
     <button class="fbtn fbtn-on" data-v="ALL">Tất cả</button>
     <button class="fbtn" data-v="STRONG BUY" style="border-color:var(--sb)">STRONG BUY</button>
     <button class="fbtn" data-v="BUY" style="border-color:var(--buy)">BUY</button>
+    <button class="fbtn" data-v="QUALITY" style="border-color:#f5c518;color:#f5c518" title="QUALITY: BUY/STRONG BUY · điểm nước ngoài ≥ 5 · điểm cơ bản ≥ 5">&#11088;</button>
     <button class="fbtn" data-v="NEUTRAL" style="border-color:var(--neu)">NEUTRAL</button>
     <button class="fbtn" data-v="SELL" style="border-color:var(--sell)">SELL</button>
     <button class="fbtn" data-v="STRONG SELL" style="border-color:var(--ss)">STRONG SELL</button>
@@ -438,7 +439,7 @@ function renderCard(d, idx) {
   const confHtml = d.confidence ? `<span class="conf-chip ${confCls}">${d.confidence}</span>` : '';
   const groupHtml = d.group ? `<span class="group-chip gc-${d.group}">${d.group}</span>` : '';
   const isQuality = (d.decision === 'BUY' || d.decision === 'STRONG BUY') && parseFloat(d.ff_score||0) >= 5 && parseFloat(d.fundamental_score||0) >= 5;
-  const qualityHtml = isQuality ? '<span class="qb-badge" title="FF ≥ 5 và Cơ bản ≥ 5 — xác nhận kép">&#11088; QUALITY</span>' : '';
+  const qualityHtml = isQuality ? '<span class="qb-star" title="QUALITY — FF ≥ 5 và Cơ bản ≥ 5">&#11088;</span>' : '';
 
   const dq = buildDataQuality(d);
 
@@ -610,6 +611,7 @@ var DECBG = {'STRONG BUY':'#00e896','BUY':'#34c26e','NEUTRAL':'#f5c240','SELL':'
 var SORTED = ALL_DATA.slice().sort(function(a,b){ return (parseFloat(b.total_score)||0) - (parseFloat(a.total_score)||0); });
 
 function tnum(v){ var n = parseFloat(v); return isNaN(n) ? null : n; }
+function isQualityRow(d){ var dec=d.decision||''; return (dec==='BUY'||dec==='STRONG BUY') && (tnum(d.ff_score)||0)>=5 && (tnum(d.fundamental_score)||0)>=5; }
 
 function rowHtml(d){
   var dec = d.decision || 'NEUTRAL';
@@ -624,10 +626,12 @@ function rowHtml(d){
   var rr     = (d.rr_tp1!=null) ? d.rr_tp1 : '—';
   var name   = d.organ_short_name || d.organ_name || d.industry || '';
   var noTrade= (d.size_hint==='NO_TRADE') || (d.skip && String(d.skip).trim());
+  var isQuality = isQualityRow(d);
+  var qualityStar = isQuality ? '<span class="qb-star" title="QUALITY — FF ≥ 5 và Cơ bản ≥ 5">&#11088;</span>' : '';
   var entryCell = noTrade ? ('<span style="color:var(--muted)">'+entry+'</span>') : entry;
-  return '<tr data-sym="'+d.symbol+'" data-dec="'+dec+'" data-name="'+String(name).toUpperCase()+'">'
+  return '<tr data-sym="'+d.symbol+'" data-dec="'+dec+'" data-quality="'+(isQuality?'1':'0')+'" data-name="'+String(name).toUpperCase()+'">'
     + '<td class="rnum" style="color:var(--muted)"></td>'
-    + '<td class="l"><span class="rsym">'+d.symbol+'</span><div class="cname">'+name+'</div></td>'
+    + '<td class="l"><span class="rsym">'+d.symbol+'</span>'+qualityStar+'<div class="cname">'+name+'</div></td>'
     + '<td class="l"><span class="badge" style="background:'+bg+'">'+dec+'</span></td>'
     + '<td class="rnum '+sc+'" style="font-weight:700">'+fsT(d.total_score)+'</td>'
     + '<td class="rnum">'+(d.price!=null?d.price:'—')+'</td>'
@@ -641,12 +645,12 @@ function rowHtml(d){
 }
 
 function updateCounts(){
-  var cnt = { 'ALL': SORTED.length, 'STRONG BUY':0, 'BUY':0, 'NEUTRAL':0, 'SELL':0, 'STRONG SELL':0 };
-  for (var i=0;i<SORTED.length;i++){ var k=SORTED[i].decision; if(cnt[k]!=null) cnt[k]++; }
+  var cnt = { 'ALL': SORTED.length, 'QUALITY':0, 'STRONG BUY':0, 'BUY':0, 'NEUTRAL':0, 'SELL':0, 'STRONG SELL':0 };
+  for (var i=0;i<SORTED.length;i++){ var k=SORTED[i].decision; if(cnt[k]!=null) cnt[k]++; if(isQualityRow(SORTED[i])) cnt['QUALITY']++; }
   var btns = document.querySelectorAll('#fbar .fbtn');
   for (var j=0;j<btns.length;j++){
     var v = btns[j].getAttribute('data-v');
-    var base = (v==='ALL') ? 'Tất cả' : v;
+    var base = (v==='ALL') ? 'Tất cả' : (v==='QUALITY' ? '⭐' : v);
     if (cnt[v]!=null) btns[j].textContent = base + ' (' + cnt[v] + ')';
   }
 }
@@ -656,7 +660,7 @@ function applyFilter(){
   var shown = 0;
   for (var i=0;i<trs.length;i++){
     var tr = trs[i];
-    var okDec = FILT.dec==='ALL' || tr.getAttribute('data-dec')===FILT.dec;
+    var okDec = FILT.dec==='ALL' || (FILT.dec==='QUALITY' ? tr.getAttribute('data-quality')==='1' : tr.getAttribute('data-dec')===FILT.dec);
     var sym = tr.getAttribute('data-sym') || '';
     var nm  = tr.getAttribute('data-name') || '';
     var okQ = !FILT.q || sym.indexOf(FILT.q)>=0 || nm.indexOf(FILT.q)>=0;
