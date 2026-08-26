@@ -526,6 +526,33 @@ def get_vnindex_return(history_length: str = "2M") -> dict:
             # "phiên trước / đã chốt".
             _live["is_live"] = bool(_live["is_open"]
                                     and _live["asof_date"] == last_trading_date())
+            # ── REGIME OP1 LIVE (mỗi run) — m2 = đà HÔM QUA + đà HÔM NAY ──
+            #    Wired vào scoring_v4 làm index_raw LIVE (thay market_regime đóng
+            #    băng 1 lần/ngày). Phân theo DẤU m2 + chiều hôm nay (không EMA,
+            #    không ngưỡng độ lớn); SIDEWAYS theo chg_20d. Fail-soft: lỗi →
+            #    không ghi market_regime_live → scoring_v4 fallback market_regime cũ.
+            try:
+                from utils.regime_v42 import classify_regime_op2
+                _cc = pd.to_numeric(df["close"], errors="coerce").dropna()
+                if len(_cc) >= 3 and _live.get("chg_pct") is not None:
+                    _p1 = float(_cc.iloc[-2])   # close phiên hôm qua (đã đóng)
+                    _p2 = float(_cc.iloc[-3])   # close phiên hôm kia
+                    _yest  = ((_p1 - _p2) / _p2 * 100.0) if _p2 else 0.0   # đà hôm qua
+                    _today = float(_live["chg_pct"])                       # đà hôm nay (live)
+                    _m2    = _yest + _today                                # Op1
+                    _op1 = classify_regime_op2(_m2, _today, res.get("vnindex_return_20d"))
+                    _live["m2"]                 = round(_m2, 4)
+                    _live["m2_yesterday"]       = round(_yest, 4)
+                    _live["m2_today"]           = _today
+                    _live["market_regime_live"] = _op1["regime_raw"]
+                    _live["regime_reason"]      = _op1["reason"]
+                    log.info(f"VNINDEX regime_live={_op1['regime_raw']} "
+                             f"(m2={_m2:+.2f} = qua{_yest:+.2f}+nay{_today:+.2f}, "
+                             f"c20={res.get('vnindex_return_20d')}) [{_op1['reason']}]")
+                else:
+                    log.warning(f"regime_op1 live skip: len={len(_cc)} chg_pct={_live.get('chg_pct')}")
+            except Exception as _re:
+                log.warning(f"regime_op1 live block error: {_re}")
             res["vnindex_live"] = _live
             save_json("vnindex_live.json", _live)
             log.info(f"VNINDEX live: level={_live['level']} "
