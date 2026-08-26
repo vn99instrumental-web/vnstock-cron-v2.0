@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.10"  # regime LIVE moi run (Op1: m2=hom qua+hom nay, dau-m2, +RECOVERY) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7 (cot RECOVERY). Bump -> reset forward bucket. Cu(v4.9):          # GATE fund+growth DOWN 0.8 / DEEP 0.6 (Đường 2, chống value-trap) + shadow NGƯỢC gate=1.0 (score_trade_gate1/decision_gate1) để forward so gated vs cũ | GATE_VERSION 6 | giữ: MR-on, context=0, extras co w_reg, extras-guard, altfund shadow | trước: v4.8
+SCORING_VERSION = "v4.11"  # DEFECT FIX hop dong factor (KHONG tuning): sc_fund BO tru ext_fv (dao dau, anh huong 95/130, 91 ma dat duoc thuong oan); sc_context BO tru ext_breadth (tiem an); true_max ve tran thuc fund 23->20, growth 15->10, ff 18->15 (dung het span). GATE_VERSION giu 7. Bump -> reset forward bucket (v4.10 rong, khong mat gi). KHONG dung: MR weight, gate, threshold, extras-guard, shadow. Cu(v4.10): regime LIVE moi run (Op1) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7. Cu(v4.9): GATE fund+growth DOWN 0.8/DEEP 0.6 + shadow gate1 | truoc: v4.8
 # ── v4.10 (shadow-only, CỐ Ý KHÔNG bump SCORING_VERSION — production score_trade/
 #    decision/score_hold KHÔNG đổi 1 ly → bucket forward v4.9 KHÔNG bị reset):
 #      + shadow RANK cross-sectional: score_trade_rank / decision_rank / _rank_delta
