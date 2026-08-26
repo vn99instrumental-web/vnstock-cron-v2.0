@@ -49,7 +49,7 @@ INDEX_GROUP = os.environ.get("V2F_INDEX_GROUP", "VN100")
 # Danh sách rổ core — gom theo thứ tự, dedupe khi build.
 INDEX_GROUPS = [
     g.strip().upper()
-    for g in os.environ.get("V2F_INDEX_GROUPS", "VN100,HNX30").split(",")
+    for g in os.environ.get("V2F_INDEX_GROUPS", "VN100").split(",")   # 2026-08-26: BO HNX30 -> chi VN100/HOSE (breadth khop VNINDEX, het lech pham vi)
     if g.strip()
 ] or [INDEX_GROUP]
 
