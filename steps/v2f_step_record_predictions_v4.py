@@ -129,7 +129,7 @@ def run():
             "registry_version": sig.get("registry_version"),
             "gate_version"    : sig.get("gate_version"),
             "flow"            : FLOW,
-            "universe_variant": "full_vn100",
+            "universe_variant": "vn100",   # 2026-08-26: BO HNX30 (truoc: full_vn100 = VN100+HNX30)
             "schema_version"  : SCHEMA_VERSION,
 
             "total_score"     : sig.get("total_score"),   # = score_trade
