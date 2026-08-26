@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.11"  # DEFECT FIX hop dong factor (KHONG tuning): sc_fund BO tru ext_fv (dao dau, anh huong 95/130, 91 ma dat duoc thuong oan); sc_context BO tru ext_breadth (tiem an); true_max ve tran thuc fund 23->20, growth 15->10, ff 18->15 (dung het span). GATE_VERSION giu 7. Bump -> reset forward bucket (v4.10 rong, khong mat gi). KHONG dung: MR weight, gate, threshold, extras-guard, shadow. Cu(v4.10): regime LIVE moi run (Op1) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7. Cu(v4.9): GATE fund+growth DOWN 0.8/DEEP 0.6 + shadow gate1 | truoc: v4.8
+SCORING_VERSION = "v4.12"  # (1) UNIVERSE bo HNX30 -> VN100/HOSE (breadth khop VNINDEX, het lech pham vi 6.2.b); (2) EMA200 mau so rieng n200 (6.2.f); (3) insider bo fallback GD cu (chi 90d that); (4) confidence agreement theo trong so (7.2). Bump -> reset forward bucket (v4.11 rong). GATE_VERSION giu 7. universe_variant: full_vn100 -> vn100. Cu(v4.11): DEFECT FIX hop dong factor (KHONG tuning): sc_fund BO tru ext_fv (dao dau, anh huong 95/130, 91 ma dat duoc thuong oan); sc_context BO tru ext_breadth (tiem an); true_max ve tran thuc fund 23->20, growth 15->10, ff 18->15 (dung het span). GATE_VERSION giu 7. Bump -> reset forward bucket (v4.10 rong, khong mat gi). KHONG dung: MR weight, gate, threshold, extras-guard, shadow. Cu(v4.10): regime LIVE moi run (Op1) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7. Cu(v4.9): GATE fund+growth DOWN 0.8/DEEP 0.6 + shadow gate1 | truoc: v4.8
 # ── v4.10 (shadow-only, CỐ Ý KHÔNG bump SCORING_VERSION — production score_trade/
 #    decision/score_hold KHÔNG đổi 1 ly → bucket forward v4.9 KHÔNG bị reset):
 #      + shadow RANK cross-sectional: score_trade_rank / decision_rank / _rank_delta
@@ -144,7 +144,8 @@ MIN_BREADTH_N = 30   # dưới ngưỡng này → không tin breadth, giữ inde
 def _compute_breadth(rows: list) -> dict:
     """% mã trên EMA50/EMA200 + median %chg 5d/20d của rổ. Fail-soft."""
     import statistics as _st
-    n = a50 = a200 = 0
+    n = a50 = 0
+    n200 = a200 = 0                      # v4.12 FIX (6.2.f): mau so RIENG cho EMA200
     r20, r5 = [], []
     for r in rows:
         p   = _f(r.get("price"))
@@ -153,7 +154,9 @@ def _compute_breadth(rows: list) -> dict:
         if p and e50:
             n += 1
             if p > e50: a50 += 1
-            if e200 and p > e200: a200 += 1
+        if p and e200:                   # chi tinh mau so khi CO ema200
+            n200 += 1
+            if p > e200: a200 += 1
         rr = _f(r.get("return_20d"))
         if rr is not None:
             r20.append(rr)
@@ -170,7 +173,7 @@ def _compute_breadth(rows: list) -> dict:
         return {"n": 0}
     return {"n": n,
             "share_50":  a50 / n,
-            "share_200": a200 / n,
+            "share_200": (a200 / n200) if n200 else None,   # v4.12: chia dung n200
             "med_c20":   _st.median(r20) if r20 else None,
             "med_c5":    _st.median(r5)  if r5  else None}
 
@@ -320,11 +323,16 @@ def confidence_data_v4(row: dict) -> tuple:
     gates = row.get("_gates") or {}
     # context bị loại khỏi trụ nhất quán: nó là HẰNG SỐ cross-sectional (-1.0 mọi mã)
     # và weight trade đã = 0 → không được tính là "cãi nhau" làm tụt Conf oan.
-    norms = [(gates.get(f, 1) or 0) * (row.get(f"trade_{f}_norm") or 0)
-             for f in FACTORS if f != "context"]
-    gross = sum(abs(x) for x in norms)
-    if gross >= CONF_DISAGREE_MIN_GROSS:
-        agree = abs(sum(norms)) / gross              # 1=đồng thuận, 0=triệt tiêu
+    facs      = [f for f in FACTORS if f != "context"]
+    raw_norms = [(gates.get(f, 1) or 0) * (row.get(f"trade_{f}_norm") or 0) for f in facs]
+    # v4.12 FIX (7.2): AGREEMENT phai theo TRONG SO — factor nho khong duoc dem
+    # ngang factor lon khi tinh "cai nhau". Trigger "du tin hieu" giu thang GATE cu
+    # (gross_raw) de KHONG phai recalibrate CONF_DISAGREE_MIN_GROSS.
+    w_norms  = [_W_TRADE_V4.get(f, 0) * x for f, x in zip(facs, raw_norms)]
+    gross_raw = sum(abs(x) for x in raw_norms)
+    if gross_raw >= CONF_DISAGREE_MIN_GROSS:
+        gross_w = sum(abs(x) for x in w_norms)
+        agree   = (abs(sum(w_norms)) / gross_w) if gross_w else 1.0   # 1=dong thuan, 0=triet tieu
         s -= (1 - agree) * CONF_DISAGREE_MAXPEN
     pct = int(max(0.0, min(100.0, round(s))))
     label = "HIGH" if pct >= CONF_HI else "MEDIUM" if pct >= CONF_MD else "LOW"
