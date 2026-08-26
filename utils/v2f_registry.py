@@ -236,19 +236,19 @@ if __name__ == "__main__":
 #       ĐIỂM, forward IC ≥30 phiên mới là phán quyết (giữ/chỉnh mức gate).
 # ⚠️ Đổi bất kỳ số nào → bump GATE_VERSION (reset bucket forward-validation v4).
 # ══════════════════════════════════════════════════════════════════════
-GATE_VERSION = 6
-REGIMES = ("UPTREND", "SIDEWAYS", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
+GATE_VERSION = 7
+REGIMES = ("UPTREND", "SIDEWAYS", "RECOVERY", "DOWNTREND", "DEEP_DOWN", "UNKNOWN")
 _REGIME_IDX = {r: i for i, r in enumerate(REGIMES)}
 
 # thứ tự cột = REGIMES ở trên
 GATE = {
-    #                 UP    SIDE  DOWN  DEEP  UNKNOWN   # nguồn
-    "mean_reversion": (1.0,  1.0,  1.0,  1.0,  1.0),    # v5: BẬT LẠI mọi regime (quyết định vận hành 2026-08-16 — kiểm production thủ công; LƯU Ý file từng ghi forward IC −0.167, cần re-validate)
-    "breakout":       (0.5,  0.7,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31). UPTREND giữ 0.5: thử nâng 0.7 nhưng ngưỡng ×w_reg tự bù → không nới được BUY (sim 2026-08-16), revert.
-    "flow":           (1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
-    "fundamental":    (1.0,  1.0,  0.8,  0.6,  1.0),    # v6: gate DOWN/DEEP (2026-08-20) — chặn value-trap. Refresh Q2 làm fund_norm 0→+0.49 toàn rổ → 21 BUY trong DEEP_DOWN. 0.6 = "originate-guard": fund+growth max KHÔNG tự vượt ngưỡng BUY (g≤0.68). Sim cross-section: BUY 21→7, SELL ~không đổi.
-    "growth":         (1.0,  1.0,  0.8,  0.6,  1.0),    # v6: gate cùng nhịp fundamental — growth cũng là tín hiệu chậm, không time 1–5d; giữ tính chất originate-guard của cả cụm slow-factor.
-    "context":        (1.0,  1.0,  1.0,  1.0,  1.0),    # đã regime-aware nội bộ
+    #                 UP    SIDE  RECOV DOWN  DEEP  UNKNOWN   # nguồn
+    "mean_reversion": (1.0,  1.0,  1.0,  1.0,  1.0,  1.0),    # v5: BẬT LẠI mọi regime (quyết định vận hành 2026-08-16 — kiểm production thủ công; LƯU Ý file từng ghi forward IC −0.167, cần re-validate)
+    "breakout":       (0.5,  0.7,  0.5,  1.0,  1.0,  0.5),    # v3: down/deep bật lại (forward IC +0.31). UPTREND giữ 0.5: thử nâng 0.7 nhưng ngưỡng ×w_reg tự bù → không nới được BUY (sim 2026-08-16), revert.
+    "flow":           (1.0,  1.0,  1.0,  1.0,  1.0,  1.0),    # inherited-pending
+    "fundamental":    (1.0,  1.0,  0.8,  0.8,  0.6,  1.0),    # v6: gate DOWN/DEEP (2026-08-20) — chặn value-trap. Refresh Q2 làm fund_norm 0→+0.49 toàn rổ → 21 BUY trong DEEP_DOWN. 0.6 = "originate-guard": fund+growth max KHÔNG tự vượt ngưỡng BUY (g≤0.68). Sim cross-section: BUY 21→7, SELL ~không đổi.
+    "growth":         (1.0,  1.0,  0.8,  0.8,  0.6,  1.0),    # v6: gate cùng nhịp fundamental — growth cũng là tín hiệu chậm, không time 1–5d; giữ tính chất originate-guard của cả cụm slow-factor.
+    "context":        (1.0,  1.0,  1.0,  1.0,  1.0,  1.0),    # đã regime-aware nội bộ
 }
 
 
