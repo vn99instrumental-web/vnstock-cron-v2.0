@@ -68,7 +68,7 @@ _NON_STOCK_PATTERN = re.compile(
     re.IGNORECASE,
 )
 _VALID_EXCHANGES = {"HSX", "HOSE", "HNX", "HSX (HOSE)"}
-_CORE_INDEX_GROUPS = ["VN100", "HNX30"]
+_CORE_INDEX_GROUPS = ["VN100"]   # 2026-08-26: BO HNX30 (dong bo utils/v2f_universe.py)
 _FILL_INDEX_GROUP = "VNSML"
 
 # ---------------------------------------------------------------------
