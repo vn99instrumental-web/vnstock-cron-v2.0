@@ -108,6 +108,50 @@ CONTEXT_MATRIX_V41_PROPOSED = {
 RECOVERY_BUY_WARNING = "song hoi chua xac nhan dao chieu"
 
 
+# ─────────────────────────────────────────────────────────────────────
+# OP1 — REGIME LIVE MỖI RUN theo DẤU của m2 (wired vào scoring_v4 index_raw)
+# ─────────────────────────────────────────────────────────────────────
+# m2 = đà HÔM QUA + đà HÔM NAY (có dấu). Phân trạng thái theo DẤU của m2 +
+# chiều của hôm nay — KHÔNG dùng ngưỡng độ lớn, KHÔNG dùng EMA/vị trí.
+#   |chg_20d| ≤ 2       → SIDEWAYS   (20 phiên đi ngang, đè trước; chống rung
+#                                     khi m2 lượn quanh 0 trong thị trường phẳng)
+#   m2 > 0              → UPTREND    (tổng 2 phiên còn dương)
+#   m2 ≤ 0 & hôm nay >0 → RECOVERY   (hồi: hôm nay xanh nhưng chưa bù cú giảm)
+#   m2 ≤ 0 & hôm nay ≤0 → DOWNTREND  (giảm tiếp)
+# DEEP_DOWN KHÔNG sinh từ index — chỉ đến từ breadth (classify_regime_breadth)
+# qua more_bearish(): VNINDEX đơn dễ bị vài mã lớn kéo, breadth cả rổ đáng tin
+# hơn để gọi "sập thật". Ví dụ khớp yêu cầu:
+#   qua+10 nay-7  → m2=+3 (giảm) → UPTREND     (vẫn tăng)
+#   qua+10 nay-14 → m2=-4 (giảm) → DOWNTREND
+#   qua-10 nay+5  → m2=-5 (tăng) → RECOVERY    (hồi, chưa đủ)
+#   qua-10 nay+11 → m2=+1 (tăng) → UPTREND
+TH_SIDEWAYS_C20 = 2.0   # |chg_20d| ≤ 2% → SIDEWAYS (= |TH_DOWN_C20|, không bịa số mới)
+
+
+def classify_regime_op2(m2: float | None, today: float | None,
+                        chg_20d: float | None) -> dict:
+    """Regime Op1 (dấu-m2), live mỗi run. Không EMA, không ngưỡng độ lớn.
+    m2 = đà hôm qua + đà hôm nay (có dấu). today = đà hôm nay (chg_pct live).
+    Trả {"regime_raw", "reason", "crash_rule"}. DEEP_DOWN đến từ breadth."""
+    _m2  = m2      if m2      is not None else 0.0
+    _td  = today   if today   is not None else 0.0
+    _c20 = chg_20d if chg_20d is not None else 0.0
+
+    if abs(_c20) <= TH_SIDEWAYS_C20:
+        return {"regime_raw": "SIDEWAYS",
+                "reason": f"c20={_c20:+.2f} trong +-{TH_SIDEWAYS_C20} (di ngang)",
+                "crash_rule": False}
+    if _m2 > 0:
+        return {"regime_raw": "UPTREND",
+                "reason": f"m2={_m2:+.2f}>0", "crash_rule": False}
+    if _td > 0:
+        return {"regime_raw": "RECOVERY",
+                "reason": f"m2={_m2:+.2f}<=0 & hom_nay={_td:+.2f}>0 (hoi chua xac nhan)",
+                "crash_rule": False}
+    return {"regime_raw": "DOWNTREND",
+            "reason": f"m2={_m2:+.2f}<=0 & hom_nay={_td:+.2f}<=0", "crash_rule": False}
+
+
 def classify_regime(close: float, ema50: float, ema200: float | None,
                     chg_5d: float | None, chg_20d: float | None) -> dict:
     """
