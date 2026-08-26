@@ -258,7 +258,8 @@ def _renorm(v, true_max, span):
 
 
 def sc_ff(row, ctx):
-    s = _renorm(row.get("ff_score"), 18, 6)
+    # v4.11: 18→15 = tran thuc cua ff_score (net-stance +-10 + momentum +-5); clamp +-20 khong cham
+    s = _renorm(row.get("ff_score"), 15, 6)
     return s, (f"FF(v2.3){s:+d}" if s else "")
 
 
@@ -273,21 +274,26 @@ def sc_insider(row, ctx):
 
 
 def sc_fund(row, ctx):
+    # v4.11 DEFECT FIX: BO phep tru ext_fv_score.
+    #   fundamental_score (field output V2) la BASE PE/PB/ROE/D-E, DA KHONG chua fv
+    #   -> tru fv la tru khong, dao dau (ma dat fv<0 bi cong, ma re fv>0 bi tru).
+    #   Intent goc "FairVal naive -> off" = chi dung base. true_max 23->20 = clamp thuc cua field.
     base = _f(row.get("fundamental_score"), 0) or 0
-    fv   = _f(row.get("ext_fv_score"), 0) or 0
-    s = _renorm(base - fv, 23, 8)          # trừ FairVal naive (off theo design)
+    s = _renorm(base, 20, 8)
     return s, (f"Fund{s:+d}" if s else "")
 
 
 def sc_growth(row, ctx):
-    s = _renorm(row.get("growth_score"), 15, 5)
+    # v4.11: 15->10 = tran thuc cua growth_score (clamp +-10); truoc do norm tran bi ket 0.6
+    s = _renorm(row.get("growth_score"), 10, 5)
     return s, (f"Growth{s:+d}" if s else "")
 
 
 def sc_context(row, ctx):
+    # v4.11 DEFECT FIX: BO phep tru ext_breadth_score (cung loi fair-value, hien tiem an vi breadth=0).
+    #   context_score (field output V2) KHONG chua breadth -> tru la tru khong.
     base = _f(row.get("context_score"), 0) or 0
-    br   = _f(row.get("ext_breadth_score"), 0) or 0
-    s = _renorm(base - br, 5, 2)
+    s = _renorm(base, 5, 2)
     return s, (f"Ctx{s:+d}" if s else "")
 
 
@@ -455,3 +461,4 @@ if __name__ == "__main__":
         log.error("V3 shadow crash (không chặn pipeline):\n"
                   + traceback.format_exc())
         sys.exit(0)      # fail-soft tuyệt đối
+        
