@@ -763,17 +763,16 @@ def get_scan_universe(industry_map: list) -> list[str]:
         add(_fetch_index_members(grp), grp)
     core_count = len(universe)
 
-    if len(universe) < MAX_SYMBOLS:
-        add(_fetch_index_members(_FILL_INDEX_GROUP), _FILL_INDEX_GROUP)
-    if len(universe) < MAX_SYMBOLS:
-        add(_industry_map_symbols(industry_map), "industry_map")
-
+    # 2026-08-27: CHỈ VN100 — bỏ fill VNSML + industry_map (khớp intraday universe
+    #             VN100 thuần; không cache fundamentals mã ngoài rổ scoring, đỡ ~50
+    #             call/scan). Giữ fallback industry_map CHỈ khi VN100 fetch fail để
+    #             scan không chết rỗng.
     if not universe:
         add(_industry_map_symbols(industry_map), "industry_map(fallback)")
 
     log.info(
-        f"Universe: {len(universe)} symbols "
-        f"(core VN100+HNX30={core_count}, fill={len(universe) - core_count})"
+        f"Universe: {len(universe)} symbols (core VN100={core_count}, "
+        f"fill={len(universe) - core_count})"
     )
     return universe
 
