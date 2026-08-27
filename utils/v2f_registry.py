@@ -97,7 +97,8 @@ SIGNALS = [
     # ── BREAKOUT ────────────────────────────────────────────────────────
     ("dist_52w",     "breakout",       "sc_52w",        4, ("trade", "hold"),
      "active", "raw",       "+0.034/+0.063",
-     "Anchor HOLD (t20=5.8, mạnh dần theo horizon); 4/4 quý dương ở 20d"),
+     "Anchor HOLD (t20=5.8); v4.14 MỘT CHIỀU: bỏ phạt đáy, chỉ thưởng gần đỉnh "
+     "(vùng đáy nhường deep_dd) — hết triệt tiêu ở đáy"),
     ("vol_ratio_h",  "breakout",       "sc_vol_ratio",  3, ("hold",),
      "active", "raw",       "5d:~0 / 20d:+0.021",
      "CHUYỂN KHUNG: volume đột biến đi trước đà 1 tháng (t20=2.1)"),
