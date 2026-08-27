@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T08:59:13.828615+07:00",
+  "generated_at": "2026-08-27T09:07:22.935628+07:00",
   "schema_version": 9,
   "source": "VCI",
   "ttl_days": 3,
@@ -6985,12 +6985,12 @@
     },
     "VW3": {
       "symbol": "VW3",
-      "fetched_at": "2026-08-24T08:52:06.184019+07:00",
+      "fetched_at": "2026-08-27T09:06:00.102843+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": -2.98,
-        "pb": 0.47,
+        "pe": -3.15,
+        "pb": 0.5,
         "roe": -14.000000000000002,
         "roa": -5.0,
         "eps": null,
@@ -7001,7 +7001,7 @@
         "net_margin": -16.0,
         "quick_ratio": 1.14,
         "interest_cov": null,
-        "ev_ebitda": -0.62
+        "ev_ebitda": -0.83
       },
       "income": {
         "net_profit_year": -5836439427.0
@@ -7085,7 +7085,7 @@
     },
     "VXP": {
       "symbol": "VXP",
-      "fetched_at": "2026-08-24T08:51:50.990297+07:00",
+      "fetched_at": "2026-08-27T09:05:38.656807+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
@@ -7151,7 +7151,7 @@
     },
     "VWS": {
       "symbol": "VWS",
-      "fetched_at": "2026-08-24T08:52:05.284825+07:00",
+      "fetched_at": "2026-08-27T09:05:52.041369+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
@@ -22081,12 +22081,12 @@
     },
     "VIC": {
       "symbol": "VIC",
-      "fetched_at": "2026-08-24T08:43:04.358612+07:00",
+      "fetched_at": "2026-08-27T09:02:05.262715+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 70.21,
-        "pb": 9.37,
+        "pe": 78.77,
+        "pb": 10.51,
         "roe": 15.0,
         "roa": 2.0,
         "eps": null,
@@ -22097,7 +22097,7 @@
         "net_margin": 6.0,
         "quick_ratio": 0.72,
         "interest_cov": null,
-        "ev_ebitda": 32.36
+        "ev_ebitda": 35.7
       },
       "income": {
         "revenue": 117936034000000.0,
@@ -22147,10 +22147,24 @@
     },
     "VIX": {
       "symbol": "VIX",
-      "fetched_at": "2026-08-24T08:43:08.828604+07:00",
+      "fetched_at": "2026-08-27T09:02:05.263915+07:00",
       "schema_version": 9,
-      "period": "",
-      "ratio": {},
+      "period": "2026-Q2",
+      "ratio": {
+        "pe": 6.66,
+        "pb": 1.13,
+        "roe": 16.0,
+        "roa": 12.0,
+        "eps": null,
+        "bvps": null,
+        "beta": null,
+        "div_yield": 0.0,
+        "gross_margin": 66.0,
+        "net_margin": 47.0,
+        "quick_ratio": 7.42,
+        "interest_cov": null,
+        "ev_ebitda": 7.27
+      },
       "income": {
         "revenue": 1349303071717.0,
         "gross_profit": 194120633154.0,
@@ -22181,30 +22195,30 @@
         "cf_quality_period": "annual"
       },
       "data_status": {
-        "ratio_source": null,
+        "ratio_source": "vci_ratio_summary",
         "statement_source": "vci_long",
         "cf_available": true,
         "growth_available": true,
-        "incomplete": true,
+        "incomplete": false,
         "revenue_metric_id": "IS_NET_REVENUE",
         "profit_metric_id": "IS_PROFIT_AFTER_TAX_FOR_SHAREHOLDERS_OF_PARENT_COMPANY"
       },
       "finance_score": {
-        "fundamental": 0,
+        "fundamental": 16,
         "cashflow": -10,
         "growth": -6,
-        "total": -16,
+        "total": 0,
         "max": 38
       }
     },
     "VJC": {
       "symbol": "VJC",
-      "fetched_at": "2026-08-24T08:43:26.335434+07:00",
+      "fetched_at": "2026-08-27T09:02:37.947085+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 43.99,
-        "pb": 3.64,
+        "pe": 44.87,
+        "pb": 3.71,
         "roe": 9.0,
         "roa": 2.0,
         "eps": null,
@@ -22215,7 +22229,7 @@
         "net_margin": 2.0,
         "quick_ratio": 1.04,
         "interest_cov": null,
-        "ev_ebitda": 31.57
+        "ev_ebitda": 31.94
       },
       "income": {
         "revenue": 30498715674246.0,
@@ -22265,7 +22279,7 @@
     },
     "VND": {
       "symbol": "VND",
-      "fetched_at": "2026-08-24T08:43:42.437458+07:00",
+      "fetched_at": "2026-08-27T09:02:46.219336+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
@@ -22331,12 +22345,12 @@
     },
     "VNM": {
       "symbol": "VNM",
-      "fetched_at": "2026-08-24T08:43:46.336957+07:00",
+      "fetched_at": "2026-08-27T09:02:58.459595+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 12.16,
-        "pb": 4.18,
+        "pe": 11.97,
+        "pb": 4.12,
         "roe": 34.0,
         "roa": 20.0,
         "eps": null,
@@ -22347,7 +22361,7 @@
         "net_margin": 16.0,
         "quick_ratio": 1.55,
         "interest_cov": null,
-        "ev_ebitda": 9.54
+        "ev_ebitda": 9.4
       },
       "income": {
         "revenue": 18847347464988.0,
@@ -22397,12 +22411,12 @@
     },
     "VPB": {
       "symbol": "VPB",
-      "fetched_at": "2026-08-24T08:44:06.981412+07:00",
+      "fetched_at": "2026-08-27T09:03:12.806772+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 6.84,
-        "pb": 1.14,
+        "pe": 7.12,
+        "pb": 1.19,
         "roe": 17.0,
         "roa": 2.0,
         "eps": null,
@@ -22463,12 +22477,12 @@
     },
     "VPI": {
       "symbol": "VPI",
-      "fetched_at": "2026-08-24T08:44:07.654559+07:00",
+      "fetched_at": "2026-08-27T09:03:19.925940+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 52.02,
-        "pb": 3.85,
+        "pe": 54.26,
+        "pb": 4.02,
         "roe": 8.0,
         "roa": 3.0,
         "eps": null,
@@ -22479,7 +22493,7 @@
         "net_margin": 17.0,
         "quick_ratio": 0.35,
         "interest_cov": null,
-        "ev_ebitda": 37.54
+        "ev_ebitda": 38.73
       },
       "income": {
         "revenue": 849453463757.0,
@@ -22529,12 +22543,12 @@
     },
     "VPL": {
       "symbol": "VPL",
-      "fetched_at": "2026-08-24T08:44:25.768237+07:00",
+      "fetched_at": "2026-08-27T09:03:32.085980+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 46.28,
-        "pb": 3.04,
+        "pe": 45.25,
+        "pb": 2.97,
         "roe": 8.0,
         "roa": 3.0,
         "eps": null,
@@ -22545,7 +22559,7 @@
         "net_margin": 18.0,
         "quick_ratio": 0.84,
         "interest_cov": null,
-        "ev_ebitda": 22.53
+        "ev_ebitda": 22.1
       },
       "income": {
         "revenue": 3309546000000.0,
@@ -22586,21 +22600,21 @@
         "profit_metric_id": "IS_PROFIT_AFTER_TAX_FOR_SHAREHOLDERS_OF_PARENT_COMPANY"
       },
       "finance_score": {
-        "fundamental": -8,
+        "fundamental": -5,
         "cashflow": -10,
         "growth": -4,
-        "total": -22,
+        "total": -19,
         "max": 38
       }
     },
     "VPX": {
       "symbol": "VPX",
-      "fetched_at": "2026-08-24T08:44:26.934765+07:00",
+      "fetched_at": "2026-08-27T09:03:38.420634+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 8.85,
-        "pb": 1.34,
+        "pe": 8.8,
+        "pb": 1.33,
         "roe": 16.0,
         "roa": 7.000000000000001,
         "eps": null,
@@ -22611,7 +22625,7 @@
         "net_margin": 39.0,
         "quick_ratio": 1.65,
         "interest_cov": null,
-        "ev_ebitda": 10.49
+        "ev_ebitda": 10.45
       },
       "income": {
         "revenue": 4098141674328.0,
@@ -22661,12 +22675,12 @@
     },
     "VRE": {
       "symbol": "VRE",
-      "fetched_at": "2026-08-24T08:44:41.030098+07:00",
+      "fetched_at": "2026-08-27T09:03:47.428100+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 7.93,
-        "pb": 1.17,
+        "pe": 8.02,
+        "pb": 1.18,
         "roe": 15.0,
         "roa": 12.0,
         "eps": null,
@@ -22677,7 +22691,7 @@
         "net_margin": 79.0,
         "quick_ratio": 1.57,
         "interest_cov": null,
-        "ev_ebitda": 10.63
+        "ev_ebitda": 10.75
       },
       "income": {
         "revenue": 2373871000000.0,
@@ -22727,12 +22741,12 @@
     },
     "VSC": {
       "symbol": "VSC",
-      "fetched_at": "2026-08-24T08:44:48.009107+07:00",
+      "fetched_at": "2026-08-27T09:04:04.652376+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 16.69,
-        "pb": 1.03,
+        "pe": 16.31,
+        "pb": 1.0,
         "roe": 6.0,
         "roa": 3.0,
         "eps": null,
@@ -22743,7 +22757,7 @@
         "net_margin": 17.0,
         "quick_ratio": 1.02,
         "interest_cov": null,
-        "ev_ebitda": 10.54
+        "ev_ebitda": 10.44
       },
       "income": {
         "revenue": 861250391277.0,
@@ -22793,12 +22807,12 @@
     },
     "VTP": {
       "symbol": "VTP",
-      "fetched_at": "2026-08-24T08:45:01.977451+07:00",
+      "fetched_at": "2026-08-27T09:04:07.294938+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 24.52,
-        "pb": 4.77,
+        "pe": 24.3,
+        "pb": 4.73,
         "roe": 18.0,
         "roa": 5.0,
         "eps": null,
@@ -22809,7 +22823,7 @@
         "net_margin": 2.0,
         "quick_ratio": 1.11,
         "interest_cov": null,
-        "ev_ebitda": 18.96
+        "ev_ebitda": 18.8
       },
       "income": {
         "revenue": 5471818059420.0,
@@ -24839,12 +24853,12 @@
     },
     "YTC": {
       "symbol": "YTC",
-      "fetched_at": "2026-08-24T08:50:28.022636+07:00",
+      "fetched_at": "2026-08-27T09:04:23.330092+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 16.15,
-        "pb": 1.09,
+        "pe": 15.7,
+        "pb": 1.06,
         "roe": 7.000000000000001,
         "roa": 1.0,
         "eps": null,
@@ -24855,7 +24869,7 @@
         "net_margin": 1.0,
         "quick_ratio": 0.89,
         "interest_cov": null,
-        "ev_ebitda": 30.25
+        "ev_ebitda": 29.79
       },
       "income": {
         "net_profit_year": 12829628193.0
@@ -24889,11 +24903,11 @@
     },
     "YEG": {
       "symbol": "YEG",
-      "fetched_at": "2026-08-24T08:50:32.693405+07:00",
+      "fetched_at": "2026-08-27T09:04:25.272524+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 34.59,
+        "pe": 34.45,
         "pb": 0.75,
         "roe": 2.0,
         "roa": 2.0,
@@ -24905,7 +24919,7 @@
         "net_margin": 3.0,
         "quick_ratio": 1.9,
         "interest_cov": null,
-        "ev_ebitda": 22.69
+        "ev_ebitda": 22.62
       },
       "income": {
         "revenue": 311154844885.0,
@@ -24955,12 +24969,12 @@
     },
     "YBM": {
       "symbol": "YBM",
-      "fetched_at": "2026-08-24T08:50:45.081497+07:00",
+      "fetched_at": "2026-08-27T09:04:37.489783+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 7.38,
-        "pb": 0.81,
+        "pe": 8.12,
+        "pb": 0.89,
         "roe": 10.0,
         "roa": 4.0,
         "eps": null,
@@ -24971,7 +24985,7 @@
         "net_margin": 3.0,
         "quick_ratio": 1.15,
         "interest_cov": null,
-        "ev_ebitda": 5.93
+        "ev_ebitda": 6.26
       },
       "income": {
         "revenue": 231479626226.0,
@@ -25021,12 +25035,12 @@
     },
     "YBC": {
       "symbol": "YBC",
-      "fetched_at": "2026-08-24T08:50:51.738148+07:00",
+      "fetched_at": "2026-08-27T09:04:43.392910+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 11.11,
-        "pb": 0.58,
+        "pe": 9.74,
+        "pb": 0.51,
         "roe": 5.0,
         "roa": 1.0,
         "eps": null,
@@ -25037,7 +25051,7 @@
         "net_margin": 1.0,
         "quick_ratio": 0.41,
         "interest_cov": null,
-        "ev_ebitda": 6.2
+        "ev_ebitda": 6.12
       },
       "income": {
         "net_profit_year": 7614555486.0
@@ -25062,16 +25076,16 @@
         "profit_metric_id": null
       },
       "finance_score": {
-        "fundamental": 12,
+        "fundamental": 15,
         "cashflow": 0,
         "growth": 0,
-        "total": 12,
+        "total": 15,
         "max": 38
       }
     },
     "WTC": {
       "symbol": "WTC",
-      "fetched_at": "2026-08-24T08:51:03.420945+07:00",
+      "fetched_at": "2026-08-27T09:04:54.116142+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
@@ -25137,11 +25151,11 @@
     },
     "WSS": {
       "symbol": "WSS",
-      "fetched_at": "2026-08-24T08:51:05.448858+07:00",
+      "fetched_at": "2026-08-27T09:04:56.575280+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 10.06,
+        "pe": 10.09,
         "pb": 0.57,
         "roe": 6.0,
         "roa": 6.0,
@@ -25150,30 +25164,30 @@
         "beta": null,
         "div_yield": 0.0,
         "gross_margin": 53.0,
-        "net_margin": 45.0,
-        "quick_ratio": 11.5,
+        "net_margin": 44.0,
+        "quick_ratio": 10.78,
         "interest_cov": null,
-        "ev_ebitda": 8.7
+        "ev_ebitda": 8.55
       },
       "income": {
-        "revenue": 9068937620.0,
-        "gross_profit": 3626553687.0,
-        "net_profit": 2092381182.0,
+        "revenue": 9265083202.0,
+        "gross_profit": 3589198687.0,
+        "net_profit": 1493022893.0,
         "operating_profit": null,
         "eps": 0.0,
-        "rev_growth_qoq": -0.4092,
-        "profit_growth_qoq": -0.828,
-        "rev_growth_yoy": -0.6889,
-        "profit_growth_yoy": -0.9184,
+        "rev_growth_qoq": -0.3964,
+        "profit_growth_qoq": -0.8773,
+        "rev_growth_yoy": -0.6822,
+        "profit_growth_yoy": -0.9418,
         "net_profit_year": 45613542998.0
       },
       "balance": {
-        "total_assets": 593721498796.0,
-        "equity": 543322971724.0,
-        "total_liab": 50398527072.0,
+        "total_assets": 596777585767.0,
+        "equity": 542723613435.0,
+        "total_liab": 54053972332.0,
         "short_debt": 0.0,
         "long_debt": 0.0,
-        "debt_to_equity": 0.093
+        "debt_to_equity": 0.1
       },
       "cashflow": {
         "cf_operating": -80474815500.0,
@@ -25203,12 +25217,12 @@
     },
     "WSB": {
       "symbol": "WSB",
-      "fetched_at": "2026-08-24T08:51:18.686732+07:00",
+      "fetched_at": "2026-08-27T09:05:09.753401+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 7.56,
-        "pb": 1.01,
+        "pe": 7.6,
+        "pb": 1.02,
         "roe": 13.0,
         "roa": 11.0,
         "eps": null,
@@ -25219,7 +25233,7 @@
         "net_margin": 11.0,
         "quick_ratio": 3.73,
         "interest_cov": null,
-        "ev_ebitda": 4.44
+        "ev_ebitda": 4.47
       },
       "income": {
         "revenue": 251266849505.0,
@@ -25269,12 +25283,12 @@
     },
     "WCS": {
       "symbol": "WCS",
-      "fetched_at": "2026-08-24T08:51:31.119385+07:00",
+      "fetched_at": "2026-08-27T09:05:18.065957+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 10.74,
-        "pb": 2.75,
+        "pe": 10.65,
+        "pb": 2.73,
         "roe": 28.000000000000004,
         "roa": 24.0,
         "eps": null,
@@ -25285,7 +25299,7 @@
         "net_margin": 48.0,
         "quick_ratio": 11.76,
         "interest_cov": null,
-        "ev_ebitda": 10.1
+        "ev_ebitda": 10.01
       },
       "income": {
         "revenue": 42900055673.0,
@@ -25335,12 +25349,12 @@
     },
     "VXT": {
       "symbol": "VXT",
-      "fetched_at": "2026-08-24T08:51:37.170059+07:00",
+      "fetched_at": "2026-08-27T09:05:29.209389+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 90.92,
-        "pb": 6.06,
+        "pe": 102.82,
+        "pb": 6.85,
         "roe": 7.000000000000001,
         "roa": 4.0,
         "eps": null,
@@ -25351,7 +25365,7 @@
         "net_margin": 4.0,
         "quick_ratio": 1.4,
         "interest_cov": null,
-        "ev_ebitda": 37.76
+        "ev_ebitda": 42.32
       },
       "income": {
         "revenue": 30128927731.0,
@@ -25401,7 +25415,7 @@
     },
     "VXB": {
       "symbol": "VXB",
-      "fetched_at": "2026-08-24T08:51:52.128968+07:00",
+      "fetched_at": "2026-08-27T09:05:45.396741+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
@@ -25467,12 +25481,12 @@
     },
     "VVS": {
       "symbol": "VVS",
-      "fetched_at": "2026-08-24T08:52:16.293488+07:00",
+      "fetched_at": "2026-08-27T09:06:04.728200+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 3.21,
-        "pb": 2.45,
+        "pe": 3.3,
+        "pb": 2.49,
         "roe": 86.0,
         "roa": 10.0,
         "eps": null,
@@ -25483,7 +25497,7 @@
         "net_margin": 5.0,
         "quick_ratio": 0.79,
         "interest_cov": null,
-        "ev_ebitda": 6.75
+        "ev_ebitda": 6.84
       },
       "income": {
         "revenue": 4256358195467.0,
@@ -25533,7 +25547,7 @@
     },
     "VVN": {
       "symbol": "VVN",
-      "fetched_at": "2026-08-24T08:52:17.972202+07:00",
+      "fetched_at": "2026-08-27T09:06:14.473430+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
@@ -25599,12 +25613,12 @@
     },
     "VTZ": {
       "symbol": "VTZ",
-      "fetched_at": "2026-08-24T08:52:33.569581+07:00",
+      "fetched_at": "2026-08-27T09:06:35.829768+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 22.89,
-        "pb": 1.7,
+        "pe": 23.11,
+        "pb": 1.71,
         "roe": 8.0,
         "roa": 2.0,
         "eps": null,
@@ -25615,7 +25629,7 @@
         "net_margin": 1.0,
         "quick_ratio": 0.73,
         "interest_cov": null,
-        "ev_ebitda": 16.41
+        "ev_ebitda": 16.02
       },
       "income": {
         "revenue": 1712635307302.0,
@@ -25665,12 +25679,12 @@
     },
     "VUA": {
       "symbol": "VUA",
-      "fetched_at": "2026-08-24T08:52:31.581730+07:00",
+      "fetched_at": "2026-08-27T09:06:20.750057+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 24.4,
-        "pb": 1.52,
+        "pe": 21.16,
+        "pb": 1.32,
         "roe": 6.0,
         "roa": 5.0,
         "eps": null,
@@ -25681,14 +25695,14 @@
         "net_margin": 54.0,
         "quick_ratio": 2.95,
         "interest_cov": null,
-        "ev_ebitda": 53.57
+        "ev_ebitda": 47.76
       },
       "income": {
         "revenue": 67322907064.0,
         "gross_profit": 51595665998.0,
         "net_profit": 39966638880.0,
         "operating_profit": null,
-        "eps": 200.0,
+        "eps": 212.0,
         "rev_growth_qoq": 1.0139,
         "profit_growth_qoq": 1.2241,
         "rev_growth_yoy": 30.8488,
@@ -25731,24 +25745,10 @@
     },
     "VTX": {
       "symbol": "VTX",
-      "fetched_at": "2026-08-24T08:52:54.367563+07:00",
+      "fetched_at": "2026-08-27T09:06:44.761381+07:00",
       "schema_version": 9,
-      "period": "2026-Q2",
-      "ratio": {
-        "pe": -2.94,
-        "pb": 1.92,
-        "roe": -53.0,
-        "roa": -14.000000000000002,
-        "eps": null,
-        "bvps": null,
-        "beta": null,
-        "div_yield": 0.0,
-        "gross_margin": -4.0,
-        "net_margin": -21.0,
-        "quick_ratio": 0.31,
-        "interest_cov": null,
-        "ev_ebitda": -161.34
-      },
+      "period": "",
+      "ratio": {},
       "income": {
         "revenue": 28193250672.0,
         "gross_profit": -4516930342.0,
@@ -25779,30 +25779,30 @@
         "cf_quality_period": "annual"
       },
       "data_status": {
-        "ratio_source": "vci_ratio_summary",
+        "ratio_source": null,
         "statement_source": "vci_long",
         "cf_available": true,
         "growth_available": true,
-        "incomplete": false,
+        "incomplete": true,
         "revenue_metric_id": "IS_NET_REVENUE",
         "profit_metric_id": "IS_PROFIT_AFTER_TAX_FOR_SHAREHOLDERS_OF_PARENT_COMPANY"
       },
       "finance_score": {
-        "fundamental": -5,
+        "fundamental": 0,
         "cashflow": -10,
         "growth": -4,
-        "total": -19,
+        "total": -14,
         "max": 38
       }
     },
     "VTV": {
       "symbol": "VTV",
-      "fetched_at": "2026-08-24T08:52:56.553411+07:00",
+      "fetched_at": "2026-08-27T09:06:54.769707+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
-        "pe": 488.06,
-        "pb": 1.11,
+        "pe": 484.6,
+        "pb": 1.1,
         "roe": 0.0,
         "roa": 0.0,
         "eps": null,
@@ -25813,7 +25813,7 @@
         "net_margin": 0.0,
         "quick_ratio": 1.77,
         "interest_cov": null,
-        "ev_ebitda": 27.98
+        "ev_ebitda": 27.82
       },
       "income": {
         "revenue": 266424811347.0,
@@ -25863,7 +25863,7 @@
     },
     "VTS": {
       "symbol": "VTS",
-      "fetched_at": "2026-08-24T08:53:18.080725+07:00",
+      "fetched_at": "2026-08-27T09:07:04.327267+07:00",
       "schema_version": 9,
       "period": "2026-Q2",
       "ratio": {
