@@ -262,9 +262,9 @@ table.dtbl tr[data-sym]:hover{background:#0f2436}
 
 <div class="wrap">
   <div class="fbar" id="fbar">
-    <button class="fbtn fbtn-on" data-v="ALL">Tất cả</button>
+    <button class="fbtn" data-v="ALL">Tất cả</button>
     <button class="fbtn" data-v="STRONG BUY" style="border-color:var(--sb)">STRONG BUY</button>
-    <button class="fbtn" data-v="BUY" style="border-color:var(--buy)">BUY</button>
+    <button class="fbtn fbtn-on" data-v="BUY" style="border-color:var(--buy)">BUY</button>
     <button class="fbtn" data-v="QUALITY" style="border-color:#f5c518;color:#f5c518" title="QUALITY: BUY/STRONG BUY · điểm nước ngoài ≥ 5 · điểm cơ bản ≥ 5">&#11088;</button>
     <button class="fbtn" data-v="NEUTRAL" style="border-color:var(--neu)">NEUTRAL</button>
     <button class="fbtn" data-v="SELL" style="border-color:var(--sell)">SELL</button>
@@ -606,7 +606,7 @@ function renderCard(d, idx) {
 }
 
 /* ===== v2.3 table controls — string-concat, KHÔNG backtick (n8n-safe) ===== */
-var FILT = { dec: 'ALL', q: '' };
+var FILT = { dec: 'BUY', q: '' };
 var DECBG = {'STRONG BUY':'#00e896','BUY':'#34c26e','NEUTRAL':'#f5c240','SELL':'#e86030','STRONG SELL':'#e02040'};
 var SORTED = ALL_DATA.slice().sort(function(a,b){ return (parseFloat(b.total_score)||0) - (parseFloat(a.total_score)||0); });
 
