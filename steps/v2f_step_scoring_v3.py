@@ -219,6 +219,29 @@ def sc_52w(row, ctx):
     return s, f"52W={d:+.0f}%{s:+d}"
 
 
+def sc_deepdd(row, ctx):
+    """Deep drawdown / gần đáy 52T: giá càng sát ĐÁY biên độ 52 tuần → điểm
+    DƯƠNG càng lớn (kỳ vọng bật lên sau khi giảm rất sâu). MỘT CHIỀU: chỉ
+    thưởng vùng đáy, KHÔNG phạt vùng đỉnh (dist_52w/breakout đã phụ trách phía
+    đỉnh) → tránh đối đầu trực tiếp. Dùng low_52w/high_52w có sẵn (max/min
+    OHLCV 12M). pos = (giá-đáy)/(đỉnh-đáy): 0 = sát đáy, 1 = sát đỉnh.
+    Bằng chứng (INDICATIVE, dưới guard 30): nhóm giảm >40% từ đỉnh có excess5d
+    +1.38% / excess10d +1.46% trên 7 phiên 30/07-07/08 — proxy theo cách-đỉnh;
+    nửa 'sát-đáy' cưỡi trên pos, CHƯA kiểm forward riêng (ledger thiếu low_52w)."""
+    if row.get("_ta_window") == "3M":
+        return 0, "DeepDD skip(3M)"
+    p  = _f(row.get("price"))
+    lo = _f(row.get("low_52w"))
+    hi = _f(row.get("high_52w"))
+    if not p or lo is None or hi is None or hi <= lo:
+        return 0, ""
+    pos = (p - lo) / (hi - lo)                 # 0 = sát đáy, 1 = sát đỉnh
+    pos = max(0.0, min(1.0, pos))
+    # càng gần đáy (pos nhỏ) → điểm càng cao; pos >= 0.5 → 0 (không phạt đỉnh)
+    s = int(round(4 * max(0.0, 1.0 - pos / 0.5)))
+    return s, f"DeepDD pos={pos:.2f}{s:+d}"
+
+
 def sc_vol_ratio(row, ctx):
     vr = _f(row.get("vol_ma_ratio"))
     if vr is None:
@@ -304,7 +327,7 @@ def sc_none(row, ctx):
 FN_TABLE = {
     "sc_willr": sc_willr, "sc_bb": sc_bb, "sc_overext": sc_overext,
     "sc_rs_rev": sc_rs_rev, "sc_cmf": sc_cmf, "sc_stoch": sc_stoch,
-    "sc_52w": sc_52w, "sc_vol_ratio": sc_vol_ratio, "sc_ff": sc_ff,
+    "sc_52w": sc_52w, "sc_deepdd": sc_deepdd, "sc_vol_ratio": sc_vol_ratio, "sc_ff": sc_ff,
     "sc_of": sc_of, "sc_prop": sc_prop, "sc_insider": sc_insider,
     "sc_fund": sc_fund, "sc_growth": sc_growth, "sc_context": sc_context,
     "sc_none": sc_none,
@@ -461,4 +484,3 @@ if __name__ == "__main__":
         log.error("V3 shadow crash (không chặn pipeline):\n"
                   + traceback.format_exc())
         sys.exit(0)      # fail-soft tuyệt đối
-        
