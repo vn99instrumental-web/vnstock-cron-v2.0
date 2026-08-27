@@ -36,7 +36,7 @@ CHANGELOG:
   ⚠️ MỌI thay đổi bảng SIGNALS → bump REGISTRY_VERSION (ghi vào ledger v3).
 """
 
-REGISTRY_VERSION = 1
+REGISTRY_VERSION = 2  # v2: + tín hiệu deep_dd (mean_reversion, span 4). cap MR trade 20->24.
 
 FACTORS = ("mean_reversion", "breakout", "flow",
            "fundamental", "growth", "context")
@@ -83,6 +83,10 @@ SIGNALS = [
     ("rs_reversal",  "mean_reversion", "sc_rs_rev",     4, ("trade", "hold"),
      "active", "raw",       "+0.038/+0.025",
      "= RS 20d ĐẢO DẤU; gốc STABLE_NEG 5/5 quý"),
+    ("deep_dd",      "mean_reversion", "sc_deepdd",     4, ("trade", "hold"),
+     "active", "raw",       "exc5d+1.38%/exc10d+1.46% (7 phien, INDICATIVE)",
+     "Gần đáy 52T → điểm + (một chiều, span 4). low_52w có sẵn. Bằng chứng "
+     "dưới guard 30 — cần forward mới; nửa sát-đáy chưa kiểm riêng"),
     ("cmf_mr",       "mean_reversion", "sc_cmf",        3, ("trade",),
      "gate:down", "raw",    "down:+0.076",
      "Chỉ có edge khi regime down — chờ gate Phase 2"),
