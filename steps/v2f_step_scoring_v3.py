@@ -213,9 +213,8 @@ def sc_52w(row, ctx):
     d = (p - h) / h * 100
     if   d >  -2: s = +4
     elif d >  -8: s = +2
-    elif d < -40: s = -4
-    elif d < -25: s = -2
-    else:         s = 0
+    else:         s = 0     # v4.14: BỎ phạt đáy (cũ: d<-25%→-2, d<-40%→-4). Một chiều
+                            #        dương — chỉ thưởng gần đỉnh; vùng đáy để deep_dd lo.
     return s, f"52W={d:+.0f}%{s:+d}"
 
 
