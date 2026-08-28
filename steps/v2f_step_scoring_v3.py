@@ -152,11 +152,11 @@ def sc_overext(row, ctx):
             d = (p - e) / e * 100
     if d is None:
         return 0, ""
-    if   d >  15: s = -5
-    elif d >   8: s = -3
+    if   d >  15: s = -3
+    elif d >   8: s = -2
     elif d >   3: s = -1
-    elif d < -15: s = +5
-    elif d <  -8: s = +3
+    elif d < -15: s = +3
+    elif d <  -8: s = +2
     elif d <  -3: s = +1
     else:         s = 0
     return s, f"OverextEMA200={d:+.0f}%{s:+d}"
@@ -236,8 +236,18 @@ def sc_deepdd(row, ctx):
         return 0, ""
     pos = (p - lo) / (hi - lo)                 # 0 = sát đáy, 1 = sát đỉnh
     pos = max(0.0, min(1.0, pos))
-    # càng gần đáy (pos nhỏ) → điểm càng cao; pos >= 0.5 → 0 (không phạt đỉnh)
-    s = int(round(4 * max(0.0, 1.0 - pos / 0.5)))
+    # B(v4.15): chỉ thưởng ĐÁY THẬT — pos < 0.20 (cũ: pos < 0.5, quá lỏng, 73/100
+    #   mã bật, phần lớn chỉ 'dưới trung điểm' chứ không phải đáy). pos>=0.20 → 0.
+    s = int(round(4 * max(0.0, 1.0 - pos / 0.20)))
+    if s <= 0:
+        return 0, f"DeepDD pos={pos:.2f}+0"
+    # C(v4.15): neo 'cơ hội định giá' — hạ thưởng đáy nếu cơ bản RÕ xấu (đáy + cơ
+    #   bản xấu = dao rơi thật, không phải cơ hội). FAIL-OPEN: finance_score_fund
+    #   thiếu/None → GIỮ nguyên (tránh giết deep_dd khi finance cache lỗi/zero).
+    fs = _f(row.get("finance_score_fund"))
+    if fs is not None:
+        if   fs <= -5: s = 0                    # cơ bản rất xấu → bỏ thưởng
+        elif fs <   0: s = int(round(s * 0.5))  # cơ bản hơi xấu → giảm nửa
     return s, f"DeepDD pos={pos:.2f}{s:+d}"
 
 
