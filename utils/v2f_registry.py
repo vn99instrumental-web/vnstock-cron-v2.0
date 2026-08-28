@@ -36,7 +36,7 @@ CHANGELOG:
   ⚠️ MỌI thay đổi bảng SIGNALS → bump REGISTRY_VERSION (ghi vào ledger v3).
 """
 
-REGISTRY_VERSION = 2  # v2: + tín hiệu deep_dd (mean_reversion, span 4). cap MR trade 20->24.
+REGISTRY_VERSION = 3  # v3: overext_ema span 5->3 (gỡ trùng 'rơi sâu' với deep_dd, corr 0.85) → cap MR auto 24->22. | v2: + deep_dd (span 4), cap MR 20->24.
 
 FACTORS = ("mean_reversion", "breakout", "flow",
            "fundamental", "growth", "context")
@@ -77,9 +77,10 @@ SIGNALS = [
     ("bb_mr",        "mean_reversion", "sc_bb",         5, ("trade", "hold"),
      "active", "raw",       "+0.031/+0.021",
      "KEEP trade; 20d STABLE_POS theo quý (3 quý gần +0.07..+0.10)"),
-    ("overext_ema",  "mean_reversion", "sc_overext",    5, ("trade", "hold"),
+    ("overext_ema",  "mean_reversion", "sc_overext",    3, ("trade", "hold"),
      "active", "raw",       "+0.034/+0.049",
-     "= price_vs_ema200 ĐẢO DẤU (fade căng); gốc STABLE_NEG 5/5 quý"),
+     "= price_vs_ema200 ĐẢO DẤU (fade căng); gốc STABLE_NEG 5/5 quý. "
+     "v4.15: span 5->3 — gỡ đếm trùng 'rơi sâu' với deep_dd (Spearman 0.85)"),
     ("rs_reversal",  "mean_reversion", "sc_rs_rev",     4, ("trade", "hold"),
      "active", "raw",       "+0.038/+0.025",
      "= RS 20d ĐẢO DẤU; gốc STABLE_NEG 5/5 quý"),
