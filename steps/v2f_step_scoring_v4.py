@@ -46,7 +46,7 @@ from collections import Counter
 
 from utils.cache import load_json, save_json
 from utils.of_buy_pressure import buy_pressure_pts
-from utils.regime_v42 import classify_regime_breadth, more_bearish
+from utils.regime_v42 import classify_regime_breadth, classify_regime_op2, more_bearish
 from utils.v2f_registry import (REGISTRY_VERSION, FACTORS, FACTOR_WEIGHTS,
                                 THRESHOLDS, CONFLUENCE_BONUS,
                                 CONFLUENCE_MIN_NORM, SIGNALS,
@@ -61,7 +61,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger(__name__)
 
-SCORING_VERSION = "v4.16"  # REGIME Op1 lam muot (theo yeu cau nguoi dung): classify_regime_op2 doi tu 'dau-m2' sang so DA HOM NAY (t) voi band |DA HOM QUA (y)|: cung chieu->UP/DOWN; dao chieu & |t|>|y|->theo hom nay; dao chieu & |t|<=|y|->SIDEWAYS. Giu chot chan |chg_20d|<=2->SIDEWAYS. BO RECOVERY (gop SIDEWAYS) o CA index (op2) LAN breadth. DEEP_DOWN van tu breadth+crash. Doi decision ngay phan ky/dao chieu -> bump RESET forward bucket (tach khoi v4.15). Cu(v4.15): A/B/C mean_reversion (theo yeu cau nguoi dung, gop 1 cycle co y): (A) overext_ema span 5->3 + rescale ±3 -> go dem TRUNG 'roi sau' voi deep_dd (Spearman 0.85, 57/73 ma trung); cap MR auto 24->22. (B) deep_dd chi thuong DAY THAT pos<0.20 (cu pos<0.5 -> 73/100 ma, phan lon chi 'duoi trung diem'). (C) deep_dd neo finance_score_fund FAIL-OPEN: fs<=-5 bo, fs<0 giam nua (loc ~10 ma day+co ban xau = dao roi; thieu/0 -> giu nguyen tranh cache-zero). REGISTRY_VERSION 2->3. Bump -> RESET forward bucket. LUU Y: dashboard CAPS_SRV.mean_reversion 24->22 + overext display span 5->3 can sync. Cu(v4.14): (0) dist_52w (sc_52w) BO phan phat day (cu: d<-25%->-2, d<-40%->-4) -> MOT CHIEU duong, chi thuong gan dinh; vung day nhuong deep_dd -> HET triet tieu o day. Ly do: 7 phien 30/07-07/08 nhom bi phat -4 (giam >40% tu dinh) lai co excess5d +1.38% (dist_52w cham NGUOC o day) — INDICATIVE, DUOI guard 30; gop cung deep_dd theo yeu cau nguoi dung (PHA 1-change/cycle co y). Bump -> RESET forward bucket. Cu(v4.13): MEAN_REVERSION them tin hieu deep_dd (gan day 52T -> diem +, MOT CHIEU duong, span 4, low_52w san co); cap MR trade 20->24; REGISTRY_VERSION 1->2. Cu(v4.12): (1) UNIVERSE bo HNX30 -> VN100/HOSE (breadth khop VNINDEX, het lech pham vi 6.2.b); (2) EMA200 mau so rieng n200 (6.2.f); (3) insider bo fallback GD cu (chi 90d that); (4) confidence agreement theo trong so (7.2). Bump -> reset forward bucket (v4.11 rong). GATE_VERSION giu 7. universe_variant: full_vn100 -> vn100. Cu(v4.11): DEFECT FIX hop dong factor (KHONG tuning): sc_fund BO tru ext_fv (dao dau, anh huong 95/130, 91 ma dat duoc thuong oan); sc_context BO tru ext_breadth (tiem an); true_max ve tran thuc fund 23->20, growth 15->10, ff 18->15 (dung het span). GATE_VERSION giu 7. Bump -> reset forward bucket (v4.10 rong, khong mat gi). KHONG dung: MR weight, gate, threshold, extras-guard, shadow. Cu(v4.10): regime LIVE moi run (Op1) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7. Cu(v4.9): GATE fund+growth DOWN 0.8/DEEP 0.6 + shadow gate1 | truoc: v4.8
+SCORING_VERSION = "v4.17"  # BREADTH theo A/D + rule Op1 (option c, theo yeu cau nguoi dung, ghi production): breadth doi tu cach MA (share_50/200 - do VI TRI) sang NET ADVANCE/DECLINE (dem ma tang/giam theo % HOM NAY vs HOM QUA - do CHIEU), ap classify_regime_op2 lam muot band -> CUNG NGON NGU voi index. med_c20 = chot chan anti-noise. Fail-soft: thieu du lieu A/D (nt/ny < MIN_BREADTH_N) -> ve breadth MA cu. VD 28/08: breadth DEEP_DOWN(MA) -> DOWNTREND(A/D), nhe & dung hon (index tang hom qua nhung 53/89 ma van GIAM = narrow rally that 2 phien). Doi regime -> RESET forward bucket. Cu(v4.16): REGIME Op1 lam muot (theo yeu cau nguoi dung): classify_regime_op2 doi tu 'dau-m2' sang so DA HOM NAY (t) voi band |DA HOM QUA (y)|: cung chieu->UP/DOWN; dao chieu & |t|>|y|->theo hom nay; dao chieu & |t|<=|y|->SIDEWAYS. Giu chot chan |chg_20d|<=2->SIDEWAYS. BO RECOVERY (gop SIDEWAYS) o CA index (op2) LAN breadth. DEEP_DOWN van tu breadth+crash. Doi decision ngay phan ky/dao chieu -> bump RESET forward bucket (tach khoi v4.15). Cu(v4.15): A/B/C mean_reversion (theo yeu cau nguoi dung, gop 1 cycle co y): (A) overext_ema span 5->3 + rescale ±3 -> go dem TRUNG 'roi sau' voi deep_dd (Spearman 0.85, 57/73 ma trung); cap MR auto 24->22. (B) deep_dd chi thuong DAY THAT pos<0.20 (cu pos<0.5 -> 73/100 ma, phan lon chi 'duoi trung diem'). (C) deep_dd neo finance_score_fund FAIL-OPEN: fs<=-5 bo, fs<0 giam nua (loc ~10 ma day+co ban xau = dao roi; thieu/0 -> giu nguyen tranh cache-zero). REGISTRY_VERSION 2->3. Bump -> RESET forward bucket. LUU Y: dashboard CAPS_SRV.mean_reversion 24->22 + overext display span 5->3 can sync. Cu(v4.14): (0) dist_52w (sc_52w) BO phan phat day (cu: d<-25%->-2, d<-40%->-4) -> MOT CHIEU duong, chi thuong gan dinh; vung day nhuong deep_dd -> HET triet tieu o day. Ly do: 7 phien 30/07-07/08 nhom bi phat -4 (giam >40% tu dinh) lai co excess5d +1.38% (dist_52w cham NGUOC o day) — INDICATIVE, DUOI guard 30; gop cung deep_dd theo yeu cau nguoi dung (PHA 1-change/cycle co y). Bump -> RESET forward bucket. Cu(v4.13): MEAN_REVERSION them tin hieu deep_dd (gan day 52T -> diem +, MOT CHIEU duong, span 4, low_52w san co); cap MR trade 20->24; REGISTRY_VERSION 1->2. Cu(v4.12): (1) UNIVERSE bo HNX30 -> VN100/HOSE (breadth khop VNINDEX, het lech pham vi 6.2.b); (2) EMA200 mau so rieng n200 (6.2.f); (3) insider bo fallback GD cu (chi 90d that); (4) confidence agreement theo trong so (7.2). Bump -> reset forward bucket (v4.11 rong). GATE_VERSION giu 7. universe_variant: full_vn100 -> vn100. Cu(v4.11): DEFECT FIX hop dong factor (KHONG tuning): sc_fund BO tru ext_fv (dao dau, anh huong 95/130, 91 ma dat duoc thuong oan); sc_context BO tru ext_breadth (tiem an); true_max ve tran thuc fund 23->20, growth 15->10, ff 18->15 (dung het span). GATE_VERSION giu 7. Bump -> reset forward bucket (v4.10 rong, khong mat gi). KHONG dung: MR weight, gate, threshold, extras-guard, shadow. Cu(v4.10): regime LIVE moi run (Op1) an gate; hysteresis NGAY->RUN; GATE_VERSION 6->7. Cu(v4.9): GATE fund+growth DOWN 0.8/DEEP 0.6 + shadow gate1 | truoc: v4.8
 # ── v4.10 (shadow-only, CỐ Ý KHÔNG bump SCORING_VERSION — production score_trade/
 #    decision/score_hold KHÔNG đổi 1 ly → bucket forward v4.9 KHÔNG bị reset):
 #      + shadow RANK cross-sectional: score_trade_rank / decision_rank / _rank_delta
@@ -142,11 +142,21 @@ MIN_BREADTH_N = 30   # dưới ngưỡng này → không tin breadth, giữ inde
 
 
 def _compute_breadth(rows: list) -> dict:
-    """% mã trên EMA50/EMA200 + median %chg 5d/20d của rổ. Fail-soft."""
+    """Breadth cách MA (share_50/200 + median chg) — GIỮ làm fallback.
+    v4.17: THÊM net advance/decline HÔM NAY & HÔM QUA (ad_today/ad_yesterday) —
+    breadth theo CHIỀU (đếm mã tăng/giảm theo %), để áp rule Op1 làm mượt như
+    index. Fail-soft: thiếu dữ liệu → None, call-site tự về cách MA."""
     import statistics as _st
     n = a50 = 0
     n200 = a200 = 0                      # v4.12 FIX (6.2.f): mau so RIENG cho EMA200
     r20, r5 = [], []
+    _rd = None                          # ngày chạy = date lớn nhất trong rổ
+    for r in rows:
+        d = r.get("date")
+        if d and (_rd is None or d > _rd):
+            _rd = d
+    adv_t = dec_t = nt = 0              # A/D HÔM NAY  (chg_pct_1d live)
+    adv_y = dec_y = ny = 0              # A/D HÔM QUA  (2 close đã đóng cuối)
     for r in rows:
         p   = _f(r.get("price"))
         e50 = _f(r.get("ema50"))
@@ -169,13 +179,35 @@ def _compute_breadth(rows: list) -> dict:
                     r5.append((float(cn) / float(c0) - 1.0) * 100.0)
             except Exception:
                 pass
+        # ── A/D HÔM NAY: chg_pct_1d = live so đóng cửa hôm qua ──
+        t = _f(r.get("chg_pct_1d"))
+        if t is not None:
+            nt += 1
+            if   t > 0: adv_t += 1
+            elif t < 0: dec_t += 1
+        # ── A/D HÔM QUA: 2 phiên đã ĐÓNG cuối cùng (lọc date < ngày chạy) ──
+        if isinstance(o, list) and _rd:
+            comp = [c for c in o if isinstance(c, dict)
+                    and c.get("date") and c["date"] < _rd]
+            if len(comp) >= 2:
+                cy1 = _f(comp[-1].get("close")); cy0 = _f(comp[-2].get("close"))
+                if cy1 and cy0:
+                    yv = cy1 / cy0 - 1.0
+                    ny += 1
+                    if   yv > 0: adv_y += 1
+                    elif yv < 0: dec_y += 1
     if n == 0:
         return {"n": 0}
     return {"n": n,
             "share_50":  a50 / n,
             "share_200": (a200 / n200) if n200 else None,   # v4.12: chia dung n200
             "med_c20":   _st.median(r20) if r20 else None,
-            "med_c5":    _st.median(r5)  if r5  else None}
+            "med_c5":    _st.median(r5)  if r5  else None,
+            # v4.17 net advance/decline (%): None nếu quá ít mã → fail-soft về MA
+            "ad_today":     ((adv_t - dec_t) / nt * 100.0) if nt >= MIN_BREADTH_N else None,
+            "ad_yesterday": ((adv_y - dec_y) / ny * 100.0) if ny >= MIN_BREADTH_N else None,
+            "ad_up_today": adv_t, "ad_dn_today": dec_t, "ad_n_today": nt,
+            "ad_up_yest":  adv_y, "ad_dn_yest":  dec_y, "ad_n_yest":  ny}
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -659,7 +691,14 @@ def run():
     run_date   = _run_date(ctx, rows)
     # ── V4.5: regime BREADTH-AWARE (chống méo index cap-weighted) ──
     _brd = _compute_breadth(rows)
-    if _brd.get("n", 0) >= MIN_BREADTH_N:
+    _ad_t = _brd.get("ad_today"); _ad_y = _brd.get("ad_yesterday")
+    if _ad_t is not None and _ad_y is not None:
+        # v4.17: breadth theo A/D (đếm mã tăng/giảm theo %) + rule Op1 làm mượt band
+        #        — cùng ngôn ngữ với index (hôm nay vs hôm qua). med_c20 = chốt chặn.
+        breadth_raw = classify_regime_op2(
+            _ad_y + _ad_t, _ad_t, _brd.get("med_c20"))["regime_raw"]
+    elif _brd.get("n", 0) >= MIN_BREADTH_N:
+        # fail-soft: thiếu dữ liệu A/D → về cách breadth MA cũ
         breadth_raw = classify_regime_breadth(
             _brd["share_50"], _brd["share_200"],
             _brd["med_c5"], _brd["med_c20"])["regime_raw"]
@@ -713,6 +752,8 @@ def run():
         _r["_regime_index"]      = index_raw
         _r["_regime_breadth"]    = breadth_raw
         _r["_regime_blended"]    = raw_regime
+        _r["_breadth_ad_today"]     = _brd.get("ad_today")
+        _r["_breadth_ad_yesterday"] = _brd.get("ad_yesterday")
         _r["_breadth_pct_50"]    = round(_brd["share_50"] * 100, 1) if _brd.get("n") else None
         _r["_breadth_pct_200"]   = round(_brd["share_200"] * 100, 1) if _brd.get("n") else None
     log.info(f"[V4.5] regime index={index_raw} | breadth={breadth_raw}"
