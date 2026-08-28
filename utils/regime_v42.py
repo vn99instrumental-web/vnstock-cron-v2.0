@@ -113,11 +113,11 @@ RECOVERY_BUY_WARNING = "song hoi chua xac nhan dao chieu"
 # ─────────────────────────────────────────────────────────────────────
 # m2 = đà HÔM QUA + đà HÔM NAY (có dấu). Phân trạng thái theo DẤU của m2 +
 # chiều của hôm nay — KHÔNG dùng ngưỡng độ lớn, KHÔNG dùng EMA/vị trí.
-#   |chg_20d| ≤ 2       → SIDEWAYS   (20 phiên đi ngang, đè trước; chống rung
-#                                     khi m2 lượn quanh 0 trong thị trường phẳng)
-#   m2 > 0              → UPTREND    (tổng 2 phiên còn dương)
-#   m2 ≤ 0 & hôm nay >0 → RECOVERY   (hồi: hôm nay xanh nhưng chưa bù cú giảm)
-#   m2 ≤ 0 & hôm nay ≤0 → DOWNTREND  (giảm tiếp)
+#   |chg_20d| ≤ 2                 → SIDEWAYS   (20 phiên đi ngang, đè trước)
+#   cùng chiều (lên/lên, xuống/x) → UP / DOWN  (2 phiên cùng hướng)
+#   đảo chiều & |t| > |y|         → theo HÔM NAY (vượt band hôm qua)
+#   đảo chiều & |t| ≤ |y|         → SIDEWAYS   (chưa vượt band → mượt)
+#   (RECOVERY đã BỎ — gộp vào SIDEWAYS, ở cả index lẫn breadth)
 # DEEP_DOWN KHÔNG sinh từ index — chỉ đến từ breadth (classify_regime_breadth)
 # qua more_bearish(): VNINDEX đơn dễ bị vài mã lớn kéo, breadth cả rổ đáng tin
 # hơn để gọi "sập thật". Ví dụ khớp yêu cầu:
@@ -130,26 +130,47 @@ TH_SIDEWAYS_C20 = 2.0   # |chg_20d| ≤ 2% → SIDEWAYS (= |TH_DOWN_C20|, không
 
 def classify_regime_op2(m2: float | None, today: float | None,
                         chg_20d: float | None) -> dict:
-    """Regime Op1 (dấu-m2), live mỗi run. Không EMA, không ngưỡng độ lớn.
-    m2 = đà hôm qua + đà hôm nay (có dấu). today = đà hôm nay (chg_pct live).
-    Trả {"regime_raw", "reason", "crash_rule"}. DEEP_DOWN đến từ breadth."""
+    """Regime Op1 v2 — LÀM MƯỢT theo band |đà hôm qua|. Live mỗi run.
+    y = đà hôm qua, t = đà hôm nay (chg_pct live). m2 = y + t (giữ chữ ký cũ).
+      • cùng chiều (cả 2 lên / cả 2 xuống)        → UPTREND / DOWNTREND
+      • đảo chiều & |t| > |y| (vượt band hôm qua)  → theo chiều HÔM NAY
+      • đảo chiều & |t| ≤ |y| (chưa vượt band)     → SIDEWAYS
+      • |chg_20d| ≤ 2%                             → SIDEWAYS (đè trước, chống rung)
+    RECOVERY đã BỎ (gộp vào SIDEWAYS). DEEP_DOWN chỉ đến từ breadth + crash.
+    Ví dụ: qua+0.56 nay-0.09 → |t|<|y| → SIDEWAYS; qua+10 nay-14 → DOWNTREND;
+           qua-10 nay+11 → UPTREND; qua-10 nay+5 → |t|<|y| → SIDEWAYS."""
     _m2  = m2      if m2      is not None else 0.0
-    _td  = today   if today   is not None else 0.0
+    _t   = today   if today   is not None else 0.0
     _c20 = chg_20d if chg_20d is not None else 0.0
+    _y   = _m2 - _t                              # đà hôm qua = m2 − đà hôm nay
 
+    # Chốt chặn đi ngang 20 phiên (GIỮ) — đè trước, chống rung khi thị trường phẳng
     if abs(_c20) <= TH_SIDEWAYS_C20:
         return {"regime_raw": "SIDEWAYS",
                 "reason": f"c20={_c20:+.2f} trong +-{TH_SIDEWAYS_C20} (di ngang)",
                 "crash_rule": False}
-    if _m2 > 0:
+
+    up_both   = (_y >= 0.0 and _t >= 0.0)        # cùng lên (hoặc 1 phiên phẳng)
+    down_both = (_y <= 0.0 and _t <= 0.0)        # cùng xuống (hoặc 1 phiên phẳng)
+    if up_both and down_both:                    # y == 0 và t == 0 → phẳng hẳn
+        return {"regime_raw": "SIDEWAYS",
+                "reason": f"y={_y:+.2f} & t={_t:+.2f} deu phang", "crash_rule": False}
+    if up_both:
         return {"regime_raw": "UPTREND",
-                "reason": f"m2={_m2:+.2f}>0", "crash_rule": False}
-    if _td > 0:
-        return {"regime_raw": "RECOVERY",
-                "reason": f"m2={_m2:+.2f}<=0 & hom_nay={_td:+.2f}>0 (hoi chua xac nhan)",
+                "reason": f"cung chieu len (y={_y:+.2f}, t={_t:+.2f})", "crash_rule": False}
+    if down_both:
+        return {"regime_raw": "DOWNTREND",
+                "reason": f"cung chieu xuong (y={_y:+.2f}, t={_t:+.2f})", "crash_rule": False}
+
+    # đảo chiều: so độ lớn HÔM NAY với band = |đà hôm qua|
+    if abs(_t) > abs(_y):
+        rg = "UPTREND" if _t > 0 else "DOWNTREND"
+        return {"regime_raw": rg,
+                "reason": f"dao chieu VUOT band |t|={abs(_t):.2f}>|y|={abs(_y):.2f}",
                 "crash_rule": False}
-    return {"regime_raw": "DOWNTREND",
-            "reason": f"m2={_m2:+.2f}<=0 & hom_nay={_td:+.2f}<=0", "crash_rule": False}
+    return {"regime_raw": "SIDEWAYS",
+            "reason": f"dao chieu trong band |t|={abs(_t):.2f}<=|y|={abs(_y):.2f}",
+            "crash_rule": False}
 
 
 def classify_regime(close: float, ema50: float, ema200: float | None,
@@ -327,8 +348,8 @@ def classify_regime_breadth(share_50: float, share_200: float,
                            else "breadth duoi 2 EMA & c5<=0"),
                 "crash_rule": crash}
     if (not above_50) and c5 >= TH_RECOVERY_C5:
-        return {"regime_raw": "RECOVERY",
-                "reason": f"breadth duoi EMA50 & c5={c5:+.2f}>=+2",
+        return {"regime_raw": "SIDEWAYS",   # RECOVERY BỎ → gộp SIDEWAYS
+                "reason": f"breadth duoi EMA50 & c5={c5:+.2f}>=+2 (RECOVERY bo->SIDEWAYS)",
                 "crash_rule": False}
     if (not above_50) and (c20 <= TH_DOWN_C20 or c5 <= TH_DOWN_C5):
         return {"regime_raw": "DOWNTREND",
