@@ -1,32 +1,16 @@
 {
-  "asof_utc": "2026-09-03T01:33:39Z",
-  "asof_ict": "2026-09-03 08:33:39",
-  "run_date": "2026-08-28",
-  "snap_time": "14:40",
+  "asof_utc": "2026-09-03T06:32:02Z",
+  "asof_ict": "2026-09-03 13:32:02",
+  "run_date": "2026-09-03",
+  "snap_time": "13:11",
   "expect_date": "2026-09-03",
   "rows_v4": 100,
   "rows_v23": 100,
-  "ok": false,
+  "ok": true,
   "n_errors": 0,
-  "n_warns": 3,
-  "summary": "⚠️ QC 2026-08-28 14:40: 0 lỗi / 3 cảnh báo\n• [WARN] data date=2026-08-28 ≠ kỳ vọng 2026-09-03 — nghi dùng cache/không refresh\n• [WARN] vnindex asof=2026-08-28 ≠ 2026-09-03\n• [WARN] TẤT CẢ 6 BUY thiếu entry/tp1 → forward TP/SL không grade được (nghi record đọc sai file levels)",
-  "problems": [
-    {
-      "id": "freshness",
-      "severity": "warn",
-      "msg": "data date=2026-08-28 ≠ kỳ vọng 2026-09-03 — nghi dùng cache/không refresh"
-    },
-    {
-      "id": "vnindex_live",
-      "severity": "warn",
-      "msg": "vnindex asof=2026-08-28 ≠ 2026-09-03"
-    },
-    {
-      "id": "buy_levels",
-      "severity": "warn",
-      "msg": "TẤT CẢ 6 BUY thiếu entry/tp1 → forward TP/SL không grade được (nghi record đọc sai file levels)"
-    }
-  ],
+  "n_warns": 0,
+  "summary": "✅ QC sạch — 2026-09-03 13:11 (100 mã)",
+  "problems": [],
   "checks": [
     {
       "id": "rows_v4",
@@ -55,13 +39,13 @@
     },
     {
       "id": "freshness",
-      "severity": "warn",
-      "msg": "data date=2026-08-28 ≠ kỳ vọng 2026-09-03 — nghi dùng cache/không refresh"
+      "severity": "ok",
+      "msg": "date=2026-09-03 (đúng hôm nay)"
     },
     {
       "id": "vnindex_live",
-      "severity": "warn",
-      "msg": "vnindex asof=2026-08-28 ≠ 2026-09-03"
+      "severity": "ok",
+      "msg": "level=1823.37 asof=2026-09-03"
     },
     {
       "id": "context",
@@ -80,8 +64,8 @@
     },
     {
       "id": "buy_levels",
-      "severity": "warn",
-      "msg": "TẤT CẢ 6 BUY thiếu entry/tp1 → forward TP/SL không grade được (nghi record đọc sai file levels)"
+      "severity": "ok",
+      "msg": "12 BUY đều có entry/tp1"
     }
   ]
 }
