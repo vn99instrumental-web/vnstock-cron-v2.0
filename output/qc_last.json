@@ -1,0 +1,87 @@
+{
+  "asof_utc": "2026-09-03T01:33:39Z",
+  "asof_ict": "2026-09-03 08:33:39",
+  "run_date": "2026-08-28",
+  "snap_time": "14:40",
+  "expect_date": "2026-09-03",
+  "rows_v4": 100,
+  "rows_v23": 100,
+  "ok": false,
+  "n_errors": 0,
+  "n_warns": 3,
+  "summary": "⚠️ QC 2026-08-28 14:40: 0 lỗi / 3 cảnh báo\n• [WARN] data date=2026-08-28 ≠ kỳ vọng 2026-09-03 — nghi dùng cache/không refresh\n• [WARN] vnindex asof=2026-08-28 ≠ 2026-09-03\n• [WARN] TẤT CẢ 6 BUY thiếu entry/tp1 → forward TP/SL không grade được (nghi record đọc sai file levels)",
+  "problems": [
+    {
+      "id": "freshness",
+      "severity": "warn",
+      "msg": "data date=2026-08-28 ≠ kỳ vọng 2026-09-03 — nghi dùng cache/không refresh"
+    },
+    {
+      "id": "vnindex_live",
+      "severity": "warn",
+      "msg": "vnindex asof=2026-08-28 ≠ 2026-09-03"
+    },
+    {
+      "id": "buy_levels",
+      "severity": "warn",
+      "msg": "TẤT CẢ 6 BUY thiếu entry/tp1 → forward TP/SL không grade được (nghi record đọc sai file levels)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "rows_v4",
+      "severity": "ok",
+      "msg": "v4 = 100 dòng"
+    },
+    {
+      "id": "rows_v23",
+      "severity": "ok",
+      "msg": "v2.3 = 100 dòng"
+    },
+    {
+      "id": "track_parity",
+      "severity": "ok",
+      "msg": "khớp 100 mã cả 2 track"
+    },
+    {
+      "id": "price_v4",
+      "severity": "ok",
+      "msg": "price đầy đủ"
+    },
+    {
+      "id": "fields_v4",
+      "severity": "ok",
+      "msg": "score_trade/decision đầy đủ"
+    },
+    {
+      "id": "freshness",
+      "severity": "warn",
+      "msg": "data date=2026-08-28 ≠ kỳ vọng 2026-09-03 — nghi dùng cache/không refresh"
+    },
+    {
+      "id": "vnindex_live",
+      "severity": "warn",
+      "msg": "vnindex asof=2026-08-28 ≠ 2026-09-03"
+    },
+    {
+      "id": "context",
+      "severity": "ok",
+      "msg": "context OK"
+    },
+    {
+      "id": "regime_state",
+      "severity": "ok",
+      "msg": "regime=DOWNTREND"
+    },
+    {
+      "id": "ledger_v4",
+      "severity": "ok",
+      "msg": "ledger có 100 dòng cho run này"
+    },
+    {
+      "id": "buy_levels",
+      "severity": "warn",
+      "msg": "TẤT CẢ 6 BUY thiếu entry/tp1 → forward TP/SL không grade được (nghi record đọc sai file levels)"
+    }
+  ]
+}
