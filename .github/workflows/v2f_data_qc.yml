@@ -1,0 +1,90 @@
+# ============================================================================
+# VNStock Data QC (post-intraday) — PHASE CHECK OFFLINE
+#
+# Chạy SAU khi intraday đã push xong. n8n là bộ trigger:
+#   n8n dispatch workflow này → checkout main (đã có data mới) →
+#   chạy scripts/qc_intraday_v4.py (chỉ stdlib, KHÔNG venv/API, đọc-only) →
+#   ghi output/qc_last.json → commit.
+# n8n đọc raw qc_last.json rồi TỰ gửi Telegram nếu ok=false.
+#
+# KHÔNG ảnh hưởng thời gian intraday: đây là job/runner riêng, hoàn toàn tách.
+# Bắt được cả run-level death: nếu intraday chết (không push data mới), QC thấy
+#   date cũ → cảnh báo "data không tươi".
+#
+# Checker LUÔN exit 0 (ok/không-ok nằm trong qc_last.json) → job này không đỏ,
+#   n8n quyết định gửi Telegram hay không. Đặt QC_FAIL_ON_ERROR=1 nếu muốn đỏ.
+# ============================================================================
+name: VNStock Data QC (post-intraday)
+
+on:
+  workflow_dispatch:
+    inputs:
+      expect_date:
+        description: 'Ép ngày kỳ vọng YYYY-MM-DD (rỗng = hôm nay ICT)'
+        type: string
+        default: ''
+      skip_freshness:
+        description: 'Bỏ qua check date cũ (ngày lễ/test)'
+        type: boolean
+        default: false
+
+  # (TÙY CHỌN) tự chạy sau intraday, hands-off, không cần n8n dispatch.
+  # Nếu bật cái này thì KHÔNG cho n8n dispatch nữa (tránh chạy 2 lần).
+  # workflow_run:
+  #   workflows: ["VNStock Intraday V2F (full-VN100)"]
+  #   types: [completed]
+
+permissions:
+  contents: write
+
+# Group riêng → không đụng intraday.
+concurrency:
+  group: vnstock-data-qc
+  cancel-in-progress: false
+
+jobs:
+  qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      QC_EXPECT_DATE:    ${{ inputs.expect_date }}
+      QC_SKIP_FRESHNESS: ${{ inputs.skip_freshness && '1' || '' }}
+      # Sàn số mã (VN100 ~100). Chỉnh nếu universe đổi.
+      QC_MIN_ROWS:       "95"
+      QC_MAX_NONE_PRICE: "0"
+      QC_CHECK_BUY_LEVELS: "1"
+      # Đặt "1" nếu muốn job đỏ khi có error (mặc định luôn xanh).
+      QC_FAIL_ON_ERROR:  ""
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Chỉ stdlib → không restore venv, không cài gì.
+      - name: Run QC (read-only, stdlib)
+        run: python3 scripts/qc_intraday_v4.py
+
+      - name: Commit qc_last.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/qc_last.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "qc_last.json không đổi — skip commit."
+            exit 0
+          fi
+          git commit -m "qc[v4]: $(date +'%Y-%m-%d %H:%M') ICT"
+          pushed=0
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              echo "✅ pushed (attempt $i)"; pushed=1; break
+            fi
+            echo "⚠️ push attempt $i failed — retrying..."; sleep $((RANDOM % 5 + 3))
+          done
+          [ "$pushed" -eq 1 ] || { echo "❌ push failed after 5 attempts"; exit 1; }
