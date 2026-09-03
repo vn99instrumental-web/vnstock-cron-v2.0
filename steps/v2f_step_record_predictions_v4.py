@@ -4,8 +4,12 @@ v2f_step_record_predictions_v4.py — Ghi SỔ C (shadow #2) cho scoring v4 (RCE
 Chạy trong v2f_cron_intraday.yml SAU v2f_step_scoring_v4.py.
 Fork từ v2f_step_record_predictions_v3.py. KHÁC BIỆT so với v3:
   - Đọc v2f_signals_v4.json
-  - Dùng CHUNG v2f_trade_levels.json (levels entry/stop scoring-agnostic → KHÔNG
-    cần step price_levels_v4 riêng)
+  - Đọc levels từ v2f_trade_levels_v4.json (do steps/v2f_step_price_levels_v4.py
+    sinh NGAY TRƯỚC bước này — list phẳng 100 mã, decision/levels đồng bộ V4).
+    (BUG 2026-08-29 đã fix: trước đây trỏ nhầm v2f_trade_levels.json bản v2.3 —
+     định dạng dict {buy_levels:[...]} mà _load_trade_map chỉ tìm key "symbols"
+     → map RỖNG → mọi BUY nhận entry/stop/tp1 = None → trọng tài không chấm
+     được TP/SL. Hệ quả: 678/678 BUG bị mất phần chấm lệnh.)
   - Ghi output/history/v2f_predictions_v4/{YYYY-MM}.jsonl (LEDGER RIÊNG)
   - pred_id = "{symbol}_{date}_{snap_time}_v2fv4"
   - Ghi THÊM metadata RCEG: regime (hiệu lực), regime_raw (trước hysteresis),
@@ -40,7 +44,8 @@ log = logging.getLogger(__name__)
 FLOW              = "v2f_v4"
 SCHEMA_VERSION    = 1
 SIGNALS_FILE      = "v2f_signals_v4.json"
-TRADE_LEVELS_FILE = "v2f_trade_levels.json"   # dùng chung levels v2.3 (agnostic)
+TRADE_LEVELS_FILE          = "v2f_trade_levels_v4.json"  # nguồn chính (list phẳng V4)
+TRADE_LEVELS_FILE_FALLBACK = "v2f_trade_levels.json"     # dự phòng (dict v2.3)
 HISTORY_SUBDIR    = "history/v2f_predictions_v4"
 
 ANCHOR_HOUR_ICT = int(os.environ.get("RECORD_ANCHOR_HOUR", "0"))
@@ -59,15 +64,36 @@ def _should_record(now_hour: int) -> bool:
 
 
 def _load_trade_map(trade_data) -> dict:
+    """
+    Trả dict {symbol: levels}. Chịu được 3 định dạng để không lặp lại lỗi
+    trỏ nhầm file (2026-08-29):
+      1) list phẳng [{symbol, entry, stop_loss, tp1, ...}, ...]   ← v2f_trade_levels_v4.json
+      2) dict {symbols: {SYM: {...}}} hoặc {symbols: [ {...} ]}
+      3) dict {buy_levels: [ {...} ], exit_levels: [ {...} ]}      ← v2f_trade_levels.json (v2.3)
+    """
     if not trade_data:
         return {}
-    items = trade_data.get("symbols") if isinstance(trade_data, dict) else trade_data
+
+    # Gom mọi "nguồn list" có thể có
+    candidates = []
+    if isinstance(trade_data, list):
+        candidates = trade_data
+    elif isinstance(trade_data, dict):
+        syms = trade_data.get("symbols")
+        if isinstance(syms, dict):
+            return syms                                   # đã là {symbol: {...}}
+        if isinstance(syms, list):
+            candidates += syms
+        # định dạng v2.3: gộp buy_levels + exit_levels
+        for k in ("buy_levels", "exit_levels"):
+            v = trade_data.get(k)
+            if isinstance(v, list):
+                candidates += v
+
     out = {}
-    if isinstance(items, dict):
-        return items
-    for t in items or []:
+    for t in candidates:
         if isinstance(t, dict) and t.get("symbol"):
-            out[t["symbol"]] = t
+            out[t["symbol"]] = t                          # buy_levels ưu tiên (đứng trước)
     return out
 
 
@@ -99,6 +125,20 @@ def run():
         return
 
     trade_map = _load_trade_map(load_json(TRADE_LEVELS_FILE))
+    if not trade_map:
+        log.warning(f"{TRADE_LEVELS_FILE} không cho map nào — thử fallback "
+                    f"{TRADE_LEVELS_FILE_FALLBACK}")
+        trade_map = _load_trade_map(load_json(TRADE_LEVELS_FILE_FALLBACK))
+    # Quan sát: lỗi cũ là IM LẶNG (map rỗng vẫn chạy). Log để lần sau thấy ngay.
+    n_lvl = sum(1 for t in trade_map.values()
+                if t.get("entry") is not None
+                and (t.get("stop_loss") or t.get("stop")) is not None
+                and t.get("tp1") is not None)
+    log.info(f"Trade levels map: {len(trade_map)} mã "
+             f"(đủ entry/stop/tp1: {n_lvl})")
+    if not trade_map:
+        log.warning("⚠️ trade_map RỖNG — BUY sẽ không có entry/stop/tp1, "
+                    "trọng tài không chấm được TP/SL. Kiểm price_levels_v4 đã chạy chưa.")
 
     snap_date = signals[0].get("date") or today_str()
     snap_time = signals[0].get("snap_time") or now.strftime("%H:%M")
@@ -217,8 +257,18 @@ def run():
     from collections import Counter
     dec = Counter(r["decision"] for r in new_records)
     reg = new_records[0].get("regime")
+    n_buy = sum(1 for r in new_records if r["decision"] in ("BUY", "STRONG BUY"))
+    n_buy_lvl = sum(1 for r in new_records
+                    if r["decision"] in ("BUY", "STRONG BUY")
+                    and r.get("entry") is not None
+                    and r.get("stop") is not None
+                    and r.get("tp1") is not None)
     log.info(f"Ghi {len(new_records)} records mới → {out_path} (regime={reg})")
     log.info(f"Breakdown: {dict(dec)}")
+    log.info(f"BUY có đủ levels (entry/stop/tp1): {n_buy_lvl}/{n_buy}")
+    if n_buy and n_buy_lvl < n_buy:
+        log.warning(f"⚠️ {n_buy - n_buy_lvl} lệnh BUY THIẾU levels — "
+                    "trọng tài sẽ bỏ qua phần TP/SL cho các mã này.")
     log.info("=== RECORD PREDICTIONS V4 (SHADOW#2 RCEG) DONE ===")
 
 
