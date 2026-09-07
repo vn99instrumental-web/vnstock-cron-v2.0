@@ -67,6 +67,7 @@ from utils.v2f_universe import build_v2f_universe
 # 2026-08-19 (P0.1): tape intraday dùng chung từ bước prefetch. Cache miss/tắt →
 # tự fetch live (fallback an toàn). Rollback: env PREFETCH_ENABLED=0.
 from utils import intraday_cache
+from utils.of_side import buy_sell_masks   # v3.2.9: phân loại chiều lệnh miễn nhiễm nguồn
 
 logging.basicConfig(
     level=logging.INFO,
@@ -128,8 +129,7 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
             df_intra["volume"] = pd.to_numeric(df_intra["volume"], errors="coerce")
             row["price"]      = float(df_intra["price"].iloc[-1])
             row["price_type"] = "realtime"
-            buy_mask  = df_intra["match_type"].str.contains("Buy",  case=False, na=False)
-            sell_mask = df_intra["match_type"].str.contains("Sell", case=False, na=False)
+            buy_mask, sell_mask = buy_sell_masks(df_intra["match_type"])
             buy_vol   = float(df_intra.loc[buy_mask,  "volume"].sum())
             sell_vol  = float(df_intra.loc[sell_mask, "volume"].sum())
             total     = buy_vol + sell_vol
