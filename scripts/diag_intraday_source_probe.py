@@ -141,8 +141,13 @@ def main():
         "conclusions": {},
     }
 
-    # rows trung bình theo nguồn để so trần 100
+    # In NGAY version đang đo (để log tự tố cáo 3.2.8 hay 3.2.9)
+    print(f"vnstock_data_version = {report['vnstock_data_version']}  "
+          f"| page_size xin = {PAGESIZE}\n")
+
+    # rows + ĐỘ TRỄ trung bình theo nguồn (elapsed = manh mối phân trang)
     rows_by_source = {s: [] for s in SOURCES}
+    elapsed_by_source = {s: [] for s in SOURCES}
 
     for src in SOURCES:
         for sym in SYMBOLS:
@@ -151,6 +156,8 @@ def main():
             df, meta, err = _fetch(src, sym)
             row["elapsed_s"] = round(time.time() - t0, 2)
             row.update(meta)
+            if err is None:
+                elapsed_by_source[src].append(row["elapsed_s"])
             if err is not None:
                 row["error"] = err
                 row["rows"] = None
@@ -167,6 +174,7 @@ def main():
             # in gọn từng dòng cho log debug.yml
             print(
                 f"[{src:>3}] {sym:>4}  rows={row.get('rows')}  "
+                f"elapsed={row.get('elapsed_s')}s  "
                 f"kwarg={row.get('used_kwarg')}  "
                 f"tz={row.get('time_is_tz_aware')}  "
                 f"labels={list((row.get('match_type_values') or {}).keys())[:5]}  "
@@ -177,6 +185,7 @@ def main():
     # ── Kết luận tự động (chỉ mô tả số, không phán) ──
     for s in SOURCES:
         vals = rows_by_source[s]
+        el = elapsed_by_source[s]
         report["conclusions"][s] = {
             "n_ok": len(vals),
             "rows_min": min(vals) if vals else None,
@@ -184,6 +193,10 @@ def main():
             "rows_avg": round(sum(vals) / len(vals), 1) if vals else None,
             # cờ nghi trần 100: mọi mã đều <=110 dòng
             "suspect_100_cap": bool(vals) and max(vals) <= 110,
+            # ĐỘ TRỄ mỗi lượt gọi — cao bất thường = dấu hiệu phân trang nhiều HTTP
+            "elapsed_min": round(min(el), 2) if el else None,
+            "elapsed_max": round(max(el), 2) if el else None,
+            "elapsed_avg": round(sum(el) / len(el), 2) if el else None,
         }
 
     report["elapsed_total_s"] = round(time.time() - started, 1)
@@ -196,12 +209,16 @@ def main():
     except Exception as e:
         print(f"\n⚠️ Không ghi được {OUT_PATH}: {e}")
 
-    print("\n=== TÓM TẮT THEO NGUỒN ===")
+    print(f"\n=== TÓM TẮT THEO NGUỒN (vnstock_data {report['vnstock_data_version']}) ===")
     for s in SOURCES:
         c = report["conclusions"][s]
         print(f"  {s:>3}: n_ok={c['n_ok']}  rows_avg={c['rows_avg']}  "
-              f"min={c['rows_min']}  max={c['rows_max']}  "
+              f"(min={c['rows_min']} max={c['rows_max']})  "
+              f"elapsed_avg={c['elapsed_avg']}s  "
+              f"(min={c['elapsed_min']} max={c['elapsed_max']})  "
               f"nghi_tran_100={c['suspect_100_cap']}")
+    print("\n(elapsed_avg cao bất thường ở 1 nguồn = nguồn đó phân trang nhiều "
+          "lượt HTTP → đây là thủ phạm làm prefetch chậm)")
 
 
 if __name__ == "__main__":
