@@ -55,7 +55,7 @@ from vnstock_ta import Indicator
 from utils.helpers import (
     now_ict, is_market_open, last_trading_date,
     load_exchange_map, get_exchange,
-    safe_run, safe_val, to_float,
+    safe_run, safe_run_retry, safe_val, to_float,
     start_str, today_str
 )
 from utils.cache import save_json, load_json, save_csv
@@ -157,7 +157,7 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
             row["price_date"] = str(df_hist["time"].iloc[-1])[:10]
 
     if market_open:
-        df_ob = safe_run(f"order_book {symbol}",
+        df_ob = safe_run_retry(f"order_book {symbol}",
             lambda: Market().equity(symbol).order_book())
         if df_ob is not None and not df_ob.empty:
             try:
