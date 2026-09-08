@@ -175,6 +175,7 @@ def main():
             print(
                 f"[{src:>3}] {sym:>4}  rows={row.get('rows')}  "
                 f"elapsed={row.get('elapsed_s')}s  "
+                f"cols={row.get('columns')}  "
                 f"kwarg={row.get('used_kwarg')}  "
                 f"tz={row.get('time_is_tz_aware')}  "
                 f"labels={list((row.get('match_type_values') or {}).keys())[:5]}  "
