@@ -75,6 +75,7 @@ OF_MIN_INTERVAL  = float(os.environ.get("VCI_OF_MIN_INTERVAL", "0.5"))
 # call đầu dính 429 → tiết kiệm 5s mà không tăng rủi ro.
 # Override khi test: VCI_STEP_COOLDOWN=N giây.
 STEP_COOLDOWN = int(os.environ.get("VCI_STEP_COOLDOWN", "3"))
+INTRADAY_SOURCE = os.environ.get("INTRADAY_SOURCE", "VND")  # v3.2.9: VCI phân trang 100/lượt → chậm ~25x. VND cùng cột+nhãn+tz, nhanh. Lùi: INTRADAY_SOURCE=VCI
 
 # =====================================================
 # VOLUME PROFILE từ intraday
@@ -377,7 +378,7 @@ def fetch_one(deep_row: dict, market_open: bool) -> dict:
                 if is_blocked():   # kill switch đã bật → bỏ retry, không tốn API
                     break
                 df_intra = vci_safe_run(f"{_label} {symbol} (attempt {_att+1})",
-                           lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=10000))
+                           lambda: Quote(source=INTRADAY_SOURCE, symbol=symbol).intraday(page_size=10000))
                 if df_intra is not None and not df_intra.empty:
                     break
                 if is_blocked():   # lần gọi vừa rồi có thể đã bật kill switch
