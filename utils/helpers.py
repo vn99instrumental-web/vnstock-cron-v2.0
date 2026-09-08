@@ -1,6 +1,7 @@
 import os
 import logging
 import traceback
+import time
 import pandas as pd
 from datetime import datetime, timedelta
 from config import ICT, MARKET_OPEN, MARKET_CLOSE, HOSE_CODE
@@ -51,6 +52,27 @@ def safe_run(label: str, fn):
         log.error(f"  ❌ {label}: {e}")
         traceback.print_exc()
         return None
+
+def safe_run_retry(label: str, fn, attempts: int = 2, delay: float = 0.6):
+    """Như safe_run nhưng THỬ LẠI cho call đọc (idempotent) hay gặp lỗi ngắt quãng
+    của lớp quota vnai (UnboundLocalError 'threading' khi nó spawn thread flush).
+    Thử tối đa `attempts` lần, cách nhau `delay`s. Trả None nếu vẫn hỏng (như safe_run).
+    Chỉ dùng cho các call an toàn khi gọi lại (vd order_book) — KHÔNG dùng cho ghi."""
+    last = None
+    for i in range(1, attempts + 1):
+        try:
+            result = fn()
+            log.info(f"  ✅ {label}" + (f" (retry {i})" if i > 1 else ""))
+            return result
+        except Exception as e:
+            last = e
+            log.warning(f"  ⚠️ {label}: {e} (lần {i}/{attempts})")
+            if i < attempts:
+                time.sleep(delay)
+    log.error(f"  ❌ {label}: {last} (bỏ sau {attempts} lần)")
+    traceback.print_exc()
+    return None
+
 
 def to_float(val) -> float | None:
     if val is None:
