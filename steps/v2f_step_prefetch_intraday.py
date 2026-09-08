@@ -49,6 +49,7 @@ WORKERS       = int(os.environ.get("PREFETCH_WORKERS", "3"))
 MIN_INTERVAL  = float(os.environ.get("PREFETCH_INTERVAL", "0.35"))
 PAGESIZE      = int(os.environ.get("PREFETCH_PAGESIZE", "10000"))
 POST_COOLDOWN = int(os.environ.get("PREFETCH_POST_COOLDOWN", "5"))
+INTRADAY_SOURCE = os.environ.get("INTRADAY_SOURCE", "VND")  # v3.2.9: VCI phân trang 100/lượt → chậm ~25x. VND cùng cột+nhãn+tz, nhanh. Lùi: INTRADAY_SOURCE=VCI
 
 
 def _fetch_and_store(symbol: str) -> str:
@@ -57,7 +58,7 @@ def _fetch_and_store(symbol: str) -> str:
         return "fail"
     df = vci_safe_run(
         f"prefetch {symbol}",
-        lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=PAGESIZE),
+        lambda: Quote(source=INTRADAY_SOURCE, symbol=symbol).intraday(page_size=PAGESIZE),
     )
     if df is None or getattr(df, "empty", True):
         return "empty"
