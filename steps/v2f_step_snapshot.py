@@ -77,6 +77,7 @@ log = logging.getLogger(__name__)
 
 # 2026-06-18: 10 → 5 (fix 429). Override khi test: VCI_MAX_WORKERS=N
 MAX_WORKERS    = int(os.environ.get("VCI_MAX_WORKERS", "5"))
+INTRADAY_SOURCE = os.environ.get("INTRADAY_SOURCE", "VND")  # v3.2.9: VCI phân trang 100/lượt → chậm ~25x. VND cùng cột+nhãn+tz, nhanh. Lùi: INTRADAY_SOURCE=VCI
 
 def _to_float_safe(v, default=0.0):
     try:
@@ -123,7 +124,7 @@ def get_snapshot(symbol: str, market_open: bool) -> dict:
             df_intra = _cached.tail(200).reset_index(drop=True)
         if df_intra is None:   # cache tắt/miss → fetch live như cũ
             df_intra = vci_safe_run(f"intraday {symbol}",
-                lambda: Quote(source="VCI", symbol=symbol).intraday(page_size=200))
+                lambda: Quote(source=INTRADAY_SOURCE, symbol=symbol).intraday(page_size=200))
         if df_intra is not None and not df_intra.empty:
             df_intra["price"]  = pd.to_numeric(df_intra["price"],  errors="coerce")
             df_intra["volume"] = pd.to_numeric(df_intra["volume"], errors="coerce")
