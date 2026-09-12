@@ -33,7 +33,7 @@
 | E1.5 | Sync outcomes → v4_outcomes | — | build_outcome_row 1-1 khớp schema wide | **DONE** | E1.2 |
 | E1.6 | Test idempotency + schema (DB thật) | app-test | Upsert 2× qua MCP → counts 1/2/1 không đổi; FK+unique OK; dọn về 0 rows | **DONE** | E1.4-5 |
 | E1.7 | Security review (service_role, không log secret) | security-review | **DONE** — PASS, 0 Critical/High/Med; fix gitignore __pycache__; note escape breakdown ở E3 | **DONE** | E1.4-5 |
-| E1.8 | Append step sync non-blocking vào `v2f_cron_intraday.yml` (ADR-008) | security-review | **DONE (giao full-file)** — step SAU "Commit V2F output", `continue-on-error: true`, skip mềm khi thiếu secret; YAML hợp lệ. **Chờ anh: (1) set secret GH `SUPABASE_SERVICE_ROLE_KEY`, (2) merge vào main** | **DELIVERED** | E1.6-7 |
+| E1.8 | Append step sync non-blocking vào `v2f_cron_intraday.yml` (ADR-008) | security-review | **DONE** — commit `1fad8df`; step SAU "Commit V2F output", `continue-on-error: true`, skip mềm khi thiếu secret; YAML hợp lệ. **Chờ anh: (1) set secret GH `SUPABASE_SERVICE_ROLE_KEY`, (2) merge vào main** | **DONE** | E1.6-7 |
 | E1.9 | Sync FULL data thật lên bảng | — | Tự chạy khi run intraday kế tiếp SAU khi anh set secret + merge E1.8. Verify row count khớp ledger | BLOCKED (chờ E1.8 merge + secret) | E1.8 |
 
 ---
@@ -42,12 +42,12 @@
 
 | ID | Task | Skill | Definition of Done | Status | Dep |
 |---|---|---|---|---|---|
-| E2.1 | Design khung app + nav (5 route) | frontend-design | Mockup/spec route today/history/history/[id]/config/ic | TODO | E0 |
-| E2.2 | Scaffold `web/` Next.js App Router + TS | — | dev/build chạy; route trống render | TODO | E2.1 |
-| E2.3 | `lib/supabase/{server,client}.ts` (đúng lớp key) | — | Server dùng service (chỉ server), client dùng anon | TODO | E2.2 |
-| E2.4 | Supabase Auth **đơn owner** (login) + `middleware.ts` (ADR-007) | — | Chặn /config + Promote khi chưa auth; allowlist 1 email owner; public route mở | TODO | E2.3 |
-| E2.5 | Verify secret không vào client bundle | security-review | grep bundle sạch; review pass | TODO | E2.3-4 |
-| E2.6 | Visual QA khung + responsive | visual-qa | Desktop + mobile OK | TODO | E2.2 |
+| E2.1 | Design khung app + nav (5 route) | frontend-design | **DONE** — shell sidebar/top-nav + header version badge động + màu semantic decision | **DONE** | E0 |
+| E2.2 | Scaffold `web/` Next.js App Router + TS | — | **DONE (code)** — package/tsconfig/next/postcss/tailwind + 5 route + login + auth callback. ⏳ `npm install`+build verify local/Vercel (không chạy ở phiên: tránh cạn disk) | **DONE (code)** | E2.1 |
+| E2.3 | `lib/supabase/{server,client,middleware}.ts` (đúng lớp key) | — | **DONE** — client+server dùng anon+cookie; getUser/isOwner; service_role KHÔNG dùng ở E2 | **DONE** | E2.2 |
+| E2.4 | Supabase Auth **đơn owner** (login) + `middleware.ts` (ADR-007) | — | **DONE** — middleware gate /config (redirect /login), kiểm lại server-side; login email+password; allowlist NEXT_PUBLIC_OWNER_EMAIL | **DONE** | E2.3 |
+| E2.5 | Verify secret không vào client bundle | security-review | **DONE** — grep web/ sạch; service_role/GITHUB_TOKEN chỉ trong comment/env-example | **DONE** | E2.3-4 |
+| E2.6 | Visual QA khung + responsive | visual-qa | ⏳ PENDING — cần app chạy local (chưa install ở phiên) | TODO | E2.2 |
 
 ---
 

@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* ── Design tokens: "terminal tài chính" sạch, trung tính + semantic decision ── */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", monospace;
+
+  /* nền + mực */
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-ink: #111827;
+  --color-muted: #6b7280;
+
+  /* accent hành động */
+  --color-accent: #2563eb;
+
+  /* semantic theo decision (BUY xanh lá · STRONG BUY xanh đậm · SELL/STRONG SELL đỏ · NEUTRAL xám) */
+  --color-buy: #16a34a;
+  --color-strong-buy: #15803d;
+  --color-sell: #dc2626;
+  --color-strong-sell: #991b1b;
+  --color-neutral: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0b0e14;
+    --color-surface: #131720;
+    --color-border: #263041;
+    --color-ink: #e5e7eb;
+    --color-muted: #94a3b8;
+    --color-accent: #3b82f6;
+  }
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Số căn cột đều (bảng data-dense) */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}

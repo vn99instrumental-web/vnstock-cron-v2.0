@@ -81,11 +81,21 @@
 
 ---
 
+## 4d. E2 — Web Foundation (DONE code, 2026-09-12)
+
+- ✅ `web/` scaffold: Next.js 15 (App Router) + React 19 + TS + Tailwind v4 + @supabase/ssr + Recharts.
+- ✅ Shell: `(dashboard)/layout` sidebar/top-nav + header **version badge đọc động** từ v4_runs; màu semantic decision.
+- ✅ 5 route placeholder (today/history/history/[id]/ic/config) + `/login` (email+password owner) + `/auth/callback`.
+- ✅ `lib/supabase/{client,server,middleware}`: anon+cookie; `getUser`/`isOwner`; **service_role KHÔNG dùng ở E2**.
+- ✅ Auth gate (ADR-007): `middleware.ts` chặn /config → /login; kiểm lại server-side; allowlist `NEXT_PUBLIC_OWNER_EMAIL`.
+- ✅ security-review E2.5: grep web/ sạch, không rò secret ra client.
+- ⏳ **Chưa verify build**: không chạy `npm install`/`next build` ở phiên (tránh cạn disk container). Anh chạy `cd web && npm install && npm run dev` (hoặc deploy Vercel) để verify + visual-qa (E2.6).
+
 ## 5. Việc kế tiếp (next actions)
 
-1. **E0.7** — commit + push docs lên `claude/bold-pascal-768taz`.
-2. **E1** — chốt ADR-002 + ADR-006 → viết `sync_supabase.py` (có data thật lên bảng).
-3. **E2** — scaffold `web/` (song song E1).
+1. **Owner (thủ công)**: set secret GH `SUPABASE_SERVICE_ROLE_KEY` + merge branch → main → data tự chảy (E1.9).
+2. **Owner**: `cd web && npm install && npm run dev` verify build + visual-qa E2.6; tạo user owner trong Supabase Auth để test /config gate.
+3. **E3** — Read Dashboards (today/history/drill-down) — cần data thật (sau khi sync chạy).
 
 ---
 
