@@ -1,0 +1,52 @@
+name: Sync ledger → Supabase (manual)
+
+# Đồng bộ THỦ CÔNG: đọc ledger đã commit (predictions_v4 + outcomes_v4) → Supabase,
+# rồi tính forward IC. KHÔNG gọi API chứng khoán, KHÔNG cần trong giờ giao dịch —
+# an toàn chạy bất cứ lúc nào để nạp lại toàn bộ data lịch sử có trong repo.
+#
+# Kích hoạt: tab Actions → workflow này → Run workflow.
+# Cần secret repo: SUPABASE_SERVICE_ROLE_KEY (Settings → Secrets and variables → Actions).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-supabase
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install --quiet requests
+
+      - name: Guard secret
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "❌ Chưa set secret SUPABASE_SERVICE_ROLE_KEY."
+            echo "   Vào repo → Settings → Secrets and variables → Actions → New repository secret."
+            exit 1
+          fi
+          echo "✅ Secret có sẵn."
+
+      - name: Sync predictions + outcomes → Supabase
+        run: python3 scripts/sync_supabase.py
+
+      - name: Export forward IC → Supabase
+        run: python3 scripts/export_ic_to_supabase.py

@@ -34,7 +34,7 @@
 | E1.6 | Test idempotency + schema (DB thật) | app-test | Upsert 2× qua MCP → counts 1/2/1 không đổi; FK+unique OK; dọn về 0 rows | **DONE** | E1.4-5 |
 | E1.7 | Security review (service_role, không log secret) | security-review | **DONE** — PASS, 0 Critical/High/Med; fix gitignore __pycache__; note escape breakdown ở E3 | **DONE** | E1.4-5 |
 | E1.8 | Append step sync non-blocking vào `v2f_cron_intraday.yml` (ADR-008) | security-review | **DONE** — commit `1fad8df`; step SAU "Commit V2F output", `continue-on-error: true`, skip mềm khi thiếu secret; YAML hợp lệ. **Chờ anh: (1) set secret GH `SUPABASE_SERVICE_ROLE_KEY`, (2) merge vào main** | **DONE** | E1.6-7 |
-| E1.9 | Sync FULL data thật lên bảng | — | Tự chạy khi run intraday kế tiếp SAU khi anh set secret + merge E1.8. Verify row count khớp ledger | BLOCKED (chờ E1.8 merge + secret) | E1.8 |
+| E1.9 | Sync FULL data thật lên bảng | — | 2 đường: (a) tự chạy ở intraday kế tiếp (E1.8); (b) **workflow bấm-tay `sync_supabase.yml`** — nạp toàn bộ ledger bất cứ lúc nào (kể cả ngoài giờ). Verify row count khớp ledger | READY (chờ owner merge + Run workflow) | E1.8 |
 
 ---
 
@@ -99,7 +99,7 @@
 | E6.2 | Ghi `v4_ic_metrics` idempotent | — | **DONE** — upsert on_conflict(config_version,factor,horizon); dry-run 64 dòng trên data 07/08 (MR IC dương mạnh nhất, verify hợp lý). Ghi thật cần service key | **DONE** | E6.1 |
 | E6.3 | Trang `ic` (bảng/heatmap) | frontend-design | **DONE (code)** — heatmap table factor×horizon theo version, màu diverging theo IC (|IC| chuẩn ±0.2), hover xem n; empty state | **DONE (code)** | E2, E6.2 |
 | E6.4 | App-test + Visual QA | app-test, visual-qa | TODO | TODO | E6.3 |
-| E6.5 | **HỎI DUYỆT** wire export_ic vào cron_weekly (sau eval) | security-review | NEEDS-APPROVAL — tương tự E1.8, chạm production workflow | NEEDS-APPROVAL | E6.2 |
+| E6.5 | Chạy export_ic lên Supabase | — | **READY** — đã gộp vào workflow bấm-tay `sync_supabase.yml` (chạy sau sync). Wire vào cron_weekly tự động vẫn để sau (NEEDS-APPROVAL) | READY | E6.2 |
 
 ---
 
