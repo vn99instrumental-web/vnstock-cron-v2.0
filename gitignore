@@ -1,0 +1,28 @@
+# --- Secrets / env ---
+.env
+.env.local
+.env*.local
+!.env.example
+
+# --- Node / Next.js (web/) ---
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
+web/build/
+web/dist/
+web/.turbo/
+web/coverage/
+
+# --- Vercel ---
+.vercel/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# --- Misc ---
+.DS_Store
+*.log
