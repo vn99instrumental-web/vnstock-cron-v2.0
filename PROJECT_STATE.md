@@ -91,6 +91,23 @@
 - ✅ security-review E2.5: grep web/ sạch, không rò secret ra client.
 - ⏳ **Chưa verify build**: không chạy `npm install`/`next build` ở phiên (tránh cạn disk container). Anh chạy `cd web && npm install && npm run dev` (hoặc deploy Vercel) để verify + visual-qa (E2.6).
 
+## 4e. E4 + E6 (làm song song, DONE code — 2026-09-12)
+
+**E4 — Config & Promote:**
+- ✅ `config/scoring/schema.json` (JSON Schema 4 nhóm) + `config/scoring/active.json` (baseline v4.17 mirror registry).
+- ✅ `web/lib/scoring/simulate.ts` (ước lượng, nhãn SIMULATION) + `default-config.ts`.
+- ✅ `web/app/api/promote/route.ts` server-only: owner gate + same-origin(CSRF) + validate + one-change guard(force) + commit active.json(GITHUB_TOKEN) + ghi v4_scoring_configs(service_role, archive→insert).
+- ✅ `web/components/config-editor.tsx` + `config/page.tsx`: editor weights/gate(6×6)/thresholds/extras + panel mô phỏng + Promote.
+- ✅ security-review: 0 Critical/High; low (commit+insert không atomic → 207 handled).
+- ⏳ Cần env runtime `GITHUB_TOKEN` + `SUPABASE_SERVICE_ROLE_KEY` (Vercel) để promote chạy thật; app-test/visual-qa cần app chạy.
+
+**E6 — IC Evaluator:**
+- ✅ `scripts/export_ic_to_supabase.py`: TÁI SỬ DỤNG methodology IC chính thức (import `eval_forward_ic._spearman/daily_last` + `sync_supabase.Supabase`). Dry-run 64 dòng trên data 07/08 — MR IC dương mạnh nhất (+0.16@5d), khớp registry.
+- ✅ Ghi `v4_ic_metrics` idempotent (upsert). Ghi thật cần service key (server).
+- ⏳ E6.3 trang IC heatmap (cần data); E6.5 wire vào cron_weekly (NEEDS-APPROVAL, như E1.8).
+
+**⚠️ Fact:** gate_matrix có **6 regime** (UP/SIDE/RECOV/DOWN/DEEP/UNKNOWN), không phải 4 như migration 0001 comment.
+
 ## 5. Việc kế tiếp (next actions)
 
 1. **Owner (thủ công)**: set secret GH `SUPABASE_SERVICE_ROLE_KEY` + merge branch → main → data tự chảy (E1.9).

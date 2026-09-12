@@ -68,14 +68,14 @@
 
 | ID | Task | Skill | Definition of Done | Status | Dep |
 |---|---|---|---|---|---|
-| E4.1 | Grill-me + design Config editor | grill-me, frontend-design | Chốt UX editor + schema.json shape | TODO | E3 |
-| E4.2 | `config/scoring/schema.json` (validate) | — | Schema đủ 4 nhóm: factor_weights + gate_matrix + thresholds + extras_cfg (ADR-009) | TODO | E4.1 |
-| E4.3 | Trang `config` editor + validate | — | Config sai schema bị chặn | TODO | E4.2 |
-| E4.4 | `lib/scoring/simulate.ts` (nhãn simulation) | — | Output dán nhãn "simulation"; không dùng làm căn cứ chính thức | TODO | E4.3 |
-| E4.5 | `app/api/promote/route.ts` (server-only) | security-review | Ghi active.json qua GITHUB_TOKEN + row config production; authenticated-only | TODO | E4.3 |
-| E4.6 | Enforce one-change-per-cycle + shadow≥30 | — | UI cảnh báo >1 thay đổi; chặn promote khi chưa đủ shadow | TODO | E4.5 |
-| E4.7 | Security review (Promote/secret/input) | security-review | Pass; secret không ra client | TODO | E4.5 |
-| E4.8 | App-test + Visual QA | app-test, visual-qa | Luồng promote + hiển thị OK | TODO | E4.5 |
+| E4.1 | Grill-me + design Config editor | grill-me, frontend-design | **DONE** — dùng lại design language E2; config surface chốt ADR-009 | **DONE** | E3 |
+| E4.2 | `config/scoring/schema.json` (validate) | — | **DONE** — JSON Schema đủ 4 nhóm; +`config/scoring/active.json` baseline v4.17 (mirror registry) | **DONE** | E4.1 |
+| E4.3 | Trang `config` editor + validate | — | **DONE (code)** — editor weights/gate(6×6)/thresholds/extras + load config production/baseline; validate ở promote route | **DONE (code)** | E4.2 |
+| E4.4 | `lib/scoring/simulate.ts` (nhãn simulation) | — | **DONE** — Σ weight×gate×norm, nhãn SIMULATION rõ; +default-config.ts | **DONE** | E4.3 |
+| E4.5 | `app/api/promote/route.ts` (server-only) | security-review | **DONE (code)** — owner gate + validate + commit active.json (GITHUB_TOKEN) + ghi v4_scoring_configs (service_role). Cần env runtime GITHUB_TOKEN+service key | **DONE (code)** | E4.3 |
+| E4.6 | Enforce one-change-per-cycle | — | **DONE** — guard đếm nhóm đổi >1 → 409; nút Force cố ý. (shadow≥30 enforce ở E5 scorer) | **DONE** | E4.5 |
+| E4.7 | Security review (Promote/secret/input) | security-review | **DONE** — 0 Critical/High; +same-origin guard CSRF. Low: commit+insert không atomic (207 handled) | **DONE** | E4.5 |
+| E4.8 | App-test + Visual QA | app-test, visual-qa | ⏳ PENDING — cần app chạy + env GITHUB_TOKEN/service key để test promote thật | TODO | E4.5 |
 
 ---
 
@@ -95,10 +95,11 @@
 
 | ID | Task | Skill | Definition of Done | Status | Dep |
 |---|---|---|---|---|---|
-| E6.1 | `scripts/export_ic_to_supabase.py` (rank-IC Python) | — | Spearman per (config_version, factor, horizon); join s_* × ret_h | TODO | E1 |
-| E6.2 | Ghi `v4_ic_metrics` idempotent | — | Unique config_version+factor+horizon; re-run không nhân đôi | TODO | E6.1 |
-| E6.3 | Trang `ic` (bảng/heatmap) | frontend-design | Hiển thị IC; empty state khi thiếu mẫu | TODO | E2, E6.2 |
-| E6.4 | App-test + Visual QA | app-test, visual-qa | Luồng + hiển thị OK | TODO | E6.3 |
+| E6.1 | `scripts/export_ic_to_supabase.py` (rank-IC Python) | — | **DONE** — import methodology IC chính thức (eval_forward_ic: daily-last→IC/ngày→trung bình) + class Supabase (sync). 7 factor × 4 horizon | **DONE** | E1 |
+| E6.2 | Ghi `v4_ic_metrics` idempotent | — | **DONE** — upsert on_conflict(config_version,factor,horizon); dry-run 64 dòng trên data 07/08 (MR IC dương mạnh nhất, verify hợp lý). Ghi thật cần service key | **DONE** | E6.1 |
+| E6.3 | Trang `ic` (bảng/heatmap) | frontend-design | ⏳ TODO — heatmap Recharts; cần data (chạy export sau khi có outcomes). Placeholder+empty state đã có (E2) | TODO | E2, E6.2 |
+| E6.4 | App-test + Visual QA | app-test, visual-qa | TODO | TODO | E6.3 |
+| E6.5 | **HỎI DUYỆT** wire export_ic vào cron_weekly (sau eval) | security-review | NEEDS-APPROVAL — tương tự E1.8, chạm production workflow | NEEDS-APPROVAL | E6.2 |
 
 ---
 
