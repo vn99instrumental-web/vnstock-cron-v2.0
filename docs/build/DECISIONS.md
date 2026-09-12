@@ -16,8 +16,9 @@
 
 ---
 
-## ADR-002 — Schema `v4_outcomes` (wide vs long): **TREO, chốt ở E1**
-- **Trạng thái:** DEFERRED → sẽ quyết trong E1 (2026-09-12)
+## ADR-002 — Schema `v4_outcomes` (wide vs long): **WIDE** (CLOSED ở E1)
+- **Trạng thái:** ✅ ACCEPTED — chọn (A) WIDE, migration `0002_outcomes_wide.sql` đã apply (2026-09-12, E1)
+- **Chốt:** WIDE. Evidence quyết định: 12.794 rows outcomes 2026-08 đều đủ 20 field (hình chữ nhật hoàn hảo), chỉ 1 `lens='trade'`. Migration 0001 (long) sai: không có cột `horizon` trong ledger + unique thiếu `snap_time` (5 snap/ngày sẽ đè). Migration 0002: cột `ret_1d/3d/5d/10d/mfe_pct/mae_pct/t0_close/n_bars/eval_date/lens...`, `unique(symbol,signal_date,snap_time,lens)`. E6 IC vẫn tính per-horizon từ cột wide.
 - **Bối cảnh:** Migration `0001` định nghĩa `v4_outcomes(symbol, signal_date, horizon int, ret)` — mô hình **long** (mỗi horizon 1 row). Nhưng ledger thật (`v2f_outcomes_v4/2026-08.jsonl`, evidence đã đọc) lưu **wide**: 1 row/prediction chứa `ret_1d, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct` + `lens`, `scoring_version_effective`, `t0_close`, `n_bars`.
 - **Lựa chọn:**
   - **(A) Đổi migration sang wide** (migration `0002`): cột `ret_1d/3d/5d/10d/mfe_pct/mae_pct/lens`. Sync 1-1 với ledger, ít bug, mất khả năng query generic theo `horizon`.
@@ -87,9 +88,9 @@
 
 ---
 
-## ADR-006 — `run_id` sinh deterministic ở sync (ledger không có sẵn)
-- **Trạng thái:** PROPOSED (2026-09-12) — xác nhận ở E1
-- **Bối cảnh:** `v4_runs` cần `run_id` (PK) nhưng ledger prediction không có field `run_id`; chỉ có `snap_time`, `signal_date`, `scoring_version`, `flow`.
-- **Quyết định (đề xuất):** Sinh `run_id` deterministic từ tổ hợp `(signal_date, snap_time, scoring_version, kind)` (vd hash ngắn hoặc concat). Đảm bảo idempotent: cùng run → cùng id → upsert không nhân đôi.
-- **Lý do:** Cần group signals theo run cho trang Today; idempotency.
-- **Hệ quả:** E1 chốt công thức chính xác + `kind` (intraday/daily) suy từ snap_time hoặc flow. Xác nhận khi code sync.
+## ADR-006 — `run_id` deterministic (CLOSED ở E1)
+- **Trạng thái:** ✅ ACCEPTED (2026-09-12, E1)
+- **Bối cảnh:** `v4_runs` cần `run_id` (PK) nhưng ledger prediction không có field `run_id`.
+- **Chốt:** `run_id = f"{signal_date}_{snap_time}"` (vd `2026-09-03_09:27`). `kind='intraday'`.
+- **Evidence:** predictions 2026-09 — 1 "run" = đúng `(signal_date, snap_time)` → mỗi run 100 mã, `scoring_version` hằng số trong run (0 run có >1 version), flow/universe hằng. 37 run/tháng. Không cần đưa version vào run_id (đã hằng). Mọi run v4 là snap intraday → kind='intraday'; daily flow chưa xuất hiện trong ledger v4.
+- **Hệ quả:** Human-readable, idempotent (cùng run → cùng id → upsert không nhân đôi). Nếu sau này có daily flow, map lại `kind` theo flow/snap.

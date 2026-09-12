@@ -26,14 +26,15 @@
 
 | ID | Task | Skill | Definition of Done | Status | Dep |
 |---|---|---|---|---|---|
-| E1.1 | Chốt ADR-002 schema outcomes (wide/long) | grill-me | ADR-002 CLOSED với lựa chọn A/B + lý do | TODO | E0 |
-| E1.2 | (nếu wide) Migration `0002` đổi `v4_outcomes` | security-review | Migration apply, schema khớp ledger | TODO | E1.1 |
-| E1.3 | Chốt ADR-006 công thức `run_id` | — | Công thức deterministic + `kind` mapping | TODO | E0 |
-| E1.4 | Viết `scripts/sync_supabase.py` (predictions → v4_signals + v4_runs) | — | Upsert idempotent; breakdown jsonb gói `s_*`+shadow; version khớp từng dòng | TODO | E1.3 |
-| E1.5 | Sync outcomes → v4_outcomes | — | Khớp schema chốt E1.1 | TODO | E1.2 |
-| E1.6 | Test idempotency + row-count | app-test | Re-run 2× không nhân đôi; count khớp ledger tháng 2026-09 | TODO | E1.4-5 |
-| E1.7 | Security review (service_role, không log secret) | security-review | Pass; secret chỉ env server | TODO | E1.4-5 |
-| E1.8 | **HỎI DUYỆT** + append step sync non-blocking vào cron workflow cũ (ADR-008) | grill-me, security-review | User approve; step SAU commit-to-main, `continue-on-error: true`; sync fail → pipeline vẫn xanh + git push vẫn chạy; giao full-file workflow | NEEDS-APPROVAL | E1.6 |
+| E1.1 | Chốt ADR-002 schema outcomes (wide/long) | grill-me | ADR-002 CLOSED = WIDE | **DONE** | E0 |
+| E1.2 | Migration `0002` đổi `v4_outcomes` sang WIDE | — | Applied (Supabase), 21 cột khớp ledger, unique(symbol,signal_date,snap_time,lens) | **DONE** | E1.1 |
+| E1.3 | Chốt ADR-006 công thức `run_id` | — | `run_id=signal_date_snap_time`, kind='intraday' | **DONE** | E0 |
+| E1.4 | Viết `scripts/sync_supabase.py` (predictions → v4_signals + v4_runs) | — | py_compile OK; transform 3700→3700 signals+37 runs; breakdown=full record; version khớp | **DONE** | E1.3 |
+| E1.5 | Sync outcomes → v4_outcomes | — | build_outcome_row 1-1 khớp schema wide | **DONE** | E1.2 |
+| E1.6 | Test idempotency + schema (DB thật) | app-test | Upsert 2× qua MCP → counts 1/2/1 không đổi; FK+unique OK; dọn về 0 rows | **DONE** | E1.4-5 |
+| E1.7 | Security review (service_role, không log secret) | security-review | **DONE** — PASS, 0 Critical/High/Med; fix gitignore __pycache__; note escape breakdown ở E3 | **DONE** | E1.4-5 |
+| E1.8 | **HỎI DUYỆT** + append step sync non-blocking vào cron workflow cũ (ADR-008) | grill-me, security-review | User approve; step SAU commit-to-main, `continue-on-error: true`; sync fail → pipeline vẫn xanh + git push vẫn chạy; giao full-file workflow | NEEDS-APPROVAL | E1.6-7 |
+| E1.9 | Sync FULL data thật lên bảng (chạy script server-side có service key) | — | Row count Supabase khớp ledger; cần env SUPABASE_SERVICE_ROLE_KEY (chỉ có ở server/GH Actions) | BLOCKED (thiếu key ở phiên local) | E1.7-8 |
 
 ---
 
@@ -57,7 +58,7 @@
 | E3.1 | Design Today/History/Drill-down | frontend-design | Spec bảng, filter, badge version động | TODO | E2 |
 | E3.2 | Trang `today` (run mới nhất) | — | Khớp `v4_runs.started_at` max; version động | TODO | E1, E3.1 |
 | E3.3 | Trang `history` (filter + phân trang server-side) | — | Filter ngày/mã/decision; empty/loading/error states | TODO | E1, E3.1 |
-| E3.4 | Trang `history/[id]` (drill-down) | — | Breakdown `s_*`/gates/ranks/shadow/outcome | TODO | E1, E3.1 |
+| E3.4 | Trang `history/[id]` (drill-down) | — | Breakdown `s_*`/gates/ranks/shadow/outcome. **Escape khi render `breakdown` jsonb** (XSS defense-in-depth — note từ security-review E1) | TODO | E1, E3.1 |
 | E3.5 | App-test luồng đọc | app-test | Routing/filter/drill-down pass | TODO | E3.2-4 |
 | E3.6 | Visual QA | visual-qa | Responsive + states OK | TODO | E3.2-4 |
 

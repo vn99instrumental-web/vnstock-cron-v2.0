@@ -64,9 +64,16 @@
 
 | ADR | Nội dung | Chốt ở |
 |---|---|---|
-| ADR-002 | Schema `v4_outcomes` wide (ledger) vs long (migration) | E1 |
 | ADR-004 | Scorer đọc `active.json` (fallback registry) | E5 — **cần duyệt** |
-| ADR-006 | Công thức `run_id` deterministic khi sync | E1 |
+
+## 4c. E1 — Data Sync (đang làm, 2026-09-12)
+
+- ✅ ADR-002 CLOSED = WIDE. **Migration `0002_outcomes_wide.sql` đã apply** lên Supabase (v4_outcomes 21 cột, `unique(symbol,signal_date,snap_time,lens)`, RLS on).
+- ✅ ADR-006 CLOSED: `run_id = signal_date_snap_time`, `kind='intraday'`.
+- ✅ `scripts/sync_supabase.py` (full-file): stdlib+requests, zero heavy dep. Transform verified: 3700 predictions → 3700 signals + 37 runs (2026-09); outcomes 1-1 wide. py_compile OK. `breakdown` jsonb = full record (lossless drill-down). Secret chỉ đọc từ env, không log.
+- ✅ Idempotency + schema verified ở DB thật (MCP): upsert 2× → counts 1/2/1 không đổi; FK v4_signals→v4_runs + unique constraint hoạt động. Đã dọn test rows về 0.
+- ⏳ **BLOCKED**: full sync data thật cần `SUPABASE_SERVICE_ROLE_KEY` — chỉ có ở server/GH Actions (không có ở phiên local). Full load chạy khi wire workflow (E1.8, cần duyệt).
+- ⏳ TODO: `security-review` (E1.7) trước khi wire workflow.
 
 ---
 

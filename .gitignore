@@ -1,3 +1,7 @@
 # 2026-08-19 (P0.1): cache tape intraday dùng chung 1 run — KHÔNG commit.
 # Ephemeral theo từng GitHub Actions run; commit sẽ làm bloat + tape stale.
 output/cache/intraday/
+
+# Python bytecode cache — không commit.
+__pycache__/
+*.pyc
