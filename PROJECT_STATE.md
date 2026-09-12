@@ -117,6 +117,12 @@
 - ✅ Helper `lib/format.ts` + `components/{signals-table,history-filters}.tsx`.
 - ⏳ Tất cả hiển thị **empty-state** tới khi có data thật (sync + IC export chạy). Chưa app-test/visual-qa (cần app chạy).
 
+## 4g. Build verified + fix Vercel (2026-09-12)
+- ✅ `npm install` + `tsc --noEmit` sạch + `next build` **PASS** tại chỗ (10 route, static/dynamic đúng, middleware OK).
+- ✅ Sửa lỗi build: nav.tsx (bỏ as const), server/middleware setAll annotate CookieToSet.
+- ✅ Vá bảo mật: Next 15.1.6 → 15.5.25 (CVE-2025-66478); +package-lock.json.
+- ⚠️ Fix ở nhánh `claude/bold-pascal-768taz` — cần **merge lại vào main** để Vercel redeploy thành công (lần build lỗi trước chạy trên main@190b1d5 chưa có fix).
+
 ## 5. Việc kế tiếp (next actions)
 
 1. **Owner (thủ công)**: set secret GH `SUPABASE_SERVICE_ROLE_KEY` + merge branch → main → data tự chảy (E1.9).
