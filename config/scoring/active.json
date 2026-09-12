@@ -1,0 +1,44 @@
+{
+  "version_label": "v4.17-baseline",
+  "status": "production",
+  "based_on": "utils/v2f_registry.py @ REGISTRY_VERSION=3, GATE_VERSION=7, SCORING_VERSION=v4.17",
+  "note": "Baseline trích từ registry hiện hành (E4). Promote sẽ GHI ĐÈ file này (server-only). E5 scorer đọc file này + fallback registry khi thiếu/hỏng.",
+  "factor_weights": {
+    "trade": {
+      "mean_reversion": 0.30,
+      "breakout": 0.08,
+      "flow": 0.25,
+      "fundamental": 0.20,
+      "growth": 0.10,
+      "context": 0.07
+    },
+    "hold": {
+      "mean_reversion": 0.15,
+      "breakout": 0.28,
+      "flow": 0.12,
+      "fundamental": 0.25,
+      "growth": 0.15,
+      "context": 0.05
+    }
+  },
+  "gate_matrix": {
+    "regimes": ["UPTREND", "SIDEWAYS", "RECOVERY", "DOWNTREND", "DEEP_DOWN", "UNKNOWN"],
+    "mean_reversion": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "breakout":       [0.5, 0.7, 0.5, 1.0, 1.0, 0.5],
+    "flow":           [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "fundamental":    [1.0, 1.0, 0.8, 0.8, 0.6, 1.0],
+    "growth":         [1.0, 1.0, 0.8, 0.8, 0.6, 1.0],
+    "context":        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  },
+  "thresholds": [
+    { "min": 50,   "decision": "STRONG BUY" },
+    { "min": 25,   "decision": "BUY" },
+    { "min": -10,  "decision": "NEUTRAL" },
+    { "min": -25,  "decision": "SELL" },
+    { "min": null, "decision": "STRONG SELL" }
+  ],
+  "extras": {
+    "confluence_bonus": 5,
+    "confluence_min_norm": 0.30
+  }
+}

@@ -1,0 +1,108 @@
+# TASKS — Backlog epic → task
+
+> Backlog thực thi. Mỗi task: **ID · skill gate · Definition of Done · status · dependency**.
+> Cập nhật `status` **ngay khi xong task**. Nguồn chân lý trạng thái build tổng: `PROJECT_STATE.md`.
+> Status: `TODO · DOING · BLOCKED · DONE · NEEDS-APPROVAL`
+
+**Ngày:** 2026-09-12 · **HEAD gốc:** `38de5bb`
+
+---
+
+## E0 — Foundation *(DOING)*
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E0.1 | Verify connections (Supabase/GitHub/n8n) | — | 3 connection sống + 5 bảng `v4_*` tồn tại RLS-on (evidence log) | **DONE** | — |
+| E0.2 | Viết `PRD.md` comprehensive (E0-E6) | grill-me | PRD khớp HEAD thật, có acceptance criteria từng epic | **DONE** | E0.1 |
+| E0.3 | Viết `PLAN.md` (phase + dependency + cadence) | — | Lộ trình + dependency graph + milestone | **DONE** | E0.2 |
+| E0.4 | Viết `DECISIONS.md` (ADR khởi tạo) | — | ADR-001..006 (shared-project, outcomes-deferred, source-of-truth, config-driven, promote-security, run_id) | **DONE** | E0.2 |
+| E0.5 | Viết `TASKS.md` (backlog) | — | Backlog E0-E6 có DoD/dep/status | **DONE** | E0.2 |
+| E0.6 | Viết `PROJECT_STATE.md` | project-update | State khớp evidence repo | **DONE** | E0.2 |
+| E0.7 | Commit + push branch `claude/bold-pascal-768taz` | — | Push thành công, working tree clean | **TODO** | E0.2-6 |
+
+---
+
+## E1 — Data Sync (JSONL → Supabase)
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E1.1 | Chốt ADR-002 schema outcomes (wide/long) | grill-me | ADR-002 CLOSED = WIDE | **DONE** | E0 |
+| E1.2 | Migration `0002` đổi `v4_outcomes` sang WIDE | — | Applied (Supabase), 21 cột khớp ledger, unique(symbol,signal_date,snap_time,lens) | **DONE** | E1.1 |
+| E1.3 | Chốt ADR-006 công thức `run_id` | — | `run_id=signal_date_snap_time`, kind='intraday' | **DONE** | E0 |
+| E1.4 | Viết `scripts/sync_supabase.py` (predictions → v4_signals + v4_runs) | — | py_compile OK; transform 3700→3700 signals+37 runs; breakdown=full record; version khớp | **DONE** | E1.3 |
+| E1.5 | Sync outcomes → v4_outcomes | — | build_outcome_row 1-1 khớp schema wide | **DONE** | E1.2 |
+| E1.6 | Test idempotency + schema (DB thật) | app-test | Upsert 2× qua MCP → counts 1/2/1 không đổi; FK+unique OK; dọn về 0 rows | **DONE** | E1.4-5 |
+| E1.7 | Security review (service_role, không log secret) | security-review | **DONE** — PASS, 0 Critical/High/Med; fix gitignore __pycache__; note escape breakdown ở E3 | **DONE** | E1.4-5 |
+| E1.8 | Append step sync non-blocking vào `v2f_cron_intraday.yml` (ADR-008) | security-review | **DONE** — commit `1fad8df`; step SAU "Commit V2F output", `continue-on-error: true`, skip mềm khi thiếu secret; YAML hợp lệ. **Chờ anh: (1) set secret GH `SUPABASE_SERVICE_ROLE_KEY`, (2) merge vào main** | **DONE** | E1.6-7 |
+| E1.9 | Sync FULL data thật lên bảng | — | Tự chạy khi run intraday kế tiếp SAU khi anh set secret + merge E1.8. Verify row count khớp ledger | BLOCKED (chờ E1.8 merge + secret) | E1.8 |
+
+---
+
+## E2 — Web Foundation
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E2.1 | Design khung app + nav (5 route) | frontend-design | **DONE** — shell sidebar/top-nav + header version badge động + màu semantic decision | **DONE** | E0 |
+| E2.2 | Scaffold `web/` Next.js App Router + TS | — | **DONE (code)** — package/tsconfig/next/postcss/tailwind + 5 route + login + auth callback. ⏳ `npm install`+build verify local/Vercel (không chạy ở phiên: tránh cạn disk) | **DONE (code)** | E2.1 |
+| E2.3 | `lib/supabase/{server,client,middleware}.ts` (đúng lớp key) | — | **DONE** — client+server dùng anon+cookie; getUser/isOwner; service_role KHÔNG dùng ở E2 | **DONE** | E2.2 |
+| E2.4 | Supabase Auth **đơn owner** (login) + `middleware.ts` (ADR-007) | — | **DONE** — middleware gate /config (redirect /login), kiểm lại server-side; login email+password; allowlist NEXT_PUBLIC_OWNER_EMAIL | **DONE** | E2.3 |
+| E2.5 | Verify secret không vào client bundle | security-review | **DONE** — grep web/ sạch; service_role/GITHUB_TOKEN chỉ trong comment/env-example | **DONE** | E2.3-4 |
+| E2.6 | Visual QA khung + responsive | visual-qa | ⏳ PENDING — cần app chạy local (chưa install ở phiên) | TODO | E2.2 |
+
+---
+
+## E3 — Read Dashboards
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E3.1 | Design Today/History/Drill-down | frontend-design | **DONE** — dùng lại design language E2 (bảng data-dense, DecisionBadge semantic, stat cards) | **DONE** | E2 |
+| E3.2 | Trang `today` (run mới nhất) | — | **DONE (code)** — đọc v4_runs started_at max + signals; stat cards; version động | **DONE (code)** | E1, E3.1 |
+| E3.3 | Trang `history` (filter + phân trang server-side) | — | **DONE (code)** — filter ngày/mã/decision + phân trang range(50) + count; empty state | **DONE (code)** | E1, E3.1 |
+| E3.4 | Trang `history/[id]` (drill-down) | — | **DONE (code)** — breakdown s_*/norms/gates/ranks/shadow/trade-levels + outcome forward. React escape mặc định → XSS-safe (thỏa note E1) | **DONE (code)** | E1, E3.1 |
+| E3.5 | App-test luồng đọc | app-test | ⏳ PENDING — cần app chạy + data | TODO | E3.2-4 |
+| E3.6 | Visual QA | visual-qa | ⏳ PENDING — cần app chạy | TODO | E3.2-4 |
+
+---
+
+## E4 — Config & Promote
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E4.1 | Grill-me + design Config editor | grill-me, frontend-design | **DONE** — dùng lại design language E2; config surface chốt ADR-009 | **DONE** | E3 |
+| E4.2 | `config/scoring/schema.json` (validate) | — | **DONE** — JSON Schema đủ 4 nhóm; +`config/scoring/active.json` baseline v4.17 (mirror registry) | **DONE** | E4.1 |
+| E4.3 | Trang `config` editor + validate | — | **DONE (code)** — editor weights/gate(6×6)/thresholds/extras + load config production/baseline; validate ở promote route | **DONE (code)** | E4.2 |
+| E4.4 | `lib/scoring/simulate.ts` (nhãn simulation) | — | **DONE** — Σ weight×gate×norm, nhãn SIMULATION rõ; +default-config.ts | **DONE** | E4.3 |
+| E4.5 | `app/api/promote/route.ts` (server-only) | security-review | **DONE (code)** — owner gate + validate + commit active.json (GITHUB_TOKEN) + ghi v4_scoring_configs (service_role). Cần env runtime GITHUB_TOKEN+service key | **DONE (code)** | E4.3 |
+| E4.6 | Enforce one-change-per-cycle | — | **DONE** — guard đếm nhóm đổi >1 → 409; nút Force cố ý. (shadow≥30 enforce ở E5 scorer) | **DONE** | E4.5 |
+| E4.7 | Security review (Promote/secret/input) | security-review | **DONE** — 0 Critical/High; +same-origin guard CSRF. Low: commit+insert không atomic (207 handled) | **DONE** | E4.5 |
+| E4.8 | App-test + Visual QA | app-test, visual-qa | ⏳ PENDING — cần app chạy + env GITHUB_TOKEN/service key để test promote thật | TODO | E4.5 |
+
+---
+
+## E5 — Scorer config-driven *(NEEDS-APPROVAL · Python)*
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E5.0 | **HỎI DUYỆT** sửa `steps/v2f_step_scoring_v4.py` | grill-me | User approve rõ ràng | **NEEDS-APPROVAL** | E4 |
+| E5.1 | Loader đọc `active.json` + fallback registry | — | `py_compile`+AST pass; không config → output byte-identical | TODO | E5.0 |
+| E5.2 | Shadow fields + bump version khi đổi số | — | Shadow ghi riêng; đổi số → bump SCORING_VERSION + reset bucket | TODO | E5.1 |
+| E5.3 | Security review (production Python) | security-review | Pass | TODO | E5.1 |
+| E5.4 | Shadow ≥30 phiên trước promote thật | — | Đủ 30 phiên forward → mới promote | TODO | E5.2 |
+
+---
+
+## E6 — IC Evaluator
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E6.1 | `scripts/export_ic_to_supabase.py` (rank-IC Python) | — | **DONE** — import methodology IC chính thức (eval_forward_ic: daily-last→IC/ngày→trung bình) + class Supabase (sync). 7 factor × 4 horizon | **DONE** | E1 |
+| E6.2 | Ghi `v4_ic_metrics` idempotent | — | **DONE** — upsert on_conflict(config_version,factor,horizon); dry-run 64 dòng trên data 07/08 (MR IC dương mạnh nhất, verify hợp lý). Ghi thật cần service key | **DONE** | E6.1 |
+| E6.3 | Trang `ic` (bảng/heatmap) | frontend-design | **DONE (code)** — heatmap table factor×horizon theo version, màu diverging theo IC (|IC| chuẩn ±0.2), hover xem n; empty state | **DONE (code)** | E2, E6.2 |
+| E6.4 | App-test + Visual QA | app-test, visual-qa | TODO | TODO | E6.3 |
+| E6.5 | **HỎI DUYỆT** wire export_ic vào cron_weekly (sau eval) | security-review | NEEDS-APPROVAL — tương tự E1.8, chạm production workflow | NEEDS-APPROVAL | E6.2 |
+
+---
+
+## Cột mốc cập nhật
+- 2026-09-12: Khởi tạo backlog. E0.1-E0.7 DONE (push `adb5d4f`).
+- 2026-09-12 (grill vòng 2): chốt ADR-007 (auth 1 owner), ADR-008 (sync non-blocking vào workflow cũ), ADR-009 (config surface đầy đủ); sửa decision buckets đúng data. Thêm E1.8. PRD → v2.0 GRILLED.

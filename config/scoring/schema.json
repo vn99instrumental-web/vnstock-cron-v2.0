@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "vnstock/scoring/active.schema.json",
+  "title": "VNStock scoring active config",
+  "description": "Hợp đồng cho config/scoring/active.json. Promote validate theo schema này trước khi ghi (E4). E5 scorer đọc + fallback registry.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version_label", "factor_weights", "gate_matrix", "thresholds"],
+  "properties": {
+    "version_label": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["draft", "shadow", "production", "archived"] },
+    "based_on": { "type": "string" },
+    "note": { "type": "string" },
+    "factor_weights": {
+      "type": "object",
+      "required": ["trade", "hold"],
+      "properties": {
+        "trade": { "$ref": "#/$defs/weightSet" },
+        "hold": { "$ref": "#/$defs/weightSet" }
+      },
+      "additionalProperties": false
+    },
+    "gate_matrix": {
+      "type": "object",
+      "required": ["regimes", "mean_reversion", "breakout", "flow", "fundamental", "growth", "context"],
+      "properties": {
+        "regimes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "mean_reversion": { "$ref": "#/$defs/gateRow" },
+        "breakout": { "$ref": "#/$defs/gateRow" },
+        "flow": { "$ref": "#/$defs/gateRow" },
+        "fundamental": { "$ref": "#/$defs/gateRow" },
+        "growth": { "$ref": "#/$defs/gateRow" },
+        "context": { "$ref": "#/$defs/gateRow" }
+      },
+      "additionalProperties": false
+    },
+    "thresholds": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["min", "decision"],
+        "properties": {
+          "min": { "type": ["number", "null"] },
+          "decision": {
+            "type": "string",
+            "enum": ["STRONG BUY", "BUY", "NEUTRAL", "SELL", "STRONG SELL"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extras": {
+      "type": "object",
+      "properties": {
+        "confluence_bonus": { "type": "number", "minimum": 0, "maximum": 100 },
+        "confluence_min_norm": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "weightSet": {
+      "type": "object",
+      "required": ["mean_reversion", "breakout", "flow", "fundamental", "growth", "context"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(mean_reversion|breakout|flow|fundamental|growth|context)$": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "gateRow": {
+      "type": "array",
+      "items": { "type": "number", "minimum": 0, "maximum": 1 },
+      "minItems": 1
+    }
+  }
+}
