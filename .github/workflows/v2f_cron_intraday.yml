@@ -253,6 +253,28 @@ jobs:
             exit 1
           fi
 
+      # ──────────────────────────────────────────────────────────────────
+      # [E1.8 · ADR-008] MIRROR ledger → Supabase (app query layer).
+      # Đặt SAU "Commit V2F output" → ledger đã push lên main trước khi sync.
+      # continue-on-error: sync hỏng KHÔNG chặn pipeline / KHÔNG rollback push
+      #   (bảo vệ pipeline tiền thật). Idempotent (upsert on_conflict) → chạy
+      #   lại mỗi run không nhân đôi. Đọc predictions_v4 + outcomes_v4 (mọi
+      #   tháng), nên outcomes do cron_weekly ghi cũng lên bảng ở run kế.
+      # SUPABASE_URL công khai (đã có trong env.example). service_role là
+      #   SECRET GH Actions — chưa set thì skip mềm (vẫn xanh).
+      # ──────────────────────────────────────────────────────────────────
+      - name: Sync ledger → Supabase (mirror, non-blocking)
+        continue-on-error: true
+        env:
+          SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "⚠️ Chưa set secret SUPABASE_SERVICE_ROLE_KEY — bỏ qua sync (non-blocking)."
+            exit 0
+          fi
+          /opt/vnstock/.venv/bin/python scripts/sync_supabase.py
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB PHỤ — chỉ chạy tay (workflow_dispatch) để BACKFILL V4 trên dữ liệu
   # đã commit (v2f_signals.json + context.json của phiên gần nhất). KHÔNG
