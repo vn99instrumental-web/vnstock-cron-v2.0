@@ -33,8 +33,8 @@
 | E1.5 | Sync outcomes → v4_outcomes | — | build_outcome_row 1-1 khớp schema wide | **DONE** | E1.2 |
 | E1.6 | Test idempotency + schema (DB thật) | app-test | Upsert 2× qua MCP → counts 1/2/1 không đổi; FK+unique OK; dọn về 0 rows | **DONE** | E1.4-5 |
 | E1.7 | Security review (service_role, không log secret) | security-review | **DONE** — PASS, 0 Critical/High/Med; fix gitignore __pycache__; note escape breakdown ở E3 | **DONE** | E1.4-5 |
-| E1.8 | **HỎI DUYỆT** + append step sync non-blocking vào cron workflow cũ (ADR-008) | grill-me, security-review | User approve; step SAU commit-to-main, `continue-on-error: true`; sync fail → pipeline vẫn xanh + git push vẫn chạy; giao full-file workflow | NEEDS-APPROVAL | E1.6-7 |
-| E1.9 | Sync FULL data thật lên bảng (chạy script server-side có service key) | — | Row count Supabase khớp ledger; cần env SUPABASE_SERVICE_ROLE_KEY (chỉ có ở server/GH Actions) | BLOCKED (thiếu key ở phiên local) | E1.7-8 |
+| E1.8 | Append step sync non-blocking vào `v2f_cron_intraday.yml` (ADR-008) | security-review | **DONE (giao full-file)** — step SAU "Commit V2F output", `continue-on-error: true`, skip mềm khi thiếu secret; YAML hợp lệ. **Chờ anh: (1) set secret GH `SUPABASE_SERVICE_ROLE_KEY`, (2) merge vào main** | **DELIVERED** | E1.6-7 |
+| E1.9 | Sync FULL data thật lên bảng | — | Tự chạy khi run intraday kế tiếp SAU khi anh set secret + merge E1.8. Verify row count khớp ledger | BLOCKED (chờ E1.8 merge + secret) | E1.8 |
 
 ---
 

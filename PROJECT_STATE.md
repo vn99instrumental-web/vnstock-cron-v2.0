@@ -72,8 +72,12 @@
 - ✅ ADR-006 CLOSED: `run_id = signal_date_snap_time`, `kind='intraday'`.
 - ✅ `scripts/sync_supabase.py` (full-file): stdlib+requests, zero heavy dep. Transform verified: 3700 predictions → 3700 signals + 37 runs (2026-09); outcomes 1-1 wide. py_compile OK. `breakdown` jsonb = full record (lossless drill-down). Secret chỉ đọc từ env, không log.
 - ✅ Idempotency + schema verified ở DB thật (MCP): upsert 2× → counts 1/2/1 không đổi; FK v4_signals→v4_runs + unique constraint hoạt động. Đã dọn test rows về 0.
-- ⏳ **BLOCKED**: full sync data thật cần `SUPABASE_SERVICE_ROLE_KEY` — chỉ có ở server/GH Actions (không có ở phiên local). Full load chạy khi wire workflow (E1.8, cần duyệt).
-- ⏳ TODO: `security-review` (E1.7) trước khi wire workflow.
+- ✅ `security-review` (E1.7) PASS.
+- ✅ E1.8 (giao full-file): `v2f_cron_intraday.yml` thêm step "Sync ledger → Supabase" — SAU "Commit V2F output", `continue-on-error: true`, skip mềm khi thiếu secret. YAML hợp lệ.
+- ⏳ **CHỜ ANH (2 việc thủ công) để data tự chảy lên bảng**:
+  1. Set secret GitHub Actions `SUPABASE_SERVICE_ROLE_KEY` (repo Settings → Secrets → Actions). SUPABASE_URL đã hardcode (công khai).
+  2. Merge branch `claude/bold-pascal-768taz` → `main`.
+  → Sau đó run intraday kế tiếp (n8n 5×/ngày) sẽ tự sync (E1.9).
 
 ---
 
