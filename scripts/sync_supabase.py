@@ -32,6 +32,7 @@ import logging
 import os
 import re
 import sys
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -44,7 +45,8 @@ OUTC_DIR = ROOT / "output" / "history" / "v2f_outcomes_v4"
 
 ICT_OFFSET = "+07:00"                      # giờ VN
 BUY_DECISIONS = {"BUY", "STRONG BUY"}      # đếm n_buy
-BATCH = 500                                # số row/1 request PostgREST
+BATCH = 200                                # số row/1 request PostgREST (nhỏ để tránh 504 khi breakdown jsonb lớn)
+MAX_RETRY = 5                              # retry cho lỗi tạm (5xx / timeout / mạng)
 MONTH_RE = re.compile(r"^\d{4}-\d{2}$")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -203,16 +205,35 @@ class Supabase:
         total = 0
         for i in range(0, len(rows), BATCH):
             chunk = rows[i:i + BATCH]
-            r = requests.post(
-                f"{self.rest}/{table}",
-                params={"on_conflict": on_conflict},
-                headers=self._h,
-                data=json.dumps(chunk, default=str),
-                timeout=60,
-            )
-            if r.status_code >= 300:
-                # KHÔNG log body request (tránh lộ dữ liệu/khoá); chỉ log status + phản hồi ngắn.
-                raise RuntimeError(f"upsert {table} HTTP {r.status_code}: {r.text[:300]}")
+            body = json.dumps(chunk, default=str)
+            # Retry backoff cho lỗi TẠM (504/502/503/429 hoặc timeout/mạng).
+            last_err = ""
+            for attempt in range(1, MAX_RETRY + 1):
+                try:
+                    r = requests.post(
+                        f"{self.rest}/{table}",
+                        params={"on_conflict": on_conflict},
+                        headers=self._h,
+                        data=body,
+                        timeout=120,
+                    )
+                except requests.RequestException as e:
+                    last_err = f"network:{type(e).__name__}"
+                    r = None
+                if r is not None and r.status_code < 300:
+                    break
+                if r is not None:
+                    last_err = f"HTTP {r.status_code}: {r.text[:200]}"
+                    # Lỗi client (4xx trừ 429) không đáng retry → dừng ngay.
+                    if 400 <= r.status_code < 500 and r.status_code != 429:
+                        raise RuntimeError(f"upsert {table} {last_err}")
+                if attempt < MAX_RETRY:
+                    wait = 2 ** attempt
+                    log.warning("  upsert %s batch @%d lỗi (%s) — thử lại sau %ds (lần %d/%d)",
+                                table, total, last_err, wait, attempt, MAX_RETRY)
+                    time.sleep(wait)
+            else:
+                raise RuntimeError(f"upsert {table} thất bại sau {MAX_RETRY} lần: {last_err}")
             total += len(chunk)
             log.info("  upsert %s: %d/%d", table, total, len(rows))
         return total
