@@ -3,16 +3,21 @@
 import { createClient } from "@/lib/supabase/server";
 
 export async function VersionBadge() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("v4_runs")
-    .select("scoring_version, gate_version, started_at")
-    .order("started_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const sv = data?.scoring_version ?? "—";
-  const gv = data?.gate_version ?? "—";
+  let sv = "—";
+  let gv: string | number = "—";
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("v4_runs")
+      .select("scoring_version, gate_version, started_at")
+      .order("started_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    sv = data?.scoring_version ?? "—";
+    gv = data?.gate_version ?? "—";
+  } catch {
+    // Thiếu env / Supabase lỗi → hiển thị "—", không làm sập layout.
+  }
 
   return (
     <span

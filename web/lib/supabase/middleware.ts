@@ -1,4 +1,6 @@
 // Helper refresh session cho middleware + gate /config (ADR-007).
+// Fail-safe: nếu thiếu env hoặc Supabase lỗi → KHÔNG sập site; chỉ chặn /config (fail-closed),
+// còn route public vẫn render bình thường.
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -13,13 +15,28 @@ function isProtected(pathname: string): boolean {
   );
 }
 
+function redirectToLogin(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  url.pathname = "/login";
+  url.searchParams.set("next", request.nextUrl.pathname);
+  return NextResponse.redirect(url);
+}
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { pathname } = request.nextUrl;
+
+  // Thiếu env → không thể xác thực. Không sập: chặn /config, public vẫn chạy.
+  if (!url || !anon) {
+    if (isProtected(pathname)) return redirectToLogin(request);
+    return response;
+  }
+
+  try {
+    const supabase = createServerClient(url, anon, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -34,26 +51,24 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
-    },
-  );
+    });
 
-  // QUAN TRỌNG: getUser() refresh token; đừng chèn logic giữa createServerClient và đây.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // QUAN TRỌNG: getUser() refresh token; đừng chèn logic giữa createServerClient và đây.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-  const owner = process.env.NEXT_PUBLIC_OWNER_EMAIL?.toLowerCase().trim();
-  const isOwner =
-    !!owner && !!user?.email && user.email.toLowerCase().trim() === owner;
+    const owner = process.env.NEXT_PUBLIC_OWNER_EMAIL?.toLowerCase().trim();
+    const isOwner =
+      !!owner && !!user?.email && user.email.toLowerCase().trim() === owner;
 
-  // Chưa đăng nhập / không phải owner → chặn route bảo vệ, đẩy về /login.
-  if (isProtected(pathname) && !isOwner) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+    if (isProtected(pathname) && !isOwner) {
+      return redirectToLogin(request);
+    }
+    return response;
+  } catch {
+    // Supabase lỗi (mạng/khoá sai) → fail-closed cho /config, còn lại vẫn render.
+    if (isProtected(pathname)) return redirectToLogin(request);
+    return response;
   }
-
-  return response;
 }
