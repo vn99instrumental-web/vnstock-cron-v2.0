@@ -33,6 +33,7 @@
 | E1.5 | Sync outcomes → v4_outcomes | — | Khớp schema chốt E1.1 | TODO | E1.2 |
 | E1.6 | Test idempotency + row-count | app-test | Re-run 2× không nhân đôi; count khớp ledger tháng 2026-09 | TODO | E1.4-5 |
 | E1.7 | Security review (service_role, không log secret) | security-review | Pass; secret chỉ env server | TODO | E1.4-5 |
+| E1.8 | **HỎI DUYỆT** + append step sync non-blocking vào cron workflow cũ (ADR-008) | grill-me, security-review | User approve; step SAU commit-to-main, `continue-on-error: true`; sync fail → pipeline vẫn xanh + git push vẫn chạy; giao full-file workflow | NEEDS-APPROVAL | E1.6 |
 
 ---
 
@@ -43,7 +44,7 @@
 | E2.1 | Design khung app + nav (5 route) | frontend-design | Mockup/spec route today/history/history/[id]/config/ic | TODO | E0 |
 | E2.2 | Scaffold `web/` Next.js App Router + TS | — | dev/build chạy; route trống render | TODO | E2.1 |
 | E2.3 | `lib/supabase/{server,client}.ts` (đúng lớp key) | — | Server dùng service (chỉ server), client dùng anon | TODO | E2.2 |
-| E2.4 | Supabase Auth (login) + `middleware.ts` | — | Chặn /config + Promote khi chưa auth; public route mở | TODO | E2.3 |
+| E2.4 | Supabase Auth **đơn owner** (login) + `middleware.ts` (ADR-007) | — | Chặn /config + Promote khi chưa auth; allowlist 1 email owner; public route mở | TODO | E2.3 |
 | E2.5 | Verify secret không vào client bundle | security-review | grep bundle sạch; review pass | TODO | E2.3-4 |
 | E2.6 | Visual QA khung + responsive | visual-qa | Desktop + mobile OK | TODO | E2.2 |
 
@@ -67,7 +68,7 @@
 | ID | Task | Skill | Definition of Done | Status | Dep |
 |---|---|---|---|---|---|
 | E4.1 | Grill-me + design Config editor | grill-me, frontend-design | Chốt UX editor + schema.json shape | TODO | E3 |
-| E4.2 | `config/scoring/schema.json` (validate) | — | Schema weights/gates/thresholds | TODO | E4.1 |
+| E4.2 | `config/scoring/schema.json` (validate) | — | Schema đủ 4 nhóm: factor_weights + gate_matrix + thresholds + extras_cfg (ADR-009) | TODO | E4.1 |
 | E4.3 | Trang `config` editor + validate | — | Config sai schema bị chặn | TODO | E4.2 |
 | E4.4 | `lib/scoring/simulate.ts` (nhãn simulation) | — | Output dán nhãn "simulation"; không dùng làm căn cứ chính thức | TODO | E4.3 |
 | E4.5 | `app/api/promote/route.ts` (server-only) | security-review | Ghi active.json qua GITHUB_TOKEN + row config production; authenticated-only | TODO | E4.3 |
@@ -101,4 +102,5 @@
 ---
 
 ## Cột mốc cập nhật
-- 2026-09-12: Khởi tạo backlog. E0.1-E0.6 DONE, E0.7 pending push.
+- 2026-09-12: Khởi tạo backlog. E0.1-E0.7 DONE (push `adb5d4f`).
+- 2026-09-12 (grill vòng 2): chốt ADR-007 (auth 1 owner), ADR-008 (sync non-blocking vào workflow cũ), ADR-009 (config surface đầy đủ); sửa decision buckets đúng data. Thêm E1.8. PRD → v2.0 GRILLED.

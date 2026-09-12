@@ -55,6 +55,38 @@
 
 ---
 
+## ADR-007 — Auth = Supabase Auth đơn owner; public read
+- **Trạng thái:** ACCEPTED (2026-09-12, grill vòng 2)
+- **Bối cảnh:** Hành động nhạy cảm duy nhất là Config editor + Promote. Còn lại (signals/outcomes/ic) repo vốn public, không nhạy cảm.
+- **Lựa chọn cân nhắc:** (A) Supabase Auth 1 owner; (B) không auth, Promote qua secret server; (C) MVP read-only chưa có Config/Promote.
+- **Quyết định:** **(A)** — Supabase Auth đơn owner (email của anh, whitelist 1 email). Public read toàn bộ. `/config` + Promote chỉ sau login. Không RBAC nhiều vai, không cho đăng ký user mới.
+- **Lý do:** Bảo vệ được cả UI editor lẫn API Promote bằng session thật; RLS `read v4_configs = authenticated` đã sẵn sàng khớp mô hình này. Đơn giản, không over-engineer.
+- **Hệ quả:** E2 dựng Supabase Auth + middleware chặn `/config`/Promote khi chưa auth. E4 kiểm tra session server-side trước khi ghi. Cần cấu hình allowlist email owner (Supabase Auth settings / kiểm tra trong route).
+
+---
+
+## ADR-008 — Sync chạy qua step non-blocking append vào cron workflow cũ
+- **Trạng thái:** ACCEPTED (2026-09-12, grill vòng 2) — **thực thi ở E1 vẫn cần duyệt sửa workflow**
+- **Bối cảnh:** Workflow intraday/daily hiện có `contents: write`, tự commit JSONL ledger vào `main`. Sync cần đọc ledger đã commit.
+- **Lựa chọn cân nhắc:** (A) workflow GH Actions riêng trigger on push; (B) thêm step vào workflow cũ; (C) chạy tay/cron ngoài.
+- **Quyết định:** **(B)** — append 1 step sync vào cuối cron workflow cũ (sau step commit-to-main), với **2 guardrail bắt buộc**:
+  1. `continue-on-error: true` — sync fail **không** làm fail pipeline, **không** chặn git push (bảo vệ pipeline tiền thật đang chạy).
+  2. Đặt SAU commit-to-main để đọc ledger đã persist.
+- **Lý do:** Gộp 1 pipeline, data lên bảng ngay sau mỗi run, không cần cơ chế trigger riêng. User (owner) là người duyệt.
+- **Hệ quả (never-do #6):** Sửa `.github/workflows/*.yml` là chạm production → E1 phải **hỏi duyệt lại + giao full-file workflow**, review kỹ concurrency, không tự ý sửa. Rủi ro chính: làm gãy cron → guardrail non-blocking là bắt buộc, không thương lượng.
+
+---
+
+## ADR-009 — Config surface = weights + gates + thresholds + extras (đầy đủ)
+- **Trạng thái:** ACCEPTED (2026-09-12, grill vòng 2)
+- **Bối cảnh:** App cho phép chỉnh cấu hình scorer. Bảng `v4_scoring_configs` đã có `factor_weights, gate_matrix, thresholds, extras_cfg`.
+- **Lựa chọn cân nhắc:** (A) đầy đủ weights+gates+thresholds+extras; (B) chỉ factor weights; (C) chốt sau ở E4.
+- **Quyết định:** **(A)** — bề mặt đầy đủ, khớp schema `v4_scoring_configs`.
+- **Lý do:** Mục tiêu là tinh chỉnh scorer thật (không chỉ trọng số). Gate matrix (factor × regime) là đòn bẩy lớn với regime VN.
+- **Hệ quả:** `config/scoring/schema.json` (E4) phải định nghĩa đủ 4 nhóm. `simulate.ts` phức tạp hơn (ước lượng ảnh hưởng gate). E5 loader `active.json` phải đọc đủ weights/gates/thresholds/extras, fail-soft từng nhóm. **One-change-per-cycle vẫn áp**: dù editor mở đủ, mỗi promote chỉ nên đổi 1 nhóm logic → UI cảnh báo.
+
+---
+
 ## ADR-006 — `run_id` sinh deterministic ở sync (ledger không có sẵn)
 - **Trạng thái:** PROPOSED (2026-09-12) — xác nhận ở E1
 - **Bối cảnh:** `v4_runs` cần `run_id` (PK) nhưng ledger prediction không có field `run_id`; chỉ có `snap_time`, `signal_date`, `scoring_version`, `flow`.

@@ -3,7 +3,7 @@
 > Tái sinh từ **chứng cứ repo thật** (không suy diễn). Đọc đầu mỗi phiên.
 > Do skill `project-update` cập nhật sau mỗi merge.
 
-**Cập nhật:** 2026-09-12 · **HEAD:** `38de5bb` · **Branch:** `claude/bold-pascal-768taz`
+**Cập nhật:** 2026-09-12 (grill vòng 2) · **HEAD gốc:** `38de5bb` · **Branch:** `claude/bold-pascal-768taz` · **PRD:** v2.0 GRILLED
 
 ---
 
@@ -50,7 +50,17 @@
 
 ---
 
-## 4. Quyết định treo (cần chốt tiếp)
+## 4. Quyết định đã chốt (grill vòng 2, 2026-09-12)
+
+| ADR | Nội dung | Trạng thái |
+|---|---|---|
+| ADR-007 | Auth = Supabase Auth **đơn owner**; public read | ACCEPTED |
+| ADR-008 | Sync = append step **non-blocking** vào cron workflow cũ (đặt sau commit-to-main, `continue-on-error`) | ACCEPTED — thực thi E1 cần duyệt sửa workflow |
+| ADR-009 | Config surface = weights + gates + thresholds + extras (đầy đủ) | ACCEPTED |
+
+**Fact sửa (data thật):** decision buckets = `NEUTRAL/BUY/STRONG BUY/SELL/STRONG SELL` (KHÔNG có HOLD; migration comment cũ ghi sai). "Run" = `(signal_date, snap_time)`, ~20 snap/tháng.
+
+## 4b. Quyết định treo (cần chốt tiếp)
 
 | ADR | Nội dung | Chốt ở |
 |---|---|---|

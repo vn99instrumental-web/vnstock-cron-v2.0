@@ -3,7 +3,9 @@
 > Yêu cầu sản phẩm & acceptance criteria. **Không code trái PRD**; nếu cần lệch → ghi ADR trong `DECISIONS.md` trước.
 > Bản này là **comprehensive**, phủ E0→E6. Đọc kèm `CLAUDE.md` (hiến pháp) và `PLAN.md` (lộ trình).
 
-**Version:** 1.0 · **Ngày:** 2026-09-12 · **HEAD gốc:** `38de5bb` · **Trạng thái:** DRAFT (chờ duyệt)
+**Version:** 2.0 · **Ngày:** 2026-09-12 · **HEAD gốc:** `38de5bb` · **Trạng thái:** GRILLED (đã chốt 6 quyết định qua 2 vòng grill-me)
+
+> **Changelog v2.0 (sau grill-me vòng 2):** (1) sửa decision buckets đúng data thật; (2) khoá auth = Supabase Auth 1 owner; (3) khoá sync = append non-blocking vào cron workflow cũ (cần duyệt lúc E1); (4) khoá config surface = weights+gates+thresholds+extras; (5) làm rõ "run" = (signal_date, snap_time).
 
 ---
 
@@ -42,8 +44,10 @@ App web **hiển thị + điều chỉnh** cho pipeline chấm điểm cổ phi�
 
 | Persona | Nhu cầu | Quyền |
 |---|---|---|
-| **Chủ hệ thống (anh)** | Xem tín hiệu, soi IC, tinh chỉnh config, promote | Authenticated: full read + Promote |
+| **Chủ hệ thống (anh)** | Xem tín hiệu, soi IC, tinh chỉnh config, promote | **Supabase Auth (1 owner)**: full read + Config editor + Promote |
 | **Người xem ẩn danh** | Xem tín hiệu công khai (repo vốn public) | Anon: read signals/outcomes/ic, **không** thấy config editor/Promote |
+
+**Auth model (ADR-007, đã chốt):** Supabase Auth **đơn owner** (email của anh). Public read toàn bộ signals/outcomes/ic. `/config` + Promote chỉ mở sau login. Không RBAC nhiều vai, không đăng ký user mới (whitelist 1 email owner).
 
 Bối cảnh: desktop-first (bàn làm việc, soi bảng số), nhưng **phải dùng được trên mobile** (xem nhanh Today khi ngoài đường).
 
@@ -83,8 +87,8 @@ Bảng `v4_*` đã tạo trên Supabase (migration `20260912085136_vnstock_app_v
 
 | Bảng | Nguồn | Ghi chú lệch cần xử lý |
 |---|---|---|
-| `v4_runs` | derive từ predictions (group theo run) | Chưa có `run_id` trong ledger → E1 phải sinh (vd hash snap_time+scoring_version) |
-| `v4_signals` | `v2f_predictions_v4/*.jsonl` | Ledger dùng `decision ∈ {NEUTRAL, SELL, BUY, ...}`; nhiều field shadow (`score_trade_nomr`, `decision_altfund`...) + factor scores `s_*` → gói vào `breakdown` jsonb |
+| `v4_runs` | derive từ predictions (group theo run) | Chưa có `run_id` trong ledger → E1 phải sinh (ADR-006). "Run" = 1 `(signal_date, snap_time)`; ~20 snap_time/tháng, nhiều snap/ngày (n8n 5×/ngày) |
+| `v4_signals` | `v2f_predictions_v4/*.jsonl` | **Decision buckets thật** (đếm 2026-09, 3.700 dòng): `NEUTRAL 2595 · BUY 944 · SELL 125 · STRONG SELL 30 · STRONG BUY 6` → **5 bucket, KHÔNG có HOLD**. Confidence: MEDIUM/HIGH/LOW. Nhiều field shadow (`score_trade_nomr`, `decision_altfund`...) + factor scores `s_*` → gói vào `breakdown` jsonb |
 | `v4_outcomes` | `v2f_outcomes_v4/*.jsonl` | **⚠️ LỆCH SCHEMA**: ledger **wide** (`ret_1d/3d/5d/10d`, `mfe_pct`, `mae_pct`, `lens`); migration đang **long** (`horizon`, `ret`). **Chốt ở E1 (ADR-002).** |
 | `v4_scoring_configs` | app ghi (Config/Promote) | lifecycle: `draft → shadow → production → archived` |
 | `v4_ic_metrics` | `export_ic_to_supabase.py` | rank-IC per (config_version, factor, horizon) |
@@ -111,13 +115,15 @@ Chi tiết field ledger thật (evidence, đọc `2026-09.jsonl`):
 ### E1 — Data Sync (JSONL → Supabase)
 - **Mục tiêu:** mirror ledger vào Supabase idempotent.
 - **Phạm vi:** `scripts/sync_supabase.py` (server-side, service_role). Đọc predictions_v4 + outcomes_v4, upsert `v4_runs/v4_signals/v4_outcomes`.
-- **Quyết định treo cần chốt:** ADR-002 schema outcomes (wide vs long). Nếu wide → migration `0002` đổi bảng.
+- **Cơ chế trigger (ADR-008, đã chốt):** append **1 step non-blocking** vào cron workflow cũ (intraday/daily), đặt **SAU** step commit-to-main, `continue-on-error: true` → sync lỗi **không** fail pipeline / không chặn git push. ⚠️ **Chạm production workflow → HỎI DUYỆT + giao full-file lúc E1** (never-do #6).
+- **Quyết định treo cần chốt:** ADR-002 schema outcomes (wide vs long). Nếu wide → migration `0002` đổi bảng. ADR-006 công thức `run_id`.
 - **DoD:**
   - [ ] Chạy sync tháng 2026-09 → row count Supabase khớp số dòng ledger (trừ duplicate theo unique key).
   - [ ] Re-run 2 lần → không nhân đôi row (idempotent, verify bằng `count(*)`).
   - [ ] `scoring_version/gate_version` trong `v4_signals` khớp ledger từng dòng (spot-check 5 mã).
   - [ ] Secret `SUPABASE_SERVICE_ROLE_KEY` chỉ ở env server, không log ra.
-- **Skill gate:** `security-review` (chạm Supabase/secret) → `app-test`.
+  - [ ] Step sync `continue-on-error` — mô phỏng sync fail → pipeline vẫn xanh, git push vẫn chạy.
+- **Skill gate:** `grill-me` (chốt ADR-002/006 + duyệt sửa workflow) → `security-review` (chạm Supabase/secret) → `app-test`.
 
 ### E2 — Web Foundation
 - **Mục tiêu:** khung Next.js chạy được + auth + kết nối Supabase đúng lớp (server/client key).
@@ -132,7 +138,7 @@ Chi tiết field ledger thật (evidence, đọc `2026-09.jsonl`):
 - **Mục tiêu:** đọc & hiển thị tín hiệu từ Supabase.
 - **Phạm vi:** `today` (run gần nhất: danh sách decision, score, regime, badge version), `history` (filter ngày/mã/decision, phân trang), `history/[id]` (drill-down full breakdown jsonb + shadow fields + trade levels + outcome nếu có).
 - **DoD:**
-  - [ ] Today hiển thị đúng run mới nhất (khớp `v4_runs.started_at` max).
+  - [ ] Today hiển thị đúng run mới nhất = `(signal_date, snap_time)` lớn nhất (không phải chỉ theo ngày; ~20 snap/tháng, nhiều snap/ngày).
   - [ ] Version badge đọc **động** từ row (không hardcode "v4.17").
   - [ ] History filter + phân trang hoạt động; empty/loading/error states có.
   - [ ] Drill-down 1 tín hiệu: breakdown factor `s_*`, gates, ranks, shadow decisions, outcome ret_* (nếu matured).
@@ -140,7 +146,8 @@ Chi tiết field ledger thật (evidence, đọc `2026-09.jsonl`):
 
 ### E4 — Config & Promote
 - **Mục tiêu:** đề xuất config chấm điểm + promote an toàn (shadow-first).
-- **Phạm vi:** `config` (editor weights/gates/thresholds, đọc schema từ `config/scoring/schema.json`), `lib/scoring/simulate.ts` (ước lượng, **nhãn simulation**), `app/api/promote/route.ts` (server-only: validate schema → commit `active.json` vào repo qua `GITHUB_TOKEN`), lifecycle `v4_scoring_configs`.
+- **Config surface (ADR-009, đã chốt):** đầy đủ — `factor_weights` + `gate_matrix` (factor→[UP,SIDE,DOWN,DEEP]) + `thresholds` + `extras_cfg`, khớp bảng `v4_scoring_configs`. (Không thu hẹp về weights-only.)
+- **Phạm vi:** `config` (editor weights/gates/thresholds/extras, đọc schema từ `config/scoring/schema.json`), `lib/scoring/simulate.ts` (ước lượng, **nhãn simulation**), `app/api/promote/route.ts` (server-only: validate schema → commit `active.json` vào repo qua `GITHUB_TOKEN`), lifecycle `v4_scoring_configs`.
 - **DoD:**
   - [ ] Editor validate theo `schema.json`; config sai schema bị chặn.
   - [ ] Simulate luôn hiển thị nhãn "simulation — không phải điểm chính thức".
