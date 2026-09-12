@@ -1,0 +1,75 @@
+# PROJECT_STATE.md — Trạng thái build (nguồn chân lý)
+
+> Tái sinh từ **chứng cứ repo thật** (không suy diễn). Đọc đầu mỗi phiên.
+> Do skill `project-update` cập nhật sau mỗi merge.
+
+**Cập nhật:** 2026-09-12 · **HEAD:** `38de5bb` · **Branch:** `claude/bold-pascal-768taz`
+
+---
+
+## 1. Ta đang ở đâu
+
+**Phase 0 — Foundation (E0), đang chốt.** Repo đang ở giai đoạn tài liệu build; **chưa có** `web/`, chưa có `scripts/sync_supabase.py`, chưa có `config/scoring/`. Pipeline Python đã đầy đủ và đang chạy production.
+
+---
+
+## 2. Đã có gì (evidence-verified)
+
+### Pipeline Python (production, KHÔNG đụng khi chưa duyệt)
+- `steps/` — 20 file. Scorer production: `v2f_step_scoring_v4.py` (`SCORING_VERSION="v4.17"`, `GATE_VERSION=7`, `REGISTRY_VERSION=3`, import weights/gates từ `utils/v2f_registry.py`). **Hardcode, chưa đọc config ngoài.**
+- `utils/` — 21 file (registry, indicators_meta, regime_v42, sector_map...).
+- `scripts/` — ~40 file diag/eval. Evaluator forward: `v2f_step_eval_predictions.py` (tính `ret_1d/3d/5d/10d`, **chưa** tính IC).
+- `.github/workflows/` — 8 workflow (cron_daily, cron_intraday, cron_news, cron_weekly, v2f_data_qc, backtest, pages, debug).
+- Ledger JSONL `output/history/`:
+  - `v2f_predictions_v4/`: 2026-07/08/09 (tháng 09 = 8MB, có data mới).
+  - `v2f_outcomes_v4/`: 2026-07/08 (09 chưa mature).
+
+### Supabase (project `mcaqnaomzoqgxccdgvls`, Postgres 17.6, ACTIVE_HEALTHY)
+- Migration `0001_init.sql` **đã apply** (version `20260912085136_vnstock_app_v4_init`).
+- 5 bảng `v4_*` tồn tại, **RLS on**, **0 rows** (chưa sync):
+  `v4_runs · v4_signals · v4_outcomes · v4_scoring_configs · v4_ic_metrics`.
+- Project **dùng chung** nhiều app khác (vibe_space chat/poems, qcvn, n8n_chat, staging). ⚠️ Advisory critical: 4 bảng app KHÁC tắt RLS — **không** thuộc app này, không tự sửa (ADR-001).
+
+### Docs build (E0 — vừa tạo)
+- `docs/build/PRD.md` — comprehensive E0-E6.
+- `docs/build/PLAN.md` — phase + dependency + cadence.
+- `docs/build/DECISIONS.md` — ADR-001..006.
+- `docs/build/TASKS.md` — backlog.
+- `PROJECT_STATE.md` — file này.
+
+---
+
+## 3. Connection check (2026-09-12)
+
+| Connection | Trạng thái | Bằng chứng |
+|---|---|---|
+| Supabase | ✅ | `mcaqnaomzoqgxccdgvls` ACTIVE_HEALTHY, PG 17.6 |
+| GitHub | ✅ | auth `vn99instrumental-web`, repo khớp remote |
+| n8n | ✅ | workflow `Github: Push-to-Chart_100-Points-System_v2f` active |
+| DB migration | ✅ | 5 bảng `v4_*` tồn tại, RLS on, 0 rows |
+
+---
+
+## 4. Quyết định treo (cần chốt tiếp)
+
+| ADR | Nội dung | Chốt ở |
+|---|---|---|
+| ADR-002 | Schema `v4_outcomes` wide (ledger) vs long (migration) | E1 |
+| ADR-004 | Scorer đọc `active.json` (fallback registry) | E5 — **cần duyệt** |
+| ADR-006 | Công thức `run_id` deterministic khi sync | E1 |
+
+---
+
+## 5. Việc kế tiếp (next actions)
+
+1. **E0.7** — commit + push docs lên `claude/bold-pascal-768taz`.
+2. **E1** — chốt ADR-002 + ADR-006 → viết `sync_supabase.py` (có data thật lên bảng).
+3. **E2** — scaffold `web/` (song song E1).
+
+---
+
+## 6. Rào chắn an toàn đang hiệu lực
+- Chỉ chạm bảng `v4_*` trên Supabase (không phá app dùng chung).
+- Không sửa `steps/`/`utils/`/n8n khi chưa duyệt (đặc biệt E5).
+- Secret (`service_role`, `GITHUB_TOKEN`) chỉ server.
+- Con số điểm/IC chính thức chỉ từ Python; `simulate.ts` = simulation.
