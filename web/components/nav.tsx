@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [
+type NavLink = { href: string; label: string; icon: string; owner?: boolean };
+
+const LINKS: NavLink[] = [
   { href: "/today", label: "Hôm nay", icon: "●" },
   { href: "/history", label: "Lịch sử", icon: "◷" },
   { href: "/ic", label: "Chất lượng (IC)", icon: "▤" },
   { href: "/config", label: "Cấu hình", icon: "⚙", owner: true },
-] as const;
+];
 
 export function Nav({ isOwner }: { isOwner: boolean }) {
   const pathname = usePathname();
