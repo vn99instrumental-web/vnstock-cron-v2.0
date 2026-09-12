@@ -108,6 +108,15 @@
 
 **⚠️ Fact:** gate_matrix có **6 regime** (UP/SIDE/RECOV/DOWN/DEEP/UNKNOWN), không phải 4 như migration 0001 comment.
 
+## 4f. E3 + E6.3 (Read UI, DONE code — 2026-09-12)
+
+- ✅ `today`: đọc v4_runs (run mới nhất) + v4_signals; stat cards + bảng SignalsTable; version động.
+- ✅ `history`: filter ngày/mã/decision (client HistoryFilters) + phân trang server-side range(50)+count.
+- ✅ `history/[id]`: drill-down breakdown (s_*/norms/gates/ranks/shadow/trade-levels) + outcome forward. React escape → XSS-safe.
+- ✅ `ic`: heatmap table factor×horizon theo version, màu diverging theo IC.
+- ✅ Helper `lib/format.ts` + `components/{signals-table,history-filters}.tsx`.
+- ⏳ Tất cả hiển thị **empty-state** tới khi có data thật (sync + IC export chạy). Chưa app-test/visual-qa (cần app chạy).
+
 ## 5. Việc kế tiếp (next actions)
 
 1. **Owner (thủ công)**: set secret GH `SUPABASE_SERVICE_ROLE_KEY` + merge branch → main → data tự chảy (E1.9).

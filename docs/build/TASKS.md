@@ -55,12 +55,12 @@
 
 | ID | Task | Skill | Definition of Done | Status | Dep |
 |---|---|---|---|---|---|
-| E3.1 | Design Today/History/Drill-down | frontend-design | Spec bảng, filter, badge version động | TODO | E2 |
-| E3.2 | Trang `today` (run mới nhất) | — | Khớp `v4_runs.started_at` max; version động | TODO | E1, E3.1 |
-| E3.3 | Trang `history` (filter + phân trang server-side) | — | Filter ngày/mã/decision; empty/loading/error states | TODO | E1, E3.1 |
-| E3.4 | Trang `history/[id]` (drill-down) | — | Breakdown `s_*`/gates/ranks/shadow/outcome. **Escape khi render `breakdown` jsonb** (XSS defense-in-depth — note từ security-review E1) | TODO | E1, E3.1 |
-| E3.5 | App-test luồng đọc | app-test | Routing/filter/drill-down pass | TODO | E3.2-4 |
-| E3.6 | Visual QA | visual-qa | Responsive + states OK | TODO | E3.2-4 |
+| E3.1 | Design Today/History/Drill-down | frontend-design | **DONE** — dùng lại design language E2 (bảng data-dense, DecisionBadge semantic, stat cards) | **DONE** | E2 |
+| E3.2 | Trang `today` (run mới nhất) | — | **DONE (code)** — đọc v4_runs started_at max + signals; stat cards; version động | **DONE (code)** | E1, E3.1 |
+| E3.3 | Trang `history` (filter + phân trang server-side) | — | **DONE (code)** — filter ngày/mã/decision + phân trang range(50) + count; empty state | **DONE (code)** | E1, E3.1 |
+| E3.4 | Trang `history/[id]` (drill-down) | — | **DONE (code)** — breakdown s_*/norms/gates/ranks/shadow/trade-levels + outcome forward. React escape mặc định → XSS-safe (thỏa note E1) | **DONE (code)** | E1, E3.1 |
+| E3.5 | App-test luồng đọc | app-test | ⏳ PENDING — cần app chạy + data | TODO | E3.2-4 |
+| E3.6 | Visual QA | visual-qa | ⏳ PENDING — cần app chạy | TODO | E3.2-4 |
 
 ---
 
@@ -97,7 +97,7 @@
 |---|---|---|---|---|---|
 | E6.1 | `scripts/export_ic_to_supabase.py` (rank-IC Python) | — | **DONE** — import methodology IC chính thức (eval_forward_ic: daily-last→IC/ngày→trung bình) + class Supabase (sync). 7 factor × 4 horizon | **DONE** | E1 |
 | E6.2 | Ghi `v4_ic_metrics` idempotent | — | **DONE** — upsert on_conflict(config_version,factor,horizon); dry-run 64 dòng trên data 07/08 (MR IC dương mạnh nhất, verify hợp lý). Ghi thật cần service key | **DONE** | E6.1 |
-| E6.3 | Trang `ic` (bảng/heatmap) | frontend-design | ⏳ TODO — heatmap Recharts; cần data (chạy export sau khi có outcomes). Placeholder+empty state đã có (E2) | TODO | E2, E6.2 |
+| E6.3 | Trang `ic` (bảng/heatmap) | frontend-design | **DONE (code)** — heatmap table factor×horizon theo version, màu diverging theo IC (|IC| chuẩn ±0.2), hover xem n; empty state | **DONE (code)** | E2, E6.2 |
 | E6.4 | App-test + Visual QA | app-test, visual-qa | TODO | TODO | E6.3 |
 | E6.5 | **HỎI DUYỆT** wire export_ic vào cron_weekly (sau eval) | security-review | NEEDS-APPROVAL — tương tự E1.8, chạm production workflow | NEEDS-APPROVAL | E6.2 |
 
