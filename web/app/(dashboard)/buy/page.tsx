@@ -46,6 +46,28 @@ export default async function BuyPage() {
     .order("score_trade", { ascending: false });
 
   const signals = (data ?? []) as BuySignal[];
+
+  // % thay đổi so với giá TC (giá đóng cửa phiên liền trước) — lấy prevClose từ v4_ohlc.
+  if (signals.length) {
+    const sigDate = latestBuy.signal_date as string;
+    const since = new Date(new Date(sigDate).getTime() - 14 * 864e5).toISOString().slice(0, 10);
+    const { data: ohlc } = await supabase
+      .from("v4_ohlc")
+      .select("symbol, date, close")
+      .in("symbol", signals.map((s) => s.symbol))
+      .lt("date", sigDate)
+      .gte("date", since)
+      .order("date", { ascending: false });
+    const prev = new Map<string, number>();
+    for (const r of (ohlc ?? []) as { symbol: string; close: number }[]) {
+      if (!prev.has(r.symbol)) prev.set(r.symbol, Number(r.close));
+    }
+    for (const s of signals) {
+      const price = Number((s.breakdown ?? {}).price);
+      const pc = prev.get(s.symbol);
+      s.changePct = pc && Number.isFinite(price) && pc !== 0 ? ((price - pc) / pc) * 100 : null;
+    }
+  }
   const stale = newestRun && newestRun.run_id !== latestBuy.run_id;
 
   return (

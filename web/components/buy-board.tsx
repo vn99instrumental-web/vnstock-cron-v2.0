@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
 import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
 import { DecisionBadge } from "@/components/ui";
-import { fmtNum } from "@/lib/format";
+import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import {
   factorViews, signalViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
 } from "@/lib/interpret";
@@ -17,6 +17,24 @@ export interface BuySignal {
   score_trade: number | null;
   signal_date: string;
   breakdown: Record<string, unknown> | null;
+  changePct?: number | null; // % vs giá TC (phiên trước), tính ở server
+}
+
+type SortKey = "score" | "chg_desc" | "chg_asc" | "ff_desc" | "ff_asc";
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "score", label: "Score ↓" },
+  { key: "chg_desc", label: "% tăng nhiều ↓" },
+  { key: "chg_asc", label: "% giảm nhiều ↑" },
+  { key: "ff_desc", label: "Khối ngoại MUA ↓" },
+  { key: "ff_asc", label: "Khối ngoại BÁN ↑" },
+];
+
+/** VND → "x.x tỷ" / "x triệu". */
+function fmtBil(v: number | null): string {
+  if (v == null || !Number.isFinite(v)) return "—";
+  const b = v / 1e9;
+  if (Math.abs(b) >= 0.1) return (b >= 0 ? "+" : "") + b.toFixed(1) + " tỷ";
+  return (v >= 0 ? "+" : "") + (v / 1e6).toFixed(0) + " tr";
 }
 
 function num(v: unknown): number | null {
@@ -46,6 +64,8 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   const [candles, setCandles] = useState<Candle[]>([]);
   const [markers, setMarkers] = useState<BuyMarker[]>([]);
   const [loading, setLoading] = useState(false);
+  const [q, setQ] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("score");
 
   useEffect(() => {
     if (!sel) return;
@@ -113,6 +133,31 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
     return { entry: num(b.entry), stop: num(b.stop), tp1: num(b.tp1), tp2: num(b.tp2), signalDate: sel.signal_date };
   }, [sel]);
 
+  const ffNum = (s: BuySignal): number | null => {
+    const v = Number((s.breakdown ?? {}).ff_intra_net);
+    return Number.isFinite(v) ? v : null;
+  };
+  const displayed = useMemo(() => {
+    const qq = q.trim().toUpperCase();
+    const arr = qq ? signals.filter((s) => s.symbol.includes(qq)) : [...signals];
+    const cmpNull = (a: number | null, b: number | null, dir: 1 | -1) => {
+      if (a == null && b == null) return 0;
+      if (a == null) return 1; // null xuống cuối
+      if (b == null) return -1;
+      return (a - b) * dir;
+    };
+    arr.sort((a, b) => {
+      switch (sortKey) {
+        case "chg_desc": return cmpNull(a.changePct ?? null, b.changePct ?? null, -1);
+        case "chg_asc": return cmpNull(a.changePct ?? null, b.changePct ?? null, 1);
+        case "ff_desc": return cmpNull(ffNum(a), ffNum(b), -1);
+        case "ff_asc": return cmpNull(ffNum(a), ffNum(b), 1);
+        default: return cmpNull(a.score_trade ?? null, b.score_trade ?? null, -1);
+      }
+    });
+    return arr;
+  }, [signals, q, sortKey]);
+
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
   const b = sel?.breakdown ?? {};
   const factors = useMemo(() => factorViews(b), [b]);
@@ -128,33 +173,63 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   }
 
   return (
-    <div className="grid gap-3 md:grid-cols-[230px_1fr]">
+    <div className="grid gap-3 md:grid-cols-[300px_1fr]">
       {/* LIST trái */}
       <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="border-b border-[var(--color-border)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-muted)]">
-          {signals.length} mã BUY / STRONG BUY
+        <div className="flex items-center gap-1.5 border-b border-[var(--color-border)] p-2">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Tìm mã…"
+            className="w-full rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs uppercase"
+          />
+          <select
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as SortKey)}
+            className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1 py-1 text-[11px]"
+            title="Sắp xếp"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.key} value={o.key}>{o.label}</option>
+            ))}
+          </select>
         </div>
-        <ul className="max-h-[74vh] overflow-y-auto">
-          {signals.map((s) => {
+        <div className="px-2.5 py-1 text-[10px] text-[var(--color-muted)]">
+          {displayed.length}/{signals.length} mã · %so giá TC · KN = khối ngoại ròng
+        </div>
+        <ul className="max-h-[70vh] overflow-y-auto">
+          {displayed.map((s) => {
             const active = sel?.id === s.id;
+            const chg = s.changePct;
+            const ff = ffNum(s);
             return (
               <li key={s.id}>
                 <button
                   onClick={() => setSel(s)}
-                  className={`flex w-full items-center justify-between gap-1.5 border-b border-[var(--color-border)] px-2.5 py-1.5 text-left text-xs ${
+                  className={`flex w-full flex-col gap-0.5 border-b border-[var(--color-border)] px-2.5 py-1.5 text-left ${
                     active ? "bg-[var(--color-accent)]/10" : "hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
                   }`}
                 >
-                  <span className="flex min-w-0 items-center gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5 text-xs">
                     <span className="font-semibold">{s.symbol}</span>
                     <DecisionBadge decision={s.decision} />
                     <ConfChip conf={(s.breakdown ?? {}).confidence} />
+                    <span className="tabular ml-auto text-[10px] text-[var(--color-muted)]">score {fmtNum(s.score_trade)}</span>
                   </span>
-                  <span className="tabular text-[11px] text-[var(--color-muted)]">{fmtNum(s.score_trade)}</span>
+                  <span className="flex items-center gap-2 text-[11px] tabular">
+                    <span>{fmtNum((s.breakdown ?? {}).price)}</span>
+                    <span className={signClass(chg)}>{chg == null ? "—" : fmtPct(chg)}</span>
+                    <span className="ml-auto" title="Khối ngoại ròng phiên (mua−bán)" style={{ color: ff == null ? "var(--color-muted)" : ff >= 0 ? "var(--color-buy)" : "var(--color-sell)" }}>
+                      KN {fmtBil(ff)}
+                    </span>
+                  </span>
                 </button>
               </li>
             );
           })}
+          {displayed.length === 0 ? (
+            <li className="px-2.5 py-4 text-center text-xs text-[var(--color-muted)]">Không có mã khớp “{q}”.</li>
+          ) : null}
         </ul>
       </div>
 
