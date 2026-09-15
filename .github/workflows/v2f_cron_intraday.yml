@@ -273,7 +273,13 @@ jobs:
             echo "⚠️ Chưa set secret SUPABASE_SERVICE_ROLE_KEY — bỏ qua sync (non-blocking)."
             exit 0
           fi
-          /opt/vnstock/.venv/bin/python scripts/sync_supabase.py
+          # INCREMENTAL: chỉ sync tháng hiện tại + tháng trước (nhẹ, tránh timeout khi
+          # re-sync toàn bộ lịch sử mỗi run → rớt các row mới nhất). Full history sync
+          # dùng workflow "Sync ledger → Supabase (manual)".
+          CUR=$(date -u +%Y-%m)
+          PREV=$(date -u -d '1 month ago' +%Y-%m)
+          echo "Sync months: $CUR $PREV"
+          /opt/vnstock/.venv/bin/python scripts/sync_supabase.py --months "$CUR" "$PREV"
 
   # ══════════════════════════════════════════════════════════════════════
   # JOB PHỤ — chỉ chạy tay (workflow_dispatch) để BACKFILL V4 trên dữ liệu
