@@ -20,6 +20,18 @@ export interface BuySignal {
   changePct?: number | null; // % vs giá TC (phiên trước), tính ở server
 }
 
+export interface ExpectancyRow {
+  decision: string;
+  confidence: string;
+  n: number;
+  avg_ret_1d: number | string | null;
+  avg_ret_5d: number | string | null;
+  avg_ret_10d: number | string | null;
+  avg_mfe: number | string | null;
+  avg_mae: number | string | null;
+  winrate_5d: number | string | null;
+}
+
 type SortKey = "score" | "chg_desc" | "chg_asc" | "ff_desc" | "ff_asc";
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "score", label: "Score ↓" },
@@ -59,7 +71,26 @@ function ConfChip({ conf, withLabel = false }: { conf: unknown; withLabel?: bool
   );
 }
 
-export function BuyBoard({ signals }: { signals: BuySignal[] }) {
+function agoText(min: number): string {
+  if (min < 1) return "vừa xong";
+  if (min < 60) return `${min} phút trước`;
+  const h = Math.floor(min / 60);
+  return h < 24 ? `${h} giờ trước` : `${Math.floor(h / 24)} ngày trước`;
+}
+
+export function BuyBoard({
+  signals,
+  expectancy = [],
+  runId,
+  runStartedAt = null,
+  newestRunId = null,
+}: {
+  signals: BuySignal[];
+  expectancy?: ExpectancyRow[];
+  runId?: string;
+  runStartedAt?: string | null;
+  newestRunId?: string | null;
+}) {
   const [sel, setSel] = useState<BuySignal | null>(signals[0] ?? null);
   const [candles, setCandles] = useState<Candle[]>([]);
   const [markers, setMarkers] = useState<BuyMarker[]>([]);
@@ -165,6 +196,30 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   const sigs = useMemo(() => signalViews(b), [b]);
   const buyDays = new Set(markers.map((m) => m.date)).size;
 
+  // C — độ tươi dữ liệu.
+  const fresh = (() => {
+    if (!runStartedAt) return null;
+    const ageMin = Math.max(0, Math.round((Date.now() - new Date(runStartedAt).getTime()) / 60000));
+    const ict = new Date(Date.now() + 7 * 3600e3);
+    const dow = ict.getUTCDay();
+    const hh = ict.getUTCHours() + ict.getUTCMinutes() / 60;
+    const marketOpen = dow >= 1 && dow <= 5 && hh >= 9 && hh <= 15;
+    return { ageMin, marketOpen, stale: marketOpen && ageMin > 30 };
+  })();
+  const runStale = !!newestRunId && !!runId && newestRunId !== runId;
+
+  // A/B — kỳ vọng lịch sử theo (decision, confidence).
+  const expLookup = (dec: string | null, conf: unknown): ExpectancyRow | null => {
+    const c = String(conf ?? "").toUpperCase();
+    return (
+      expectancy.find((e) => e.decision === dec && e.confidence === c) ||
+      expectancy.find((e) => e.decision === "BUY" && e.confidence === c) ||
+      null
+    );
+  };
+  const exp = sel ? expLookup(sel.decision, (sel.breakdown ?? {}).confidence) : null;
+  const num = (v: unknown) => { const x = Number(v); return Number.isFinite(x) ? x : null; };
+
   if (!signals.length) {
     return (
       <div className="rounded-lg border border-dashed border-[var(--color-border)] px-6 py-12 text-center text-sm text-[var(--color-muted)]">
@@ -174,7 +229,23 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   }
 
   return (
-    <div className={showList ? "grid gap-3 md:grid-cols-[300px_1fr]" : "block"}>
+    <div className="flex flex-col gap-2">
+      {/* C — thanh độ tươi dữ liệu */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-[11px]">
+        <span className="font-medium">Run {runId ?? "—"}</span>
+        {fresh ? (
+          <span className={fresh.stale ? "font-medium text-[var(--color-sell)]" : "text-[var(--color-muted)]"}>
+            cập nhật {agoText(fresh.ageMin)} · {fresh.marketOpen ? "phiên ĐANG MỞ" : "ngoài phiên"}
+            {fresh.stale ? " ⚠ data có thể trễ" : ""}
+          </span>
+        ) : null}
+        {runStale ? (
+          <span className="text-[var(--color-sell)]">⚠ có run mới hơn ({newestRunId}) chưa đủ BUY — đang xem run có BUY gần nhất</span>
+        ) : null}
+        <span className="ml-auto italic text-[var(--color-muted)]">Snapshot 5×/ngày · không realtime</span>
+      </div>
+
+      <div className={showList ? "grid gap-3 md:grid-cols-[300px_1fr]" : "block"}>
       {/* LIST trái */}
       <div className={`rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] ${showList ? "" : "hidden"}`}>
         <div className="flex items-center gap-1.5 border-b border-[var(--color-border)] p-2">
@@ -255,11 +326,34 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
               </span>
               <div className="ml-auto flex flex-wrap gap-x-2.5 text-[11px] tabular">
                 <span>Entry <b>{levels.entry != null ? fmtNum(levels.entry) : "—"}</b></span>
-                <span className="text-[var(--color-sell)]">Stop {levels.stop != null ? fmtNum(levels.stop) : "—"}</span>
-                <span className="text-[var(--color-buy)]">TP1 {levels.tp1 != null ? fmtNum(levels.tp1) : "—"}</span>
-                <span className="text-[var(--color-buy)]">TP2 {levels.tp2 != null ? fmtNum(levels.tp2) : "—"}</span>
+                {levels.entry != null ? (
+                  <>
+                    <span className="text-[var(--color-buy)]">+3% {fmtNum(levels.entry * 1.03)}</span>
+                    <span className="text-[var(--color-buy)]">+6% {fmtNum(levels.entry * 1.06)}</span>
+                    <span className="text-[var(--color-sell)]">−3% {fmtNum(levels.entry * 0.97)}</span>
+                  </>
+                ) : null}
               </div>
             </div>
+
+            {/* A/B — kỳ vọng lịch sử + gợi ý thoát */}
+            {exp ? (
+              <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-[var(--color-border)] bg-black/[0.02] px-3 py-1.5 text-[11px] dark:bg-white/[0.03]">
+                <span className="font-medium">Kỳ vọng lịch sử (BUY·{exp.confidence}, n={exp.n}):</span>
+                <span>Win 5 phiên{" "}
+                  <b style={{ color: (num(exp.winrate_5d) ?? 0) >= 55 ? "var(--color-buy)" : (num(exp.winrate_5d) ?? 0) < 50 ? "var(--color-sell)" : "#ca8a04" }}>
+                    {num(exp.winrate_5d) ?? "—"}%
+                  </b>
+                </span>
+                <span>TB 5 phiên <b className={signClass(num(exp.avg_ret_5d))}>{num(exp.avg_ret_5d) != null ? fmtPct(num(exp.avg_ret_5d)) : "—"}</b></span>
+                <span>MFE <b className="text-[var(--color-buy)]">{num(exp.avg_mfe) != null ? fmtPct(num(exp.avg_mfe)) : "—"}</b> · MAE <b className="text-[var(--color-sell)]">{num(exp.avg_mae) != null ? fmtPct(num(exp.avg_mae)) : "—"}</b></span>
+                <span className="ml-auto">Gợi ý thoát: chốt quanh <b className="text-[var(--color-buy)]">+{num(exp.avg_mfe) != null ? Math.abs(num(exp.avg_mfe)!).toFixed(1) : "3"}%</b>, cắt quanh <b className="text-[var(--color-sell)]">{num(exp.avg_mae) != null ? num(exp.avg_mae)!.toFixed(1) : "-3"}%</b></span>
+              </div>
+            ) : (
+              <div className="mb-2 rounded-md border border-dashed border-[var(--color-border)] px-3 py-1.5 text-[11px] text-[var(--color-muted)]">
+                Chưa đủ mẫu lịch sử cho {sel.decision}·{String(b.confidence ?? "")} để ước lượng kỳ vọng.
+              </div>
+            )}
 
             {loading ? (
               <div className="grid h-[280px] place-items-center text-xs text-[var(--color-muted)]">Đang tải giá…</div>
@@ -329,6 +423,7 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
             )}
           </>
         ) : null}
+      </div>
       </div>
     </div>
   );
