@@ -179,6 +179,24 @@ Chi tiết field ledger thật (evidence, đọc `2026-09.jsonl`):
 
 ---
 
+### E7 — Buy Board & Chart *(epic mới, thêm sau grill vòng 3)*
+- **Mục tiêu:** xem nhanh **chỉ mã BUY/STRONG BUY** và theo dõi 1 mã đã đề xuất diễn biến giá thế nào (trong ngày + các ngày sau), có mốc entry/stop/TP + highlight khi chạm TP.
+- **Layout:** route `/buy` (public read). **Master-detail**: danh sách BUY/STRONG BUY của run mới nhất **bên trái** (sort theo score), **chart bên phải** cho mã đang chọn (mặc định chọn dòng đầu). Mobile: list trên, chart dưới.
+- **Nguồn data chart (ADR-010, đã chốt):** **tái tạo từ `v4_signals` đã có** — KHÔNG fetch ngoài, KHÔNG bảng/pipeline mới (giữ kiến trúc app = lớp query). Mỗi mã vn100 được chấm mỗi ngày → giá lưu ở từng snap. Dựng:
+  - **Nến daily** từ giá snap trong ngày: `O` = snap đầu, `C` = snap cuối, `H` = max, `L` = min. Ngày chỉ 1 snap → nến suy biến (doji/line). **Nhãn rõ: "nến dựng từ giá snap, không phải tick OHLC đầy đủ".**
+  - **Đường intraday** cho ngày ra tín hiệu (giá theo từng lần chạy intraday).
+  - Trục thời gian: từ `signal_date` của tín hiệu → ngày mới nhất có trong ledger cho mã đó.
+- **Overlay:** đường `entry` (+ marker tại snap ra tín hiệu), `stop` (đỏ), `tp1`/`tp2` (xanh đứt). **Highlight TP-hit:** khi có snap giá ≥ tp1 (hoặc ≥ tp2) → tô/đánh dấu nến đó + badge "TP1 hit"/"TP2 hit". Đối chiếu chéo với `mfe_pct` từ outcome nếu đã chín.
+- **DoD:**
+  - [ ] `/buy` chỉ liệt kê `decision ∈ {BUY, STRONG BUY}` của run mới nhất; chọn 1 mã → chart bên phải cập nhật.
+  - [ ] Chart hiển thị chuỗi giá của mã từ ngày tín hiệu → hiện tại (nến daily + intraday ngày 0), version-agnostic.
+  - [ ] Entry/stop/tp1/tp2 vẽ đúng từ tín hiệu; highlight khi giá chạm TP.
+  - [ ] Empty/loading states; mobile xếp dọc; nhãn "simulation/không phải tick OHLC" rõ.
+  - [ ] 100% đọc từ Supabase (`v4_signals`), không gọi API ngoài, không secret ở client.
+- **Skill gate:** `frontend-design` (trước code) → `dataviz` (trước khi vẽ chart) → `app-test` → `visual-qa`.
+
+---
+
 ## 6. Yêu cầu phi chức năng (NFR)
 
 | Nhóm | Yêu cầu |

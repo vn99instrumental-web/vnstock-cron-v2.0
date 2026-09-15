@@ -123,6 +123,14 @@
 - ✅ Vá bảo mật: Next 15.1.6 → 15.5.25 (CVE-2025-66478); +package-lock.json.
 - ⚠️ Fix ở nhánh `claude/bold-pascal-768taz` — cần **merge lại vào main** để Vercel redeploy thành công (lần build lỗi trước chạy trên main@190b1d5 chưa có fix).
 
+## 4h. E7 — Buy Board & Chart (DONE code, build PASS — 2026-09-15)
+
+- ✅ Trang `/buy`: list BUY/STRONG BUY (run mới nhất, sort score) bên trái + chart bên phải (master-detail, mobile xếp dọc).
+- ✅ Chart nến custom SVG (`price-chart.tsx`): nến daily dựng từ giá snap (ADR-010) + overlay entry/stop/tp1/tp2 + ★ highlight khi high≥TP + strip intraday ngày ra tín hiệu. Nhãn rõ "không phải tick OHLC đầy đủ".
+- ✅ `lib/chart.ts` (buildCandles/tpHit) + `buy-board.tsx` (fetch chuỗi giá qua supabase client, chỉ đọc `price:breakdown->>price` cho nhẹ).
+- ✅ Nav thêm mục "Mua". `tsc --noEmit` + `next build` PASS (route /buy 3.72kB).
+- ⏳ Cần **merge → main** để Vercel deploy; app-test/visual-qa sau khi live.
+
 ## 5. Việc kế tiếp (next actions)
 
 1. **Owner (thủ công)**: set secret GH `SUPABASE_SERVICE_ROLE_KEY` + merge branch → main → data tự chảy (E1.9).
