@@ -56,6 +56,21 @@ export interface Levels {
   signalDate: string;
 }
 
+/** MA đơn giản trên giá đóng cửa daily (từ giá snap). null cho tới khi đủ period. */
+export function computeMA(candles: Candle[], period: number): (number | null)[] {
+  const out: (number | null)[] = [];
+  for (let i = 0; i < candles.length; i++) {
+    if (i + 1 < period) {
+      out.push(null);
+      continue;
+    }
+    let sum = 0;
+    for (let j = i - period + 1; j <= i; j++) sum += candles[j].close;
+    out.push(sum / period);
+  }
+  return out;
+}
+
 /** Nến nào chạm TP (high ≥ tp) — dùng highlight. */
 export function tpHit(candles: Candle[], levels: Levels) {
   const hit1 = levels.tp1 != null && candles.some((c) => c.date >= levels.signalDate && c.high >= levels.tp1!);
