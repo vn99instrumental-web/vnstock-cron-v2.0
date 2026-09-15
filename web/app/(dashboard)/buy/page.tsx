@@ -1,5 +1,5 @@
 import { PageHeader, EmptyState } from "@/components/ui";
-import { BuyBoard, type BuySignal } from "@/components/buy-board";
+import { BuyBoard, type BuySignal, type ExpectancyRow } from "@/components/buy-board";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -70,17 +70,27 @@ export default async function BuyPage() {
   }
   const stale = newestRun && newestRun.run_id !== latestBuy.run_id;
 
+  // Thời điểm run (độ tươi data) + kỳ vọng lịch sử của BUY theo confidence.
+  const { data: runRow } = await supabase
+    .from("v4_runs")
+    .select("started_at")
+    .eq("run_id", latestBuy.run_id)
+    .maybeSingle();
+  const { data: expData } = await supabase.from("v4_buy_expectancy").select("*");
+
   return (
     <>
       <PageHeader
         title="Mua"
-        desc={
-          `${signals.length} mã BUY / STRONG BUY · run ${latestBuy.run_id}` +
-          (stale ? ` (run có BUY gần nhất; run mới nhất ${newestRun!.run_id} chưa có/đủ)` : "") +
-          " — chọn 1 mã để xem diễn biến giá + entry/TP"
-        }
+        desc={`${signals.length} mã BUY / STRONG BUY — chọn 1 mã để xem diễn biến giá, entry ±3/6% và kỳ vọng lịch sử`}
       />
-      <BuyBoard signals={signals} />
+      <BuyBoard
+        signals={signals}
+        expectancy={(expData ?? []) as ExpectancyRow[]}
+        runId={latestBuy.run_id}
+        runStartedAt={(runRow?.started_at as string | undefined) ?? null}
+        newestRunId={(newestRun?.run_id as string | undefined) ?? null}
+      />
     </>
   );
 }
