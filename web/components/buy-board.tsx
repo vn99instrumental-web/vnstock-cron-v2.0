@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
-import { PriceChart, IntradayStrip } from "@/components/price-chart";
+import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
 import { DecisionBadge } from "@/components/ui";
 import { fmtNum } from "@/lib/format";
+import {
+  factorViews, signalViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
+} from "@/lib/interpret";
 
 export interface BuySignal {
   id: number;
@@ -22,9 +25,21 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function ConfChip({ conf }: { conf: unknown }) {
+  const key = String(conf ?? "").toUpperCase();
+  const c = CONFIDENCE_LABEL[key];
+  if (!c) return null;
+  return (
+    <span className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ color: c.color, backgroundColor: "color-mix(in srgb, currentColor 12%, transparent)" }}>
+      {c.text}
+    </span>
+  );
+}
+
 export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   const [sel, setSel] = useState<BuySignal | null>(signals[0] ?? null);
   const [candles, setCandles] = useState<Candle[]>([]);
+  const [markers, setMarkers] = useState<BuyMarker[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,43 +51,43 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
         const supabase = createClient();
         const { data } = await supabase
           .from("v4_signals")
-          .select("signal_date, snap_time, price:breakdown->>price")
+          .select("signal_date, snap_time, decision, price:breakdown->>price")
           .eq("symbol", sel.symbol)
           .order("signal_date", { ascending: true })
           .order("snap_time", { ascending: true });
         if (!alive) return;
-        const points: PricePoint[] = (data ?? [])
-          .map((r: Record<string, unknown>) => ({
-            signal_date: String(r.signal_date),
-            snap_time: String(r.snap_time),
-            price: num(r.price) ?? NaN,
-          }))
+        const rows = (data ?? []) as Record<string, unknown>[];
+        const points: PricePoint[] = rows
+          .map((r) => ({ signal_date: String(r.signal_date), snap_time: String(r.snap_time), price: num(r.price) ?? NaN }))
           .filter((p) => Number.isFinite(p.price));
         setCandles(buildCandles(points));
+        // Marker BUY: mỗi snap có decision BUY/STRONG BUY (nhiều điểm/ngày nếu có).
+        setMarkers(
+          rows
+            .filter((r) => r.decision === "BUY" || r.decision === "STRONG BUY")
+            .map((r) => ({ date: String(r.signal_date), price: num(r.price) ?? NaN, strong: r.decision === "STRONG BUY" }))
+            .filter((m) => Number.isFinite(m.price)),
+        );
       } catch {
-        if (alive) setCandles([]);
+        if (alive) { setCandles([]); setMarkers([]); }
       } finally {
         if (alive) setLoading(false);
       }
     })();
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [sel]);
 
   const levels: Levels | null = useMemo(() => {
     if (!sel) return null;
     const b = sel.breakdown ?? {};
-    return {
-      entry: num(b.entry),
-      stop: num(b.stop),
-      tp1: num(b.tp1),
-      tp2: num(b.tp2),
-      signalDate: sel.signal_date,
-    };
+    return { entry: num(b.entry), stop: num(b.stop), tp1: num(b.tp1), tp2: num(b.tp2), signalDate: sel.signal_date };
   }, [sel]);
 
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
+  const b = sel?.breakdown ?? {};
+  const factors = useMemo(() => factorViews(b), [b]);
+  const sigs = useMemo(() => signalViews(b), [b]);
+  const buyDays = new Set(markers.map((m) => m.date)).size;
 
   if (!signals.length) {
     return (
@@ -83,28 +98,29 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-[260px_1fr]">
+    <div className="grid gap-3 md:grid-cols-[230px_1fr]">
       {/* LIST trái */}
       <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="border-b border-[var(--color-border)] px-3 py-2 text-xs font-medium text-[var(--color-muted)]">
+        <div className="border-b border-[var(--color-border)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-muted)]">
           {signals.length} mã BUY / STRONG BUY
         </div>
-        <ul className="max-h-[70vh] overflow-y-auto">
+        <ul className="max-h-[74vh] overflow-y-auto">
           {signals.map((s) => {
             const active = sel?.id === s.id;
             return (
               <li key={s.id}>
                 <button
                   onClick={() => setSel(s)}
-                  className={`flex w-full items-center justify-between gap-2 border-b border-[var(--color-border)] px-3 py-2 text-left text-sm ${
+                  className={`flex w-full items-center justify-between gap-1.5 border-b border-[var(--color-border)] px-2.5 py-1.5 text-left text-xs ${
                     active ? "bg-[var(--color-accent)]/10" : "hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
                   }`}
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex min-w-0 items-center gap-1.5">
                     <span className="font-semibold">{s.symbol}</span>
                     <DecisionBadge decision={s.decision} />
+                    <ConfChip conf={(s.breakdown ?? {}).confidence} />
                   </span>
-                  <span className="tabular text-xs text-[var(--color-muted)]">{fmtNum(s.score_trade)}</span>
+                  <span className="tabular text-[11px] text-[var(--color-muted)]">{fmtNum(s.score_trade)}</span>
                 </button>
               </li>
             );
@@ -113,16 +129,18 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
       </div>
 
       {/* DETAIL phải */}
-      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
         {sel && levels ? (
           <>
-            <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1">
-              <h2 className="text-base font-semibold">{sel.symbol}</h2>
+            <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h2 className="text-sm font-semibold">{sel.symbol}</h2>
               <DecisionBadge decision={sel.decision} />
-              <span className="text-xs text-[var(--color-muted)]">
+              <ConfChip conf={b.confidence} />
+              <span className="text-[11px] text-[var(--color-muted)]">
                 tín hiệu {sel.signal_date} · score {fmtNum(sel.score_trade)}
+                {buyDays > 1 ? ` · ${buyDays} ngày có tín hiệu BUY` : ""}
               </span>
-              <div className="ml-auto flex flex-wrap gap-x-3 text-xs tabular">
+              <div className="ml-auto flex flex-wrap gap-x-2.5 text-[11px] tabular">
                 <span>Entry <b>{levels.entry != null ? fmtNum(levels.entry) : "—"}</b></span>
                 <span className="text-[var(--color-sell)]">Stop {levels.stop != null ? fmtNum(levels.stop) : "—"}</span>
                 <span className="text-[var(--color-buy)]">TP1 {levels.tp1 != null ? fmtNum(levels.tp1) : "—"}</span>
@@ -131,15 +149,64 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
             </div>
 
             {loading ? (
-              <div className="grid h-[300px] place-items-center text-sm text-[var(--color-muted)]">Đang tải giá…</div>
+              <div className="grid h-[280px] place-items-center text-xs text-[var(--color-muted)]">Đang tải giá…</div>
             ) : (
               <>
-                <PriceChart candles={candles} levels={levels} />
-                <div className="mt-4">
-                  <div className="mb-1 text-xs font-medium text-[var(--color-muted)]">
+                <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
+                <div className="mt-3">
+                  <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">
                     Giá trong ngày ra tín hiệu ({sel.signal_date}) — theo từng lần chạy intraday
                   </div>
                   <IntradayStrip candle={entryCandle} />
+                </div>
+
+                {/* PHÂN TÍCH KỸ THUẬT (dễ hiểu) */}
+                <div className="mt-4 grid gap-4 border-t border-[var(--color-border)] pt-3 lg:grid-cols-2">
+                  <div>
+                    <h3 className="mb-1.5 text-xs font-semibold">6 nhóm yếu tố</h3>
+                    <div className="flex flex-col gap-1">
+                      {factors.map((f) => (
+                        <div key={f.label} className="flex items-center gap-2 text-[11px]">
+                          <span className="w-40 shrink-0 truncate text-[var(--color-muted)]">{f.label}</span>
+                          <div className="relative h-2 flex-1 rounded bg-black/5 dark:bg-white/10">
+                            <div
+                              className="absolute top-0 h-2 rounded"
+                              style={{
+                                backgroundColor: DIR_COLOR[f.dir],
+                                left: f.norm >= 0 ? "50%" : `${50 + f.norm * 50}%`,
+                                width: `${Math.min(50, Math.abs(f.norm) * 50)}%`,
+                              }}
+                            />
+                            <div className="absolute left-1/2 top-0 h-2 w-px bg-[var(--color-border)]" />
+                          </div>
+                          <span className="tabular w-24 shrink-0 text-right" style={{ color: DIR_COLOR[f.dir] }}>
+                            {DIR_LABEL[f.dir]}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Thanh phải = nghiêng mua, trái = nghiêng bán (độ dài = độ mạnh).</p>
+                  </div>
+
+                  <div>
+                    <h3 className="mb-1.5 text-xs font-semibold">Tín hiệu chi tiết (diễn giải)</h3>
+                    {sigs.length ? (
+                      <ul className="flex flex-col gap-1">
+                        {sigs.slice(0, 10).map((s) => (
+                          <li key={s.name} className="flex items-start gap-2 text-[11px]">
+                            <span className="tabular w-6 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[s.dir] }}>
+                              {s.score > 0 ? "+" : ""}{s.score}
+                            </span>
+                            <span className="shrink-0 font-medium">{s.name}</span>
+                            <span className="text-[var(--color-muted)]">— {s.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-[11px] text-[var(--color-muted)]">Không có tín hiệu nổi bật.</p>
+                    )}
+                    <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Diễn giải theo dấu điểm số factor — con số chính thức từ pipeline Python.</p>
+                  </div>
                 </div>
               </>
             )}
