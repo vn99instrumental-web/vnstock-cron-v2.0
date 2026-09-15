@@ -94,7 +94,8 @@
 - **Lựa chọn cân nhắc:** (A) tái tạo nến từ giá snap đã có trong `v4_signals`; (B) thêm pipeline Python export OHLC thật → bảng `v4_ohlc` mới; (C) app tự fetch vnstock khi xem.
 - **Quyết định:** **(A)**. Mỗi mã vn100 chấm mỗi ngày → có chuỗi giá snap. Dựng nến daily (O=snap đầu, C=snap cuối, H=max, L=min) + đường intraday ngày 0. Nhãn rõ "không phải tick OHLC đầy đủ".
 - **Lý do:** Giữ kiến trúc **app = lớp query** (PRD non-goal: app không tự fetch chứng khoán). Không thêm bảng/pipeline/secret. Data đã sync + anon đọc được. Đủ cho mục đích theo dõi diễn biến + hit TP (đối chiếu `mfe_pct`).
-- **Hệ quả:** Nến thô (≤5 điểm/ngày) — chấp nhận, dán nhãn. Nếu sau này cần nến tick thật → mở ADR mới cho phương án B (script export OHLC). TP-hit suy từ giá snap ≥ tp (có thể bỏ sót nếu giá chạm giữa 2 snap — đối chiếu mfe_pct khi outcome chín).
+- **Hệ quả:** Nến thô (≤5 điểm/ngày) — chấp nhận, dán nhãn. TP-hit suy từ giá snap ≥ tp (đối chiếu mfe_pct khi outcome chín).
+- **Cập nhật 2026-09-15 — ĐÃ bổ sung phương án B** (user muốn nến daily thật + backfill quá khứ): thêm bảng `v4_ohlc` (migration 0005) + `scripts/export_ohlc_to_supabase.py` (vnstock VCI, chạy qua workflow `backfill_ohlc.yml`). Chart `/buy` **đọc `v4_ohlc` trước** (nến daily thật, lịch sử ~400 ngày); **fallback về nến-từ-snap (A)** khi mã chưa có OHLC. A vẫn giữ cho marker BUY/intraday strip (từ snap). Cần secret VNSTOCK_API_KEY (đã có) + chạy workflow backfill.
 
 ---
 
