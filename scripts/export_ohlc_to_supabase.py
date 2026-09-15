@@ -105,7 +105,7 @@ def fetch_ohlcv(symbol: str, start: str, end: str) -> list[dict]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Backfill OHLC daily → v4_ohlc.")
-    ap.add_argument("--days", type=int, default=400, help="số ngày lịch sử (mặc định 400)")
+    ap.add_argument("--days", type=int, default=900, help="số ngày lịch sử (mặc định 900 ~ đủ EMA200 nếu nguồn cho)")
     ap.add_argument("--symbols", nargs="*", help="lọc mã (mặc định: mọi mã trong ledger)")
     ap.add_argument("--limit", type=int, default=0, help="giới hạn số mã (0 = tất cả)")
     ap.add_argument("--dry-run", action="store_true")
