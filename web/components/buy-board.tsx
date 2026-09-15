@@ -25,13 +25,18 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-function ConfChip({ conf }: { conf: unknown }) {
+function ConfChip({ conf, withLabel = false }: { conf: unknown; withLabel?: boolean }) {
   const key = String(conf ?? "").toUpperCase();
   const c = CONFIDENCE_LABEL[key];
   if (!c) return null;
   return (
-    <span className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ color: c.color, backgroundColor: "color-mix(in srgb, currentColor 12%, transparent)" }}>
-      {c.text}
+    <span
+      className="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium"
+      style={{ color: c.color, borderColor: c.color }}
+      title="Chất lượng tín hiệu (confidence)"
+    >
+      <span aria-hidden style={{ width: 6, height: 6, borderRadius: 9, background: c.color }} />
+      {withLabel ? "Chất lượng: " : ""}{c.text}
     </span>
   );
 }
@@ -49,19 +54,44 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
     (async () => {
       try {
         const supabase = createClient();
-        const { data } = await supabase
-          .from("v4_signals")
-          .select("signal_date, snap_time, decision, price:breakdown->>price")
-          .eq("symbol", sel.symbol)
-          .order("signal_date", { ascending: true })
-          .order("snap_time", { ascending: true });
+        // Song song: snaps (marker BUY + intraday + fallback) và OHLC thật (nến daily có lịch sử).
+        const [sigRes, ohlcRes] = await Promise.all([
+          supabase
+            .from("v4_signals")
+            .select("signal_date, snap_time, decision, price:breakdown->>price")
+            .eq("symbol", sel.symbol)
+            .order("signal_date", { ascending: true })
+            .order("snap_time", { ascending: true }),
+          supabase
+            .from("v4_ohlc")
+            .select("date, open, high, low, close")
+            .eq("symbol", sel.symbol)
+            .order("date", { ascending: true }),
+        ]);
         if (!alive) return;
-        const rows = (data ?? []) as Record<string, unknown>[];
+        const rows = (sigRes.data ?? []) as Record<string, unknown>[];
         const points: PricePoint[] = rows
           .map((r) => ({ signal_date: String(r.signal_date), snap_time: String(r.snap_time), price: num(r.price) ?? NaN }))
           .filter((p) => Number.isFinite(p.price));
-        setCandles(buildCandles(points));
-        // Marker BUY: mỗi snap có decision BUY/STRONG BUY (nhiều điểm/ngày nếu có).
+        const snapCandles = buildCandles(points);
+        const snapMap = new Map(snapCandles.map((c) => [c.date, c.snaps]));
+
+        const ohlc = (ohlcRes.data ?? []) as Record<string, unknown>[];
+        let finalCandles: Candle[];
+        if (ohlc.length) {
+          // Nến thật từ v4_ohlc; đính kèm snaps cùng ngày (cho strip intraday).
+          finalCandles = ohlc
+            .map((r) => {
+              const o = num(r.open), h = num(r.high), l = num(r.low), c = num(r.close);
+              if (o == null || h == null || l == null || c == null) return null;
+              const date = String(r.date);
+              return { date, open: o, high: h, low: l, close: c, snaps: snapMap.get(date) ?? [] } as Candle;
+            })
+            .filter((x): x is Candle => x !== null);
+        } else {
+          finalCandles = snapCandles; // fallback: nến từ snap
+        }
+        setCandles(finalCandles);
         setMarkers(
           rows
             .filter((r) => r.decision === "BUY" || r.decision === "STRONG BUY")
@@ -135,7 +165,7 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
             <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
               <h2 className="text-sm font-semibold">{sel.symbol}</h2>
               <DecisionBadge decision={sel.decision} />
-              <ConfChip conf={b.confidence} />
+              <ConfChip conf={b.confidence} withLabel />
               <span className="text-[11px] text-[var(--color-muted)]">
                 tín hiệu {sel.signal_date} · score {fmtNum(sel.score_trade)}
                 {buyDays > 1 ? ` · ${buyDays} ngày có tín hiệu BUY` : ""}
@@ -152,7 +182,7 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
               <div className="grid h-[280px] place-items-center text-xs text-[var(--color-muted)]">Đang tải giá…</div>
             ) : (
               <>
-                <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
+                <PriceChart candles={candles.slice(-180)} levels={levels} buyMarkers={markers} />
                 <div className="mt-3">
                   <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">
                     Giá trong ngày ra tín hiệu ({sel.signal_date}) — theo từng lần chạy intraday

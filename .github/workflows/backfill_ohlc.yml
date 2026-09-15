@@ -1,0 +1,70 @@
+name: Backfill OHLC → Supabase (manual)
+
+# Lấy OHLC daily thật (vnstock VCI) cho các mã trong ledger → bảng v4_ohlc.
+# Chart /buy đọc bảng này để vẽ nến daily có LỊCH SỬ xa hơn ledger (ADR-010 phương án B).
+# Chạy THỦ CÔNG, ngoài giờ vẫn được (lấy lịch sử daily).
+# Cần secrets: VNSTOCK_API_KEY (+ VNSTOCK_DEVICE_ID nếu có) và SUPABASE_SERVICE_ROLE_KEY.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Số ngày lịch sử backfill'
+        type: string
+        default: '400'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backfill-ohlc
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VNSTOCK_API_KEY:           ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID:         ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE:       "0"
+      VNSTOCK_LANGUAGE:          en
+      SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+
+      - name: Restore vnstock cache (best effort)
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+          restore-keys: |
+            vnstock-stable-v4-
+
+      - name: Backfill OHLC
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "❌ Chưa set secret SUPABASE_SERVICE_ROLE_KEY."; exit 1
+          fi
+          if [ -x /opt/vnstock/.venv/bin/python ]; then
+            PY=/opt/vnstock/.venv/bin/python
+            echo "✅ Dùng venv vnstock có sẵn."
+          else
+            echo "ℹ️ Không có venv cache — cài vnstock_data tạm."
+            PY=python3
+            python3 -m pip install --quiet vnstock_data pandas requests
+          fi
+          $PY scripts/export_ohlc_to_supabase.py --days "${{ inputs.days }}"
