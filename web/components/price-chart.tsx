@@ -238,6 +238,21 @@ export function PriceChart({
           );
         })}
 
+        {/* đường + nhãn GIÁ HIỆN TẠI (nến cuối vùng xem) — kiểu TradingView */}
+        {(() => {
+          const last = vis[m - 1];
+          if (!last) return null;
+          const yy = y(last.close);
+          const c = last.close >= last.open ? UP : DOWN;
+          return (
+            <g>
+              <line x1={M.left} x2={M.left + plotW} y1={yy} y2={yy} stroke={c} strokeWidth={0.6} strokeDasharray="2 3" opacity={0.55} />
+              <rect x={M.left + plotW} y={yy - 7} width={M.right} height={14} rx={2} fill={c} />
+              <text x={M.left + plotW + M.right / 2} y={yy + 3} fontSize={9} textAnchor="middle" fill="#fff" className="tabular">{fmt(last.close)}</text>
+            </g>
+          );
+        })()}
+
         {hoverLocal >= 0 ? (
           <line x1={cx(hoverLocal)} x2={cx(hoverLocal)} y1={M.top} y2={M.top + plotH} stroke="var(--color-ink)" strokeWidth={0.5} opacity={0.35} />
         ) : null}

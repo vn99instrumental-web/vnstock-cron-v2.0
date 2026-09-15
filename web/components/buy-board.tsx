@@ -66,6 +66,7 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("score");
+  const [showList, setShowList] = useState(true);
 
   useEffect(() => {
     if (!sel) return;
@@ -173,9 +174,9 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
   }
 
   return (
-    <div className="grid gap-3 md:grid-cols-[300px_1fr]">
+    <div className={showList ? "grid gap-3 md:grid-cols-[300px_1fr]" : "block"}>
       {/* LIST trái */}
-      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className={`rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] ${showList ? "" : "hidden"}`}>
         <div className="flex items-center gap-1.5 border-b border-[var(--color-border)] p-2">
           <input
             value={q}
@@ -238,6 +239,13 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
         {sel && levels ? (
           <>
             <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <button
+                onClick={() => setShowList((v) => !v)}
+                title={showList ? "Ẩn danh sách (mở rộng chart)" : "Hiện danh sách"}
+                className="rounded border border-[var(--color-border)] px-1.5 py-0.5 text-xs text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+              >
+                {showList ? "‹ Ẩn DS" : "☰ DS"}
+              </button>
               <h2 className="text-sm font-semibold">{sel.symbol}</h2>
               <DecisionBadge decision={sel.decision} />
               <ConfChip conf={b.confidence} withLabel />
