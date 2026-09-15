@@ -7,39 +7,56 @@ export const dynamic = "force-dynamic";
 export default async function BuyPage() {
   const supabase = await createClient();
 
-  const { data: run } = await supabase
-    .from("v4_runs")
-    .select("run_id, started_at")
-    .order("started_at", { ascending: false })
+  // Run MỚI NHẤT CÓ tín hiệu BUY thực sự trong v4_signals (bền vững kể cả khi run
+  // mới nhất chưa sync đủ signals, hoặc tình cờ 0 BUY).
+  const { data: latestBuy } = await supabase
+    .from("v4_signals")
+    .select("run_id, signal_date, snap_time")
+    .in("decision", ["BUY", "STRONG BUY"])
+    .order("signal_date", { ascending: false })
+    .order("snap_time", { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  if (!run) {
+  if (!latestBuy) {
     return (
       <>
-        <PageHeader title="Mua" desc="Mã BUY / STRONG BUY của run mới nhất + diễn biến giá." />
+        <PageHeader title="Mua" desc="Mã BUY / STRONG BUY + diễn biến giá." />
         <EmptyState
-          title="Chưa có dữ liệu"
-          hint="Bảng v4_signals đang rỗng — chờ sync (E1) chạy."
+          title="Chưa có mã BUY/STRONG BUY nào trong dữ liệu"
+          hint="Chờ sync đổ data, hoặc các phiên gần đây không có tín hiệu mua."
         />
       </>
     );
   }
 
+  // So với run mới nhất tổng thể (để báo nếu đang xem run cũ hơn).
+  const { data: newestRun } = await supabase
+    .from("v4_runs")
+    .select("run_id")
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   const { data } = await supabase
     .from("v4_signals")
     .select("id, symbol, decision, score_trade, signal_date, breakdown")
-    .eq("run_id", run.run_id)
+    .eq("run_id", latestBuy.run_id)
     .in("decision", ["BUY", "STRONG BUY"])
     .order("score_trade", { ascending: false });
 
   const signals = (data ?? []) as BuySignal[];
+  const stale = newestRun && newestRun.run_id !== latestBuy.run_id;
 
   return (
     <>
       <PageHeader
         title="Mua"
-        desc={`${signals.length} mã BUY / STRONG BUY · run ${run.run_id} — chọn 1 mã để xem diễn biến giá + entry/TP`}
+        desc={
+          `${signals.length} mã BUY / STRONG BUY · run ${latestBuy.run_id}` +
+          (stale ? ` (run có BUY gần nhất; run mới nhất ${newestRun!.run_id} chưa có/đủ)` : "") +
+          " — chọn 1 mã để xem diễn biến giá + entry/TP"
+        }
       />
       <BuyBoard signals={signals} />
     </>
