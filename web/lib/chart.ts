@@ -90,6 +90,24 @@ export function computeEMA(candles: Candle[], period: number): (number | null)[]
   return out;
 }
 
+/** Bollinger Bands (period, mult) trên giá đóng cửa. null cho tới khi đủ period. */
+export function computeBB(candles: Candle[], period = 20, mult = 2): {
+  mid: number | null; upper: number | null; lower: number | null;
+}[] {
+  const out: { mid: number | null; upper: number | null; lower: number | null }[] = [];
+  for (let i = 0; i < candles.length; i++) {
+    if (i + 1 < period) { out.push({ mid: null, upper: null, lower: null }); continue; }
+    let sum = 0;
+    for (let j = i - period + 1; j <= i; j++) sum += candles[j].close;
+    const mid = sum / period;
+    let v = 0;
+    for (let j = i - period + 1; j <= i; j++) v += (candles[j].close - mid) ** 2;
+    const sd = Math.sqrt(v / period);
+    out.push({ mid, upper: mid + mult * sd, lower: mid - mult * sd });
+  }
+  return out;
+}
+
 /** Nến nào chạm TP (high ≥ tp) — dùng highlight. */
 export function tpHit(candles: Candle[], levels: Levels) {
   const hit1 = levels.tp1 != null && candles.some((c) => c.date >= levels.signalDate && c.high >= levels.tp1!);

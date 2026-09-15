@@ -191,7 +191,11 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
                 </div>
 
                 {/* PHÂN TÍCH KỸ THUẬT (dễ hiểu) */}
-                <div className="mt-4 grid gap-4 border-t border-[var(--color-border)] pt-3 lg:grid-cols-2">
+                <p className="mt-3 border-t border-[var(--color-border)] pt-2 text-[10px] italic text-[var(--color-muted)]">
+                  Đã vẽ trên chart: EMA50/EMA200, Bollinger(20,2), Entry ±3/±6%. Các chỉ báo dao động
+                  (Williams %R, RSI, order flow…) không cùng thang giá nên diễn giải bằng chữ bên dưới.
+                </p>
+                <div className="grid gap-4 pt-2 lg:grid-cols-2">
                   <div>
                     <h3 className="mb-1.5 text-xs font-semibold">6 nhóm yếu tố</h3>
                     <div className="flex flex-col gap-1">

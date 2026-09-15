@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Candle, Levels } from "@/lib/chart";
-import { computeEMA, tpHit } from "@/lib/chart";
+import { computeBB, computeEMA } from "@/lib/chart";
 
 // Chart nến custom SVG (interactive). Hover → crosshair + tooltip. Ctrl+lăn = zoom
-// (quanh con trỏ), kéo chuột = pan (kiểu TradingView). EMA50/200, ±3/6% quanh entry.
+// quanh con trỏ, kéo = pan (kiểu TradingView).
+// Overlay: Entry + đường ±3/±6% (màu xanh/đỏ theo hướng), EMA50/EMA200, Bollinger(20,2).
+// KHÔNG còn TP/SL (thay bằng ±3/6%). ◆ hồng = điểm tín hiệu BUY.
 
 const W = 820;
 const H = 340;
-const M = { top: 12, right: 64, bottom: 30, left: 46 };
+const M = { top: 12, right: 66, bottom: 30, left: 46 };
 const MIN_VIS = 5;
 
 const UP = "#16a34a";
@@ -18,7 +20,9 @@ const ACCENT = "#2563eb";
 const EMA50C = "#ea580c";
 const EMA200C = "#7c3aed";
 const BUYC = "#db2777";
-const PCTC = "var(--color-muted)";
+const BBC = "#64748b";
+// màu đường % (đậm dần theo mức)
+const PCT_COLOR: Record<number, string> = { 6: "#15803d", 3: "#4ade80", [-3]: "#f87171", [-6]: "#dc2626" };
 
 function fmt(n: number): string {
   return n.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -39,16 +43,14 @@ export function PriceChart({
   const n = candles.length;
   const wrapRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ start: 0, count: n });
-  const [hover, setHover] = useState<number | null>(null); // global index
+  const [hover, setHover] = useState<number | null>(null);
   const drag = useRef<{ active: boolean } | null>(null);
 
-  // Reset view khi đổi mã / số nến.
   useEffect(() => { setView({ start: 0, count: n }); }, [n]);
 
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
 
-  // Ctrl + wheel zoom (non-passive để preventDefault chặn zoom trình duyệt).
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
@@ -62,9 +64,9 @@ export function PriceChart({
         const anchor = prev.start + frac * prev.count;
         const factor = e.deltaY < 0 ? 0.82 : 1.22;
         const count = Math.round(clamp(prev.count * factor, MIN_VIS, n));
-        let start = Math.round(anchor - frac * count);
-        start = clamp(start, 0, Math.max(0, n - count));
-        return { start, count };
+        let s = Math.round(anchor - frac * count);
+        s = clamp(s, 0, Math.max(0, n - count));
+        return { start: s, count };
       });
     };
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -79,39 +81,61 @@ export function PriceChart({
   const vis = candles.slice(start, end);
   const m = vis.length;
 
-  // Y auto-scale theo vùng đang xem.
   const ys = vis.flatMap((c) => [c.high, c.low]);
   let yMin = Math.min(...ys);
   let yMax = Math.max(...ys);
   const pad = (yMax - yMin) * 0.06 || yMax * 0.02 || 1;
   yMin -= pad; yMax += pad;
   const y = (v: number) => M.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
-  const inY = (v: number | null | undefined) => v != null && v >= yMin && v <= yMax;
+  const inY = (v: number | null | undefined): v is number => v != null && v >= yMin && v <= yMax;
 
   const slot = plotW / m;
   const cw = Math.max(1.5, Math.min(14, slot * 0.62));
   const cx = (localI: number) => M.left + slot * (localI + 0.5);
-  const gToL = (g: number) => g - start; // global→local index
 
   const lastBuy = buyMarkers.length ? buyMarkers[buyMarkers.length - 1].price : null;
   const base = levels.entry ?? lastBuy;
   const pctPairs = base != null ? [6, 3, -3, -6].map((p) => ({ p, v: base * (1 + p / 100) })) : [];
 
-  const { hit1, hit2, hitStop } = tpHit(candles, levels);
+  // Sau ngày tín hiệu: đã đạt +3/+6% (high) hay thủng -3/-6% (low)?
+  const reach = { up3: false, up6: false, dn3: false, dn6: false };
+  if (base != null) {
+    for (const c of candles) {
+      if (c.date < levels.signalDate) continue;
+      if (c.high >= base * 1.06) reach.up6 = true;
+      if (c.high >= base * 1.03) reach.up3 = true;
+      if (c.low <= base * 0.94) reach.dn6 = true;
+      if (c.low <= base * 0.97) reach.dn3 = true;
+    }
+  }
+
   const ema50 = computeEMA(candles, 50);
   const ema200 = computeEMA(candles, 200);
-  const emaPath = (ema: (number | null)[], col: string) => {
+  const bb = computeBB(candles, 20, 2);
+  const line = (vals: (number | null)[], col: string, sw = 1.2, dash?: string) => {
     const pts: string[] = [];
-    for (let g = start; g < end; g++) {
-      const v = ema[g];
-      if (v != null) pts.push(`${cx(g - start)},${y(v)}`);
-    }
-    return pts.length ? <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={1.2} opacity={0.9} /> : null;
+    for (let g = start; g < end; g++) { const v = vals[g]; if (v != null) pts.push(`${cx(g - start)},${y(v)}`); }
+    return pts.length ? <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={sw} strokeDasharray={dash} opacity={0.9} /> : null;
   };
   const emaHas = { e50: ema50.slice(start, end).some((v) => v != null), e200: ema200.slice(start, end).some((v) => v != null) };
 
-  const yTicks = Array.from({ length: 5 }, (_, k) => yMin + ((yMax - yMin) * k) / 4);
+  // Bollinger fill band (upper→lower) trong vùng xem.
+  const bbUpper: (number | null)[] = bb.map((b) => b.upper);
+  const bbLower: (number | null)[] = bb.map((b) => b.lower);
+  const bbMid: (number | null)[] = bb.map((b) => b.mid);
+  let bbBand: string | null = null;
+  {
+    const up: string[] = [], lo: string[] = [];
+    for (let g = start; g < end; g++) {
+      if (bbUpper[g] != null && bbLower[g] != null) {
+        up.push(`${cx(g - start)},${y(bbUpper[g] as number)}`);
+        lo.push(`${cx(g - start)},${y(bbLower[g] as number)}`);
+      }
+    }
+    if (up.length > 1) bbBand = up.join(" ") + " " + lo.reverse().join(" ");
+  }
 
+  const yTicks = Array.from({ length: 5 }, (_, k) => yMin + ((yMax - yMin) * k) / 4);
   const sigGlobal = candles.findIndex((c) => c.date >= levels.signalDate);
   const sigLocal = sigGlobal >= start && sigGlobal < end ? sigGlobal - start : -1;
   const step = Math.max(1, Math.ceil(m / 10));
@@ -119,17 +143,6 @@ export function PriceChart({
   for (let i = 0; i < m; i += step) xLabels.add(i);
   xLabels.add(m - 1);
   if (sigLocal >= 0) xLabels.add(sigLocal);
-
-  function level(v: number | null, color: string, dash: string, label: string) {
-    if (!inY(v)) return null;
-    const yy = y(v as number);
-    return (
-      <g>
-        <line x1={M.left} x2={M.left + plotW} y1={yy} y2={yy} stroke={color} strokeWidth={1} strokeDasharray={dash} opacity={0.9} />
-        <text x={M.left + plotW + 4} y={yy + 3} fontSize={9} fill={color} className="tabular">{label} {fmt(v as number)}</text>
-      </g>
-    );
-  }
 
   function localFromEvent(e: React.MouseEvent<SVGSVGElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -140,13 +153,10 @@ export function PriceChart({
     if (drag.current?.active) {
       const rect = e.currentTarget.getBoundingClientRect();
       const dCandles = Math.round((e.movementX / rect.width) * W / slot);
-      if (dCandles !== 0) {
-        setView((prev) => {
-          const cnt = clamp(prev.count, MIN_VIS, n);
-          const st = clamp(prev.start - dCandles, 0, Math.max(0, n - cnt));
-          return { start: st, count: cnt };
-        });
-      }
+      if (dCandles !== 0) setView((prev) => {
+        const cnt = clamp(prev.count, MIN_VIS, n);
+        return { start: clamp(prev.start - dCandles, 0, Math.max(0, n - cnt)), count: cnt };
+      });
       return;
     }
     setHover(start + localFromEvent(e));
@@ -159,7 +169,7 @@ export function PriceChart({
     <div ref={wrapRef} className="relative w-full overflow-hidden">
       <svg
         viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá"
-        style={{ cursor: drag.current?.active ? "grabbing" : "crosshair" }}
+        style={{ cursor: "crosshair" }}
         onMouseMove={onMove}
         onMouseLeave={() => { setHover(null); drag.current = null; }}
         onMouseDown={() => { drag.current = { active: true }; }}
@@ -172,43 +182,52 @@ export function PriceChart({
           </g>
         ))}
 
+        {/* Bollinger band (nền mờ) */}
+        {bbBand ? <polygon points={bbBand} fill={BBC} opacity={0.08} /> : null}
+        {line(bbUpper, BBC, 0.8, "3 2")}
+        {line(bbLower, BBC, 0.8, "3 2")}
+        {line(bbMid, BBC, 0.8, "1 2")}
+
+        {/* đường ±3/±6% quanh entry — màu xanh/đỏ rõ */}
         {pctPairs.filter(({ v }) => inY(v)).map(({ p, v }) => (
           <g key={p}>
-            <line x1={M.left} x2={M.left + plotW} y1={y(v)} y2={y(v)} stroke={PCTC} strokeWidth={0.5} strokeDasharray="1 3" opacity={0.6} />
-            <text x={M.left + 2} y={y(v) - 1.5} fontSize={8} fill={PCTC} className="tabular">{p > 0 ? "+" : ""}{p}%</text>
+            <line x1={M.left} x2={M.left + plotW} y1={y(v)} y2={y(v)} stroke={PCT_COLOR[p]} strokeWidth={1} strokeDasharray="5 3" opacity={0.9} />
+            <text x={M.left + plotW + 4} y={y(v) + 3} fontSize={9} fill={PCT_COLOR[p]} className="tabular">{p > 0 ? "+" : ""}{p}% {fmt(v)}</text>
           </g>
         ))}
 
+        {/* nến */}
         {vis.map((c, i) => {
           const up = c.close >= c.open;
           const col = up ? UP : DOWN;
           const bodyTop = y(Math.max(c.open, c.close));
           const bodyBot = y(Math.min(c.open, c.close));
-          const isHit = levels.tp1 != null && c.date >= levels.signalDate && c.high >= levels.tp1;
           return (
             <g key={c.date}>
               <line x1={cx(i)} x2={cx(i)} y1={y(c.high)} y2={y(c.low)} stroke={col} strokeWidth={1} />
-              <rect x={cx(i) - cw / 2} y={bodyTop} width={cw} height={Math.max(1, bodyBot - bodyTop)} fill={col}
-                stroke={isHit ? "#ca8a04" : col} strokeWidth={isHit ? 1.5 : 0} />
-              {isHit ? <text x={cx(i)} y={y(c.high) - 4} fontSize={8} textAnchor="middle" fill="#ca8a04">★</text> : null}
+              <rect x={cx(i) - cw / 2} y={bodyTop} width={cw} height={Math.max(1, bodyBot - bodyTop)} fill={col} />
             </g>
           );
         })}
 
-        {emaPath(ema50, EMA50C)}
-        {emaPath(ema200, EMA200C)}
+        {line(ema50, EMA50C)}
+        {line(ema200, EMA200C)}
 
         {sigLocal >= 0 ? (
           <line x1={cx(sigLocal)} x2={cx(sigLocal)} y1={M.top} y2={M.top + plotH} stroke={ACCENT} strokeWidth={0.5} strokeDasharray="2 2" opacity={0.5} />
         ) : null}
 
-        {level(levels.tp2, UP, "4 2", "TP2")}
-        {level(levels.tp1, UP, "4 2", "TP1")}
-        {level(levels.entry, ACCENT, "0", "Entry")}
-        {level(levels.stop, DOWN, "4 2", "Stop")}
+        {/* Entry (giữ lại làm mốc gốc) */}
+        {inY(levels.entry) ? (
+          <g>
+            <line x1={M.left} x2={M.left + plotW} y1={y(levels.entry)} y2={y(levels.entry)} stroke={ACCENT} strokeWidth={1} opacity={0.9} />
+            <text x={M.left + plotW + 4} y={y(levels.entry) + 3} fontSize={9} fill={ACCENT} className="tabular">Entry {fmt(levels.entry)}</text>
+          </g>
+        ) : null}
 
         {buyMarkers.map((mk, k) => {
-          const li = gToL(candles.findIndex((c) => c.date === mk.date));
+          const g = candles.findIndex((c) => c.date === mk.date);
+          const li = g - start;
           if (li < 0 || li >= m || !inY(mk.price)) return null;
           const px = cx(li), py = y(mk.price), r = mk.strong ? 5 : 4;
           return (
@@ -241,13 +260,10 @@ export function PriceChart({
         </div>
       ) : null}
 
-      {/* điều khiển zoom */}
-      <div className="pointer-events-none absolute left-2 top-2 flex items-center gap-1">
+      <div className="pointer-events-none absolute left-2 top-2">
         {count < n ? (
-          <button
-            onClick={() => setView({ start: 0, count: n })}
-            className="pointer-events-auto rounded border border-[var(--color-border)] bg-[var(--color-surface)]/90 px-1.5 py-0.5 text-[10px] text-[var(--color-muted)] hover:text-[var(--color-ink)]"
-          >
+          <button onClick={() => setView({ start: 0, count: n })}
+            className="pointer-events-auto rounded border border-[var(--color-border)] bg-[var(--color-surface)]/90 px-1.5 py-0.5 text-[10px] text-[var(--color-muted)] hover:text-[var(--color-ink)]">
             ⟳ toàn bộ ({n})
           </button>
         ) : null}
@@ -255,13 +271,14 @@ export function PriceChart({
 
       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] text-[var(--color-muted)]">
         {emaHas.e50 ? <span><span style={{ color: EMA50C }}>—</span> EMA50</span> : null}
-        {emaHas.e200 ? <span><span style={{ color: EMA200C }}>—</span> EMA200</span> : <span className="italic">EMA200 cần ≥200 phiên</span>}
+        {emaHas.e200 ? <span><span style={{ color: EMA200C }}>—</span> EMA200</span>
+          : <span className="italic">EMA200 cần ≥200 phiên (hiện {n})</span>}
+        <span><span style={{ color: BBC }}>▭</span> Bollinger(20,2)</span>
+        <span><span style={{ color: ACCENT }}>—</span> Entry</span>
+        <span><span style={{ color: PCT_COLOR[3] }}>┈</span> +3/+6% · <span style={{ color: PCT_COLOR[-3] }}>┈</span> −3/−6%</span>
         <span><span style={{ color: BUYC }}>◆</span> BUY</span>
-        <span><span style={{ color: "#ca8a04" }}>★</span> chạm TP</span>
-        <span>┈ ±3/6%</span>
-        {hit1 ? <span className="text-[var(--color-buy)]">✓ TP1</span> : null}
-        {hit2 ? <span className="text-[var(--color-buy)]">✓ TP2</span> : null}
-        {hitStop ? <span className="text-[var(--color-sell)]">⚠ Stop</span> : null}
+        {reach.up3 ? <span className="text-[var(--color-buy)]">✓ đạt +3%{reach.up6 ? "/+6%" : ""}</span> : null}
+        {reach.dn3 ? <span className="text-[var(--color-sell)]">▼ thủng −3%{reach.dn6 ? "/−6%" : ""}</span> : null}
         <span className="ml-auto italic">Ctrl+lăn = zoom · kéo = pan · {count}/{n} phiên</span>
       </div>
     </div>
@@ -273,7 +290,7 @@ export function IntradayStrip({ candle }: { candle: Candle | undefined }) {
   if (!candle || candle.snaps.length < 2) {
     return <p className="text-[10px] text-[var(--color-muted)]">Ngày ra tín hiệu chỉ có 1 điểm giá — không đủ vẽ intraday.</p>;
   }
-  const w = 820, h = 80, m = { l: 46, r: 64, t: 6, b: 16 };
+  const w = 820, h = 80, m = { l: 46, r: 66, t: 6, b: 16 };
   const pw = w - m.l - m.r, ph = h - m.t - m.b;
   const prices = candle.snaps.map((s) => s.price);
   let lo = Math.min(...prices), hi = Math.max(...prices);
