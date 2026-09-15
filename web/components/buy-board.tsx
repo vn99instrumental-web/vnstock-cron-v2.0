@@ -182,7 +182,7 @@ export function BuyBoard({ signals }: { signals: BuySignal[] }) {
               <div className="grid h-[280px] place-items-center text-xs text-[var(--color-muted)]">Đang tải giá…</div>
             ) : (
               <>
-                <PriceChart candles={candles.slice(-180)} levels={levels} buyMarkers={markers} />
+                <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
                 <div className="mt-3">
                   <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">
                     Giá trong ngày ra tín hiệu ({sel.signal_date}) — theo từng lần chạy intraday
