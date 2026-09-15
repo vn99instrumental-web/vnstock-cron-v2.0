@@ -1,28 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Candle, Levels } from "@/lib/chart";
 import { computeEMA, tpHit } from "@/lib/chart";
 
-// Chart nến custom SVG (interactive). Hover → crosshair + tooltip OHLC/ngày.
-// Overlay: entry/stop/tp1/tp2, đường ±3%/±6% quanh entry, EMA50/EMA200.
-// ◆ hồng = điểm tín hiệu BUY. ★ = chạm TP.
+// Chart nến custom SVG (interactive). Hover → crosshair + tooltip. Ctrl+lăn = zoom
+// (quanh con trỏ), kéo chuột = pan (kiểu TradingView). EMA50/200, ±3/6% quanh entry.
 
 const W = 820;
 const H = 340;
 const M = { top: 12, right: 64, bottom: 30, left: 46 };
+const MIN_VIS = 5;
 
 const UP = "#16a34a";
 const DOWN = "#dc2626";
 const ACCENT = "#2563eb";
-const EMA50C = "#ea580c";  // cam
-const EMA200C = "#7c3aed"; // tím
-const BUYC = "#db2777";    // hồng
+const EMA50C = "#ea580c";
+const EMA200C = "#7c3aed";
+const BUYC = "#db2777";
 const PCTC = "var(--color-muted)";
 
 function fmt(n: number): string {
   return n.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+function clamp(v: number, lo: number, hi: number) { return Math.max(lo, Math.min(hi, v)); }
 
 export interface BuyMarker { date: string; price: number; strong: boolean }
 
@@ -35,78 +36,135 @@ export function PriceChart({
   levels: Levels;
   buyMarkers?: BuyMarker[];
 }) {
-  const [hover, setHover] = useState<number | null>(null);
+  const n = candles.length;
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState({ start: 0, count: n });
+  const [hover, setHover] = useState<number | null>(null); // global index
+  const drag = useRef<{ active: boolean } | null>(null);
 
-  if (!candles.length) {
-    return <p className="p-6 text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu giá để vẽ.</p>;
-  }
+  // Reset view khi đổi mã / số nến.
+  useEffect(() => { setView({ start: 0, count: n }); }, [n]);
 
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
 
-  // Giá tham chiếu cho đường %: entry của tín hiệu; fallback giá buy gần nhất.
-  const lastBuy = buyMarkers.length ? buyMarkers[buyMarkers.length - 1].price : null;
-  const base = levels.entry ?? lastBuy;
-  const pctPairs = base != null ? [6, 3, -3, -6].map((p) => ({ p, v: base * (1 + p / 100) })) : [];
+  // Ctrl + wheel zoom (non-passive để preventDefault chặn zoom trình duyệt).
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      const rect = el.getBoundingClientRect();
+      const vx = ((e.clientX - rect.left) / rect.width) * W;
+      const frac = clamp((vx - M.left) / plotW, 0, 1);
+      setView((prev) => {
+        const anchor = prev.start + frac * prev.count;
+        const factor = e.deltaY < 0 ? 0.82 : 1.22;
+        const count = Math.round(clamp(prev.count * factor, MIN_VIS, n));
+        let start = Math.round(anchor - frac * count);
+        start = clamp(start, 0, Math.max(0, n - count));
+        return { start, count };
+      });
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [n, plotW]);
 
-  const ys = candles.flatMap((c) => [c.high, c.low]);
-  for (const v of [levels.entry, levels.stop, levels.tp1, levels.tp2]) if (v != null) ys.push(v);
-  for (const { v } of pctPairs) ys.push(v);
+  if (!n) return <p className="p-6 text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu giá để vẽ.</p>;
+
+  const start = clamp(view.start, 0, Math.max(0, n - Math.min(view.count, n)));
+  const count = clamp(view.count, MIN_VIS, n);
+  const end = Math.min(n, start + count);
+  const vis = candles.slice(start, end);
+  const m = vis.length;
+
+  // Y auto-scale theo vùng đang xem.
+  const ys = vis.flatMap((c) => [c.high, c.low]);
   let yMin = Math.min(...ys);
   let yMax = Math.max(...ys);
   const pad = (yMax - yMin) * 0.06 || yMax * 0.02 || 1;
-  yMin -= pad;
-  yMax += pad;
-
+  yMin -= pad; yMax += pad;
   const y = (v: number) => M.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
-  const n = candles.length;
-  const slot = plotW / n;
-  const cw = Math.max(1.5, Math.min(12, slot * 0.62));
-  const cx = (i: number) => M.left + slot * (i + 0.5);
-  const idxOf = new Map(candles.map((c, i) => [c.date, i]));
+  const inY = (v: number | null | undefined) => v != null && v >= yMin && v <= yMax;
+
+  const slot = plotW / m;
+  const cw = Math.max(1.5, Math.min(14, slot * 0.62));
+  const cx = (localI: number) => M.left + slot * (localI + 0.5);
+  const gToL = (g: number) => g - start; // global→local index
+
+  const lastBuy = buyMarkers.length ? buyMarkers[buyMarkers.length - 1].price : null;
+  const base = levels.entry ?? lastBuy;
+  const pctPairs = base != null ? [6, 3, -3, -6].map((p) => ({ p, v: base * (1 + p / 100) })) : [];
 
   const { hit1, hit2, hitStop } = tpHit(candles, levels);
   const ema50 = computeEMA(candles, 50);
   const ema200 = computeEMA(candles, 200);
   const emaPath = (ema: (number | null)[], col: string) => {
-    const pts = ema.map((v, i) => (v == null ? null : `${cx(i)},${y(v)}`)).filter(Boolean).join(" ");
-    return pts ? <polyline points={pts} fill="none" stroke={col} strokeWidth={1.2} opacity={0.9} /> : null;
+    const pts: string[] = [];
+    for (let g = start; g < end; g++) {
+      const v = ema[g];
+      if (v != null) pts.push(`${cx(g - start)},${y(v)}`);
+    }
+    return pts.length ? <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={1.2} opacity={0.9} /> : null;
   };
-  const emaHas = { e50: ema50.some((v) => v != null), e200: ema200.some((v) => v != null) };
+  const emaHas = { e50: ema50.slice(start, end).some((v) => v != null), e200: ema200.slice(start, end).some((v) => v != null) };
 
   const yTicks = Array.from({ length: 5 }, (_, k) => yMin + ((yMax - yMin) * k) / 4);
 
-  const sigIdx = candles.findIndex((c) => c.date >= levels.signalDate);
-  const step = Math.max(1, Math.ceil(n / 11));
+  const sigGlobal = candles.findIndex((c) => c.date >= levels.signalDate);
+  const sigLocal = sigGlobal >= start && sigGlobal < end ? sigGlobal - start : -1;
+  const step = Math.max(1, Math.ceil(m / 10));
   const xLabels = new Set<number>();
-  for (let i = 0; i < n; i += step) xLabels.add(i);
-  xLabels.add(n - 1);
-  if (sigIdx >= 0) xLabels.add(sigIdx);
+  for (let i = 0; i < m; i += step) xLabels.add(i);
+  xLabels.add(m - 1);
+  if (sigLocal >= 0) xLabels.add(sigLocal);
 
   function level(v: number | null, color: string, dash: string, label: string) {
-    if (v == null) return null;
-    const yy = y(v);
+    if (!inY(v)) return null;
+    const yy = y(v as number);
     return (
       <g>
         <line x1={M.left} x2={M.left + plotW} y1={yy} y2={yy} stroke={color} strokeWidth={1} strokeDasharray={dash} opacity={0.9} />
-        <text x={M.left + plotW + 4} y={yy + 3} fontSize={9} fill={color} className="tabular">{label} {fmt(v)}</text>
+        <text x={M.left + plotW + 4} y={yy + 3} fontSize={9} fill={color} className="tabular">{label} {fmt(v as number)}</text>
       </g>
     );
   }
 
-  function onMove(e: React.MouseEvent<SVGSVGElement>) {
+  function localFromEvent(e: React.MouseEvent<SVGSVGElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
     const vx = ((e.clientX - rect.left) / rect.width) * W;
-    let i = Math.round((vx - M.left) / slot - 0.5);
-    i = Math.max(0, Math.min(n - 1, i));
-    setHover(i);
+    return clamp(Math.round((vx - M.left) / slot - 0.5), 0, m - 1);
+  }
+  function onMove(e: React.MouseEvent<SVGSVGElement>) {
+    if (drag.current?.active) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const dCandles = Math.round((e.movementX / rect.width) * W / slot);
+      if (dCandles !== 0) {
+        setView((prev) => {
+          const cnt = clamp(prev.count, MIN_VIS, n);
+          const st = clamp(prev.start - dCandles, 0, Math.max(0, n - cnt));
+          return { start: st, count: cnt };
+        });
+      }
+      return;
+    }
+    setHover(start + localFromEvent(e));
   }
 
-  const hc = hover != null ? candles[hover] : null;
+  const hc = hover != null && hover >= start && hover < end ? candles[hover] : null;
+  const hoverLocal = hc ? hover! - start : -1;
 
   return (
-    <div className="relative w-full overflow-hidden">
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá" onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
+    <div ref={wrapRef} className="relative w-full overflow-hidden">
+      <svg
+        viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá"
+        style={{ cursor: drag.current?.active ? "grabbing" : "crosshair" }}
+        onMouseMove={onMove}
+        onMouseLeave={() => { setHover(null); drag.current = null; }}
+        onMouseDown={() => { drag.current = { active: true }; }}
+        onMouseUp={() => { drag.current = null; }}
+      >
         {yTicks.map((t, k) => (
           <g key={k}>
             <line x1={M.left} x2={M.left + plotW} y1={y(t)} y2={y(t)} stroke="var(--color-border)" strokeWidth={0.5} />
@@ -114,16 +172,14 @@ export function PriceChart({
           </g>
         ))}
 
-        {/* đường ±3%/±6% quanh entry (nền mờ) */}
-        {pctPairs.map(({ p, v }) => (
+        {pctPairs.filter(({ v }) => inY(v)).map(({ p, v }) => (
           <g key={p}>
             <line x1={M.left} x2={M.left + plotW} y1={y(v)} y2={y(v)} stroke={PCTC} strokeWidth={0.5} strokeDasharray="1 3" opacity={0.6} />
             <text x={M.left + 2} y={y(v) - 1.5} fontSize={8} fill={PCTC} className="tabular">{p > 0 ? "+" : ""}{p}%</text>
           </g>
         ))}
 
-        {/* nến */}
-        {candles.map((c, i) => {
+        {vis.map((c, i) => {
           const up = c.close >= c.open;
           const col = up ? UP : DOWN;
           const bodyTop = y(Math.max(c.open, c.close));
@@ -142,8 +198,8 @@ export function PriceChart({
         {emaPath(ema50, EMA50C)}
         {emaPath(ema200, EMA200C)}
 
-        {sigIdx >= 0 ? (
-          <line x1={cx(sigIdx)} x2={cx(sigIdx)} y1={M.top} y2={M.top + plotH} stroke={ACCENT} strokeWidth={0.5} strokeDasharray="2 2" opacity={0.5} />
+        {sigLocal >= 0 ? (
+          <line x1={cx(sigLocal)} x2={cx(sigLocal)} y1={M.top} y2={M.top + plotH} stroke={ACCENT} strokeWidth={0.5} strokeDasharray="2 2" opacity={0.5} />
         ) : null}
 
         {level(levels.tp2, UP, "4 2", "TP2")}
@@ -151,11 +207,10 @@ export function PriceChart({
         {level(levels.entry, ACCENT, "0", "Entry")}
         {level(levels.stop, DOWN, "4 2", "Stop")}
 
-        {/* marker BUY: kim cương hồng ◆ */}
         {buyMarkers.map((mk, k) => {
-          const i = idxOf.get(mk.date);
-          if (i == null) return null;
-          const px = cx(i), py = y(mk.price), r = mk.strong ? 5 : 4;
+          const li = gToL(candles.findIndex((c) => c.date === mk.date));
+          if (li < 0 || li >= m || !inY(mk.price)) return null;
+          const px = cx(li), py = y(mk.price), r = mk.strong ? 5 : 4;
           return (
             <path key={k} d={`M ${px} ${py - r} L ${px + r} ${py} L ${px} ${py + r} L ${px - r} ${py} Z`}
               fill={BUYC} stroke="#fff" strokeWidth={1}>
@@ -164,12 +219,12 @@ export function PriceChart({
           );
         })}
 
-        {hover != null ? (
-          <line x1={cx(hover)} x2={cx(hover)} y1={M.top} y2={M.top + plotH} stroke="var(--color-ink)" strokeWidth={0.5} opacity={0.35} />
+        {hoverLocal >= 0 ? (
+          <line x1={cx(hoverLocal)} x2={cx(hoverLocal)} y1={M.top} y2={M.top + plotH} stroke="var(--color-ink)" strokeWidth={0.5} opacity={0.35} />
         ) : null}
 
         {[...xLabels].sort((a, b) => a - b).map((i) => (
-          <text key={i} x={cx(i)} y={H - 6} fontSize={8} textAnchor="middle" fill="var(--color-muted)">{candles[i].date.slice(5)}</text>
+          <text key={i} x={cx(i)} y={H - 6} fontSize={8} textAnchor="middle" fill="var(--color-muted)">{vis[i]?.date.slice(5)}</text>
         ))}
       </svg>
 
@@ -186,16 +241,28 @@ export function PriceChart({
         </div>
       ) : null}
 
+      {/* điều khiển zoom */}
+      <div className="pointer-events-none absolute left-2 top-2 flex items-center gap-1">
+        {count < n ? (
+          <button
+            onClick={() => setView({ start: 0, count: n })}
+            className="pointer-events-auto rounded border border-[var(--color-border)] bg-[var(--color-surface)]/90 px-1.5 py-0.5 text-[10px] text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+          >
+            ⟳ toàn bộ ({n})
+          </button>
+        ) : null}
+      </div>
+
       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] text-[var(--color-muted)]">
         {emaHas.e50 ? <span><span style={{ color: EMA50C }}>—</span> EMA50</span> : null}
-        {emaHas.e200 ? <span><span style={{ color: EMA200C }}>—</span> EMA200</span> : <span className="italic">EMA200 cần ≥200 phiên (chạy backfill OHLC)</span>}
-        <span><span style={{ color: BUYC }}>◆</span> tín hiệu BUY</span>
+        {emaHas.e200 ? <span><span style={{ color: EMA200C }}>—</span> EMA200</span> : <span className="italic">EMA200 cần ≥200 phiên</span>}
+        <span><span style={{ color: BUYC }}>◆</span> BUY</span>
         <span><span style={{ color: "#ca8a04" }}>★</span> chạm TP</span>
-        <span>┈ ±3/6% quanh entry</span>
+        <span>┈ ±3/6%</span>
         {hit1 ? <span className="text-[var(--color-buy)]">✓ TP1</span> : null}
         {hit2 ? <span className="text-[var(--color-buy)]">✓ TP2</span> : null}
         {hitStop ? <span className="text-[var(--color-sell)]">⚠ Stop</span> : null}
-        <span className="ml-auto italic">Di chuột để xem giá/ngày.</span>
+        <span className="ml-auto italic">Ctrl+lăn = zoom · kéo = pan · {count}/{n} phiên</span>
       </div>
     </div>
   );
