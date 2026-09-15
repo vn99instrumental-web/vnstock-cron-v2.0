@@ -103,6 +103,17 @@
 
 ---
 
+## E7 — Buy Board & Chart *(epic mới)*
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E7.1 | Grill + design layout `/buy` (list trái + chart phải) | grill-me, frontend-design | **DONE** — chốt nguồn chart (ADR-010), khung intraday+daily, master-detail | **DONE** | E3 |
+| E7.2 | Query builder chuỗi giá 1 mã từ `v4_signals` | — | Hàm lấy snaps của mã từ signal_date→hiện tại; gom nến daily (O/H/L/C từ snap) + điểm intraday | TODO | E7.1 |
+| E7.3 | Trang `/buy`: list BUY/STRONG BUY (run mới nhất) | frontend-design | Chỉ decision BUY/STRONG BUY; sort score; chọn dòng → chart cập nhật; mobile xếp dọc | TODO | E7.2 |
+| E7.4 | Component chart nến + overlay entry/stop/TP + highlight TP-hit | dataviz | Nến daily + đường intraday; entry marker; stop/tp1/tp2 lines; highlight khi snap≥tp; nhãn "không phải tick OHLC" | TODO | E7.2 |
+| E7.5 | Nav thêm mục "Mua" (/buy) + empty/loading states | — | Nav có /buy; empty khi chưa data | TODO | E7.3 |
+| E7.6 | App-test + Visual QA | app-test, visual-qa | Luồng chọn mã + chart + responsive OK | TODO | E7.3-4 |
+
 ## Cột mốc cập nhật
 - 2026-09-12: Khởi tạo backlog. E0.1-E0.7 DONE (push `adb5d4f`).
 - 2026-09-12 (grill vòng 2): chốt ADR-007 (auth 1 owner), ADR-008 (sync non-blocking vào workflow cũ), ADR-009 (config surface đầy đủ); sửa decision buckets đúng data. Thêm E1.8. PRD → v2.0 GRILLED.

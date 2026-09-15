@@ -88,6 +88,16 @@
 
 ---
 
+## ADR-010 — Chart giá (E7) tái tạo từ ledger, KHÔNG fetch ngoài
+- **Trạng thái:** ACCEPTED (2026-09-15, grill vòng 3)
+- **Bối cảnh:** User muốn xem 1 mã BUY diễn biến giá sau các lần intraday + các ngày, dạng "chart OHLC", đánh dấu entry + highlight chạm TP. Nhưng **OHLC nến thật KHÔNG có trong Supabase** (ledger chỉ lưu `price` spot mỗi snap + forward returns). User chốt: "mục đích không phải xem OHLC realtime → chọn cách tối ưu nhất".
+- **Lựa chọn cân nhắc:** (A) tái tạo nến từ giá snap đã có trong `v4_signals`; (B) thêm pipeline Python export OHLC thật → bảng `v4_ohlc` mới; (C) app tự fetch vnstock khi xem.
+- **Quyết định:** **(A)**. Mỗi mã vn100 chấm mỗi ngày → có chuỗi giá snap. Dựng nến daily (O=snap đầu, C=snap cuối, H=max, L=min) + đường intraday ngày 0. Nhãn rõ "không phải tick OHLC đầy đủ".
+- **Lý do:** Giữ kiến trúc **app = lớp query** (PRD non-goal: app không tự fetch chứng khoán). Không thêm bảng/pipeline/secret. Data đã sync + anon đọc được. Đủ cho mục đích theo dõi diễn biến + hit TP (đối chiếu `mfe_pct`).
+- **Hệ quả:** Nến thô (≤5 điểm/ngày) — chấp nhận, dán nhãn. Nếu sau này cần nến tick thật → mở ADR mới cho phương án B (script export OHLC). TP-hit suy từ giá snap ≥ tp (có thể bỏ sót nếu giá chạm giữa 2 snap — đối chiếu mfe_pct khi outcome chín).
+
+---
+
 ## ADR-006 — `run_id` deterministic (CLOSED ở E1)
 - **Trạng thái:** ✅ ACCEPTED (2026-09-12, E1)
 - **Bối cảnh:** `v4_runs` cần `run_id` (PK) nhưng ledger prediction không có field `run_id`.
