@@ -71,6 +71,25 @@ export function computeMA(candles: Candle[], period: number): (number | null)[] 
   return out;
 }
 
+/** EMA trên giá đóng cửa daily. Seed = SMA(period) tại điểm đủ dữ liệu; null trước đó. */
+export function computeEMA(candles: Candle[], period: number): (number | null)[] {
+  const k = 2 / (period + 1);
+  const out: (number | null)[] = [];
+  let ema: number | null = null;
+  for (let i = 0; i < candles.length; i++) {
+    if (i + 1 < period) { out.push(null); continue; }
+    if (ema === null) {
+      let s = 0;
+      for (let j = i - period + 1; j <= i; j++) s += candles[j].close;
+      ema = s / period;
+    } else {
+      ema = candles[i].close * k + ema * (1 - k);
+    }
+    out.push(ema);
+  }
+  return out;
+}
+
 /** Nến nào chạm TP (high ≥ tp) — dùng highlight. */
 export function tpHit(candles: Candle[], levels: Levels) {
   const hit1 = levels.tp1 != null && candles.some((c) => c.date >= levels.signalDate && c.high >= levels.tp1!);
