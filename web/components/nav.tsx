@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 type NavLink = { href: string; label: string; icon: string; owner?: boolean };
 
 const LINKS: NavLink[] = [
+  { href: "/buy", label: "Mua", icon: "▲" },
   { href: "/today", label: "Hôm nay", icon: "●" },
   { href: "/history", label: "Lịch sử", icon: "◷" },
   { href: "/ic", label: "Chất lượng (IC)", icon: "▤" },
