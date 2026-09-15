@@ -17,7 +17,7 @@ export function Nav({ isOwner }: { isOwner: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 md:flex-col md:gap-0.5">
+    <nav className="flex gap-1">
       {LINKS.filter((l) => !l.owner || isOwner).map((l) => {
         const active = pathname === l.href || pathname.startsWith(l.href + "/");
         return (
@@ -26,15 +26,13 @@ export function Nav({ isOwner }: { isOwner: boolean }) {
             href={l.href}
             aria-current={active ? "page" : undefined}
             className={[
-              "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              "flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
               active
                 ? "bg-[var(--color-accent)] text-white"
                 : "text-[var(--color-muted)] hover:bg-black/5 hover:text-[var(--color-ink)] dark:hover:bg-white/5",
             ].join(" ")}
           >
-            <span aria-hidden className="text-xs opacity-70">
-              {l.icon}
-            </span>
+            <span aria-hidden className="text-xs opacity-70">{l.icon}</span>
             <span>{l.label}</span>
           </Link>
         );

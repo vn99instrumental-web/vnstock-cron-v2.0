@@ -14,51 +14,37 @@ export default async function DashboardLayout({
   const owner = isOwner(user?.email);
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[220px_1fr]">
-      {/* Sidebar (desktop) / top-bar (mobile) */}
-      <aside className="border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 md:border-b-0 md:border-r md:py-5">
-        <div className="mb-4 flex items-center justify-between md:mb-6">
-          <Link href="/today" className="flex items-center gap-2">
-            <span className="grid h-7 w-7 place-items-center rounded-md bg-[var(--color-accent)] text-sm font-bold text-white">
-              V
-            </span>
-            <span className="text-sm font-semibold">VNStock Signals</span>
+    <div className="flex min-h-screen flex-col">
+      {/* Top bar */}
+      <header className="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+        <div className="flex items-center gap-3 px-3 py-2 md:px-4">
+          <Link href="/today" className="flex shrink-0 items-center gap-2">
+            <span className="grid h-6 w-6 place-items-center rounded-md bg-[var(--color-accent)] text-xs font-bold text-white">V</span>
+            <span className="hidden text-sm font-semibold sm:inline">VNStock Signals</span>
           </Link>
-        </div>
-        <Nav isOwner={owner} />
-        <div className="mt-4 border-t border-[var(--color-border)] pt-3 text-xs text-[var(--color-muted)] md:mt-6">
-          {user ? (
-            <div className="flex flex-col gap-2">
-              <span className="truncate" title={user.email ?? ""}>
-                {owner ? "👤 " : ""}
-                {user.email}
-              </span>
-              <SignOutButton />
-            </div>
-          ) : (
-            <Link href="/login" className="text-[var(--color-accent)] hover:underline">
-              Đăng nhập (owner)
-            </Link>
-          )}
-        </div>
-      </aside>
 
-      {/* Main */}
-      <div className="flex flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 md:px-6">
-          <span className="text-xs text-[var(--color-muted)]">
-            Pipeline v2f_v4 · nguồn chân lý: Python + ledger
-          </span>
-          <Suspense
-            fallback={
-              <span className="text-xs text-[var(--color-muted)]">…</span>
-            }
-          >
+          <div className="min-w-0 flex-1 overflow-x-auto">
+            <Nav isOwner={owner} />
+          </div>
+
+          <Suspense fallback={<span className="text-xs text-[var(--color-muted)]">…</span>}>
             <VersionBadge />
           </Suspense>
-        </header>
-        <main className="flex-1 px-4 py-5 md:px-6 md:py-6">{children}</main>
-      </div>
+
+          <div className="hidden shrink-0 items-center gap-2 text-xs text-[var(--color-muted)] md:flex">
+            {user ? (
+              <>
+                <span className="max-w-[160px] truncate" title={user.email ?? ""}>{owner ? "👤 " : ""}{user.email}</span>
+                <SignOutButton />
+              </>
+            ) : (
+              <Link href="/login" className="text-[var(--color-accent)] hover:underline">Đăng nhập</Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 px-3 py-4 md:px-4">{children}</main>
     </div>
   );
 }
