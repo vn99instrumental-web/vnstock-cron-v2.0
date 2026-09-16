@@ -1,4 +1,4 @@
-import { PageHeader, EmptyState, Card } from "@/components/ui";
+import { PageHeader, EmptyState } from "@/components/ui";
 import { TodayBoard, type TodaySignal } from "@/components/today-board";
 import { createClient } from "@/lib/supabase/server";
 import { hmVN } from "@/lib/format";
@@ -47,26 +47,11 @@ export default async function TodayPage() {
         title="Hôm nay"
         desc={`${theDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${hmVN(run.started_at)} (giờ VN)`}
       />
-      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Số mã" value={String(nSymbols)} />
-        <Stat label="BUY (phiên mới nhất)" value={String(run.n_buy ?? "—")} />
-        <Stat label="Regime" value={String(run.health?.regime ?? "—")} />
-        <Stat label="Scoring" value={String(run.scoring_version ?? "—")} mono />
-      </div>
       {signals.length ? (
         <TodayBoard signals={signals} totalSnaps={totalSnaps} />
       ) : (
         <EmptyState title="Phiên này chưa có tín hiệu" />
       )}
     </>
-  );
-}
-
-function Stat({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <Card>
-      <div className="text-xs text-[var(--color-muted)]">{label}</div>
-      <div className={`mt-1 text-lg font-semibold ${mono ? "font-mono" : ""}`}>{value}</div>
-    </Card>
   );
 }
