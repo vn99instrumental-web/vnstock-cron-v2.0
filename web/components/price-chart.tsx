@@ -154,10 +154,12 @@ export function PriceChart({
   const end = Math.min(n, start + count);
   const vis = candles.slice(start, end);
   const m = vis.length;
+  if (!m) return <p className="p-6 text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu giá để vẽ.</p>;
 
-  const ys = vis.flatMap((c) => [c.high, c.low]);
-  let yMin = Math.min(...ys);
-  let yMax = Math.max(...ys);
+  const ys = vis.flatMap((c) => [c.high, c.low]).filter((v) => Number.isFinite(v));
+  let yMin = ys.length ? Math.min(...ys) : 0;
+  let yMax = ys.length ? Math.max(...ys) : 1;
+  if (yMax <= yMin) yMax = yMin + 1; // tránh chia 0 khi mọi giá bằng nhau
   const pad = (yMax - yMin) * 0.06 || yMax * 0.02 || 1;
   yMin -= pad; yMax += pad;
   const y = (v: number) => M.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
