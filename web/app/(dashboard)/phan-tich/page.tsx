@@ -1,5 +1,5 @@
 import { PageHeader, EmptyState } from "@/components/ui";
-import { AnalysisBoard, type SignalResult, type FactorCorr } from "@/components/analysis-board";
+import { AnalysisBoard, type SignalResult, type FactorCorr, type FactorPair, type FactorCorrSplit } from "@/components/analysis-board";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function PhanTichPage() {
   const supabase = await createClient();
 
-  const [{ data: results }, { data: corr }] = await Promise.all([
+  const [{ data: results }, { data: corr }, { data: pairs }, { data: split }] = await Promise.all([
     supabase
       .from("v4_signal_results")
       .select(
@@ -15,6 +15,8 @@ export default async function PhanTichPage() {
       )
       .order("signal_date", { ascending: false }),
     supabase.from("v4_hit_factor_corr").select("*"),
+    supabase.from("v4_factor_pair_corr").select("*"),
+    supabase.from("v4_hit_factor_corr_split").select("*"),
   ]);
 
   const rows = (results ?? []) as SignalResult[];
@@ -40,7 +42,12 @@ export default async function PhanTichPage() {
         title="Phân tích tín hiệu"
         desc="Kết quả BUY/STRONG BUY theo thời gian: chạm TP hay SL (đi theo nến thật), và biến đầu vào nào liên quan."
       />
-      <AnalysisBoard results={rows} corr={(corr ?? []) as FactorCorr[]} />
+      <AnalysisBoard
+        results={rows}
+        corr={(corr ?? []) as FactorCorr[]}
+        pairs={(pairs ?? []) as FactorPair[]}
+        split={(split ?? []) as FactorCorrSplit[]}
+      />
     </>
   );
 }
