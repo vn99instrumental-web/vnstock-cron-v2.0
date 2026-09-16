@@ -1,5 +1,5 @@
 import { PageHeader, EmptyState } from "@/components/ui";
-import { BuyBoard, type BuySignal, type ExpectancyRow } from "@/components/buy-board";
+import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -78,6 +78,9 @@ export default async function BuyPage() {
     .maybeSingle();
   const { data: expData } = await supabase.from("v4_buy_expectancy").select("*");
 
+  // D/E/F — độ vững tín hiệu (thanh khoản từ breakdown; độ bền/đồng thuận từ view).
+  const { data: robData } = await supabase.from("v4_buy_robustness").select("*");
+
   return (
     <>
       <PageHeader
@@ -87,6 +90,7 @@ export default async function BuyPage() {
       <BuyBoard
         signals={signals}
         expectancy={(expData ?? []) as ExpectancyRow[]}
+        robustness={(robData ?? []) as RobustnessRow[]}
         runId={latestBuy.run_id}
         runStartedAt={(runRow?.started_at as string | undefined) ?? null}
         newestRunId={(newestRun?.run_id as string | undefined) ?? null}
