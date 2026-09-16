@@ -58,12 +58,12 @@ export default async function HistoryPage({
             </span>
             <div className="flex gap-2">
               {page > 1 ? (
-                <Link href={qs(page - 1)} className="rounded border border-[var(--color-border)] px-3 py-1">
+                <Link href={qs(page - 1)} className="inline-flex min-h-[40px] items-center rounded-md border border-[var(--color-border)] px-4 py-2 active:bg-black/5 dark:active:bg-white/5">
                   ← Trước
                 </Link>
               ) : null}
               {page < totalPages ? (
-                <Link href={qs(page + 1)} className="rounded border border-[var(--color-border)] px-3 py-1">
+                <Link href={qs(page + 1)} className="inline-flex min-h-[40px] items-center rounded-md border border-[var(--color-border)] px-4 py-2 active:bg-black/5 dark:active:bg-white/5">
                   Sau →
                 </Link>
               ) : null}

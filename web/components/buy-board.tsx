@@ -479,21 +479,31 @@ export function BuyBoard({
               </div>
             )}
 
-            {loading ? (
+            {candles.length ? (
+              // Giữ chart cũ MỜ ĐI khi đang tải mã mới (mượt hơn, không nháy trắng).
+              <div className="relative">
+                <div className={loading ? "pointer-events-none opacity-40 transition-opacity duration-200" : "transition-opacity duration-200"}>
+                  <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
+                  <div className="mt-3">
+                    <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">
+                      Giá trong ngày ra tín hiệu ({sel.signal_date}) — theo từng lần chạy intraday
+                    </div>
+                    <IntradayStrip candle={entryCandle} />
+                  </div>
+                </div>
+                {loading ? (
+                  <div className="absolute inset-0 grid place-items-center">
+                    <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]" />
+                  </div>
+                ) : null}
+              </div>
+            ) : loading ? (
               <div className="flex h-[220px] items-center justify-center gap-2 rounded-md bg-black/[0.02] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
                 <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]" />
                 Đang tải giá…
               </div>
             ) : (
-              <>
-                <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
-                <div className="mt-3">
-                  <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">
-                    Giá trong ngày ra tín hiệu ({sel.signal_date}) — theo từng lần chạy intraday
-                  </div>
-                  <IntradayStrip candle={entryCandle} />
-                </div>
-              </>
+              <p className="grid h-[120px] place-items-center text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu giá để vẽ.</p>
             )}
 
             {/* 6 NHÓM YẾU TỐ — từ breakdown, hiện NGAY (không chờ tải giá) */}
