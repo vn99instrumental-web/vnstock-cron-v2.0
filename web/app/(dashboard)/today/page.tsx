@@ -1,5 +1,5 @@
 import { PageHeader, EmptyState, Card } from "@/components/ui";
-import { SignalsTable, type SignalRow } from "@/components/signals-table";
+import { TodayBoard, type TodaySignal } from "@/components/today-board";
 import { createClient } from "@/lib/supabase/server";
 import { snapHM } from "@/lib/format";
 
@@ -19,7 +19,7 @@ export default async function TodayPage() {
   if (!run) {
     return (
       <>
-        <PageHeader title="Hôm nay" desc="Tín hiệu của run mới nhất." />
+        <PageHeader title="Hôm nay" desc="Tín hiệu của phiên mới nhất." />
         <EmptyState
           title="Chưa có dữ liệu tín hiệu"
           hint="Bảng v4_signals đang rỗng — chờ sync (E1) chạy trên GitHub Actions."
@@ -28,30 +28,35 @@ export default async function TodayPage() {
     );
   }
 
-  const { data: signals } = await supabase
+  // Ngày của run mới nhất (prefix run_id "YYYY-MM-DD_HH:MM"). Lấy TẤT CẢ snap trong ngày
+  // → gộp theo mã (1 mã có thể BUY nhiều lần chạy).
+  const theDate = String(run.run_id).split("_")[0];
+  const { data: sigs } = await supabase
     .from("v4_signals")
-    .select("id, symbol, decision, score_trade, regime, signal_date, snap_time, scoring_version, breakdown")
-    .eq("run_id", run.run_id)
+    .select("symbol, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence")
+    .eq("signal_date", theDate)
     .order("score_trade", { ascending: false });
 
-  const rows = (signals ?? []) as SignalRow[];
+  const signals = (sigs ?? []) as TodaySignal[];
+  const totalSnaps = new Set(signals.map((s) => String(s.snap_time))).size;
+  const nSymbols = new Set(signals.map((s) => s.symbol)).size;
 
   return (
     <>
       <PageHeader
         title="Hôm nay"
-        desc={`Run ${run.run_id} · ${snapHM(run.started_at)} · ${run.universe_size ?? rows.length} mã`}
+        desc={`${theDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${snapHM(run.started_at)}`}
       />
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Số tín hiệu" value={String(rows.length)} />
-        <Stat label="BUY / STRONG BUY" value={String(run.n_buy ?? "—")} />
+        <Stat label="Số mã" value={String(nSymbols)} />
+        <Stat label="BUY (phiên mới nhất)" value={String(run.n_buy ?? "—")} />
         <Stat label="Regime" value={String(run.health?.regime ?? "—")} />
         <Stat label="Scoring" value={String(run.scoring_version ?? "—")} mono />
       </div>
-      {rows.length ? (
-        <SignalsTable rows={rows} />
+      {signals.length ? (
+        <TodayBoard signals={signals} totalSnaps={totalSnaps} />
       ) : (
-        <EmptyState title="Run này chưa có tín hiệu" />
+        <EmptyState title="Phiên này chưa có tín hiệu" />
       )}
     </>
   );
