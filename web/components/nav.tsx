@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 
 type NavLink = { href: string; label: string; icon: string; owner?: boolean };
@@ -14,6 +14,16 @@ const LINKS: NavLink[] = [
   { href: "/config", label: "Cấu hình", icon: "⚙", owner: true },
 ];
 
+// Icon chỉ báo: đang điều hướng tới link vừa bấm → spinner (phản hồi tức thì).
+function LinkIcon({ icon }: { icon: string }) {
+  const { pending } = useLinkStatus();
+  return pending ? (
+    <span aria-hidden className="inline-block h-3 w-3 shrink-0 animate-spin rounded-full border border-current border-t-transparent opacity-80" />
+  ) : (
+    <span aria-hidden className="text-xs opacity-70">{icon}</span>
+  );
+}
+
 export function Nav({ isOwner }: { isOwner: boolean }) {
   const pathname = usePathname();
 
@@ -25,15 +35,16 @@ export function Nav({ isOwner }: { isOwner: boolean }) {
           <Link
             key={l.href}
             href={l.href}
+            prefetch
             aria-current={active ? "page" : undefined}
             className={[
-              "flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
+              "flex min-h-[38px] shrink-0 items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors active:scale-[0.97]",
               active
                 ? "bg-[var(--color-accent)] text-white"
-                : "text-[var(--color-muted)] hover:bg-black/5 hover:text-[var(--color-ink)] dark:hover:bg-white/5",
+                : "text-[var(--color-muted)] hover:bg-black/5 hover:text-[var(--color-ink)] active:bg-black/10 dark:hover:bg-white/5 dark:active:bg-white/10",
             ].join(" ")}
           >
-            <span aria-hidden className="text-xs opacity-70">{l.icon}</span>
+            <LinkIcon icon={l.icon} />
             <span>{l.label}</span>
           </Link>
         );
