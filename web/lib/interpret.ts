@@ -59,6 +59,55 @@ export function signalName(key: string): string {
   return SIGNAL_NAME[key] ?? key;
 }
 
+// Tên tiếng Việt cho MỌI biến số trong breakdown (dùng ở trang Phân tích tương quan).
+export const VAR_NAME: Record<string, string> = {
+  ...SIGNAL_NAME,
+  trade_mean_reversion_norm: "Nhóm Hồi phục (trade)",
+  trade_breakout_norm: "Nhóm Bứt phá (trade)",
+  trade_flow_norm: "Nhóm Dòng tiền (trade)",
+  trade_fundamental_norm: "Nhóm Cơ bản (trade)",
+  trade_growth_norm: "Nhóm Tăng trưởng (trade)",
+  trade_context_norm: "Nhóm Bối cảnh (trade)",
+  hold_mean_reversion_norm: "Nhóm Hồi phục (hold)",
+  hold_breakout_norm: "Nhóm Bứt phá (hold)",
+  hold_flow_norm: "Nhóm Dòng tiền (hold)",
+  hold_fundamental_norm: "Nhóm Cơ bản (hold)",
+  hold_growth_norm: "Nhóm Tăng trưởng (hold)",
+  hold_context_norm: "Nhóm Bối cảnh (hold)",
+  rank_trend_grp: "Xếp hạng xu hướng (ngành)",
+  rank_ff_grp: "Xếp hạng khối ngoại (ngành)",
+  rank_fund_grp: "Xếp hạng cơ bản (ngành)",
+  rank_fund_uni: "Xếp hạng cơ bản (toàn TT)",
+  rank_growth_grp: "Xếp hạng tăng trưởng (ngành)",
+  rank_cf_grp: "Xếp hạng dòng tiền DN (ngành)",
+  ff_intra_net: "Khối ngoại ròng (VND)",
+  ff_intra_frac: "Tỷ trọng khối ngoại",
+  ff_intra_ratio: "Tỷ lệ khối ngoại/GT",
+  ff_intra_pts: "Điểm khối ngoại",
+  ff_intra_flag_pts: "Cờ khối ngoại",
+  of_bp_pts: "Điểm order flow (bp)",
+  adtv_bil: "Thanh khoản TB (tỷ)",
+  confluence_bonus: "Thưởng đồng thuận",
+  n_supergroups_aligned: "Số nhóm đồng thuận",
+  total_score: "Điểm tổng (trade)",
+  score_hold: "Điểm nắm giữ (hold)",
+};
+/** Tên tiếng Việt cho mọi biến breakdown (fallback: chính key). */
+export function varName(key: string): string {
+  return VAR_NAME[key] ?? key;
+}
+
+// Nhóm biến (khớp cột grp của view v4_hit_factor_corr).
+export const GROUP_LABEL: Record<string, string> = {
+  signal: "Tín hiệu chi tiết (s_*)",
+  factor_trade: "6 nhóm yếu tố — lệnh trade",
+  factor_hold: "6 nhóm yếu tố — nắm giữ",
+  rank: "Xếp hạng tương đối (rank)",
+  flow: "Dòng tiền / khối ngoại",
+  other: "Khác",
+};
+export const GROUP_ORDER = ["signal", "factor_trade", "factor_hold", "rank", "flow", "other"];
+
 export const CONFIDENCE_LABEL: Record<string, { text: string; color: string }> = {
   HIGH: { text: "Cao", color: "var(--color-buy)" },
   MEDIUM: { text: "Trung bình", color: "#ca8a04" },

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { DecisionBadge } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
-import { signalName, CONFIDENCE_LABEL } from "@/lib/interpret";
+import { varName, GROUP_LABEL, GROUP_ORDER, CONFIDENCE_LABEL } from "@/lib/interpret";
 
 export interface SignalResult {
   pred_id: string;
@@ -34,6 +34,7 @@ export interface FactorCorr {
   n: number;
   corr_ret5: number | string | null;
   corr_win: number | string | null;
+  grp: string | null;
 }
 
 function num(v: unknown): number | null {
@@ -98,6 +99,7 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
   const [tab, setTab] = useState<"overall" | "symbol">("overall");
   const [target, setTarget] = useState<TargetKey>("std3_outcome");
   const [corrMetric, setCorrMetric] = useState<"corr_ret5" | "corr_win">("corr_ret5");
+  const [grpFilter, setGrpFilter] = useState<string>("all");
   const symbols = useMemo(
     () => [...new Set(results.map((r) => r.symbol))].sort(),
     [results],
@@ -130,17 +132,21 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
     };
   }, [results, target]);
 
+  const grpsPresent = useMemo(
+    () => GROUP_ORDER.filter((g) => corr.some((c) => c.grp === g)),
+    [corr],
+  );
   const corrSorted = useMemo(
     () =>
       [...corr]
         .map((c) => ({ ...c, v: num(c[corrMetric]) }))
-        .filter((c) => c.v != null)
+        .filter((c) => c.v != null && (grpFilter === "all" || c.grp === grpFilter))
         .sort((a, b) => Math.abs(b.v!) - Math.abs(a.v!)),
-    [corr, corrMetric],
+    [corr, corrMetric, grpFilter],
   );
   const corrMax = useMemo(
-    () => Math.max(0.2, ...corrSorted.map((c) => Math.abs(c.v!))),
-    [corrSorted],
+    () => Math.max(0.2, ...[...corr].map((c) => Math.abs(num(c[corrMetric]) ?? 0))),
+    [corr, corrMetric],
   );
 
   const symRows = useMemo(
@@ -221,11 +227,18 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
           {/* Tương quan biến đầu vào */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <h3 className="text-sm font-semibold">Biến đầu vào nào liên quan kết quả?</h3>
+              <h3 className="text-sm font-semibold">Biến đầu vào nào liên quan kết quả? <span className="text-[11px] font-normal text-[var(--color-muted)]">({corr.length} biến)</span></h3>
               <div className="ml-auto flex items-center gap-1 text-[11px]">
                 <button onClick={() => setCorrMetric("corr_ret5")} className={`rounded border px-2 py-0.5 ${corrMetric === "corr_ret5" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>vs lãi 5 phiên</button>
                 <button onClick={() => setCorrMetric("corr_win")} className={`rounded border px-2 py-0.5 ${corrMetric === "corr_win" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>vs chạm TP</button>
               </div>
+            </div>
+            {/* Lọc theo nhóm biến */}
+            <div className="mb-2 flex flex-wrap items-center gap-1 text-[10px]">
+              <button onClick={() => setGrpFilter("all")} className={`rounded-full border px-2 py-0.5 ${grpFilter === "all" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>Tất cả</button>
+              {grpsPresent.map((g) => (
+                <button key={g} onClick={() => setGrpFilter(g)} className={`rounded-full border px-2 py-0.5 ${grpFilter === g ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{GROUP_LABEL[g] ?? g}</button>
+              ))}
             </div>
             <div className="flex flex-col gap-1">
               {corrSorted.map((c) => {
@@ -234,7 +247,7 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
                 const color = v >= 0 ? BUY : SELL;
                 return (
                   <div key={c.factor} className="flex items-center gap-2 text-[11px]">
-                    <span className="w-44 shrink-0 truncate" title={c.factor}>{signalName(c.factor)}</span>
+                    <span className="w-48 shrink-0 truncate" title={`${c.factor} · n=${c.n}`}>{varName(c.factor)}</span>
                     <div className="relative h-3 flex-1 rounded bg-black/5 dark:bg-white/10">
                       <div className="absolute left-1/2 top-0 h-3 w-px bg-[var(--color-border)]" />
                       <div className="absolute top-0 h-3 rounded" style={{ backgroundColor: color, left: v >= 0 ? "50%" : `${50 - w}%`, width: `${w}%` }} />
@@ -243,10 +256,11 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
                   </div>
                 );
               })}
+              {corrSorted.length === 0 ? <div className="py-3 text-center text-[11px] text-[var(--color-muted)]">Không có biến trong nhóm này.</div> : null}
             </div>
             <p className="mt-2 text-[10px] italic text-[var(--color-muted)]">
-              Xanh = biến càng cao thì kết quả càng tốt; đỏ = càng cao càng xấu. Độ dài = độ mạnh liên quan (|hệ số|).
-              Đây là gợi ý để soi lại trọng số, <b>không</b> phải kết luận nhân quả (mẫu 1 tháng).
+              Xanh = biến càng cao thì kết quả càng tốt; đỏ = càng cao càng xấu. Độ dài = độ mạnh liên quan (|hệ số|), so cùng thang.
+              Đã loại biến rò rỉ kết quả & ID/version. Đây là gợi ý để soi lại trọng số, <b>không</b> phải kết luận nhân quả (mẫu 1 tháng, có biến trùng lặp về bản chất).
             </p>
           </div>
         </div>
