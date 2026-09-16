@@ -44,6 +44,12 @@ log = logging.getLogger(__name__)
 FLOW              = "v2f_v4"
 SCHEMA_VERSION    = 1
 SIGNALS_FILE      = "v2f_signals_v4.json"
+# Quality v2.3 (⭐): ff_score / fundamental_score CHỈ do scorer v2.3 tính
+# (ghi ở v2f_signals.json — cùng run, cùng universe). Scorer v4 KHÔNG sinh 2
+# field này. Nối chúng vào ledger v4 làm THAM CHIẾU để app tái lập nhãn Quality
+# (ff≥5 & fund≥5 — đúng định nghĩa dashboard html v4). CHỈ ĐỌC file này, KHÔNG
+# sửa → không ảnh hưởng run html v4; 2 field không vào quyết định → không đụng scoring.
+SIGNALS_V23_FILE  = "v2f_signals.json"
 TRADE_LEVELS_FILE          = "v2f_trade_levels_v4.json"  # nguồn chính (list phẳng V4)
 TRADE_LEVELS_FILE_FALLBACK = "v2f_trade_levels.json"     # dự phòng (dict v2.3)
 HISTORY_SUBDIR    = "history/v2f_predictions_v4"
@@ -143,6 +149,28 @@ def run():
     snap_date = signals[0].get("date") or today_str()
     snap_time = signals[0].get("snap_time") or now.strftime("%H:%M")
 
+    # ── Quality v2.3 (⭐): map {symbol: (ff_score, fundamental_score)} từ scorer
+    # v2.3 (v2f_signals.json) — THAM CHIẾU, KHÔNG ra quyết định. Fail-soft:
+    # thiếu file/mã → None. Chốt AN TOÀN: chỉ join khi CÙNG NGÀY snap để không
+    # gắn điểm cũ (nếu scorer v2.3 lỡ một run, giữ file cũ).
+    qual_map: dict[str, tuple] = {}
+    v23 = load_json(SIGNALS_V23_FILE)
+    if v23:
+        v23_date = str((v23[0].get("date") or ""))[:10]
+        if v23_date and v23_date != snap_date:
+            log.warning("v2f_signals.json ngày %s ≠ snap v4 %s — BỎ QUA join "
+                        "Quality (tránh gắn ff_score/fundamental_score cũ)",
+                        v23_date, snap_date)
+        else:
+            for s in v23:
+                sym2 = s.get("symbol")
+                if sym2:
+                    qual_map[sym2] = (s.get("ff_score"), s.get("fundamental_score"))
+            log.info("Quality v2.3 map: %d mã (ff_score/fundamental_score)", len(qual_map))
+    else:
+        log.warning("%s không có/rỗng — ledger v4 để trống ff_score/fundamental_score "
+                    "(fail-soft, không chặn pipeline)", SIGNALS_V23_FILE)
+
     out_dir = Path(OUTPUT_DIR) / HISTORY_SUBDIR
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{snap_date[:7]}.jsonl"
@@ -198,6 +226,10 @@ def run():
             "rank_fund_uni"   : sig.get("rank_fund_uni"),
             "rank_trend_grp"  : sig.get("rank_trend_grp"),
             "rank_ff_grp"     : sig.get("rank_ff_grp"),
+            # Quality v2.3 (⭐, THAM CHIẾU — không ra quyết định): nối từ scorer
+            # v2.3 theo symbol. Nhãn Quality = ff_score≥5 & fundamental_score≥5.
+            "ff_score"         : qual_map.get(sym, (None, None))[0],
+            "fundamental_score": qual_map.get(sym, (None, None))[1],
             "ff_intra_ratio" : sig.get("ff_intra_ratio"),
             "ff_intra_frac"  : sig.get("ff_intra_frac"),
             "ff_intra_pts"   : sig.get("ff_intra_pts"),
