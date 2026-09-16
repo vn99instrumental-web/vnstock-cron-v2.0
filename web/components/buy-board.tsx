@@ -480,7 +480,10 @@ export function BuyBoard({
             )}
 
             {loading ? (
-              <div className="grid h-[280px] place-items-center text-xs text-[var(--color-muted)]">Đang tải giá…</div>
+              <div className="flex h-[220px] items-center justify-center gap-2 rounded-md bg-black/[0.02] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
+                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]" />
+                Đang tải giá…
+              </div>
             ) : (
               <>
                 <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
@@ -490,9 +493,11 @@ export function BuyBoard({
                   </div>
                   <IntradayStrip candle={entryCandle} />
                 </div>
+              </>
+            )}
 
-                {/* 6 NHÓM YẾU TỐ → chỉ báo thành viên + điểm + hướng + lý do */}
-                <div className="mt-3 border-t border-[var(--color-border)] pt-2">
+            {/* 6 NHÓM YẾU TỐ — từ breakdown, hiện NGAY (không chờ tải giá) */}
+            <div className="mt-3 border-t border-[var(--color-border)] pt-2">
                   <h3 className="mb-0.5 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
                   <p className="mb-2 text-[10px] italic text-[var(--color-muted)]">
                     Mỗi nhóm gộp nhiều chỉ báo. Thanh = mức nghiêng của cả nhóm (phải=MUA, trái=BÁN).
@@ -533,8 +538,6 @@ export function BuyBoard({
                     ))}
                   </div>
                 </div>
-              </>
-            )}
           </>
         ) : null}
       </div>

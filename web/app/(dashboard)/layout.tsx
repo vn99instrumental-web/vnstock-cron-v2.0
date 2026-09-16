@@ -27,9 +27,12 @@ export default async function DashboardLayout({
             <Nav isOwner={owner} />
           </div>
 
-          <Suspense fallback={<span className="text-xs text-[var(--color-muted)]">…</span>}>
-            <VersionBadge />
-          </Suspense>
+          {/* Version badge: ẩn trên mobile để nav rộng hơn (thông tin dev, ít giá trị khi xem nhanh) */}
+          <div className="hidden shrink-0 sm:block">
+            <Suspense fallback={<span className="text-xs text-[var(--color-muted)]">…</span>}>
+              <VersionBadge />
+            </Suspense>
+          </div>
 
           <div className="hidden shrink-0 items-center gap-2 text-xs text-[var(--color-muted)] md:flex">
             {user ? (
