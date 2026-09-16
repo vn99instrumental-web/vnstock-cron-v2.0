@@ -19,7 +19,7 @@ const DOWN = "#dc2626";
 const ACCENT = "#2563eb";
 const EMA50C = "#ea580c";
 const EMA200C = "#7c3aed";
-const BUYC = "#db2777";
+const BUYC = "#9333ea"; // tím — marker tín hiệu BUY (phân biệt với nến đỏ/xanh)
 const BBC = "#64748b";
 // màu đường % (đậm dần theo mức)
 const PCT_COLOR: Record<number, string> = { 6: "#15803d", 3: "#4ade80", [-3]: "#f87171", [-6]: "#dc2626" };
@@ -399,7 +399,7 @@ export function PriceChart({
 // Strip intraday: giá theo từng snap trong ngày ra tín hiệu.
 export function IntradayStrip({ candle }: { candle: Candle | undefined }) {
   if (!candle || candle.snaps.length < 2) {
-    return <p className="text-[10px] text-[var(--color-muted)]">Ngày ra tín hiệu chỉ có 1 điểm giá — không đủ vẽ intraday.</p>;
+    return null;
   }
   const w = 820, h = 80, m = { l: 46, r: 66, t: 6, b: 16 };
   const pw = w - m.l - m.r, ph = h - m.t - m.b;

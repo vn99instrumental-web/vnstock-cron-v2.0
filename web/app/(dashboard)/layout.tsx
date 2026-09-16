@@ -36,10 +36,10 @@ export default async function DashboardLayout({
             </Suspense>
           </div>
 
-          <div className="hidden shrink-0 items-center gap-2 text-xs text-[var(--color-muted)] md:flex">
+          <div className="flex shrink-0 items-center gap-1.5 text-xs text-[var(--color-muted)] sm:gap-2">
             {user ? (
               <>
-                <span className="max-w-[160px] truncate" title={user.email ?? ""}>{owner ? "👤 " : ""}{user.email}</span>
+                <span className="max-w-[92px] truncate sm:max-w-[160px]" title={user.email ?? ""}>{owner ? "👤 " : ""}{user.email}</span>
                 <SignOutButton />
               </>
             ) : (

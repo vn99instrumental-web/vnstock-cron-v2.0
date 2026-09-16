@@ -1,16 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton() {
-  const router = useRouter();
-
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.refresh();
-    router.push("/today");
+    // Hard reload để server render lại trạng thái đã đăng xuất.
+    window.location.assign("/today");
   }
 
   return (

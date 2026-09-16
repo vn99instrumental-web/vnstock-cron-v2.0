@@ -17,6 +17,9 @@ export interface TodaySignal {
   n_aligned: string | number | null;
   ff_score: string | number | null;
   fundamental_score: string | number | null;
+  entry: string | number | null;
+  stop: string | number | null;
+  tp1: string | number | null;
 }
 
 /** Nhãn Quality v2.3 (dashboard html v4): khối ngoại mạnh & cơ bản tốt. */
@@ -38,6 +41,7 @@ interface Snap {
   price: number | null; confidence: string | null;
   ffNet: number | null; ffRatio: number | null; nAlign: number | null;
   ffScore: number | null; fundScore: number | null;
+  entry: number | null; stop: number | null; tp1: number | null;
 }
 interface Group {
   symbol: string; snaps: Snap[]; latest: Snap;
@@ -106,6 +110,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
         price: num(s.price), confidence: s.confidence,
         ffNet: num(s.ff_intra_net), ffRatio: num(s.ff_intra_ratio), nAlign: num(s.n_aligned),
         ffScore: num(s.ff_score), fundScore: num(s.fundamental_score),
+        entry: num(s.entry), stop: num(s.stop), tp1: num(s.tp1),
       });
       by.set(s.symbol, arr);
     }
@@ -202,6 +207,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                     <th className="py-1 font-medium">Quyết định</th>
                     <th className="py-1 text-right font-medium">Score</th>
                     <th className="py-1 text-right font-medium">Giá</th>
+                    <th className="py-1 text-right font-medium" title="Điểm vào / cắt lỗ / chốt lời (TP1) — theo từng lần chạy, chỉ với tín hiệu BUY">Entry/SL/TP</th>
                     <th className="py-1 text-right font-medium" title="Khối ngoại ròng luỹ kế trong phiên tính đến giờ đó — dòng cuối = tổng cả phiên (KHÔNG cộng dồn giữa các dòng)">NN luỹ kế</th>
                   </tr>
                 </thead>
@@ -216,6 +222,19 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                         <td className="py-1"><span className="inline-flex items-center gap-1"><DecisionBadge decision={s.decision} />{changed ? <span className="text-[10px] text-[var(--color-accent)]">↳ đổi</span> : null}</span></td>
                         <td className="py-1 text-right tabular">{fmtNum(s.score)}</td>
                         <td className="py-1 text-right tabular text-[var(--color-muted)]">{fmtNum(s.price)}</td>
+                        <td className="py-1 text-right tabular whitespace-nowrap text-[11px]">
+                          {isBuy(s.decision) && s.entry != null ? (
+                            <span>
+                              <span className="text-[var(--color-accent)]">{fmtNum(s.entry)}</span>
+                              <span className="text-[var(--color-muted)]">/</span>
+                              <span className="text-[var(--color-sell)]">{fmtNum(s.stop)}</span>
+                              <span className="text-[var(--color-muted)]">/</span>
+                              <span className="text-[var(--color-buy)]">{fmtNum(s.tp1)}</span>
+                            </span>
+                          ) : (
+                            <span className="text-[var(--color-muted)]">—</span>
+                          )}
+                        </td>
                         <td className={`py-1 text-right tabular whitespace-nowrap ${ffCls}`}>{fmtBil(s.ffNet)}</td>
                       </tr>
                     );
