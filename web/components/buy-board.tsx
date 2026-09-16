@@ -164,6 +164,7 @@ export function BuyBoard({
   );
   const [sel, setSel] = useState<BuySignal | null>(signals[0] ?? null);
   const [candles, setCandles] = useState<Candle[]>([]);
+  const [provDates, setProvDates] = useState<string[]>([]); // nến TẠM hôm nay (chưa đóng cửa)
   const [markers, setMarkers] = useState<BuyMarker[]>([]);
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState("");
@@ -202,6 +203,7 @@ export function BuyBoard({
 
         const ohlc = (ohlcRes.data ?? []) as Record<string, unknown>[];
         let finalCandles: Candle[];
+        let prov: string[] = [];
         if (ohlc.length) {
           // Nến thật từ v4_ohlc; đính kèm snaps cùng ngày (cho strip intraday).
           finalCandles = ohlc
@@ -212,10 +214,21 @@ export function BuyBoard({
               return { date, open: o, high: h, low: l, close: c, snaps: snapMap.get(date) ?? [] } as Candle;
             })
             .filter((x): x is Candle => x !== null);
+          // Ngày SAU nến OHLC mới nhất (hôm nay chưa đóng cửa / chưa sync) → thêm nến
+          // TẠM dựng từ giá intraday để vẫn thấy giá hôm nay. Hôm sau OHLC thật sẽ thay.
+          const maxOhlc = finalCandles.length ? finalCandles[finalCandles.length - 1].date : "";
+          const extra = snapCandles.filter((c) => c.date > maxOhlc);
+          if (extra.length) {
+            finalCandles = [...finalCandles, ...extra].sort((a, b) => a.date.localeCompare(b.date));
+            prov = extra.map((c) => c.date);
+          }
         } else {
           finalCandles = snapCandles; // fallback: nến từ snap
+          // Không có OHLC nào → nến mới nhất coi như tạm (hôm nay chưa chốt).
+          if (snapCandles.length) prov = [snapCandles[snapCandles.length - 1].date];
         }
         setCandles(finalCandles);
+        setProvDates(prov);
         setMarkers(
           rows
             .filter((r) => r.decision === "BUY" || r.decision === "STRONG BUY")
@@ -223,7 +236,7 @@ export function BuyBoard({
             .filter((m) => Number.isFinite(m.price)),
         );
       } catch {
-        if (alive) { setCandles([]); setMarkers([]); }
+        if (alive) { setCandles([]); setMarkers([]); setProvDates([]); }
       } finally {
         if (alive) setLoading(false);
       }
@@ -490,7 +503,7 @@ export function BuyBoard({
               // Giữ chart cũ MỜ ĐI khi đang tải mã mới (mượt hơn, không nháy trắng).
               <div className="relative">
                 <div className={loading ? "pointer-events-none opacity-40 transition-opacity duration-200" : "transition-opacity duration-200"}>
-                  <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
+                  <PriceChart candles={candles} levels={levels} buyMarkers={markers} provisionalDates={provDates} />
                   <div className="mt-3">
                     <IntradayStrip candle={entryCandle} />
                   </div>

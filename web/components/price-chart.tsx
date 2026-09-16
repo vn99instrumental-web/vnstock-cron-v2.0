@@ -35,11 +35,15 @@ export function PriceChart({
   candles,
   levels,
   buyMarkers = [],
+  provisionalDates = [],
 }: {
   candles: Candle[];
   levels: Levels;
   buyMarkers?: BuyMarker[];
+  /** Ngày có nến TẠM (chưa đóng cửa / chưa có OHLC thật) — vẽ mờ + nhãn "hôm nay". */
+  provisionalDates?: string[];
 }) {
+  const provSet = useMemo(() => new Set(provisionalDates), [provisionalDates]);
   const n = candles.length;
   const wrapRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ start: 0, count: n });
@@ -280,10 +284,12 @@ export function PriceChart({
           const col = up ? UP : DOWN;
           const bodyTop = y(Math.max(c.open, c.close));
           const bodyBot = y(Math.min(c.open, c.close));
+          const prov = provSet.has(c.date);
           return (
-            <g key={c.date}>
-              <line x1={cx(i)} x2={cx(i)} y1={y(c.high)} y2={y(c.low)} stroke={col} strokeWidth={1} />
-              <rect x={cx(i) - cw / 2} y={bodyTop} width={cw} height={Math.max(1, bodyBot - bodyTop)} fill={col} />
+            <g key={c.date} opacity={prov ? 0.5 : 1}>
+              <line x1={cx(i)} x2={cx(i)} y1={y(c.high)} y2={y(c.low)} stroke={col} strokeWidth={1} strokeDasharray={prov ? "2 2" : undefined} />
+              <rect x={cx(i) - cw / 2} y={bodyTop} width={cw} height={Math.max(1, bodyBot - bodyTop)} fill={prov ? "none" : col} stroke={col} strokeWidth={prov ? 1 : 0} strokeDasharray={prov ? "2 2" : undefined} />
+              {prov ? <text x={cx(i)} y={y(c.high) - 4} fontSize={8} textAnchor="middle" fill="var(--color-muted)">hôm nay</text> : null}
             </g>
           );
         })}
