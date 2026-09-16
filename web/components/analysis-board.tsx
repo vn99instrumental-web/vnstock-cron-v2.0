@@ -124,20 +124,33 @@ export function AnalysisBoard({
   const [splitDim, setSplitDim] = useState<"none" | "confidence" | "regime">("none");
   const [bucket, setBucket] = useState<string>("");
   const [showAllCorr, setShowAllCorr] = useState(false);
+
+  // GỘP THEO NGÀY: outcome forward tính 1 lần/ngày nên mọi snap cùng ngày giống hệt.
+  // Giữ 1 dòng/(mã, ngày) — snap MUỘN nhất trong ngày — để không lặp & thấy khác biệt qua ngày.
+  const dailyResults = useMemo(() => {
+    const byKey = new Map<string, SignalResult>();
+    for (const r of results) {
+      const k = `${r.symbol}|${r.signal_date}`;
+      const prev = byKey.get(k);
+      if (!prev || String(r.snap_time) > String(prev.snap_time)) byKey.set(k, r);
+    }
+    return [...byKey.values()];
+  }, [results]);
+
   const symbols = useMemo(
-    () => [...new Set(results.map((r) => r.symbol))].sort(),
-    [results],
+    () => [...new Set(dailyResults.map((r) => r.symbol))].sort(),
+    [dailyResults],
   );
   const [sym, setSym] = useState<string>(symbols[0] ?? "");
 
   // Khung dữ liệu (độ tươi, phạm vi).
   const meta = useMemo(() => {
-    const dates = results.map((r) => r.signal_date).sort();
-    const hasOwn = results.some((r) => r.own_outcome != null);
-    return { n: results.length, nSym: symbols.length, d0: dates[0], d1: dates[dates.length - 1], hasOwn };
-  }, [results, symbols]);
+    const dates = dailyResults.map((r) => r.signal_date).sort();
+    const hasOwn = dailyResults.some((r) => r.own_outcome != null);
+    return { n: dailyResults.length, nSym: symbols.length, d0: dates[0], d1: dates[dates.length - 1], hasOwn };
+  }, [dailyResults, symbols]);
 
-  // Đếm kết quả cho target đang chọn (tổng + theo quyết định).
+  // Đếm kết quả cho target đang chọn (tổng + theo quyết định) — theo NGÀY.
   const agg = useMemo(() => {
     const tally = (rows: SignalResult[]) => {
       let tp = 0, sl = 0, open = 0;
@@ -150,11 +163,11 @@ export function AnalysisBoard({
       return { tp, sl, open, n: rows.length };
     };
     return {
-      all: tally(results),
-      buy: tally(results.filter((r) => r.decision === "BUY")),
-      sbuy: tally(results.filter((r) => r.decision === "STRONG BUY")),
+      all: tally(dailyResults),
+      buy: tally(dailyResults.filter((r) => r.decision === "BUY")),
+      sbuy: tally(dailyResults.filter((r) => r.decision === "STRONG BUY")),
     };
-  }, [results, target]);
+  }, [dailyResults, target]);
 
   const grpsPresent = useMemo(
     () => GROUP_ORDER.filter((g) => corr.some((c) => c.grp === g)),
@@ -215,8 +228,8 @@ export function AnalysisBoard({
   );
 
   const symRows = useMemo(
-    () => results.filter((r) => r.symbol === sym).sort((a, b) => a.signal_date.localeCompare(b.signal_date)),
-    [results, sym],
+    () => dailyResults.filter((r) => r.symbol === sym).sort((a, b) => a.signal_date.localeCompare(b.signal_date)),
+    [dailyResults, sym],
   );
 
   const TabBtn = ({ k, label }: { k: "overall" | "symbol"; label: string }) => (
@@ -235,7 +248,7 @@ export function AnalysisBoard({
       {/* Phạm vi dữ liệu — KPI tiles gọn, dễ quét */}
       <div className="flex flex-wrap items-stretch gap-2">
         {[
-          { v: meta.n, lb: "tín hiệu đã chín" },
+          { v: meta.n, lb: "tín hiệu-ngày đã chín" },
           { v: meta.nSym, lb: "mã" },
           { v: `${meta.d0?.slice(5) ?? "?"} → ${meta.d1?.slice(5) ?? "?"}`, lb: "khoảng thời gian" },
         ].map((t) => (
@@ -410,7 +423,7 @@ export function AnalysisBoard({
             <select value={sym} onChange={(e) => setSym(e.target.value)} className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm">
               {symbols.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
-            <span className="text-[var(--color-muted)]">{symRows.length} tín hiệu</span>
+            <span className="text-[var(--color-muted)]">{symRows.length} ngày có tín hiệu</span>
             <span className="ml-auto flex items-center gap-2 text-[10px] text-[var(--color-muted)]">
               <OutcomeDot o="tp" /> chạm TP <OutcomeDot o="sl" /> chạm SL <OutcomeDot o="open" /> chưa chạm
             </span>
