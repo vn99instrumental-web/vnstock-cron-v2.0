@@ -501,14 +501,17 @@ export function BuyBoard({
                   <div className="grid gap-2 lg:grid-cols-2">
                     {groups.map((g) => (
                       <div key={g.key} className="rounded-md border border-[var(--color-border)] p-2">
-                        {/* header nhóm: tên + thanh nghiêng + nhãn MUA/BÁN */}
+                        {/* header nhóm: tên + tổng điểm + thanh nghiêng + nhãn MUA/BÁN */}
                         <div className="flex items-center gap-2">
                           <span className="text-[11px] font-semibold">{g.label}</span>
-                          <div className="relative ml-auto h-2 w-24 shrink-0 rounded bg-black/5 dark:bg-white/10">
+                          <span className="tabular shrink-0 text-[10px] font-semibold" style={{ color: DIR_COLOR[g.dir] }} title="Tổng điểm các chỉ báo trong nhóm / tổng span tối đa">
+                            {g.rawTotal > 0 ? "+" : ""}{g.rawTotal}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
+                          </span>
+                          <div className="relative ml-auto h-2 w-20 shrink-0 rounded bg-black/5 dark:bg-white/10">
                             <div className="absolute top-0 h-2 rounded" style={{ backgroundColor: DIR_COLOR[g.dir], left: g.norm >= 0 ? "50%" : `${50 + g.norm * 50}%`, width: `${Math.min(50, Math.abs(g.norm) * 50)}%` }} />
                             <div className="absolute left-1/2 top-0 h-2 w-px bg-[var(--color-border)]" />
                           </div>
-                          <span className="tabular w-16 shrink-0 text-right text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
+                          <span className="tabular w-14 shrink-0 text-right text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
                         </div>
                         {/* chỉ báo thành viên */}
                         {g.members.length ? (

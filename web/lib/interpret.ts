@@ -141,25 +141,32 @@ export const FACTOR_GROUPS: {
 ];
 
 export interface GroupMemberView { key: string; name: string; score: number; span: number; dir: Dir; text: string }
-export interface FactorGroupView { key: string; label: string; desc: string; norm: number; dir: Dir; members: GroupMemberView[] }
+export interface FactorGroupView {
+  key: string; label: string; desc: string; norm: number; dir: Dir;
+  rawTotal: number; spanTotal: number; members: GroupMemberView[];
+}
 
 /** Diễn giải 6 nhóm + chỉ báo thành viên (điểm, hướng, lý do) từ breakdown. */
 export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] {
   return FACTOR_GROUPS.map((g) => {
     const norm = num(b[g.normKey]) ?? 0;
     const members: GroupMemberView[] = [];
+    let rawTotal = 0, spanTotal = 0;
     for (const k of g.members) {
       const score = num(b[k]);
       if (score == null) continue; // chỉ báo không có trong breakdown → bỏ
       const meta = SIGNAL_META.find((s) => s.key === k);
       const dir = dirOf(score);
+      const span = SIGNAL_SPAN[k] ?? 0;
+      rawTotal += score;
+      spanTotal += span;
       members.push({
-        key: k, name: meta?.name ?? k, score, span: SIGNAL_SPAN[k] ?? 0, dir,
+        key: k, name: meta?.name ?? k, score, span, dir,
         text: dir === "buy" ? (meta?.buy ?? "") : dir === "sell" ? (meta?.sell ?? "") : "trung tính",
       });
     }
     members.sort((a, z) => Math.abs(z.score) - Math.abs(a.score));
-    return { key: g.key, label: g.label, desc: g.desc, norm, dir: dirOf(norm), members };
+    return { key: g.key, label: g.label, desc: g.desc, norm, dir: dirOf(norm), rawTotal, spanTotal, members };
   });
 }
 
