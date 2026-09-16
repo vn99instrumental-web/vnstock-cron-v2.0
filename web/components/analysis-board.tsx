@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 import { DecisionBadge } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import { varName, GROUP_LABEL, GROUP_ORDER, CONFIDENCE_LABEL } from "@/lib/interpret";
+import { CorrHeatmap, type FactorPair } from "@/components/corr-heatmap";
+
+export type { FactorPair };
 
 export interface SignalResult {
   pred_id: string;
@@ -30,6 +33,16 @@ export interface SignalResult {
 }
 
 export interface FactorCorr {
+  factor: string;
+  n: number;
+  corr_ret5: number | string | null;
+  corr_win: number | string | null;
+  grp: string | null;
+}
+
+export interface FactorCorrSplit {
+  dim: string;      // "confidence" | "regime"
+  bucket: string;
   factor: string;
   n: number;
   corr_ret5: number | string | null;
@@ -95,11 +108,20 @@ function HitBar({ tp, open, sl }: { tp: number; open: number; sl: number }) {
   );
 }
 
-export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr: FactorCorr[] }) {
+export function AnalysisBoard({
+  results, corr, pairs = [], split = [],
+}: {
+  results: SignalResult[];
+  corr: FactorCorr[];
+  pairs?: FactorPair[];
+  split?: FactorCorrSplit[];
+}) {
   const [tab, setTab] = useState<"overall" | "symbol">("overall");
   const [target, setTarget] = useState<TargetKey>("std3_outcome");
   const [corrMetric, setCorrMetric] = useState<"corr_ret5" | "corr_win">("corr_ret5");
   const [grpFilter, setGrpFilter] = useState<string>("all");
+  const [splitDim, setSplitDim] = useState<"none" | "confidence" | "regime">("none");
+  const [bucket, setBucket] = useState<string>("");
   const symbols = useMemo(
     () => [...new Set(results.map((r) => r.symbol))].sort(),
     [results],
@@ -136,18 +158,58 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
     () => GROUP_ORDER.filter((g) => corr.some((c) => c.grp === g)),
     [corr],
   );
+
+  // Buckets cho split đang chọn (confidence: HIGH/MEDIUM/LOW; regime: theo n giảm dần).
+  const buckets = useMemo(() => {
+    if (splitDim === "none") return [] as { bucket: string; n: number }[];
+    const m = new Map<string, number>();
+    for (const s of split) if (s.dim === splitDim) m.set(s.bucket, Math.max(m.get(s.bucket) ?? 0, s.n));
+    const arr = [...m.entries()];
+    if (splitDim === "confidence") {
+      const ord = ["HIGH", "MEDIUM", "LOW"];
+      arr.sort((a, b) => ord.indexOf(a[0]) - ord.indexOf(b[0]));
+    } else arr.sort((a, b) => b[1] - a[1]);
+    return arr.map(([b, n]) => ({ bucket: b, n }));
+  }, [split, splitDim]);
+  const activeBucket = buckets.some((b) => b.bucket === bucket) ? bucket : (buckets[0]?.bucket ?? "");
+
+  // Nguồn corr đang hiển thị: toàn cục hoặc theo bucket.
+  const activeCorr = useMemo<(FactorCorr | FactorCorrSplit)[]>(
+    () => (splitDim === "none" ? corr : split.filter((s) => s.dim === splitDim && s.bucket === activeBucket)),
+    [splitDim, corr, split, activeBucket],
+  );
   const corrSorted = useMemo(
     () =>
-      [...corr]
-        .map((c) => ({ ...c, v: num(c[corrMetric]) }))
+      activeCorr
+        .map((c) => ({ factor: c.factor, grp: c.grp, n: c.n, v: num(c[corrMetric]) }))
         .filter((c) => c.v != null && (grpFilter === "all" || c.grp === grpFilter))
         .sort((a, b) => Math.abs(b.v!) - Math.abs(a.v!)),
-    [corr, corrMetric, grpFilter],
+    [activeCorr, corrMetric, grpFilter],
   );
   const corrMax = useMemo(
-    () => Math.max(0.2, ...[...corr].map((c) => Math.abs(num(c[corrMetric]) ?? 0))),
-    [corr, corrMetric],
+    () => Math.max(0.2, ...activeCorr.map((c) => Math.abs(num(c[corrMetric]) ?? 0))),
+    [activeCorr, corrMetric],
   );
+
+  // Tập biến cho heatmap: theo nhóm đang chọn; nếu "tất cả" → 14 biến mạnh nhất.
+  const heatFactors = useMemo(() => {
+    if (grpFilter !== "all") return corr.filter((c) => c.grp === grpFilter).map((c) => c.factor);
+    return [...corr]
+      .map((c) => ({ f: c.factor, v: Math.abs(num(c.corr_ret5) ?? 0) }))
+      .sort((a, b) => b.v - a.v)
+      .slice(0, 14)
+      .map((x) => x.f);
+  }, [corr, grpFilter]);
+
+  // Cặp biến gần trùng trong tập đang xem (đa cộng tuyến).
+  const nearDup = useMemo(() => {
+    const set = new Set(heatFactors);
+    return pairs
+      .map((p) => ({ ...p, v: num(p.corr) }))
+      .filter((p) => p.v != null && Math.abs(p.v) >= 0.85 && set.has(p.fa) && set.has(p.fb))
+      .sort((a, b) => Math.abs(b.v!) - Math.abs(a.v!))
+      .slice(0, 8);
+  }, [pairs, heatFactors]);
 
   const symRows = useMemo(
     () => results.filter((r) => r.symbol === sym).sort((a, b) => a.signal_date.localeCompare(b.signal_date)),
@@ -240,6 +302,22 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
                 <button key={g} onClick={() => setGrpFilter(g)} className={`rounded-full border px-2 py-0.5 ${grpFilter === g ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{GROUP_LABEL[g] ?? g}</button>
               ))}
             </div>
+            {/* Tách theo bối cảnh */}
+            <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+              <span className="text-[var(--color-muted)]">Tách theo:</span>
+              {([["none", "Không tách"], ["confidence", "Chất lượng"], ["regime", "Trạng thái TT"]] as const).map(([k, lb]) => (
+                <button key={k} onClick={() => setSplitDim(k)} className={`rounded border px-2 py-0.5 ${splitDim === k ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{lb}</button>
+              ))}
+              {splitDim !== "none" ? (
+                <span className="ml-2 flex flex-wrap items-center gap-1">
+                  {buckets.map((b) => (
+                    <button key={b.bucket} onClick={() => setBucket(b.bucket)} className={`rounded-full border px-2 py-0.5 ${activeBucket === b.bucket ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"} ${b.n < 40 ? "opacity-70" : ""}`} title={b.n < 40 ? "Mẫu nhỏ — đọc dè dặt" : ""}>
+                      {b.bucket} <span className="text-[9px] opacity-70">n={b.n}{b.n < 40 ? " ⚠" : ""}</span>
+                    </button>
+                  ))}
+                </span>
+              ) : null}
+            </div>
             <div className="flex flex-col gap-1">
               {corrSorted.map((c) => {
                 const v = c.v!;
@@ -260,8 +338,28 @@ export function AnalysisBoard({ results, corr }: { results: SignalResult[]; corr
             </div>
             <p className="mt-2 text-[10px] italic text-[var(--color-muted)]">
               Xanh = biến càng cao thì kết quả càng tốt; đỏ = càng cao càng xấu. Độ dài = độ mạnh liên quan (|hệ số|), so cùng thang.
-              Đã loại biến rò rỉ kết quả & ID/version. Đây là gợi ý để soi lại trọng số, <b>không</b> phải kết luận nhân quả (mẫu 1 tháng, có biến trùng lặp về bản chất).
+              {splitDim !== "none" ? <> Đang tách theo <b>{splitDim === "confidence" ? "chất lượng" : "trạng thái thị trường"}</b> — nhiều biến đổi dấu giữa các bucket (vd tín hiệu tốt ở nhóm này, xấu ở nhóm kia).</> : null}
+              {" "}Đã loại biến rò rỉ kết quả & ID/version. Gợi ý để soi lại trọng số, <b>không</b> phải kết luận nhân quả (mẫu 1 tháng).
             </p>
+          </div>
+
+          {/* Ma trận tương quan biến×biến (bắt biến trùng / đa cộng tuyến) */}
+          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+            <h3 className="mb-1 text-sm font-semibold">
+              Ma trận tương quan giữa các biến
+              <span className="text-[11px] font-normal text-[var(--color-muted)]"> — {grpFilter === "all" ? "14 biến mạnh nhất" : GROUP_LABEL[grpFilter] ?? grpFilter} (dùng chip nhóm ở trên để đổi)</span>
+            </h3>
+            {nearDup.length ? (
+              <div className="mb-2 rounded border border-[var(--color-border)] bg-black/[0.02] px-2 py-1.5 text-[10px] dark:bg-white/[0.03]">
+                <b>Cặp gần trùng (nên bỏ bớt 1 khi chỉnh trọng số):</b>{" "}
+                {nearDup.map((p, i) => (
+                  <span key={`${p.fa}|${p.fb}`}>
+                    {i > 0 ? " · " : ""}{varName(p.fa)} ≈ {varName(p.fb)} <span className="tabular text-[var(--color-muted)]">({p.v! >= 0 ? "+" : ""}{p.v!.toFixed(2)})</span>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <CorrHeatmap pairs={pairs} factors={heatFactors} />
           </div>
         </div>
       ) : (
