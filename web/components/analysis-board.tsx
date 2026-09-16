@@ -5,6 +5,7 @@ import { DecisionBadge } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import { varName, GROUP_LABEL, GROUP_ORDER, CONFIDENCE_LABEL } from "@/lib/interpret";
 import { CorrHeatmap, type FactorPair } from "@/components/corr-heatmap";
+import { SignalTimeline } from "@/components/signal-timeline";
 
 export type { FactorPair };
 
@@ -415,21 +416,18 @@ export function AnalysisBoard({
             </span>
           </div>
 
-          {/* Timeline trực quan */}
+          {/* Timeline trực quan: cột = lãi 5 phiên, màu = kết quả */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
-            <div className="mb-2 text-[11px] text-[var(--color-muted)]">Dòng thời gian tín hiệu {sym} (mục tiêu {target === "std3_outcome" ? "±3%" : "+6%/−4%"}) — mỗi chấm 1 tín hiệu:</div>
-            <div className="flex flex-wrap items-end gap-1">
-              {symRows.map((r) => {
-                const o = r[target] as string | null;
-                const ret = num(r.ret_5d);
-                return (
-                  <div key={r.pred_id} className="flex flex-col items-center gap-0.5" title={`${r.signal_date} · ${outcomeMeta(o).label} · lãi5=${ret != null ? ret.toFixed(1) + "%" : "—"}`}>
-                    <OutcomeDot o={o} />
-                    <span className="text-[8px] text-[var(--color-muted)]">{r.signal_date.slice(5)}</span>
-                  </div>
-                );
-              })}
+            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h3 className="text-sm font-semibold">Diễn biến tín hiệu {sym} theo thời gian</h3>
+              <span className="text-[10px] text-[var(--color-muted)]">cột = lãi 5 phiên · màu = kết quả</span>
+              <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[10px]">
+                {([["std3_outcome", "±3%"], ["std_outcome", "+6/−4"]] as const).map(([k, lb]) => (
+                  <button key={k} onClick={() => setTarget(k)} className={`rounded px-2 py-0.5 ${target === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
+                ))}
+              </div>
             </div>
+            <SignalTimeline rows={symRows} target={target} />
           </div>
 
           {/* Bảng chi tiết */}
