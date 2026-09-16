@@ -99,6 +99,17 @@
 
 ---
 
+## ADR-012 — E8: theo dõi TP/SL & tương quan biến (trang /phan-tich)
+- **Trạng thái:** ACCEPTED (2026-09-16)
+- **Bối cảnh:** User muốn (1) xem tín hiệu BUY/SBUY theo thời gian trực quan; (2) mỗi tín hiệu chạm ĐÚNG TP của chính thời điểm đó (TP hôm qua ≠ TP hôm nay); (3) khi hit TP/SL thì biến đầu vào nào liên quan để điều chỉnh; (4) góc từng-mã + tổng thể.
+- **Evidence data (đã kiểm):** outcomes chín chỉ 333 (BUY/SBUY, lens=trade, 30/07–25/08, 46 mã). TP/SL/entry RIÊNG chỉ populated từ T9/2026 → **overlap (own-TP + outcome chín) ≈ 0 hôm nay**, tự đầy từ cuối T9 (forward). Biến `s_*` có ở cả kỳ cũ → tương quan tính được ngay. `v4_ohlc` đủ để đi theo giá xác định TP/SL chạm trước.
+- **Quyết định (user chốt 3 ngã rẽ):** (a) **cả hai** định nghĩa hit — TP riêng (forward, tự đầy) + mục tiêu CHUẨN ±3%/±6% (chạy ngay); (b) xác định chạm trước bằng **đi theo nến v4_ohlc** (chính xác thứ tự + ngày), quy ước bảo thủ TP&SL cùng ngày → SL trước; (c) **trang mới /phan-tich**.
+- **Cài đặt:** migration 0008 — 2 view read-only: `v4_signal_results` (path-walk v4_ohlc: std +6/−4, +3/−3, own tp1/tp2/sl + days) và `v4_hit_factor_corr` (corr(biến s_*, ret_5d) & corr(biến, chạm TP) — **KHÁM PHÁ, không phải IC chính thức** theo Golden rule #3). Grant anon SELECT (chỉ aggregate data vốn public). UI `components/analysis-board.tsx`: tab Tổng thể (thanh tỷ lệ TP/SL/chưa chạm theo BUY vs SBUY + xếp hạng tương quan biến diễn giải tiếng Việt) + tab Từng mã (timeline chấm màu + bảng chi tiết).
+- **Kết quả forward thật (ghi nhận, không kết luận):** std +6/−4: TP 12.9% / SL 22.5% / chưa chạm 64.6%. std +3/−3: TP 41.4% / SL 39.6%. Tương quan nổi bật: s_mkt_context −0.44, s_rs_reversal +0.21 (corr_win +0.38), s_dist_52w −0.18, total_score ≈ 0. Mẫu 1 tháng, scoring version cũ → chỉ là gợi ý soi trọng số, không nhân quả.
+- **Hệ quả:** Cửa sổ hit cố định ~10 phiên (+16 ngày lịch) — nếu đổi horizon phải sửa view. Own-TP đang trống, page tự hiện khi outcome T9 chín. Không thêm pipeline/secret; app vẫn là lớp query.
+
+---
+
 ## ADR-011 — Độ vững tín hiệu BUY (D/E/F) qua view read-only, không đụng scoring
 - **Trạng thái:** ACCEPTED (2026-09-16)
 - **Bối cảnh:** Review "để mua ngắn hạn" chỉ ra list BUY thiếu 3 lớp thông tin: (D) thanh khoản — mã mỏng khó vào/ra, dễ trượt giá; (E) độ bền — mã "nháy 1 lần" khác mã giữ BUY nhiều phiên; (F) đồng thuận intraday — BUY cả ngày khác BUY chớp 1 snap. (G) %vs TC đã có từ prevClose OHLC (phủ 100% mã BUY hiện tại; ref/tc trong breakdown = null nên không có nguồn fallback khác) → coi như đã đạt.

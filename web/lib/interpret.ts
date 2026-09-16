@@ -51,6 +51,14 @@ export const SIGNAL_META: {
   { key: "s_cf_core", name: "Dòng tiền doanh nghiệp", buy: "dòng tiền khỏe", sell: "dòng tiền yếu" },
 ];
 
+export const SIGNAL_NAME: Record<string, string> = Object.fromEntries(
+  SIGNAL_META.map((s) => [s.key, s.name]),
+);
+/** Tên tiếng Việt của biến s_* (fallback: chính key). */
+export function signalName(key: string): string {
+  return SIGNAL_NAME[key] ?? key;
+}
+
 export const CONFIDENCE_LABEL: Record<string, { text: string; color: string }> = {
   HIGH: { text: "Cao", color: "var(--color-buy)" },
   MEDIUM: { text: "Trung bình", color: "#ca8a04" },
