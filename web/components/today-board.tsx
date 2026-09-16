@@ -54,13 +54,13 @@ function alignColor(n: number | null): string {
   return "var(--color-muted)";
 }
 
-/** Chip khối ngoại ròng trong phiên (NN phiên). */
+/** Chip khối ngoại ròng luỹ kế cả phiên (chốt ở lần chạy gần nhất). */
 function ForeignChip({ net, ratio }: { net: number | null; ratio: number | null }) {
   if (net == null) return null;
   const cls = net > 0 ? "text-[var(--color-buy)]" : net < 0 ? "text-[var(--color-sell)]" : "text-[var(--color-muted)]";
   const ratioTxt = ratio != null ? ` (${(ratio * 100).toFixed(0)}% GTGD)` : "";
   return (
-    <span className={`tabular ${cls}`} title={`Khối ngoại ròng trong phiên${ratioTxt} — tham chiếu, chưa vào điểm`}>
+    <span className={`tabular ${cls}`} title={`Khối ngoại ròng luỹ kế cả phiên${ratioTxt} — chốt ở lần chạy gần nhất; tham chiếu, chưa vào điểm`}>
       NN {fmtBil(net)}
     </span>
   );
@@ -213,7 +213,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                           <th className="py-1 font-medium">Quyết định</th>
                           <th className="py-1 text-right font-medium">Score</th>
                           <th className="py-1 text-right font-medium">Giá</th>
-                          <th className="py-1 text-right font-medium">NN phiên</th>
+                          <th className="py-1 text-right font-medium" title="Khối ngoại ròng luỹ kế trong phiên tính đến giờ đó — dòng cuối = tổng cả phiên (KHÔNG cộng dồn giữa các dòng)">NN luỹ kế</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -234,13 +234,8 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                       </tbody>
                     </table>
                   </div>
-                  <p className="mt-1.5 text-[10px] italic text-[var(--color-muted)]">
-                    {g.nBuy === g.nSnap && isBuy(g.latest.decision)
-                      ? "✓ Giữ BUY suốt cả ngày — tín hiệu bền."
-                      : g.nBuy > 0
-                        ? `BUY ${g.nBuy}/${g.nSnap} lần — có lúc đổi quyết định, đọc kỹ diễn biến.`
-                        : "Không có tín hiệu BUY hôm nay."}
-                    {" · NN phiên = khối ngoại ròng, chỉ tham chiếu (chưa vào điểm)."}
+                  <p className="mt-1.5 text-[10px] text-[var(--color-muted)]">
+                    NN luỹ kế = khối ngoại ròng cộng dồn trong phiên đến giờ đó; dòng cuối = tổng cả phiên (các dòng KHÔNG cộng lại với nhau) · tham chiếu, chưa vào điểm.
                   </p>
                 </div>
               ) : null}
