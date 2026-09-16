@@ -8,21 +8,17 @@ export function PageHeader({
   desc?: string;
 }) {
   return (
-    <div className="mb-5">
-      <h1 className="text-lg font-semibold">{title}</h1>
+    <div className="mb-4 sm:mb-5">
+      <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
       {desc ? (
-        <p className="mt-1 text-sm text-[var(--color-muted)]">{desc}</p>
+        <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-[var(--color-muted)]">{desc}</p>
       ) : null}
     </div>
   );
 }
 
 export function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-      {children}
-    </div>
-  );
+  return <div className="card p-4 sm:p-5">{children}</div>;
 }
 
 /** Empty state — dùng khi bảng chưa có data (chờ sync). */
@@ -59,7 +55,7 @@ export function DecisionBadge({ decision }: { decision: string | null }) {
   const cls = DECISION_STYLES[key] ?? "bg-black/10 text-[var(--color-muted)]";
   return (
     <span
-      className={`inline-flex rounded px-2 py-0.5 text-xs font-semibold ${cls}`}
+      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold tracking-tight ${cls}`}
     >
       {decision ?? "—"}
     </span>

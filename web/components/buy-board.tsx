@@ -329,7 +329,7 @@ export function BuyBoard({
 
       <div className={showList ? "grid gap-3 md:grid-cols-[300px_1fr]" : "block"}>
       {/* LIST trái */}
-      <div className={`rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] ${showList ? "" : "hidden"}`}>
+      <div className={`card ${showList ? "" : "hidden"}`}>
         <div className="flex items-center gap-1.5 border-b border-[var(--color-border)] p-2">
           <input
             value={q}
@@ -396,7 +396,7 @@ export function BuyBoard({
       </div>
 
       {/* DETAIL phải */}
-      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+      <div className="card p-3">
         {sel && levels ? (
           <>
             <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">

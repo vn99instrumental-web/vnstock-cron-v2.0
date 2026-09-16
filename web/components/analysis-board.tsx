@@ -252,7 +252,7 @@ export function AnalysisBoard({
           { v: meta.nSym, lb: "mã" },
           { v: `${meta.d0?.slice(5) ?? "?"} → ${meta.d1?.slice(5) ?? "?"}`, lb: "khoảng thời gian" },
         ].map((t) => (
-          <div key={t.lb} className="flex min-w-[92px] flex-1 flex-col rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
+          <div key={t.lb} className="flex min-w-[92px] flex-1 flex-col card px-3 py-1.5">
             <span className="text-base font-semibold tabular">{t.v}</span>
             <span className="text-[10px] text-[var(--color-muted)]">{t.lb}</span>
           </div>
@@ -272,7 +272,7 @@ export function AnalysisBoard({
       </details>
 
       {/* Tab segmented */}
-      <div className="inline-flex w-fit rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5">
+      <div className="inline-flex w-fit card p-0.5">
         <TabBtn k="overall" label="Góc tổng thể" />
         <TabBtn k="symbol" label="Từng mã" />
       </div>
@@ -294,7 +294,7 @@ export function AnalysisBoard({
           </div>
 
           {/* Tỷ lệ chạm TP/SL — tổng + theo quyết định */}
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+          <div className="card p-3">
             <h3 className="mb-2 text-sm font-semibold">Tỷ lệ chạm mục tiêu (đi theo nến thật, cửa sổ ~10 phiên)</h3>
             <div className="flex flex-col gap-2.5">
               {[
@@ -320,7 +320,7 @@ export function AnalysisBoard({
           </div>
 
           {/* Tương quan chỉ báo ↔ chạm TP/SL */}
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+          <div className="card p-3">
             <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
               <h3 className="text-sm font-semibold">Chỉ báo nào dẫn tới chạm TP hay SL?</h3>
               <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[11px]">
@@ -390,7 +390,7 @@ export function AnalysisBoard({
           </div>
 
           {/* Ma trận tương quan biến×biến (bắt biến trùng / đa cộng tuyến) */}
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+          <div className="card p-3">
             <h3 className="mb-2 text-sm font-semibold">
               Biến nào trùng nhau?
               <span className="ml-1 text-[11px] font-normal text-[var(--color-muted)]">(phát hiện đa cộng tuyến để bớt biến thừa)</span>
@@ -433,7 +433,7 @@ export function AnalysisBoard({
           </div>
 
           {/* Timeline trực quan: cột = lãi 5 phiên, màu = kết quả */}
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+          <div className="card p-3">
             <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
               <h3 className="text-sm font-semibold">Diễn biến tín hiệu {sym} theo thời gian</h3>
               <span className="text-[10px] text-[var(--color-muted)]">cột = lãi 5 phiên · màu = kết quả</span>
@@ -447,7 +447,7 @@ export function AnalysisBoard({
           </div>
 
           {/* Bảng chi tiết */}
-          <div className="overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="overflow-x-auto card">
             <table className="w-full text-[11px]">
               <thead>
                 <tr className="border-b border-[var(--color-border)] text-left text-[var(--color-muted)]">
