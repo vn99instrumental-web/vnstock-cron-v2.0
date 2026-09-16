@@ -71,7 +71,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="grid min-h-screen place-items-center px-4">
-      <div className="w-full max-w-sm rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+      <div className="w-full max-w-sm card p-6">
         <div className="mb-4 flex items-center gap-2">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-[var(--color-accent)] text-sm font-bold text-white">
             V

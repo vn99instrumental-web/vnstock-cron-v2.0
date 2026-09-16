@@ -159,7 +159,7 @@ export default async function SignalDetailPage({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+    <div className="mb-5 card p-4">
       <h2 className="mb-3 text-sm font-semibold">{title}</h2>
       {children}
     </div>

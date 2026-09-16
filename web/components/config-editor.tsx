@@ -89,7 +89,7 @@ export function ConfigEditor({ initialConfig }: { initialConfig: ScoringConfig }
   return (
     <div className="flex flex-col gap-6">
       {/* version + note */}
-      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <section className="card p-4">
         <div className="grid gap-3 md:grid-cols-2">
           <label className="text-sm">
             version_label
@@ -107,7 +107,7 @@ export function ConfigEditor({ initialConfig }: { initialConfig: ScoringConfig }
       </section>
 
       {/* Factor weights */}
-      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <section className="card p-4">
         <h2 className="mb-3 text-sm font-semibold">Trọng số factor (weights)</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -143,7 +143,7 @@ export function ConfigEditor({ initialConfig }: { initialConfig: ScoringConfig }
       </section>
 
       {/* Gate matrix */}
-      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <section className="card p-4">
         <h2 className="mb-3 text-sm font-semibold">Gate matrix (factor × regime)</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
