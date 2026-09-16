@@ -1,7 +1,7 @@
 import { PageHeader, EmptyState, Card } from "@/components/ui";
 import { TodayBoard, type TodaySignal } from "@/components/today-board";
 import { createClient } from "@/lib/supabase/server";
-import { snapHM } from "@/lib/format";
+import { hmVN } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +33,7 @@ export default async function TodayPage() {
   const theDate = String(run.run_id).split("_")[0];
   const { data: sigs } = await supabase
     .from("v4_signals")
-    .select("symbol, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence")
+    .select("symbol, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score")
     .eq("signal_date", theDate)
     .order("score_trade", { ascending: false });
 
@@ -45,7 +45,7 @@ export default async function TodayPage() {
     <>
       <PageHeader
         title="Hôm nay"
-        desc={`${theDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${snapHM(run.started_at)}`}
+        desc={`${theDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${hmVN(run.started_at)} (giờ VN)`}
       />
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Số mã" value={String(nSymbols)} />

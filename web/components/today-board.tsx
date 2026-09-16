@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { DecisionBadge } from "@/components/ui";
-import { fmtNum, snapHM, signClass } from "@/lib/format";
+import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
 import { CONFIDENCE_LABEL } from "@/lib/interpret";
 
 export interface TodaySignal {
@@ -12,6 +12,18 @@ export interface TodaySignal {
   snap_time: string | null;
   price: string | number | null;
   confidence: string | null;
+  ff_intra_net: string | number | null;
+  ff_intra_ratio: string | number | null;
+  n_aligned: string | number | null;
+  ff_score: string | number | null;
+  fundamental_score: string | number | null;
+}
+
+/** Nhãn Quality v2.3 (dashboard html v4): khối ngoại mạnh & cơ bản tốt. */
+const QUAL_FF = 5;
+const QUAL_FUND = 5;
+function isQuality(ff: number | null, fund: number | null): boolean {
+  return ff != null && fund != null && ff >= QUAL_FF && fund >= QUAL_FUND;
 }
 
 function num(v: unknown): number | null {
@@ -21,13 +33,62 @@ function num(v: unknown): number | null {
 }
 const isBuy = (d: string | null) => d === "BUY" || d === "STRONG BUY";
 
-interface Snap { snap_time: string | null; decision: string | null; score: number | null; price: number | null; confidence: string | null }
+interface Snap {
+  snap_time: string | null; decision: string | null; score: number | null;
+  price: number | null; confidence: string | null;
+  ffNet: number | null; ffRatio: number | null; nAlign: number | null;
+  ffScore: number | null; fundScore: number | null;
+}
 interface Group {
   symbol: string; snaps: Snap[]; latest: Snap;
   nSnap: number; nBuy: number; scoreFirst: number | null; scoreLast: number | null;
 }
 
 type SortKey = "score" | "buy" | "delta";
+
+/** Màu theo số nhóm siêu yếu tố đồng thuận (0..3): càng cao tín hiệu càng chất lượng. */
+function alignColor(n: number | null): string {
+  if (n == null) return "var(--color-muted)";
+  if (n >= 3) return "var(--color-buy)";
+  if (n >= 2) return "#ca8a04";
+  return "var(--color-muted)";
+}
+
+/** Chip khối ngoại ròng trong phiên (NN phiên). */
+function ForeignChip({ net, ratio }: { net: number | null; ratio: number | null }) {
+  if (net == null) return null;
+  const cls = net > 0 ? "text-[var(--color-buy)]" : net < 0 ? "text-[var(--color-sell)]" : "text-[var(--color-muted)]";
+  const ratioTxt = ratio != null ? ` (${(ratio * 100).toFixed(0)}% GTGD)` : "";
+  return (
+    <span className={`tabular ${cls}`} title={`Khối ngoại ròng trong phiên${ratioTxt} — tham chiếu, chưa vào điểm`}>
+      NN {fmtBil(net)}
+    </span>
+  );
+}
+
+/** Nhãn ⭐ Quality (v2.3): khối ngoại mạnh (ff≥5) & cơ bản tốt (fund≥5). */
+function QualityChip({ ff, fund }: { ff: number | null; fund: number | null }) {
+  if (!isQuality(ff, fund)) return null;
+  return (
+    <span
+      className="tabular shrink-0 rounded border border-[var(--color-buy)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-buy)]"
+      title={`Quality: khối ngoại mạnh (điểm FF ${ff}≥${QUAL_FF}) & cơ bản tốt (điểm cơ bản ${fund}≥${QUAL_FUND}) — thước đo v2.3`}
+    >
+      ⭐ Quality
+    </span>
+  );
+}
+
+/** Chip chất lượng: số nhóm siêu yếu tố đồng thuận. */
+function AlignChip({ n }: { n: number | null }) {
+  if (n == null) return null;
+  const color = alignColor(n);
+  return (
+    <span className="tabular" style={{ color }} title="Số nhóm siêu yếu tố (xu hướng, dòng tiền, cơ bản…) cùng ủng hộ — càng cao tín hiệu càng chất lượng">
+      ◆ {n}/3 nhóm
+    </span>
+  );
+}
 
 export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; totalSnaps: number }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
@@ -39,7 +100,12 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
     const by = new Map<string, Snap[]>();
     for (const s of signals) {
       const arr = by.get(s.symbol) ?? [];
-      arr.push({ snap_time: s.snap_time, decision: s.decision, score: num(s.score_trade), price: num(s.price), confidence: s.confidence });
+      arr.push({
+        snap_time: s.snap_time, decision: s.decision, score: num(s.score_trade),
+        price: num(s.price), confidence: s.confidence,
+        ffNet: num(s.ff_intra_net), ffRatio: num(s.ff_intra_ratio), nAlign: num(s.n_aligned),
+        ffScore: num(s.ff_score), fundScore: num(s.fundamental_score),
+      });
       by.set(s.symbol, arr);
     }
     const out: Group[] = [];
@@ -103,59 +169,78 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
             <li key={g.symbol} className="card overflow-hidden">
               <button
                 onClick={() => setOpen(isOpen ? null : g.symbol)}
-                className="flex w-full items-center gap-2 px-3 py-2.5 text-left active:bg-black/[0.03] dark:active:bg-white/[0.03]"
+                className="flex w-full flex-col gap-1 px-3 py-2.5 text-left active:bg-black/[0.03] dark:active:bg-white/[0.03]"
               >
-                <span className="w-14 shrink-0 font-semibold">{g.symbol}</span>
-                <DecisionBadge decision={g.latest.decision} />
-                {c ? <span className="hidden text-[11px] sm:inline" style={{ color: c.color }}>{c.text}</span> : null}
-                {g.nSnap > 1 && g.nBuy > 0 ? (
-                  <span className="tabular shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium" style={{ color: buyColor, borderColor: buyColor }} title="Số lần chạy hôm nay mã là BUY / tổng số lần chạy">
-                    BUY {g.nBuy}/{g.nSnap}
-                  </span>
-                ) : null}
-                <span className="tabular ml-auto shrink-0 text-right">
-                  <span className="font-semibold">{fmtNum(g.scoreLast)}</span>
-                  {g.nSnap > 1 && Math.abs(delta) >= 0.01 ? (
-                    <span className={`ml-1 text-[11px] ${signClass(delta)}`}>{delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}</span>
+                <div className="flex w-full items-center gap-2">
+                  <span className="w-14 shrink-0 font-semibold">{g.symbol}</span>
+                  <DecisionBadge decision={g.latest.decision} />
+                  <QualityChip ff={g.latest.ffScore} fund={g.latest.fundScore} />
+                  {g.nSnap > 1 && g.nBuy > 0 ? (
+                    <span className="tabular shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium" style={{ color: buyColor, borderColor: buyColor }} title="Số lần chạy hôm nay mã là BUY / tổng số lần chạy">
+                      BUY {g.nBuy}/{g.nSnap}
+                    </span>
                   ) : null}
-                </span>
-                <span className="tabular hidden w-16 shrink-0 text-right text-[13px] text-[var(--color-muted)] sm:inline">{fmtNum(g.latest.price)}</span>
-                <span aria-hidden className="shrink-0 text-[var(--color-muted)]">{isOpen ? "▴" : "▾"}</span>
+                  <span className="tabular ml-auto shrink-0 text-right">
+                    <span className="font-semibold">{fmtNum(g.scoreLast)}</span>
+                    {g.nSnap > 1 && Math.abs(delta) >= 0.01 ? (
+                      <span className={`ml-1 text-[11px] ${signClass(delta)}`}>{delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}</span>
+                    ) : null}
+                  </span>
+                  <span aria-hidden className="shrink-0 text-[var(--color-muted)]">{isOpen ? "▴" : "▾"}</span>
+                </div>
+                {/* Meta: chất lượng · khối ngoại · confidence · giá — gọn, xuống dòng đẹp trên mobile */}
+                <div className="flex w-full flex-wrap items-center gap-x-2.5 gap-y-0.5 pl-16 text-[11px]">
+                  <AlignChip n={g.latest.nAlign} />
+                  {g.latest.ffScore != null && g.latest.fundScore != null ? (
+                    <span className="tabular text-[var(--color-muted)]" title="Điểm khối ngoại (FF) · điểm cơ bản — thước đo v2.3, thang ±20">
+                      FF {g.latest.ffScore} · CB {g.latest.fundScore}
+                    </span>
+                  ) : null}
+                  <ForeignChip net={g.latest.ffNet} ratio={g.latest.ffRatio} />
+                  {c ? <span style={{ color: c.color }}>{c.text}</span> : null}
+                  <span className="tabular text-[var(--color-muted)]">giá {fmtNum(g.latest.price)}</span>
+                </div>
               </button>
 
               {isOpen ? (
                 <div className="border-t border-[var(--color-border)] bg-black/[0.015] px-3 py-2 dark:bg-white/[0.03]">
-                  <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">Diễn biến {g.nSnap} lần chạy hôm nay:</div>
-                  <table className="w-full text-[12px]">
-                    <thead>
-                      <tr className="text-left text-[11px] text-[var(--color-muted)]">
-                        <th className="py-1 font-medium">Giờ</th>
-                        <th className="py-1 font-medium">Quyết định</th>
-                        <th className="py-1 text-right font-medium">Score</th>
-                        <th className="py-1 text-right font-medium">Giá</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {g.snaps.map((s, i) => {
-                        const prev = i > 0 ? g.snaps[i - 1].decision : null;
-                        const changed = prev != null && prev !== s.decision;
-                        return (
-                          <tr key={i} className="border-t border-[var(--color-border)]/60">
-                            <td className="py-1 tabular">{snapHM(s.snap_time)}</td>
-                            <td className="py-1"><span className="inline-flex items-center gap-1"><DecisionBadge decision={s.decision} />{changed ? <span className="text-[10px] text-[var(--color-accent)]">↳ đổi</span> : null}</span></td>
-                            <td className="py-1 text-right tabular">{fmtNum(s.score)}</td>
-                            <td className="py-1 text-right tabular text-[var(--color-muted)]">{fmtNum(s.price)}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">Diễn biến {g.nSnap} lần chạy hôm nay (giờ VN):</div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-[12px]">
+                      <thead>
+                        <tr className="text-left text-[11px] text-[var(--color-muted)]">
+                          <th className="py-1 font-medium">Giờ</th>
+                          <th className="py-1 font-medium">Quyết định</th>
+                          <th className="py-1 text-right font-medium">Score</th>
+                          <th className="py-1 text-right font-medium">Giá</th>
+                          <th className="py-1 text-right font-medium">NN phiên</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {g.snaps.map((s, i) => {
+                          const prev = i > 0 ? g.snaps[i - 1].decision : null;
+                          const changed = prev != null && prev !== s.decision;
+                          const ffCls = s.ffNet == null ? "text-[var(--color-muted)]" : s.ffNet > 0 ? "text-[var(--color-buy)]" : s.ffNet < 0 ? "text-[var(--color-sell)]" : "text-[var(--color-muted)]";
+                          return (
+                            <tr key={i} className="border-t border-[var(--color-border)]/60">
+                              <td className="py-1 tabular whitespace-nowrap">{hmVN(s.snap_time)}</td>
+                              <td className="py-1"><span className="inline-flex items-center gap-1"><DecisionBadge decision={s.decision} />{changed ? <span className="text-[10px] text-[var(--color-accent)]">↳ đổi</span> : null}</span></td>
+                              <td className="py-1 text-right tabular">{fmtNum(s.score)}</td>
+                              <td className="py-1 text-right tabular text-[var(--color-muted)]">{fmtNum(s.price)}</td>
+                              <td className={`py-1 text-right tabular whitespace-nowrap ${ffCls}`}>{fmtBil(s.ffNet)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                   <p className="mt-1.5 text-[10px] italic text-[var(--color-muted)]">
                     {g.nBuy === g.nSnap && isBuy(g.latest.decision)
                       ? "✓ Giữ BUY suốt cả ngày — tín hiệu bền."
                       : g.nBuy > 0
                         ? `BUY ${g.nBuy}/${g.nSnap} lần — có lúc đổi quyết định, đọc kỹ diễn biến.`
                         : "Không có tín hiệu BUY hôm nay."}
+                    {" · NN phiên = khối ngoại ròng, chỉ tham chiếu (chưa vào điểm)."}
                   </p>
                 </div>
               ) : null}
