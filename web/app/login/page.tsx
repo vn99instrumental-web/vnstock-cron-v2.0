@@ -1,12 +1,11 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 function LoginForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/today";
 
@@ -21,13 +20,14 @@ function LoginForm() {
     setLoading(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       setError("Đăng nhập thất bại: " + error.message);
       return;
     }
-    router.refresh();
-    router.push(next);
+    // Hard navigation: buộc server render lại với cookie session mới (layout được
+    // giữ nguyên khi điều hướng client-side → header cũ vẫn hiện "Đăng nhập").
+    window.location.assign(next);
   }
 
   return (

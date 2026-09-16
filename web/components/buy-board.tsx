@@ -492,9 +492,6 @@ export function BuyBoard({
                 <div className={loading ? "pointer-events-none opacity-40 transition-opacity duration-200" : "transition-opacity duration-200"}>
                   <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
                   <div className="mt-3">
-                    <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">
-                      Giá trong ngày ra tín hiệu ({sel.signal_date}) — theo từng lần chạy intraday
-                    </div>
                     <IntradayStrip candle={entryCandle} />
                   </div>
                 </div>
@@ -515,11 +512,7 @@ export function BuyBoard({
 
             {/* 6 NHÓM YẾU TỐ — từ breakdown, hiện NGAY (không chờ tải giá) */}
             <div className="mt-3 border-t border-[var(--color-border)] pt-2">
-                  <h3 className="mb-0.5 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
-                  <p className="mb-2 text-[10px] italic text-[var(--color-muted)]">
-                    Mỗi nhóm gộp nhiều chỉ báo. Thanh = mức nghiêng của cả nhóm (phải=MUA, trái=BÁN).
-                    Điểm chỉ báo dạng <b>+x/±span</b>: dương→nghiêng MUA, âm→nghiêng BÁN. Con số chính thức từ pipeline Python.
-                  </p>
+                  <h3 className="mb-2 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
                   <div className="grid gap-2 lg:grid-cols-2">
                     {groups.map((g) => (
                       <div key={g.key} className="rounded-md border border-[var(--color-border)] p-2">
