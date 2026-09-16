@@ -33,7 +33,7 @@ export default async function TodayPage() {
   const theDate = String(run.run_id).split("_")[0];
   const { data: sigs } = await supabase
     .from("v4_signals")
-    .select("symbol, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned")
+    .select("symbol, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score")
     .eq("signal_date", theDate)
     .order("score_trade", { ascending: false });
 

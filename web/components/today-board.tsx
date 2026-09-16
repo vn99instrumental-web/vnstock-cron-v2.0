@@ -15,6 +15,15 @@ export interface TodaySignal {
   ff_intra_net: string | number | null;
   ff_intra_ratio: string | number | null;
   n_aligned: string | number | null;
+  ff_score: string | number | null;
+  fundamental_score: string | number | null;
+}
+
+/** Nhãn Quality v2.3 (dashboard html v4): khối ngoại mạnh & cơ bản tốt. */
+const QUAL_FF = 5;
+const QUAL_FUND = 5;
+function isQuality(ff: number | null, fund: number | null): boolean {
+  return ff != null && fund != null && ff >= QUAL_FF && fund >= QUAL_FUND;
 }
 
 function num(v: unknown): number | null {
@@ -28,6 +37,7 @@ interface Snap {
   snap_time: string | null; decision: string | null; score: number | null;
   price: number | null; confidence: string | null;
   ffNet: number | null; ffRatio: number | null; nAlign: number | null;
+  ffScore: number | null; fundScore: number | null;
 }
 interface Group {
   symbol: string; snaps: Snap[]; latest: Snap;
@@ -52,6 +62,19 @@ function ForeignChip({ net, ratio }: { net: number | null; ratio: number | null 
   return (
     <span className={`tabular ${cls}`} title={`Khối ngoại ròng trong phiên${ratioTxt} — tham chiếu, chưa vào điểm`}>
       NN {fmtBil(net)}
+    </span>
+  );
+}
+
+/** Nhãn ⭐ Quality (v2.3): khối ngoại mạnh (ff≥5) & cơ bản tốt (fund≥5). */
+function QualityChip({ ff, fund }: { ff: number | null; fund: number | null }) {
+  if (!isQuality(ff, fund)) return null;
+  return (
+    <span
+      className="tabular shrink-0 rounded border border-[var(--color-buy)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-buy)]"
+      title={`Quality: khối ngoại mạnh (điểm FF ${ff}≥${QUAL_FF}) & cơ bản tốt (điểm cơ bản ${fund}≥${QUAL_FUND}) — thước đo v2.3`}
+    >
+      ⭐ Quality
     </span>
   );
 }
@@ -81,6 +104,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
         snap_time: s.snap_time, decision: s.decision, score: num(s.score_trade),
         price: num(s.price), confidence: s.confidence,
         ffNet: num(s.ff_intra_net), ffRatio: num(s.ff_intra_ratio), nAlign: num(s.n_aligned),
+        ffScore: num(s.ff_score), fundScore: num(s.fundamental_score),
       });
       by.set(s.symbol, arr);
     }
@@ -150,6 +174,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                 <div className="flex w-full items-center gap-2">
                   <span className="w-14 shrink-0 font-semibold">{g.symbol}</span>
                   <DecisionBadge decision={g.latest.decision} />
+                  <QualityChip ff={g.latest.ffScore} fund={g.latest.fundScore} />
                   {g.nSnap > 1 && g.nBuy > 0 ? (
                     <span className="tabular shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium" style={{ color: buyColor, borderColor: buyColor }} title="Số lần chạy hôm nay mã là BUY / tổng số lần chạy">
                       BUY {g.nBuy}/{g.nSnap}
@@ -166,6 +191,11 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                 {/* Meta: chất lượng · khối ngoại · confidence · giá — gọn, xuống dòng đẹp trên mobile */}
                 <div className="flex w-full flex-wrap items-center gap-x-2.5 gap-y-0.5 pl-16 text-[11px]">
                   <AlignChip n={g.latest.nAlign} />
+                  {g.latest.ffScore != null && g.latest.fundScore != null ? (
+                    <span className="tabular text-[var(--color-muted)]" title="Điểm khối ngoại (FF) · điểm cơ bản — thước đo v2.3, thang ±20">
+                      FF {g.latest.ffScore} · CB {g.latest.fundScore}
+                    </span>
+                  ) : null}
                   <ForeignChip net={g.latest.ffNet} ratio={g.latest.ffRatio} />
                   {c ? <span style={{ color: c.color }}>{c.text}</span> : null}
                   <span className="tabular text-[var(--color-muted)]">giá {fmtNum(g.latest.price)}</span>
