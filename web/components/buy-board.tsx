@@ -302,7 +302,6 @@ export function BuyBoard({
     );
   };
   const exp = sel ? expLookup(sel.decision, (sel.breakdown ?? {}).confidence) : null;
-  const num = (v: unknown) => { const x = Number(v); return Number.isFinite(x) ? x : null; };
 
   if (!signals.length) {
     return (
