@@ -110,9 +110,10 @@ export function PriceChart({
         e.preventDefault();
         const ratio = dist(e.touches) / pinch.d0;
         const count = Math.round(clamp(pinch.count0 / ratio, MIN_VIS, n));
+        const frac = pinch.frac; // chụp giá trị: updater không deref biến pinch (có thể null)
         setView((prev) => {
-          const anchor = prev.start + pinch!.frac * prev.count;
-          let s = Math.round(anchor - pinch!.frac * count);
+          const anchor = prev.start + frac * prev.count;
+          let s = Math.round(anchor - frac * count);
           s = clamp(s, 0, Math.max(0, n - count));
           return { start: s, count };
         });
@@ -128,9 +129,10 @@ export function PriceChart({
         e.preventDefault();
         const r = el.getBoundingClientRect();
         const dCandles = Math.round((dx / r.width) * W / slotRef.current);
+        const start0 = pan.start0; // chụp giá trị: updater không deref biến pan (có thể null)
         setView((prev) => {
           const cnt = clamp(prev.count, MIN_VIS, n);
-          return { start: clamp(pan!.start0 - dCandles, 0, Math.max(0, n - cnt)), count: cnt };
+          return { start: clamp(start0 - dCandles, 0, Math.max(0, n - cnt)), count: cnt };
         });
       }
     };
