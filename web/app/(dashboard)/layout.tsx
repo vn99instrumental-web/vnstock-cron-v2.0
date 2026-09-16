@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Nav } from "@/components/nav";
+import { Nav, MobileNav } from "@/components/nav";
 import { VersionBadge } from "@/components/version-badge";
 import { SignOutButton } from "@/components/sign-out-button";
 import { getUser, isOwner } from "@/lib/supabase/server";
@@ -23,9 +23,11 @@ export default async function DashboardLayout({
             <span className="hidden text-sm font-semibold sm:inline">VNStock Signals</span>
           </Link>
 
-          <div className="min-w-0 flex-1 overflow-x-auto">
+          {/* Nav ngang chỉ hiện desktop; mobile dùng bottom tab bar */}
+          <div className="hidden min-w-0 flex-1 overflow-x-auto md:block">
             <Nav isOwner={owner} />
           </div>
+          <div className="flex-1 md:hidden" />
 
           {/* Version badge: ẩn trên mobile để nav rộng hơn (thông tin dev, ít giá trị khi xem nhanh) */}
           <div className="hidden shrink-0 sm:block">
@@ -47,7 +49,8 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-4 md:px-5 md:py-5">{children}</main>
+      <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-4 pb-24 md:px-5 md:py-5 md:pb-5">{children}</main>
+      <MobileNav isOwner={owner} />
     </div>
   );
 }

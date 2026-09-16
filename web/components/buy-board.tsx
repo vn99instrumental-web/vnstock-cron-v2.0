@@ -363,7 +363,14 @@ export function BuyBoard({
             return (
               <li key={s.id}>
                 <button
-                  onClick={() => setSel(s)}
+                  onClick={() => {
+                    setSel(s);
+                    // Mobile: ẩn list để hiện chart + thông số ngay (tránh detail bị đẩy dưới list dài).
+                    if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+                      setShowList(false);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
                   className={`flex w-full flex-col gap-0.5 border-b border-[var(--color-border)] px-2.5 py-1.5 text-left ${
                     active ? "bg-[var(--color-accent)]/10" : "hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
                   }`}
