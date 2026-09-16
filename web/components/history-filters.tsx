@@ -22,7 +22,7 @@ export function HistoryFilters() {
   }
 
   const inputCls =
-    "rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1 text-sm";
+    "mt-1 min-h-[40px] rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-2 text-sm";
 
   return (
     <form onSubmit={apply} className="mb-4 flex flex-wrap items-end gap-2">
@@ -47,13 +47,13 @@ export function HistoryFilters() {
           ))}
         </select>
       </label>
-      <button type="submit" className="rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-white">
+      <button type="submit" className="min-h-[40px] rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white active:opacity-80">
         Lọc
       </button>
       <button
         type="button"
         onClick={() => router.push("/history")}
-        className="rounded-md border border-[var(--color-border)] px-3 py-1.5 text-sm text-[var(--color-muted)]"
+        className="min-h-[40px] rounded-md border border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"
       >
         Xóa lọc
       </button>

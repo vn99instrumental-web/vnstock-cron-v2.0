@@ -325,7 +325,7 @@ export function AnalysisBoard({
               <h3 className="text-sm font-semibold">Chỉ báo nào dẫn tới chạm TP hay SL?</h3>
               <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[11px]">
                 {([["corr_win", "→ Chạm TP"], ["corr_ret5", "→ Lãi 5 phiên"]] as const).map(([k, lb]) => (
-                  <button key={k} onClick={() => setCorrMetric(k)} className={`rounded px-2 py-0.5 ${corrMetric === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
+                  <button key={k} onClick={() => setCorrMetric(k)} className={`rounded px-2.5 py-1.5 ${corrMetric === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
                 ))}
               </div>
             </div>
@@ -336,9 +336,9 @@ export function AnalysisBoard({
             {/* Toolbar: nhóm biến */}
             <div className="mb-1.5 flex flex-wrap items-center gap-1 text-[10px]">
               <span className="mr-0.5 text-[var(--color-muted)]">Nhóm:</span>
-              <button onClick={() => setGrpFilter("all")} className={`rounded-full border px-2 py-0.5 ${grpFilter === "all" ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>Tất cả</button>
+              <button onClick={() => setGrpFilter("all")} className={`rounded-full border px-2.5 py-1.5 ${grpFilter === "all" ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>Tất cả</button>
               {grpsPresent.map((g) => (
-                <button key={g} onClick={() => setGrpFilter(g)} className={`rounded-full border px-2 py-0.5 ${grpFilter === g ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{GROUP_LABEL[g] ?? g}</button>
+                <button key={g} onClick={() => setGrpFilter(g)} className={`rounded-full border px-2.5 py-1.5 ${grpFilter === g ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{GROUP_LABEL[g] ?? g}</button>
               ))}
             </div>
             {/* Toolbar: tách theo bối cảnh */}
@@ -346,13 +346,13 @@ export function AnalysisBoard({
               <span className="text-[var(--color-muted)]">Tách theo:</span>
               <div className="inline-flex rounded-md border border-[var(--color-border)] p-0.5">
                 {([["none", "Không tách"], ["confidence", "Chất lượng"], ["regime", "Trạng thái TT"]] as const).map(([k, lb]) => (
-                  <button key={k} onClick={() => setSplitDim(k)} className={`rounded px-2 py-0.5 ${splitDim === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
+                  <button key={k} onClick={() => setSplitDim(k)} className={`rounded px-2.5 py-1.5 ${splitDim === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
                 ))}
               </div>
               {splitDim !== "none" ? (
                 <span className="flex flex-wrap items-center gap-1">
                   {buckets.map((b) => (
-                    <button key={b.bucket} onClick={() => setBucket(b.bucket)} className={`rounded-full border px-2 py-0.5 ${activeBucket === b.bucket ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`} title={b.n < 40 ? "Mẫu nhỏ — đọc dè dặt" : ""}>
+                    <button key={b.bucket} onClick={() => setBucket(b.bucket)} className={`rounded-full border px-2.5 py-1.5 ${activeBucket === b.bucket ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`} title={b.n < 40 ? "Mẫu nhỏ — đọc dè dặt" : ""}>
                       {b.bucket} <span className="opacity-70">{b.n}{b.n < 40 ? "⚠" : ""}</span>
                     </button>
                   ))}
@@ -439,7 +439,7 @@ export function AnalysisBoard({
               <span className="text-[10px] text-[var(--color-muted)]">cột = lãi 5 phiên · màu = kết quả</span>
               <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[10px]">
                 {([["std3_outcome", "±3%"], ["std_outcome", "+6/−4"]] as const).map(([k, lb]) => (
-                  <button key={k} onClick={() => setTarget(k)} className={`rounded px-2 py-0.5 ${target === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
+                  <button key={k} onClick={() => setTarget(k)} className={`rounded px-2.5 py-1.5 ${target === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
                 ))}
               </div>
             </div>

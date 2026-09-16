@@ -58,10 +58,10 @@ export function SignalsTable({
                     {r.signal_date} · {snapHM(r.snap_time)}
                   </td>
                 ) : null}
-                <td className="px-3 py-2 text-right">
+                <td className="px-2 py-1.5 text-right">
                   <Link
                     href={`/history/${r.id}`}
-                    className="text-xs text-[var(--color-accent)] hover:underline"
+                    className="inline-flex min-h-[36px] items-center rounded-md px-2.5 py-1.5 text-xs font-medium text-[var(--color-accent)] active:bg-[var(--color-accent)]/10 hover:underline"
                   >
                     chi tiết →
                   </Link>
