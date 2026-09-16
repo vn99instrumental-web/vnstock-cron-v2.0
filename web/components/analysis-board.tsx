@@ -119,7 +119,7 @@ export function AnalysisBoard({
 }) {
   const [tab, setTab] = useState<"overall" | "symbol">("overall");
   const [target, setTarget] = useState<TargetKey>("std3_outcome");
-  const [corrMetric, setCorrMetric] = useState<"corr_ret5" | "corr_win">("corr_ret5");
+  const [corrMetric, setCorrMetric] = useState<"corr_ret5" | "corr_win">("corr_win");
   const [grpFilter, setGrpFilter] = useState<string>("all");
   const [splitDim, setSplitDim] = useState<"none" | "confidence" | "regime">("none");
   const [bucket, setBucket] = useState<string>("");
@@ -319,17 +319,20 @@ export function AnalysisBoard({
             </p>
           </div>
 
-          {/* Tương quan biến đầu vào */}
+          {/* Tương quan chỉ báo ↔ chạm TP/SL */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
-            <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h3 className="text-sm font-semibold">Biến nào liên quan kết quả?</h3>
-              <span className="text-[10px] text-[var(--color-muted)]">{corr.length} biến · đã loại biến rò rỉ/ID</span>
+            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h3 className="text-sm font-semibold">Chỉ báo nào dẫn tới chạm TP hay SL?</h3>
               <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[11px]">
-                {([["corr_ret5", "vs lãi 5 phiên"], ["corr_win", "vs chạm TP"]] as const).map(([k, lb]) => (
+                {([["corr_win", "→ Chạm TP"], ["corr_ret5", "→ Lãi 5 phiên"]] as const).map(([k, lb]) => (
                   <button key={k} onClick={() => setCorrMetric(k)} className={`rounded px-2 py-0.5 ${corrMetric === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
                 ))}
               </div>
             </div>
+            <p className="mb-2 text-[10px] text-[var(--color-muted)]">
+              Trên {corr[0]?.n ?? "—"} tín hiệu BUY/STRONG BUY đã chín · {corr.length} chỉ báo (đã loại biến rò rỉ/ID).
+              {" "}<span style={{ color: BUY }}>Xanh</span> = chỉ báo càng cao càng hay {corrMetric === "corr_win" ? "chạm TP (thắng)" : "lãi tốt"}; <span style={{ color: SELL }}>đỏ</span> = càng cao càng {corrMetric === "corr_win" ? "hay hụt TP / chạm SL" : "lãi kém"}.
+            </p>
             {/* Toolbar: nhóm biến */}
             <div className="mb-1.5 flex flex-wrap items-center gap-1 text-[10px]">
               <span className="mr-0.5 text-[var(--color-muted)]">Nhóm:</span>
@@ -380,9 +383,9 @@ export function AnalysisBoard({
               </button>
             ) : null}
             <p className="mt-2 border-t border-[var(--color-border)] pt-2 text-[10px] italic text-[var(--color-muted)]">
-              <span style={{ color: BUY }}>▮</span> càng cao càng tốt · <span style={{ color: SELL }}>▮</span> càng cao càng xấu · độ dài = độ mạnh.
-              {splitDim !== "none" ? <> Đang tách theo <b>{splitDim === "confidence" ? "chất lượng" : "trạng thái TT"}</b> — nhiều biến đổi dấu giữa các bucket.</> : null}
-              {" "}Gợi ý soi trọng số, <b>không</b> phải nhân quả (mẫu 1 tháng).
+              Độ dài thanh = độ mạnh liên quan (|hệ số|).
+              {splitDim !== "none" ? <> Đang tách theo <b>{splitDim === "confidence" ? "chất lượng" : "trạng thái TT"}</b> — nhiều chỉ báo đổi dấu giữa các bucket.</> : null}
+              {" "}Gợi ý soi trọng số, <b>không</b> phải nhân quả (mẫu 1 tháng, khám phá — IC chính thức ở tab Chất lượng).
             </p>
           </div>
 
