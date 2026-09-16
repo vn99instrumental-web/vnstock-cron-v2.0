@@ -7,6 +7,7 @@ type NavLink = { href: string; label: string; icon: string; owner?: boolean };
 
 const LINKS: NavLink[] = [
   { href: "/buy", label: "Mua", icon: "▲" },
+  { href: "/phan-tich", label: "Phân tích", icon: "◑" },
   { href: "/today", label: "Hôm nay", icon: "●" },
   { href: "/history", label: "Lịch sử", icon: "◷" },
   { href: "/ic", label: "Chất lượng (IC)", icon: "▤" },
