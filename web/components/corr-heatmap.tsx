@@ -48,7 +48,7 @@ export function CorrHeatmap({ pairs, factors }: { pairs: FactorPair[]; factors: 
           <tr>
             <th className="sticky left-0 z-10 bg-[var(--color-surface)] px-1 py-0.5" />
             {factors.map((_, j) => (
-              <th key={j} className="px-0 py-0.5 text-center font-normal text-[var(--color-muted)]" style={{ minWidth: 20 }}>{j + 1}</th>
+              <th key={j} className="px-0 py-0.5 text-center font-normal text-[var(--color-muted)]" style={{ minWidth: 24 }}>{j + 1}</th>
             ))}
           </tr>
         </thead>
@@ -60,14 +60,20 @@ export function CorrHeatmap({ pairs, factors }: { pairs: FactorPair[]; factors: 
               </td>
               {factors.map((fb, j) => {
                 const v = get(fa, fb);
+                const diag = i === j;
                 return (
                   <td
                     key={fb}
-                    className="text-center"
+                    className="text-center tabular"
                     title={`${varName(fa)} × ${varName(fb)} = ${v != null ? v.toFixed(2) : "—"}`}
-                    style={{ background: v != null ? cellColor(v) : "transparent", width: 20, height: 20, color: v != null && Math.abs(v) > 0.6 ? "#fff" : "var(--color-ink)" }}
+                    style={{
+                      background: diag ? "var(--color-border)" : v != null ? cellColor(v) : "transparent",
+                      width: 24, height: 22,
+                      color: v != null && Math.abs(v) > 0.55 ? "#fff" : "var(--color-muted)",
+                      border: "1px solid var(--color-surface)",
+                    }}
                   >
-                    {i === j ? "•" : v != null && Math.abs(v) >= 0.7 ? Math.round(v * 100) : ""}
+                    {diag ? "" : v != null && Math.abs(v) >= 0.5 ? Math.round(v * 100) : ""}
                   </td>
                 );
               })}
@@ -75,8 +81,15 @@ export function CorrHeatmap({ pairs, factors }: { pairs: FactorPair[]; factors: 
           ))}
         </tbody>
       </table>
-      <p className="mt-2 text-[10px] italic text-[var(--color-muted)]">
-        Xanh = cùng chiều, đỏ = ngược chiều; đậm = càng gần ±1 (số hiện khi |r|≥0.7, ×100). Ô đậm ngoài đường chéo = 2 biến gần trùng nhau (đa cộng tuyến) → cân nhắc bỏ bớt 1 khi chỉnh trọng số.
+      {/* Chú giải gradient */}
+      <div className="mt-2 flex items-center gap-2 text-[10px] text-[var(--color-muted)]">
+        <span>−1</span>
+        <span className="h-2.5 w-28 rounded" style={{ background: "linear-gradient(90deg, rgba(220,38,38,0.9), rgba(220,38,38,0.12), rgba(37,99,235,0.12), rgba(37,99,235,0.9))" }} />
+        <span>+1</span>
+        <span className="ml-1">ngược chiều ← → cùng chiều · số = hệ số ×100 (hiện khi |r|≥0.5)</span>
+      </div>
+      <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">
+        Ô đậm ngoài đường chéo = 2 biến gần trùng nhau (đa cộng tuyến) → cân nhắc bỏ bớt 1 khi chỉnh trọng số. Cột đánh số theo hàng cùng tên.
       </p>
     </div>
   );

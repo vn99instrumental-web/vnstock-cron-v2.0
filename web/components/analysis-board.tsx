@@ -122,6 +122,7 @@ export function AnalysisBoard({
   const [grpFilter, setGrpFilter] = useState<string>("all");
   const [splitDim, setSplitDim] = useState<"none" | "confidence" | "regime">("none");
   const [bucket, setBucket] = useState<string>("");
+  const [showAllCorr, setShowAllCorr] = useState(false);
   const symbols = useMemo(
     () => [...new Set(results.map((r) => r.symbol))].sort(),
     [results],
@@ -191,25 +192,26 @@ export function AnalysisBoard({
     [activeCorr, corrMetric],
   );
 
-  // Tập biến cho heatmap: theo nhóm đang chọn; nếu "tất cả" → 14 biến mạnh nhất.
+  // Tập biến cho heatmap: theo nhóm đang chọn; nếu "tất cả" → 10 biến mạnh nhất (đọc dễ).
   const heatFactors = useMemo(() => {
-    if (grpFilter !== "all") return corr.filter((c) => c.grp === grpFilter).map((c) => c.factor);
+    if (grpFilter !== "all") return corr.filter((c) => c.grp === grpFilter).map((c) => c.factor).slice(0, 12);
     return [...corr]
       .map((c) => ({ f: c.factor, v: Math.abs(num(c.corr_ret5) ?? 0) }))
       .sort((a, b) => b.v - a.v)
-      .slice(0, 14)
+      .slice(0, 10)
       .map((x) => x.f);
   }, [corr, grpFilter]);
 
-  // Cặp biến gần trùng trong tập đang xem (đa cộng tuyến).
-  const nearDup = useMemo(() => {
-    const set = new Set(heatFactors);
-    return pairs
-      .map((p) => ({ ...p, v: num(p.corr) }))
-      .filter((p) => p.v != null && Math.abs(p.v) >= 0.85 && set.has(p.fa) && set.has(p.fb))
-      .sort((a, b) => Math.abs(b.v!) - Math.abs(a.v!))
-      .slice(0, 8);
-  }, [pairs, heatFactors]);
+  // Cặp biến gần trùng — quét TOÀN BỘ biến (đa cộng tuyến), để cảnh báo luôn nổi.
+  const nearDup = useMemo(
+    () =>
+      pairs
+        .map((p) => ({ ...p, v: num(p.corr) }))
+        .filter((p) => p.v != null && Math.abs(p.v) >= 0.9)
+        .sort((a, b) => Math.abs(b.v!) - Math.abs(a.v!))
+        .slice(0, 6),
+    [pairs],
+  );
 
   const symRows = useMemo(
     () => results.filter((r) => r.symbol === sym).sort((a, b) => a.signal_date.localeCompare(b.signal_date)),
@@ -229,17 +231,34 @@ export function AnalysisBoard({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Cảnh báo phạm vi + phương pháp (trung thực) */}
-      <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[11px] text-[var(--color-muted)]">
-        <b className="text-[var(--color-ink)]">{meta.n}</b> tín hiệu chín · <b className="text-[var(--color-ink)]">{meta.nSym}</b> mã · {meta.d0} → {meta.d1}.
-        Kết quả “chạm TP/SL” xác định bằng <b className="text-[var(--color-ink)]">đường giá nến thật</b> (chạm cái nào trước, theo ngày).
-        {" "}Tương quan biến là <b className="text-[var(--color-ink)]">khám phá</b> (mẫu nhỏ, 1 tháng) — <i>không phải IC chính thức</i> (IC từ pipeline Python ở tab Chất lượng).
-        {!meta.hasOwn ? (
-          <span className="text-[var(--color-sell)]"> · TP/SL RIÊNG của model chỉ lưu từ T9/2026 nên chưa mã nào đủ chín — dùng mục tiêu chuẩn ±% bên dưới; số “own” sẽ tự đầy từ cuối T9.</span>
-        ) : null}
+      {/* Phạm vi dữ liệu — KPI tiles gọn, dễ quét */}
+      <div className="flex flex-wrap items-stretch gap-2">
+        {[
+          { v: meta.n, lb: "tín hiệu đã chín" },
+          { v: meta.nSym, lb: "mã" },
+          { v: `${meta.d0?.slice(5) ?? "?"} → ${meta.d1?.slice(5) ?? "?"}`, lb: "khoảng thời gian" },
+        ].map((t) => (
+          <div key={t.lb} className="flex min-w-[92px] flex-1 flex-col rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
+            <span className="text-base font-semibold tabular">{t.v}</span>
+            <span className="text-[10px] text-[var(--color-muted)]">{t.lb}</span>
+          </div>
+        ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Cách đọc & giới hạn — thu gọn, không lấn nội dung */}
+      <details className="rounded-md border border-[var(--color-border)] bg-black/[0.015] px-3 py-1.5 text-[11px] text-[var(--color-muted)] dark:bg-white/[0.03]">
+        <summary className="cursor-pointer select-none font-medium text-[var(--color-ink)]">ℹ️ Cách đọc &amp; giới hạn dữ liệu</summary>
+        <div className="mt-1.5 flex flex-col gap-1">
+          <p>• Kết quả “chạm TP/SL” xác định bằng <b className="text-[var(--color-ink)]">đường giá nến thật</b> — chạm cái nào trước, theo ngày.</p>
+          <p>• Tương quan biến là <b className="text-[var(--color-ink)]">khám phá</b> (mẫu 1 tháng), <i>không phải IC chính thức</i> — IC chuẩn ở tab Chất lượng (IC).</p>
+          {!meta.hasOwn ? (
+            <p className="text-[var(--color-sell)]">• TP/SL <b>riêng</b> của model chỉ lưu từ T9/2026 → chưa mã nào đủ chín; tạm dùng mục tiêu chuẩn ±%. Cột “own” sẽ tự đầy từ cuối T9.</p>
+          ) : null}
+        </div>
+      </details>
+
+      {/* Tab segmented */}
+      <div className="inline-flex w-fit rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5">
         <TabBtn k="overall" label="Góc tổng thể" />
         <TabBtn k="symbol" label="Từng mã" />
       </div>
@@ -288,78 +307,98 @@ export function AnalysisBoard({
 
           {/* Tương quan biến đầu vào */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <h3 className="text-sm font-semibold">Biến đầu vào nào liên quan kết quả? <span className="text-[11px] font-normal text-[var(--color-muted)]">({corr.length} biến)</span></h3>
-              <div className="ml-auto flex items-center gap-1 text-[11px]">
-                <button onClick={() => setCorrMetric("corr_ret5")} className={`rounded border px-2 py-0.5 ${corrMetric === "corr_ret5" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>vs lãi 5 phiên</button>
-                <button onClick={() => setCorrMetric("corr_win")} className={`rounded border px-2 py-0.5 ${corrMetric === "corr_win" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>vs chạm TP</button>
+            <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h3 className="text-sm font-semibold">Biến nào liên quan kết quả?</h3>
+              <span className="text-[10px] text-[var(--color-muted)]">{corr.length} biến · đã loại biến rò rỉ/ID</span>
+              <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[11px]">
+                {([["corr_ret5", "vs lãi 5 phiên"], ["corr_win", "vs chạm TP"]] as const).map(([k, lb]) => (
+                  <button key={k} onClick={() => setCorrMetric(k)} className={`rounded px-2 py-0.5 ${corrMetric === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
+                ))}
               </div>
             </div>
-            {/* Lọc theo nhóm biến */}
-            <div className="mb-2 flex flex-wrap items-center gap-1 text-[10px]">
-              <button onClick={() => setGrpFilter("all")} className={`rounded-full border px-2 py-0.5 ${grpFilter === "all" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>Tất cả</button>
+            {/* Toolbar: nhóm biến */}
+            <div className="mb-1.5 flex flex-wrap items-center gap-1 text-[10px]">
+              <span className="mr-0.5 text-[var(--color-muted)]">Nhóm:</span>
+              <button onClick={() => setGrpFilter("all")} className={`rounded-full border px-2 py-0.5 ${grpFilter === "all" ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>Tất cả</button>
               {grpsPresent.map((g) => (
-                <button key={g} onClick={() => setGrpFilter(g)} className={`rounded-full border px-2 py-0.5 ${grpFilter === g ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{GROUP_LABEL[g] ?? g}</button>
+                <button key={g} onClick={() => setGrpFilter(g)} className={`rounded-full border px-2 py-0.5 ${grpFilter === g ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{GROUP_LABEL[g] ?? g}</button>
               ))}
             </div>
-            {/* Tách theo bối cảnh */}
-            <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+            {/* Toolbar: tách theo bối cảnh */}
+            <div className="mb-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
               <span className="text-[var(--color-muted)]">Tách theo:</span>
-              {([["none", "Không tách"], ["confidence", "Chất lượng"], ["regime", "Trạng thái TT"]] as const).map(([k, lb]) => (
-                <button key={k} onClick={() => setSplitDim(k)} className={`rounded border px-2 py-0.5 ${splitDim === k ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{lb}</button>
-              ))}
+              <div className="inline-flex rounded-md border border-[var(--color-border)] p-0.5">
+                {([["none", "Không tách"], ["confidence", "Chất lượng"], ["regime", "Trạng thái TT"]] as const).map(([k, lb]) => (
+                  <button key={k} onClick={() => setSplitDim(k)} className={`rounded px-2 py-0.5 ${splitDim === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
+                ))}
+              </div>
               {splitDim !== "none" ? (
-                <span className="ml-2 flex flex-wrap items-center gap-1">
+                <span className="flex flex-wrap items-center gap-1">
                   {buckets.map((b) => (
-                    <button key={b.bucket} onClick={() => setBucket(b.bucket)} className={`rounded-full border px-2 py-0.5 ${activeBucket === b.bucket ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"} ${b.n < 40 ? "opacity-70" : ""}`} title={b.n < 40 ? "Mẫu nhỏ — đọc dè dặt" : ""}>
-                      {b.bucket} <span className="text-[9px] opacity-70">n={b.n}{b.n < 40 ? " ⚠" : ""}</span>
+                    <button key={b.bucket} onClick={() => setBucket(b.bucket)} className={`rounded-full border px-2 py-0.5 ${activeBucket === b.bucket ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`} title={b.n < 40 ? "Mẫu nhỏ — đọc dè dặt" : ""}>
+                      {b.bucket} <span className="opacity-70">{b.n}{b.n < 40 ? "⚠" : ""}</span>
                     </button>
                   ))}
                 </span>
               ) : null}
             </div>
-            <div className="flex flex-col gap-1">
-              {corrSorted.map((c) => {
+            <div className="flex flex-col gap-1.5">
+              {(showAllCorr ? corrSorted : corrSorted.slice(0, 12)).map((c) => {
                 const v = c.v!;
                 const w = Math.min(50, (Math.abs(v) / corrMax) * 50);
                 const color = v >= 0 ? BUY : SELL;
                 return (
                   <div key={c.factor} className="flex items-center gap-2 text-[11px]">
-                    <span className="w-48 shrink-0 truncate" title={`${c.factor} · n=${c.n}`}>{varName(c.factor)}</span>
-                    <div className="relative h-3 flex-1 rounded bg-black/5 dark:bg-white/10">
-                      <div className="absolute left-1/2 top-0 h-3 w-px bg-[var(--color-border)]" />
-                      <div className="absolute top-0 h-3 rounded" style={{ backgroundColor: color, left: v >= 0 ? "50%" : `${50 - w}%`, width: `${w}%` }} />
+                    <span className="w-28 shrink-0 truncate sm:w-44" title={`${c.factor} · n=${c.n}`}>{varName(c.factor)}</span>
+                    <div className="relative h-3.5 flex-1 rounded bg-black/[0.06] dark:bg-white/10">
+                      <div className="absolute left-1/2 top-0 h-3.5 w-px bg-[var(--color-border)]" />
+                      <div className="absolute top-0 h-3.5 rounded" style={{ backgroundColor: color, left: v >= 0 ? "50%" : `${50 - w}%`, width: `${w}%` }} />
                     </div>
-                    <span className="tabular w-12 shrink-0 text-right" style={{ color }}>{v >= 0 ? "+" : ""}{v.toFixed(2)}</span>
+                    <span className="tabular w-11 shrink-0 text-right font-medium" style={{ color }}>{v >= 0 ? "+" : ""}{v.toFixed(2)}</span>
                   </div>
                 );
               })}
               {corrSorted.length === 0 ? <div className="py-3 text-center text-[11px] text-[var(--color-muted)]">Không có biến trong nhóm này.</div> : null}
             </div>
-            <p className="mt-2 text-[10px] italic text-[var(--color-muted)]">
-              Xanh = biến càng cao thì kết quả càng tốt; đỏ = càng cao càng xấu. Độ dài = độ mạnh liên quan (|hệ số|), so cùng thang.
-              {splitDim !== "none" ? <> Đang tách theo <b>{splitDim === "confidence" ? "chất lượng" : "trạng thái thị trường"}</b> — nhiều biến đổi dấu giữa các bucket (vd tín hiệu tốt ở nhóm này, xấu ở nhóm kia).</> : null}
-              {" "}Đã loại biến rò rỉ kết quả & ID/version. Gợi ý để soi lại trọng số, <b>không</b> phải kết luận nhân quả (mẫu 1 tháng).
+            {corrSorted.length > 12 ? (
+              <button onClick={() => setShowAllCorr((v) => !v)} className="mt-2 text-[11px] font-medium text-[var(--color-accent)] hover:underline">
+                {showAllCorr ? "▴ Thu gọn" : `▾ Xem tất cả ${corrSorted.length} biến`}
+              </button>
+            ) : null}
+            <p className="mt-2 border-t border-[var(--color-border)] pt-2 text-[10px] italic text-[var(--color-muted)]">
+              <span style={{ color: BUY }}>▮</span> càng cao càng tốt · <span style={{ color: SELL }}>▮</span> càng cao càng xấu · độ dài = độ mạnh.
+              {splitDim !== "none" ? <> Đang tách theo <b>{splitDim === "confidence" ? "chất lượng" : "trạng thái TT"}</b> — nhiều biến đổi dấu giữa các bucket.</> : null}
+              {" "}Gợi ý soi trọng số, <b>không</b> phải nhân quả (mẫu 1 tháng).
             </p>
           </div>
 
           {/* Ma trận tương quan biến×biến (bắt biến trùng / đa cộng tuyến) */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
-            <h3 className="mb-1 text-sm font-semibold">
-              Ma trận tương quan giữa các biến
-              <span className="text-[11px] font-normal text-[var(--color-muted)]"> — {grpFilter === "all" ? "14 biến mạnh nhất" : GROUP_LABEL[grpFilter] ?? grpFilter} (dùng chip nhóm ở trên để đổi)</span>
+            <h3 className="mb-2 text-sm font-semibold">
+              Biến nào trùng nhau?
+              <span className="ml-1 text-[11px] font-normal text-[var(--color-muted)]">(phát hiện đa cộng tuyến để bớt biến thừa)</span>
             </h3>
             {nearDup.length ? (
-              <div className="mb-2 rounded border border-[var(--color-border)] bg-black/[0.02] px-2 py-1.5 text-[10px] dark:bg-white/[0.03]">
-                <b>Cặp gần trùng (nên bỏ bớt 1 khi chỉnh trọng số):</b>{" "}
-                {nearDup.map((p, i) => (
-                  <span key={`${p.fa}|${p.fb}`}>
-                    {i > 0 ? " · " : ""}{varName(p.fa)} ≈ {varName(p.fb)} <span className="tabular text-[var(--color-muted)]">({p.v! >= 0 ? "+" : ""}{p.v!.toFixed(2)})</span>
-                  </span>
-                ))}
+              <div className="mb-3 rounded-md border-l-2 border-amber-500 bg-amber-500/10 px-3 py-2 text-[11px]">
+                <div className="mb-1 font-medium text-amber-700 dark:text-amber-400">⚠ {nearDup.length} cặp biến gần như trùng nhau — nên gộp/bỏ bớt 1 khi chỉnh trọng số:</div>
+                <div className="flex flex-col gap-0.5">
+                  {nearDup.map((p) => (
+                    <div key={`${p.fa}|${p.fb}`} className="flex items-center gap-2">
+                      <span className="tabular w-10 shrink-0 font-semibold" style={{ color: p.v! >= 0 ? BUY : SELL }}>{p.v! >= 0 ? "+" : ""}{p.v!.toFixed(2)}</span>
+                      <span>{varName(p.fa)} <span className="text-[var(--color-muted)]">≈</span> {varName(p.fb)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : null}
-            <CorrHeatmap pairs={pairs} factors={heatFactors} />
+            <details>
+              <summary className="cursor-pointer select-none text-[11px] font-medium text-[var(--color-muted)] hover:text-[var(--color-ink)]">
+                🔬 Xem ma trận đầy đủ — {grpFilter === "all" ? "10 biến mạnh nhất" : GROUP_LABEL[grpFilter] ?? grpFilter}
+              </summary>
+              <div className="mt-2">
+                <CorrHeatmap pairs={pairs} factors={heatFactors} />
+              </div>
+            </details>
           </div>
         </div>
       ) : (
