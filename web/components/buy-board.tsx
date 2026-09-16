@@ -336,12 +336,12 @@ export function BuyBoard({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Tìm mã…"
-            className="w-full rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs uppercase"
+            className="min-h-[36px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-sm uppercase"
           />
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1 py-1 text-[11px]"
+            className="min-h-[36px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[11px]"
             title="Sắp xếp"
           >
             {SORT_OPTIONS.map((o) => (
@@ -349,8 +349,8 @@ export function BuyBoard({
             ))}
           </select>
         </div>
-        <label className="flex items-center gap-1.5 border-b border-[var(--color-border)] px-2.5 py-1 text-[10px] text-[var(--color-muted)] cursor-pointer">
-          <input type="checkbox" checked={hideThin} onChange={(e) => setHideThin(e.target.checked)} className="h-3 w-3" />
+        <label className="flex min-h-[34px] items-center gap-2 border-b border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)] cursor-pointer active:bg-black/5 dark:active:bg-white/5">
+          <input type="checkbox" checked={hideThin} onChange={(e) => setHideThin(e.target.checked)} className="h-4 w-4" />
           Ẩn mã thanh khoản &lt; 10 tỷ/phiên
         </label>
         <div className="px-2.5 py-1 text-[10px] text-[var(--color-muted)]">
@@ -404,7 +404,7 @@ export function BuyBoard({
               <button
                 onClick={() => setShowList((v) => !v)}
                 title={showList ? "Ẩn danh sách (mở rộng chart)" : "Hiện danh sách"}
-                className="rounded border border-[var(--color-border)] px-1.5 py-0.5 text-xs text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+                className="inline-flex min-h-[34px] items-center rounded-md border border-[var(--color-border)] px-3 py-1 text-xs font-medium text-[var(--color-muted)] active:bg-black/5 hover:text-[var(--color-ink)] dark:active:bg-white/5"
               >
                 {showList ? "‹ Ẩn DS" : "☰ DS"}
               </button>

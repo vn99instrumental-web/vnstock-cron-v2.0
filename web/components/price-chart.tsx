@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candle, Levels } from "@/lib/chart";
 import { computeBB, computeEMA } from "@/lib/chart";
 
@@ -45,21 +45,43 @@ export function PriceChart({
   const [view, setView] = useState({ start: 0, count: n });
   const [hover, setHover] = useState<number | null>(null);
   const drag = useRef<{ active: boolean } | null>(null);
+  const viewRef = useRef(view); viewRef.current = view;
+  const slotRef = useRef(1);
 
   useEffect(() => { setView({ start: 0, count: n }); }, [n]);
 
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
 
+  // EMA/BB chỉ phụ thuộc chuỗi nến → memo để pan/zoom không tính lại mỗi khung.
+  const ema50 = useMemo(() => computeEMA(candles, 50), [candles]);
+  const ema200 = useMemo(() => computeEMA(candles, 200), [candles]);
+  const bb = useMemo(() => computeBB(candles, 20, 2), [candles]);
+
+  // Zoom helpers (dùng cho nút chạm).
+  const showAll = () => setView({ start: 0, count: n });
+  const showRecent = (k: number) => setView({ start: Math.max(0, n - k), count: Math.min(k, n) });
+  const zoomBy = (factor: number) => setView((prev) => {
+    const count = Math.round(clamp(prev.count * factor, MIN_VIS, n));
+    // neo ở cạnh phải (giữ ngày mới nhất trong khung)
+    const right = prev.start + prev.count;
+    const s = clamp(right - count, 0, Math.max(0, n - count));
+    return { start: s, count };
+  });
+
+  // Ctrl+lăn (desktop) + pinch/kéo cảm ứng (mobile) — non-passive để preventDefault.
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
+    const fracOf = (clientX: number) => {
+      const r = el.getBoundingClientRect();
+      const vx = ((clientX - r.left) / r.width) * W;
+      return clamp((vx - M.left) / plotW, 0, 1);
+    };
     const onWheel = (e: WheelEvent) => {
       if (!e.ctrlKey) return;
       e.preventDefault();
-      const rect = el.getBoundingClientRect();
-      const vx = ((e.clientX - rect.left) / rect.width) * W;
-      const frac = clamp((vx - M.left) / plotW, 0, 1);
+      const frac = fracOf(e.clientX);
       setView((prev) => {
         const anchor = prev.start + frac * prev.count;
         const factor = e.deltaY < 0 ? 0.82 : 1.22;
@@ -69,8 +91,60 @@ export function PriceChart({
         return { start: s, count };
       });
     };
+    // Touch: 1 ngón = kéo ngang (pan), 2 ngón = pinch zoom.
+    let pinch: { d0: number; count0: number; frac: number } | null = null;
+    let pan: { x: number; y: number; start0: number; engaged: boolean } | null = null;
+    const dist = (t: TouchList) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const onTStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        pan = null;
+        pinch = { d0: dist(e.touches) || 1, count0: viewRef.current.count, frac: fracOf((e.touches[0].clientX + e.touches[1].clientX) / 2) };
+        e.preventDefault();
+      } else if (e.touches.length === 1) {
+        pinch = null;
+        pan = { x: e.touches[0].clientX, y: e.touches[0].clientY, start0: viewRef.current.start, engaged: false };
+      }
+    };
+    const onTMove = (e: TouchEvent) => {
+      if (pinch && e.touches.length === 2) {
+        e.preventDefault();
+        const ratio = dist(e.touches) / pinch.d0;
+        const count = Math.round(clamp(pinch.count0 / ratio, MIN_VIS, n));
+        setView((prev) => {
+          const anchor = prev.start + pinch!.frac * prev.count;
+          let s = Math.round(anchor - pinch!.frac * count);
+          s = clamp(s, 0, Math.max(0, n - count));
+          return { start: s, count };
+        });
+      } else if (pan && e.touches.length === 1) {
+        const dx = e.touches[0].clientX - pan.x;
+        const dy = e.touches[0].clientY - pan.y;
+        // Chỉ chiếm cử chỉ khi kéo NGANG rõ rệt → cuộn dọc trang vẫn mượt.
+        if (!pan.engaged) {
+          if (Math.abs(dy) > Math.abs(dx) + 4) { pan = null; return; }
+          if (Math.abs(dx) < 8) return;
+          pan.engaged = true;
+        }
+        e.preventDefault();
+        const r = el.getBoundingClientRect();
+        const dCandles = Math.round((dx / r.width) * W / slotRef.current);
+        setView((prev) => {
+          const cnt = clamp(prev.count, MIN_VIS, n);
+          return { start: clamp(pan!.start0 - dCandles, 0, Math.max(0, n - cnt)), count: cnt };
+        });
+      }
+    };
+    const onTEnd = (e: TouchEvent) => { if (e.touches.length === 0) { pan = null; pinch = null; } };
     el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
+    el.addEventListener("touchstart", onTStart, { passive: false });
+    el.addEventListener("touchmove", onTMove, { passive: false });
+    el.addEventListener("touchend", onTEnd);
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("touchstart", onTStart);
+      el.removeEventListener("touchmove", onTMove);
+      el.removeEventListener("touchend", onTEnd);
+    };
   }, [n, plotW]);
 
   if (!n) return <p className="p-6 text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu giá để vẽ.</p>;
@@ -90,6 +164,7 @@ export function PriceChart({
   const inY = (v: number | null | undefined): v is number => v != null && v >= yMin && v <= yMax;
 
   const slot = plotW / m;
+  slotRef.current = slot;
   const cw = Math.max(1.5, Math.min(14, slot * 0.62));
   const cx = (localI: number) => M.left + slot * (localI + 0.5);
 
@@ -109,9 +184,6 @@ export function PriceChart({
     }
   }
 
-  const ema50 = computeEMA(candles, 50);
-  const ema200 = computeEMA(candles, 200);
-  const bb = computeBB(candles, 20, 2);
   const line = (vals: (number | null)[], col: string, sw = 1.2, dash?: string) => {
     const pts: string[] = [];
     for (let g = start; g < end; g++) { const v = vals[g]; if (v != null) pts.push(`${cx(g - start)},${y(v)}`); }
@@ -144,12 +216,14 @@ export function PriceChart({
   xLabels.add(m - 1);
   if (sigLocal >= 0) xLabels.add(sigLocal);
 
-  function localFromEvent(e: React.MouseEvent<SVGSVGElement>) {
+  function localFromEvent(e: React.PointerEvent<SVGSVGElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
     const vx = ((e.clientX - rect.left) / rect.width) * W;
     return clamp(Math.round((vx - M.left) / slot - 0.5), 0, m - 1);
   }
-  function onMove(e: React.MouseEvent<SVGSVGElement>) {
+  // Chỉ chuột/bút dùng hover+kéo qua pointer; cảm ứng do listener touch xử lý riêng.
+  function onMove(e: React.PointerEvent<SVGSVGElement>) {
+    if (e.pointerType === "touch") return;
     if (drag.current?.active) {
       const rect = e.currentTarget.getBoundingClientRect();
       const dCandles = Math.round((e.movementX / rect.width) * W / slot);
@@ -169,11 +243,11 @@ export function PriceChart({
     <div ref={wrapRef} className="relative w-full overflow-hidden">
       <svg
         viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá"
-        style={{ cursor: "crosshair" }}
-        onMouseMove={onMove}
-        onMouseLeave={() => { setHover(null); drag.current = null; }}
-        onMouseDown={() => { drag.current = { active: true }; }}
-        onMouseUp={() => { drag.current = null; }}
+        style={{ cursor: "crosshair", touchAction: "pan-y" }}
+        onPointerMove={onMove}
+        onPointerLeave={() => { setHover(null); drag.current = null; }}
+        onPointerDown={(e) => { if (e.pointerType !== "touch") drag.current = { active: true }; }}
+        onPointerUp={() => { drag.current = null; }}
       >
         {yTicks.map((t, k) => (
           <g key={k}>
@@ -275,13 +349,31 @@ export function PriceChart({
         </div>
       ) : null}
 
-      <div className="pointer-events-none absolute left-2 top-2">
-        {count < n ? (
-          <button onClick={() => setView({ start: 0, count: n })}
-            className="pointer-events-auto rounded border border-[var(--color-border)] bg-[var(--color-surface)]/90 px-1.5 py-0.5 text-[10px] text-[var(--color-muted)] hover:text-[var(--color-ink)]">
-            ⟳ toàn bộ ({n})
-          </button>
-        ) : null}
+      {/* Zoom −/+ (chạm được) — góc trên trái */}
+      <div className="absolute left-1.5 top-1.5 flex gap-1">
+        <button onClick={() => zoomBy(1.3)} aria-label="Thu nhỏ"
+          className="h-8 w-8 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">−</button>
+        <button onClick={() => zoomBy(0.75)} aria-label="Phóng to"
+          className="h-8 w-8 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">+</button>
+      </div>
+
+      {/* Thanh chọn khoảng xem — nút to, dễ chạm trên điện thoại */}
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+        <span className="text-[10px] text-[var(--color-muted)]">Xem:</span>
+        {[
+          { lb: "20 phiên", k: 20 },
+          { lb: "60 phiên", k: 60 },
+          { lb: "Tất cả", k: n },
+        ].map((o) => {
+          const active = o.k >= n ? count >= n : count === Math.min(o.k, n) && start === Math.max(0, n - o.k);
+          return (
+            <button key={o.lb} onClick={() => (o.k >= n ? showAll() : showRecent(o.k))}
+              className={`min-h-[32px] rounded-md border px-3 py-1 text-xs font-medium ${active ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"}`}>
+              {o.lb}
+            </button>
+          );
+        })}
+        <span className="ml-auto text-[10px] tabular text-[var(--color-muted)]">{count}/{n} phiên</span>
       </div>
 
       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] text-[var(--color-muted)]">
@@ -294,7 +386,7 @@ export function PriceChart({
         <span><span style={{ color: BUYC }}>◆</span> BUY</span>
         {reach.up3 ? <span className="text-[var(--color-buy)]">✓ đạt +3%{reach.up6 ? "/+6%" : ""}</span> : null}
         {reach.dn3 ? <span className="text-[var(--color-sell)]">▼ thủng −3%{reach.dn6 ? "/−6%" : ""}</span> : null}
-        <span className="ml-auto italic">Ctrl+lăn = zoom · kéo = pan · {count}/{n} phiên</span>
+        <span className="ml-auto italic">2 ngón = zoom · kéo ngang = trượt (máy tính: Ctrl+lăn)</span>
       </div>
     </div>
   );
