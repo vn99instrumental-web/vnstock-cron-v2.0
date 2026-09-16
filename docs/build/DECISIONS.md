@@ -99,6 +99,16 @@
 
 ---
 
+## ADR-011 — Độ vững tín hiệu BUY (D/E/F) qua view read-only, không đụng scoring
+- **Trạng thái:** ACCEPTED (2026-09-16)
+- **Bối cảnh:** Review "để mua ngắn hạn" chỉ ra list BUY thiếu 3 lớp thông tin: (D) thanh khoản — mã mỏng khó vào/ra, dễ trượt giá; (E) độ bền — mã "nháy 1 lần" khác mã giữ BUY nhiều phiên; (F) đồng thuận intraday — BUY cả ngày khác BUY chớp 1 snap. (G) %vs TC đã có từ prevClose OHLC (phủ 100% mã BUY hiện tại; ref/tc trong breakdown = null nên không có nguồn fallback khác) → coi như đã đạt.
+- **Lựa chọn cân nhắc:** (A) view SQL tổng hợp; (B) kéo trailing signals về client rồi tính TS; (C) thêm cột vào pipeline Python.
+- **Quyết định:** **(A)** cho E/F — view `v4_buy_robustness` (migration 0007) tổng hợp `buy_days_15d/total_days_15d`, `buy_snaps_today/total_snaps_today`, `first_buy_snap_vn` cho các mã BUY của run mới nhất. **D** đọc thẳng `breakdown->>'adtv_bil'` (đã có trong `v4_signals`), không cần view.
+- **Lý do:** Không reimplement scoring (chỉ COUNT/aggregate trên data đã public) → hợp Golden rule "một nguồn chân lý". View gọn hơn kéo ~3k dòng về client (B); không cần chờ pipeline (C). Grant anon SELECT như `v4_buy_expectancy` — không lộ thêm thông tin.
+- **Hệ quả:** App `/buy` thêm badge ⚡ thanh khoản (đỏ <3 tỷ, vàng <10 tỷ), "bền {n}/{N} phiên", "{n}/{N} snap · từ HH:MM"; sort mới (bền / thanh khoản); toggle "ẩn mã <10 tỷ". Ngưỡng thanh khoản (3/10 tỷ) là mặc định UI, **không** phải gate scoring. View tính "latest BUY run" nội bộ (cùng logic page.tsx) — nếu đổi cách chọn run phải sync 2 nơi.
+
+---
+
 ## ADR-006 — `run_id` deterministic (CLOSED ở E1)
 - **Trạng thái:** ✅ ACCEPTED (2026-09-12, E1)
 - **Bối cảnh:** `v4_runs` cần `run_id` (PK) nhưng ledger prediction không có field `run_id`.

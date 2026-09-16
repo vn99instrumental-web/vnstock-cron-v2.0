@@ -32,14 +32,79 @@ export interface ExpectancyRow {
   winrate_5d: number | string | null;
 }
 
-type SortKey = "score" | "chg_desc" | "chg_asc" | "ff_desc" | "ff_asc";
+// D/E/F — độ vững tín hiệu theo mã (view v4_buy_robustness).
+export interface RobustnessRow {
+  symbol: string;
+  total_days_15d: number | string | null;
+  buy_days_15d: number | string | null;
+  total_snaps_today: number | string | null;
+  buy_snaps_today: number | string | null;
+  first_buy_snap_vn: string | null;
+}
+
+type SortKey = "score" | "chg_desc" | "chg_asc" | "ff_desc" | "ff_asc" | "adtv_desc" | "persist_desc";
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "score", label: "Score ↓" },
+  { key: "persist_desc", label: "Bền tín hiệu ↓" },
+  { key: "adtv_desc", label: "Thanh khoản ↓" },
   { key: "chg_desc", label: "% tăng nhiều ↓" },
   { key: "chg_asc", label: "% giảm nhiều ↑" },
   { key: "ff_desc", label: "Khối ngoại MUA ↓" },
   { key: "ff_asc", label: "Khối ngoại BÁN ↑" },
 ];
+
+/** ADTV (thanh khoản, tỷ VND) từ breakdown.adtv_bil. */
+function adtvOf(s: BuySignal): number | null {
+  const v = Number((s.breakdown ?? {}).adtv_bil);
+  return Number.isFinite(v) ? v : null;
+}
+
+/** Phân loại thanh khoản cho mua ngắn hạn (tỷ VND/phiên). */
+function liqTier(adtv: number | null): { label: string; color: string; warn: boolean } | null {
+  if (adtv == null) return { label: "KL ?", color: "var(--color-muted)", warn: false };
+  if (adtv < 3) return { label: `${adtv.toFixed(1)} tỷ · rất mỏng`, color: "var(--color-sell)", warn: true };
+  if (adtv < 10) return { label: `${adtv.toFixed(1)} tỷ · mỏng`, color: "#ca8a04", warn: true };
+  return { label: `${adtv.toFixed(adtv < 100 ? 1 : 0)} tỷ`, color: "var(--color-buy)", warn: false };
+}
+
+/** Badge thanh khoản (D). */
+function LiqBadge({ adtv }: { adtv: number | null }) {
+  const t = liqTier(adtv);
+  if (!t) return null;
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium"
+      style={{ color: t.color, borderColor: t.color }}
+      title="Thanh khoản TB (giá trị khớp/phiên). Dưới ~10 tỷ khó vào/ra nhanh, dễ trượt giá khi mua ngắn hạn."
+    >
+      ⚡ {t.label}
+    </span>
+  );
+}
+
+/** Màu theo tỷ lệ giữ BUY: cao = xanh, thấp = xám/vàng. */
+function robColor(frac: number): string {
+  if (frac >= 0.8) return "var(--color-buy)";
+  if (frac >= 0.5) return "#ca8a04";
+  return "var(--color-muted)";
+}
+
+/** E — độ bền qua phiên. Badge gọn cho list. */
+function PersistChip({ r }: { r: RobustnessRow | undefined }) {
+  if (!r) return null;
+  const bd = Number(r.buy_days_15d) || 0;
+  const td = Number(r.total_days_15d) || 0;
+  if (!td) return null;
+  return (
+    <span
+      className="tabular text-[10px] font-medium"
+      style={{ color: robColor(bd / td) }}
+      title={`Giữ tín hiệu BUY ${bd}/${td} phiên gần đây. Càng nhiều phiên liên tục càng bền, ít "nháy 1 lần".`}
+    >
+      bền {bd}/{td}
+    </span>
+  );
+}
 
 /** VND → "x.x tỷ" / "x triệu". */
 function fmtBil(v: number | null): string {
@@ -81,16 +146,22 @@ function agoText(min: number): string {
 export function BuyBoard({
   signals,
   expectancy = [],
+  robustness = [],
   runId,
   runStartedAt = null,
   newestRunId = null,
 }: {
   signals: BuySignal[];
   expectancy?: ExpectancyRow[];
+  robustness?: RobustnessRow[];
   runId?: string;
   runStartedAt?: string | null;
   newestRunId?: string | null;
 }) {
+  const robMap = useMemo(
+    () => new Map(robustness.map((r) => [r.symbol, r])),
+    [robustness],
+  );
   const [sel, setSel] = useState<BuySignal | null>(signals[0] ?? null);
   const [candles, setCandles] = useState<Candle[]>([]);
   const [markers, setMarkers] = useState<BuyMarker[]>([]);
@@ -98,6 +169,7 @@ export function BuyBoard({
   const [q, setQ] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [showList, setShowList] = useState(true);
+  const [hideThin, setHideThin] = useState(false); // D — ẩn mã thanh khoản < 10 tỷ
 
   useEffect(() => {
     if (!sel) return;
@@ -169,9 +241,18 @@ export function BuyBoard({
     const v = Number((s.breakdown ?? {}).ff_intra_net);
     return Number.isFinite(v) ? v : null;
   };
+  // E+F gộp thành 1 điểm bền để sort: ưu tiên số phiên giữ BUY, rồi số snap hôm nay.
+  const persistScore = (s: BuySignal): number | null => {
+    const r = robMap.get(s.symbol);
+    if (!r) return null;
+    const days = Number(r.buy_days_15d) || 0;
+    const snaps = Number(r.buy_snaps_today) || 0;
+    return days * 10 + snaps;
+  };
   const displayed = useMemo(() => {
     const qq = q.trim().toUpperCase();
-    const arr = qq ? signals.filter((s) => s.symbol.includes(qq)) : [...signals];
+    let arr = qq ? signals.filter((s) => s.symbol.includes(qq)) : [...signals];
+    if (hideThin) arr = arr.filter((s) => { const a = adtvOf(s); return a == null || a >= 10; });
     const cmpNull = (a: number | null, b: number | null, dir: 1 | -1) => {
       if (a == null && b == null) return 0;
       if (a == null) return 1; // null xuống cuối
@@ -184,11 +265,14 @@ export function BuyBoard({
         case "chg_asc": return cmpNull(a.changePct ?? null, b.changePct ?? null, 1);
         case "ff_desc": return cmpNull(ffNum(a), ffNum(b), -1);
         case "ff_asc": return cmpNull(ffNum(a), ffNum(b), 1);
+        case "adtv_desc": return cmpNull(adtvOf(a), adtvOf(b), -1);
+        case "persist_desc": return cmpNull(persistScore(a), persistScore(b), -1);
         default: return cmpNull(a.score_trade ?? null, b.score_trade ?? null, -1);
       }
     });
     return arr;
-  }, [signals, q, sortKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signals, q, sortKey, hideThin, robMap]);
 
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
   const b = sel?.breakdown ?? {};
@@ -266,8 +350,12 @@ export function BuyBoard({
             ))}
           </select>
         </div>
+        <label className="flex items-center gap-1.5 border-b border-[var(--color-border)] px-2.5 py-1 text-[10px] text-[var(--color-muted)] cursor-pointer">
+          <input type="checkbox" checked={hideThin} onChange={(e) => setHideThin(e.target.checked)} className="h-3 w-3" />
+          Ẩn mã thanh khoản &lt; 10 tỷ/phiên
+        </label>
         <div className="px-2.5 py-1 text-[10px] text-[var(--color-muted)]">
-          {displayed.length}/{signals.length} mã · %so giá TC · KN = khối ngoại ròng
+          {displayed.length}/{signals.length} mã · %so giá TC · ⚡ thanh khoản · bền = số phiên giữ BUY · KN = khối ngoại ròng
         </div>
         <ul className="max-h-[70vh] overflow-y-auto">
           {displayed.map((s) => {
@@ -294,6 +382,10 @@ export function BuyBoard({
                     <span className="ml-auto" title="Khối ngoại ròng phiên (mua−bán)" style={{ color: ff == null ? "var(--color-muted)" : ff >= 0 ? "var(--color-buy)" : "var(--color-sell)" }}>
                       KN {fmtBil(ff)}
                     </span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <LiqBadge adtv={adtvOf(s)} />
+                    <PersistChip r={robMap.get(s.symbol)} />
                   </span>
                 </button>
               </li>
@@ -335,6 +427,40 @@ export function BuyBoard({
                 ) : null}
               </div>
             </div>
+
+            {/* D/E/F — độ vững tín hiệu: thanh khoản · độ bền qua phiên · đồng thuận intraday */}
+            {(() => {
+              const r = robMap.get(sel.symbol);
+              const adtv = adtvOf(sel);
+              const bd = r ? Number(r.buy_days_15d) || 0 : 0;
+              const td = r ? Number(r.total_days_15d) || 0 : 0;
+              const bs = r ? Number(r.buy_snaps_today) || 0 : 0;
+              const ts = r ? Number(r.total_snaps_today) || 0 : 0;
+              return (
+                <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-[var(--color-border)] px-3 py-1.5 text-[11px]">
+                  <span className="font-medium">Độ vững tín hiệu:</span>
+                  <span className="flex items-center gap-1.5">
+                    Thanh khoản <LiqBadge adtv={adtv} />
+                  </span>
+                  {td ? (
+                    <span title="Số phiên (ngày) mã giữ tín hiệu BUY trong ~15 phiên gần nhất.">
+                      Bền qua phiên{" "}
+                      <b style={{ color: robColor(bd / td) }}>{bd}/{td} phiên</b>
+                    </span>
+                  ) : null}
+                  {ts ? (
+                    <span title="Số lần chạy intraday hôm nay mã vẫn là BUY / tổng số lần chạy.">
+                      Đồng thuận hôm nay{" "}
+                      <b style={{ color: robColor(bs / ts) }}>{bs}/{ts} snap</b>
+                      {r?.first_buy_snap_vn ? <span className="text-[var(--color-muted)]"> · từ {r.first_buy_snap_vn}</span> : null}
+                    </span>
+                  ) : null}
+                  <span className="ml-auto italic text-[var(--color-muted)]">
+                    {adtv != null && adtv < 10 ? "⚠ thanh khoản mỏng — vào/ra dễ trượt giá" : "bền + đồng thuận cao ⇒ tín hiệu đáng tin hơn"}
+                  </span>
+                </div>
+              );
+            })()}
 
             {/* A/B — kỳ vọng lịch sử + gợi ý thoát */}
             {exp ? (
