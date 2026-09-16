@@ -7,7 +7,7 @@ import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-ch
 import { DecisionBadge } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import {
-  factorViews, signalViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
+  factorGroupViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
 } from "@/lib/interpret";
 
 export interface BuySignal {
@@ -276,8 +276,7 @@ export function BuyBoard({
 
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
   const b = sel?.breakdown ?? {};
-  const factors = useMemo(() => factorViews(b), [b]);
-  const sigs = useMemo(() => signalViews(b), [b]);
+  const groups = useMemo(() => factorGroupViews(b), [b]);
   const buyDays = new Set(markers.map((m) => m.date)).size;
 
   // C — độ tươi dữ liệu.
@@ -492,56 +491,43 @@ export function BuyBoard({
                   <IntradayStrip candle={entryCandle} />
                 </div>
 
-                {/* PHÂN TÍCH KỸ THUẬT (dễ hiểu) */}
-                <p className="mt-3 border-t border-[var(--color-border)] pt-2 text-[10px] italic text-[var(--color-muted)]">
-                  Đã vẽ trên chart: EMA50/EMA200, Bollinger(20,2), Entry ±3/±6%. Các chỉ báo dao động
-                  (Williams %R, RSI, order flow…) không cùng thang giá nên diễn giải bằng chữ bên dưới.
-                </p>
-                <div className="grid gap-4 pt-2 lg:grid-cols-2">
-                  <div>
-                    <h3 className="mb-1.5 text-xs font-semibold">6 nhóm yếu tố</h3>
-                    <div className="flex flex-col gap-1">
-                      {factors.map((f) => (
-                        <div key={f.label} className="flex items-center gap-2 text-[11px]">
-                          <span className="w-40 shrink-0 truncate text-[var(--color-muted)]">{f.label}</span>
-                          <div className="relative h-2 flex-1 rounded bg-black/5 dark:bg-white/10">
-                            <div
-                              className="absolute top-0 h-2 rounded"
-                              style={{
-                                backgroundColor: DIR_COLOR[f.dir],
-                                left: f.norm >= 0 ? "50%" : `${50 + f.norm * 50}%`,
-                                width: `${Math.min(50, Math.abs(f.norm) * 50)}%`,
-                              }}
-                            />
+                {/* 6 NHÓM YẾU TỐ → chỉ báo thành viên + điểm + hướng + lý do */}
+                <div className="mt-3 border-t border-[var(--color-border)] pt-2">
+                  <h3 className="mb-0.5 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
+                  <p className="mb-2 text-[10px] italic text-[var(--color-muted)]">
+                    Mỗi nhóm gộp nhiều chỉ báo. Thanh = mức nghiêng của cả nhóm (phải=MUA, trái=BÁN).
+                    Điểm chỉ báo dạng <b>+x/±span</b>: dương→nghiêng MUA, âm→nghiêng BÁN. Con số chính thức từ pipeline Python.
+                  </p>
+                  <div className="grid gap-2 lg:grid-cols-2">
+                    {groups.map((g) => (
+                      <div key={g.key} className="rounded-md border border-[var(--color-border)] p-2">
+                        {/* header nhóm: tên + thanh nghiêng + nhãn MUA/BÁN */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-semibold">{g.label}</span>
+                          <div className="relative ml-auto h-2 w-24 shrink-0 rounded bg-black/5 dark:bg-white/10">
+                            <div className="absolute top-0 h-2 rounded" style={{ backgroundColor: DIR_COLOR[g.dir], left: g.norm >= 0 ? "50%" : `${50 + g.norm * 50}%`, width: `${Math.min(50, Math.abs(g.norm) * 50)}%` }} />
                             <div className="absolute left-1/2 top-0 h-2 w-px bg-[var(--color-border)]" />
                           </div>
-                          <span className="tabular w-24 shrink-0 text-right" style={{ color: DIR_COLOR[f.dir] }}>
-                            {DIR_LABEL[f.dir]}
-                          </span>
+                          <span className="tabular w-16 shrink-0 text-right text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
                         </div>
-                      ))}
-                    </div>
-                    <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Thanh phải = nghiêng mua, trái = nghiêng bán (độ dài = độ mạnh).</p>
-                  </div>
-
-                  <div>
-                    <h3 className="mb-1.5 text-xs font-semibold">Tín hiệu chi tiết (diễn giải)</h3>
-                    {sigs.length ? (
-                      <ul className="flex flex-col gap-1">
-                        {sigs.slice(0, 10).map((s) => (
-                          <li key={s.name} className="flex items-start gap-2 text-[11px]">
-                            <span className="tabular w-6 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[s.dir] }}>
-                              {s.score > 0 ? "+" : ""}{s.score}
-                            </span>
-                            <span className="shrink-0 font-medium">{s.name}</span>
-                            <span className="text-[var(--color-muted)]">— {s.text}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-[11px] text-[var(--color-muted)]">Không có tín hiệu nổi bật.</p>
-                    )}
-                    <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Diễn giải theo dấu điểm số factor — con số chính thức từ pipeline Python.</p>
+                        {/* chỉ báo thành viên */}
+                        {g.members.length ? (
+                          <ul className="mt-1.5 flex flex-col gap-1">
+                            {g.members.map((m) => (
+                              <li key={m.key} className="flex items-start gap-1.5 text-[11px]">
+                                <span className="tabular w-11 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>
+                                  {m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span>
+                                </span>
+                                <span className="shrink-0 font-medium">{m.name}</span>
+                                <span className="text-[var(--color-muted)]">— {m.text}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Nhóm này không có chỉ báo nổi bật.</p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </>

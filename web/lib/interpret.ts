@@ -108,6 +108,61 @@ export const GROUP_LABEL: Record<string, string> = {
 };
 export const GROUP_ORDER = ["signal", "factor_trade", "factor_hold", "rank", "flow", "other"];
 
+// Span (điểm tối đa ±) mỗi chỉ báo — theo utils/v2f_registry.py (SIGNALS + V4_EXTRA).
+// Chỉ dùng để diễn giải "điểm X / ±span"; KHÔNG phải trọng số/gate (không hardcode weight).
+export const SIGNAL_SPAN: Record<string, number> = {
+  s_willr_mr: 6, s_bb_mr: 5, s_overext_ema: 3, s_rs_reversal: 4, s_deep_dd: 4,
+  s_dist_52w: 4, s_trend_st: 4, s_vol_ratio_h: 3,
+  s_ff_net: 6, s_of_phasefix: 4, s_prop_5d: 3, s_insider: 2, s_depth_wall: 3,
+  s_fund_core: 8, s_cf_core: 3, s_growth_core: 5, s_mkt_context: 2,
+};
+
+// 6 nhóm yếu tố (FACTORS) → chỉ báo thành viên (theo registry pipeline). normKey = điểm
+// tổng hợp nhóm đã chuẩn hoá (−1..1) đọc ĐỘNG từ breakdown; membership khá ổn định.
+export const FACTOR_GROUPS: {
+  key: string; label: string; normKey: string; members: string[]; desc: string;
+}[] = [
+  { key: "mean_reversion", label: "Hồi phục (mean reversion)", normKey: "trade_mean_reversion_norm",
+    members: ["s_willr_mr", "s_bb_mr", "s_overext_ema", "s_rs_reversal", "s_deep_dd"],
+    desc: "Giá bị bán quá đà kỳ vọng bật lại — nhóm mạnh nhất cho lệnh ngắn hạn." },
+  { key: "breakout", label: "Bứt phá / xu hướng (breakout)", normKey: "trade_breakout_norm",
+    members: ["s_dist_52w", "s_trend_st", "s_vol_ratio_h"],
+    desc: "Sức mạnh xu hướng, khoảng cách đỉnh 52 tuần, volume xác nhận đà." },
+  { key: "flow", label: "Dòng tiền (flow)", normKey: "trade_flow_norm",
+    members: ["s_ff_net", "s_of_phasefix", "s_prop_5d", "s_insider", "s_depth_wall"],
+    desc: "Khối ngoại, tự doanh, order flow, tường mua/bán — tiền thực đang vào/ra." },
+  { key: "fundamental", label: "Cơ bản (fundamental)", normKey: "trade_fundamental_norm",
+    members: ["s_fund_core", "s_cf_core"],
+    desc: "Định giá, lợi nhuận, dòng tiền hoạt động doanh nghiệp." },
+  { key: "growth", label: "Tăng trưởng (growth)", normKey: "trade_growth_norm",
+    members: ["s_growth_core"], desc: "Tốc độ tăng trưởng doanh thu/lợi nhuận." },
+  { key: "context", label: "Bối cảnh thị trường (context)", normKey: "trade_context_norm",
+    members: ["s_mkt_context"], desc: "Trạng thái thị trường chung." },
+];
+
+export interface GroupMemberView { key: string; name: string; score: number; span: number; dir: Dir; text: string }
+export interface FactorGroupView { key: string; label: string; desc: string; norm: number; dir: Dir; members: GroupMemberView[] }
+
+/** Diễn giải 6 nhóm + chỉ báo thành viên (điểm, hướng, lý do) từ breakdown. */
+export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] {
+  return FACTOR_GROUPS.map((g) => {
+    const norm = num(b[g.normKey]) ?? 0;
+    const members: GroupMemberView[] = [];
+    for (const k of g.members) {
+      const score = num(b[k]);
+      if (score == null) continue; // chỉ báo không có trong breakdown → bỏ
+      const meta = SIGNAL_META.find((s) => s.key === k);
+      const dir = dirOf(score);
+      members.push({
+        key: k, name: meta?.name ?? k, score, span: SIGNAL_SPAN[k] ?? 0, dir,
+        text: dir === "buy" ? (meta?.buy ?? "") : dir === "sell" ? (meta?.sell ?? "") : "trung tính",
+      });
+    }
+    members.sort((a, z) => Math.abs(z.score) - Math.abs(a.score));
+    return { key: g.key, label: g.label, desc: g.desc, norm, dir: dirOf(norm), members };
+  });
+}
+
 export const CONFIDENCE_LABEL: Record<string, { text: string; color: string }> = {
   HIGH: { text: "Cao", color: "var(--color-buy)" },
   MEDIUM: { text: "Trung bình", color: "#ca8a04" },
