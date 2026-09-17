@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-/** Owner đổi chế độ xem app: Công khai ↔ Yêu cầu đăng nhập. Ghi qua /api/settings. */
+/** Owner đổi chế độ xem app: Công khai ↔ Yêu cầu đăng nhập.
+ *  Ghi TRỰC TIẾP qua session đã đăng nhập (RLS chỉ cho owner UPDATE) — ổn định
+ *  hơn route server, không cần service_role. */
 export function VisibilityToggle({ initial }: { initial: boolean }) {
   const [requireLogin, setRequireLogin] = useState(initial);
   const [saving, setSaving] = useState(false);
@@ -13,20 +16,19 @@ export function VisibilityToggle({ initial }: { initial: boolean }) {
     setSaving(true);
     setMsg(null);
     try {
-      const res = await fetch("/api/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ require_login: next }),
-      });
-      const j = await res.json();
-      if (!res.ok) {
-        setMsg("Lỗi: " + (j?.error ?? res.status));
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("app_settings")
+        .update({ require_login: next, updated_at: new Date().toISOString() })
+        .eq("id", true);
+      if (error) {
+        setMsg("Lỗi lưu: " + error.message + " — cần đăng nhập bằng tài khoản owner.");
       } else {
         setRequireLogin(next);
         setMsg("Đã lưu ✓");
       }
     } catch (e) {
-      setMsg("Lỗi mạng: " + String(e));
+      setMsg("Lỗi: " + String(e));
     } finally {
       setSaving(false);
     }
