@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/ui";
 import { ConfigEditor } from "@/components/config-editor";
+import { VisibilityToggle } from "@/components/visibility-toggle";
 import { createClient, getUser, isOwner } from "@/lib/supabase/server";
 import { DEFAULT_CONFIG } from "@/lib/scoring/default-config";
 import type { ScoringConfig } from "@/lib/scoring/simulate";
@@ -20,6 +21,19 @@ export default async function ConfigPage() {
     .limit(1)
     .maybeSingle();
 
+  // Cài đặt quyền xem app (fail-open: lỗi → coi như public).
+  let requireLogin = false;
+  try {
+    const { data: st } = await supabase
+      .from("app_settings")
+      .select("require_login")
+      .eq("id", true)
+      .maybeSingle();
+    requireLogin = !!st?.require_login;
+  } catch {
+    requireLogin = false;
+  }
+
   const initial: ScoringConfig = data
     ? {
         version_label: data.version_label,
@@ -37,6 +51,7 @@ export default async function ConfigPage() {
         title="Cấu hình chấm điểm"
         desc="Đề xuất weights / gates / thresholds → mô phỏng → promote. One-change-per-cycle · shadow-first."
       />
+      <VisibilityToggle initial={requireLogin} />
       <ConfigEditor initialConfig={initial} />
     </>
   );
