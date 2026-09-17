@@ -49,7 +49,7 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-4 pb-24 md:px-5 md:py-5 md:pb-5">{children}</main>
+      <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-2 pb-24 md:px-5 md:py-2 md:pb-5">{children}</main>
       <MobileNav isOwner={owner} />
     </div>
   );

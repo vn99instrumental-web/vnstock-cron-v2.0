@@ -1,6 +1,8 @@
 // Dựng dữ liệu chart cho E7 từ giá snap trong v4_signals (ADR-010).
 // ⚠️ Nến dựng từ giá snap (≤~7 điểm/ngày), KHÔNG phải tick OHLC đầy đủ.
 
+import { hmVN } from "./format";
+
 export interface PricePoint {
   signal_date: string;
   snap_time: string; // "HH:MM" hoặc timestamptz
@@ -14,13 +16,6 @@ export interface Candle {
   low: number;
   close: number;
   snaps: { t: string; price: number }[]; // điểm intraday trong ngày
-}
-
-function hm(ts: string): string {
-  const m = String(ts).match(/T(\d{2}:\d{2})/);
-  if (m) return m[1];
-  const m2 = String(ts).match(/^(\d{2}:\d{2})/);
-  return m2 ? m2[1] : String(ts);
 }
 
 /** Gom PricePoint theo ngày → nến daily (O=snap đầu, C=snap cuối, H=max, L=min). */
@@ -42,7 +37,7 @@ export function buildCandles(points: PricePoint[]): Candle[] {
       close: prices[prices.length - 1],
       high: Math.max(...prices),
       low: Math.min(...prices),
-      snaps: day.map((d) => ({ t: hm(d.snap_time), price: d.price })),
+      snaps: day.map((d) => ({ t: hmVN(d.snap_time), price: d.price })),
     });
   }
   return candles;
