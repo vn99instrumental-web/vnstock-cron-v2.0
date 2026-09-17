@@ -260,12 +260,12 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Tìm mã…"
-          className="min-h-[38px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-sm uppercase sm:max-w-[200px]"
+          className="min-h-[30px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase sm:max-w-[200px]"
         />
-        <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} className="min-h-[38px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px]">
+        <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]">
           {SORT_OPTS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
         </select>
-        <label className="flex min-h-[38px] cursor-pointer items-center gap-1.5 text-[13px] text-[var(--color-muted)]">
+        <label className="flex min-h-[30px] cursor-pointer items-center gap-1.5 text-[12px] text-[var(--color-muted)]">
           <input type="checkbox" checked={buyOnly} onChange={(e) => setBuyOnly(e.target.checked)} className="h-4 w-4" />
           Chỉ BUY
         </label>
