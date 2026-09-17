@@ -342,12 +342,12 @@ export function BuyBoard({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Tìm mã…"
-            className="min-h-[36px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-sm uppercase"
+            className="min-h-[30px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase"
           />
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="min-h-[36px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[11px]"
+            className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]"
             title="Sắp xếp"
           >
             {SORT_OPTIONS.map((o) => (

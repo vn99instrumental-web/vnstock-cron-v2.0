@@ -46,7 +46,7 @@ function TopItem({ l }: { l: NavLink }) {
       prefetch
       aria-current={active ? "page" : undefined}
       className={[
-        "flex min-h-[38px] shrink-0 items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors active:scale-[0.97]",
+        "flex min-h-[32px] shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors active:scale-[0.97]",
         active
           ? "bg-[var(--color-accent)] text-white"
           : "text-[var(--color-muted)] hover:bg-black/5 hover:text-[var(--color-ink)] active:bg-black/10 dark:hover:bg-white/5 dark:active:bg-white/10",

@@ -21,7 +21,7 @@ export async function VersionBadge() {
 
   return (
     <span
-      className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-xs text-[var(--color-muted)]"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-0.5 text-[11px] text-[var(--color-muted)]"
       title="Phiên bản chấm điểm đọc động từ dữ liệu"
     >
       <span className="font-mono text-[var(--color-ink)]">scoring {sv}</span>

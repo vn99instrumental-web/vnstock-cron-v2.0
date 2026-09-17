@@ -17,10 +17,10 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen flex-col">
       {/* Top bar */}
       <header className="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-3 py-2 md:px-5">
-          <Link href="/today" className="flex shrink-0 items-center gap-2">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-[var(--color-accent)] text-xs font-bold text-white">V</span>
-            <span className="hidden text-sm font-semibold sm:inline">VNStock Signals</span>
+        <div className="mx-auto flex max-w-[1400px] items-center gap-2 px-3 py-1.5 md:px-5">
+          <Link href="/today" className="flex shrink-0 items-center gap-1.5">
+            <span className="grid h-5 w-5 place-items-center rounded-md bg-[var(--color-accent)] text-[10px] font-bold text-white">V</span>
+            <span className="hidden text-[13px] font-semibold sm:inline">VNStock Signals</span>
           </Link>
 
           {/* Nav ngang chỉ hiện desktop; mobile dùng bottom tab bar */}
