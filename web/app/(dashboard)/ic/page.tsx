@@ -1,7 +1,29 @@
 import { PageHeader, EmptyState } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
+import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 
 export const dynamic = "force-dynamic";
+
+/** Ý nghĩa từng nhân tố (bám định nghĩa pipeline: FACTOR_GROUPS). */
+const FACTOR_INFO: Record<string, { label: string; desc: string; members: string[] }> = {
+  score_trade: {
+    label: "Điểm tổng (score_trade)",
+    desc: "Gộp tất cả các nhóm nhân tố thành 1 điểm cuối — chất lượng của tín hiệu MUA nói chung. IC hàng này = độ tin cậy của quyết định.",
+    members: [],
+  },
+  ...Object.fromEntries(
+    FACTOR_GROUPS.map((g) => [g.key, { label: g.label, desc: g.desc, members: g.members.map(signalName) }]),
+  ),
+};
+
+/** Diễn giải độ mạnh + hướng của một ô IC (dùng cho tooltip). */
+function icMeaning(ic: number | null): { strength: string; dir: string } {
+  if (ic === null || !Number.isFinite(ic)) return { strength: "chưa có dữ liệu", dir: "" };
+  const a = Math.abs(ic);
+  const strength = a < 0.02 ? "gần như không dự báo" : a < 0.05 ? "có tín hiệu" : a < 0.1 ? "tốt" : "rất mạnh";
+  const dir = ic > 0 ? "thuận (điểm cao ⇒ lời cao)" : ic < 0 ? "nghịch (điểm cao ⇒ lỗ)" : "trung tính";
+  return { strength, dir };
+}
 
 const HORIZONS = [1, 3, 5, 10];
 const FACTOR_ORDER = [
@@ -118,6 +140,27 @@ export default async function ICPage() {
         </div>
       </details>
 
+      <details className="card mb-6 p-3 text-[13px]">
+        <summary className="cursor-pointer select-none text-sm font-semibold">📖 Ý nghĩa từng nhân tố (rê chuột lên tên hàng / từng ô để xem nhanh)</summary>
+        <div className="mt-2 flex flex-col gap-2.5">
+          {FACTOR_ORDER.filter((k) => FACTOR_INFO[k]).map((k) => {
+            const info = FACTOR_INFO[k];
+            return (
+              <div key={k} className="border-l-2 border-[var(--color-border)] pl-2.5">
+                <div className="font-mono text-[12px] font-semibold">{k}</div>
+                <div className="text-[13px] font-medium">{info.label}</div>
+                <div className="text-[12px] text-[var(--color-muted)]">{info.desc}</div>
+                {info.members.length ? (
+                  <div className="mt-0.5 text-[11px] text-[var(--color-muted)]">
+                    <span className="font-medium">Chỉ báo thành viên:</span> {info.members.join(" · ")}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </details>
+
       {[...byVer.entries()].map(([version, fm]) => {
         const factors = FACTOR_ORDER.filter((f) => fm.has(f)).concat(
           [...fm.keys()].filter((f) => !FACTOR_ORDER.includes(f)),
@@ -138,17 +181,37 @@ export default async function ICPage() {
                 <tbody>
                   {factors.map((f) => (
                     <tr key={f} className="border-t border-[var(--color-border)]">
-                      <td className="px-3 py-2 font-medium">{f}</td>
+                      <td
+                        className="cursor-help px-3 py-2 font-medium"
+                        title={
+                          FACTOR_INFO[f]
+                            ? `${FACTOR_INFO[f].label}\n${FACTOR_INFO[f].desc}` +
+                              (FACTOR_INFO[f].members.length ? `\n\nGồm: ${FACTOR_INFO[f].members.join(", ")}` : "")
+                            : f
+                        }
+                      >
+                        {f}
+                      </td>
                       {HORIZONS.map((h) => {
                         const r = fm.get(f)?.get(h);
                         const ic = r?.ic ?? null;
                         const { bg, fg } = icCell(ic);
+                        const info = FACTOR_INFO[f];
+                        const m = icMeaning(ic);
+                        const title = r
+                          ? `${info?.label ?? f} · sau ${h} phiên\n` +
+                            (ic === null
+                              ? "Chưa đủ dữ liệu tính IC"
+                              : `IC ${(ic >= 0 ? "+" : "") + ic.toFixed(3)} — ${m.strength}, ${m.dir}`) +
+                            `\nn = ${r.n ?? "?"} quan sát` +
+                            (info?.desc ? `\n\n${info.desc}` : "")
+                          : `${info?.label ?? f} · sau ${h} phiên — chưa có dữ liệu`;
                         return (
                           <td
                             key={h}
-                            className="tabular px-3 py-2 text-center"
+                            className="tabular cursor-help px-3 py-2 text-center"
                             style={{ backgroundColor: bg, color: fg }}
-                            title={r ? `n=${r.n}` : "—"}
+                            title={title}
                           >
                             {ic === null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
                           </td>
