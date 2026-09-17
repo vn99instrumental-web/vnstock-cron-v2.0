@@ -10,7 +10,7 @@ import { computeBB, computeEMA } from "@/lib/chart";
 // KHÔNG còn TP/SL (thay bằng ±3/6%). ◆ hồng = điểm tín hiệu BUY.
 
 const W = 820;
-const H = 268;
+const H = 208;
 const M = { top: 12, right: 66, bottom: 30, left: 46 };
 const MIN_VIS = 5;
 

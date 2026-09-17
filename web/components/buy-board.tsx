@@ -318,9 +318,9 @@ export function BuyBoard({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       {/* C — thanh độ tươi dữ liệu */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-[11px]">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-1 text-[11px]">
         <span className="font-medium">Run {runId ?? "—"}</span>
         {fresh ? (
           <span className={fresh.stale ? "font-medium text-[var(--color-sell)]" : "text-[var(--color-muted)]"}>
@@ -410,14 +410,14 @@ export function BuyBoard({
       </div>
 
       {/* DETAIL phải */}
-      <div className="card p-3">
+      <div className="card p-2">
         {sel && levels ? (
           <>
-            <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
               <button
                 onClick={() => setShowList((v) => !v)}
                 title={showList ? "Ẩn danh sách (mở rộng chart)" : "Hiện danh sách"}
-                className="inline-flex min-h-[34px] items-center rounded-md border border-[var(--color-border)] px-3 py-1 text-xs font-medium text-[var(--color-muted)] active:bg-black/5 hover:text-[var(--color-ink)] dark:active:bg-white/5"
+                className="inline-flex min-h-[30px] items-center rounded-md border border-[var(--color-border)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-muted)] active:bg-black/5 hover:text-[var(--color-ink)] dark:active:bg-white/5"
               >
                 {showList ? "‹ Ẩn DS" : "☰ DS"}
               </button>
@@ -449,7 +449,7 @@ export function BuyBoard({
               const bs = r ? Number(r.buy_snaps_today) || 0 : 0;
               const ts = r ? Number(r.total_snaps_today) || 0 : 0;
               return (
-                <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-[var(--color-border)] px-3 py-1.5 text-[11px]">
+                <div className="mb-1.5 flex flex-wrap items-center gap-x-4 gap-y-0.5 rounded-md border border-[var(--color-border)] px-2.5 py-1 text-[11px]">
                   <span className="font-medium">Độ vững tín hiệu:</span>
                   <span className="flex items-center gap-1.5">
                     Thanh khoản <LiqBadge adtv={adtv} />
@@ -476,7 +476,7 @@ export function BuyBoard({
 
             {/* A/B — kỳ vọng lịch sử + gợi ý thoát */}
             {exp ? (
-              <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-[var(--color-border)] bg-black/[0.02] px-3 py-1.5 text-[11px] dark:bg-white/[0.03]">
+              <div className="mb-1.5 flex flex-wrap items-center gap-x-4 gap-y-0.5 rounded-md border border-[var(--color-border)] bg-black/[0.02] px-2.5 py-1 text-[11px] dark:bg-white/[0.03]">
                 <span className="font-medium">Kỳ vọng lịch sử (BUY·{exp.confidence}, n={exp.n}):</span>
                 <span>Win 5 phiên{" "}
                   <b style={{ color: (num(exp.winrate_5d) ?? 0) >= 55 ? "var(--color-buy)" : (num(exp.winrate_5d) ?? 0) < 50 ? "var(--color-sell)" : "#ca8a04" }}>
@@ -488,7 +488,7 @@ export function BuyBoard({
                 <span className="ml-auto">Gợi ý thoát: chốt quanh <b className="text-[var(--color-buy)]">+{num(exp.avg_mfe) != null ? Math.abs(num(exp.avg_mfe)!).toFixed(1) : "3"}%</b>, cắt quanh <b className="text-[var(--color-sell)]">{num(exp.avg_mae) != null ? num(exp.avg_mae)!.toFixed(1) : "-3"}%</b></span>
               </div>
             ) : (
-              <div className="mb-2 rounded-md border border-dashed border-[var(--color-border)] px-3 py-1.5 text-[11px] text-[var(--color-muted)]">
+              <div className="mb-1.5 rounded-md border border-dashed border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)]">
                 Chưa đủ mẫu lịch sử cho {sel.decision}·{String(b.confidence ?? "")} để ước lượng kỳ vọng.
               </div>
             )}
@@ -498,7 +498,7 @@ export function BuyBoard({
               <div className="relative">
                 <div className={loading ? "pointer-events-none opacity-40 transition-opacity duration-200" : "transition-opacity duration-200"}>
                   <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
-                  <div className="mt-3">
+                  <div className="mt-1.5">
                     <IntradayStrip candle={entryCandle} />
                   </div>
                 </div>
@@ -518,11 +518,11 @@ export function BuyBoard({
             )}
 
             {/* 6 NHÓM YẾU TỐ — từ breakdown, hiện NGAY (không chờ tải giá) */}
-            <div className="mt-3 border-t border-[var(--color-border)] pt-2">
-                  <h3 className="mb-2 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
-                  <div className="grid gap-2 lg:grid-cols-2">
+            <div className="mt-2 border-t border-[var(--color-border)] pt-1.5">
+                  <h3 className="mb-1.5 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
+                  <div className="grid gap-1.5 lg:grid-cols-2">
                     {groups.map((g) => (
-                      <div key={g.key} className="rounded-md border border-[var(--color-border)] p-2">
+                      <div key={g.key} className="rounded-md border border-[var(--color-border)] p-1.5">
                         {/* header nhóm: tên + tổng điểm + thanh nghiêng + nhãn MUA/BÁN */}
                         <div className="flex items-center gap-2">
                           <span className="text-[11px] font-semibold">{g.label}</span>
@@ -537,9 +537,9 @@ export function BuyBoard({
                         </div>
                         {/* chỉ báo thành viên */}
                         {g.members.length ? (
-                          <ul className="mt-1.5 flex flex-col gap-1">
+                          <ul className="mt-1 flex flex-col gap-0.5">
                             {g.members.map((m) => (
-                              <li key={m.key} className="flex items-start gap-1.5 text-[11px]">
+                              <li key={m.key} className="flex items-start gap-1.5 text-[11px] leading-tight">
                                 <span className="tabular w-11 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>
                                   {m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span>
                                 </span>
