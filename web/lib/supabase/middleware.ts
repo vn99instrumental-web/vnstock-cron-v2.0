@@ -65,6 +65,29 @@ export async function updateSession(request: NextRequest) {
     if (isProtected(pathname) && !isOwner) {
       return redirectToLogin(request);
     }
+
+    // Cài đặt owner: bật require_login → mọi trang cần đăng nhập mới xem.
+    // Fail-open: lỗi/thiếu bảng → coi như PUBLIC (không khoá app).
+    // Luôn cho qua khu vực đăng nhập + API (route tự kiểm quyền riêng).
+    const isAuthArea =
+      pathname === "/login" ||
+      pathname.startsWith("/login/") ||
+      pathname.startsWith("/auth") ||
+      pathname.startsWith("/api");
+    if (!user && !isAuthArea) {
+      let requireLogin = false;
+      try {
+        const { data } = await supabase
+          .from("app_settings")
+          .select("require_login")
+          .eq("id", true)
+          .maybeSingle();
+        requireLogin = !!data?.require_login;
+      } catch {
+        requireLogin = false;
+      }
+      if (requireLogin) return redirectToLogin(request);
+    }
     return response;
   } catch {
     // Supabase lỗi (mạng/khoá sai) → fail-closed cho /config, còn lại vẫn render.
