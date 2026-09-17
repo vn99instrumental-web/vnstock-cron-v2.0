@@ -63,6 +63,61 @@ export default async function ICPage() {
         title="Chất lượng nhân tố (IC)"
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
+
+      <details open className="card mb-4 p-3 text-[13px]">
+        <summary className="cursor-pointer select-none text-sm font-semibold">ℹ️ IC là gì &amp; đọc bảng thế nào?</summary>
+        <div className="mt-2 flex flex-col gap-2 leading-relaxed text-[var(--color-muted)]">
+          <p>
+            <b className="text-[var(--color-ink)]">IC (Information Coefficient)</b> = tương quan hạng (Spearman) giữa
+            điểm nhân tố lúc ra tín hiệu và <b className="text-[var(--color-ink)]">lợi nhuận thực tế sau N phiên</b>.
+            Nói cách khác: điểm cao có <i>thật sự</i> đi kèm lời cao hơn không.
+          </p>
+
+          <div>
+            <div className="mb-1 font-medium text-[var(--color-ink)]">Đọc độ mạnh |IC| (định lượng):</div>
+            <ul className="grid gap-x-4 gap-y-0.5 sm:grid-cols-2">
+              <li>≈ 0 → gần như không dự báo</li>
+              <li>0.02 – 0.05 → có tín hiệu (đã đáng dùng)</li>
+              <li>0.05 – 0.10 → tốt</li>
+              <li>&gt; 0.10 → rất mạnh (hiếm — soi kỹ cỡ mẫu n kẻo overfit)</li>
+            </ul>
+          </div>
+
+          <p>
+            <b className="text-[var(--color-ink)]">Dấu &amp; màu:</b>{" "}
+            <span className="font-semibold text-[var(--color-buy)]">+ xanh</span> = nhân tố cao ⇒ lời cao (dự báo
+            thuận, đúng kỳ vọng);{" "}
+            <span className="font-semibold text-[var(--color-sell)]">− đỏ</span> = nhân tố cao ⇒ lỗ (nghịch — factor
+            đang phản tác dụng, nên cân nhắc giảm/đảo trọng số). Màu càng đậm ⇒ |IC| càng lớn (chuẩn hoá ±0.20).
+          </p>
+
+          <p>
+            <b className="text-[var(--color-ink)]">Cột 1d/3d/5d/10d:</b> đo với lợi nhuận sau 1/3/5/10 phiên — một
+            nhân tố có thể mạnh ở khung này nhưng yếu ở khung khác. So ngang để biết factor dự báo ngắn hay dài hạn.
+          </p>
+
+          <p>
+            <b className="text-[var(--color-ink)]">Hàng:</b> <code>score_trade</code> = điểm tổng (chất lượng tín hiệu
+            chung); các hàng còn lại = từng nhóm nhân tố.
+          </p>
+
+          <p>
+            <b className="text-[var(--color-ink)]">n (rê chuột lên ô) = cỡ mẫu.</b> n nhỏ → IC nhiễu, chưa tin được.
+            Ưu tiên ô có n lớn và qua nhiều phiên.
+          </p>
+
+          <p>
+            <b className="text-[var(--color-ink)]">Nhóm theo version:</b> mỗi lần đổi SCORING_VERSION là reset
+            forward-validation → IC tính riêng từng version. So version mới với cũ để biết thay đổi có cải thiện không.
+          </p>
+
+          <p className="italic">
+            Lưu ý: đây là <b>forward IC</b> (đo trên tương lai thật, không phải backtest) — đáng tin hơn, nhưng vẫn cần
+            đủ mẫu &amp; nhiều phiên mới kết luận. Con số chính thức do evaluator Python tính.
+          </p>
+        </div>
+      </details>
+
       {[...byVer.entries()].map(([version, fm]) => {
         const factors = FACTOR_ORDER.filter((f) => fm.has(f)).concat(
           [...fm.keys()].filter((f) => !FACTOR_ORDER.includes(f)),
