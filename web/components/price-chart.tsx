@@ -10,7 +10,7 @@ import { computeBB, computeEMA } from "@/lib/chart";
 // KHÔNG còn TP/SL (thay bằng ±3/6%). ◆ hồng = điểm tín hiệu BUY.
 
 const W = 820;
-const H = 340;
+const H = 268;
 const M = { top: 12, right: 66, bottom: 30, left: 46 };
 const MIN_VIS = 5;
 
@@ -44,6 +44,7 @@ export function PriceChart({
   const wrapRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ start: 0, count: n });
   const [hover, setHover] = useState<number | null>(null);
+  const [pos, setPos] = useState<{ x: number; y: number; w: number; h: number } | null>(null); // vị trí con trỏ (px trong svg)
   const drag = useRef<{ active: boolean } | null>(null);
   const viewRef = useRef(view); viewRef.current = view;
   const slotRef = useRef(1);
@@ -228,8 +229,8 @@ export function PriceChart({
   // Chỉ chuột/bút dùng hover+kéo qua pointer; cảm ứng do listener touch xử lý riêng.
   function onMove(e: React.PointerEvent<SVGSVGElement>) {
     if (e.pointerType === "touch") return;
+    const rect = e.currentTarget.getBoundingClientRect();
     if (drag.current?.active) {
-      const rect = e.currentTarget.getBoundingClientRect();
       const dCandles = Math.round((e.movementX / rect.width) * W / slot);
       if (dCandles !== 0) setView((prev) => {
         const cnt = clamp(prev.count, MIN_VIS, n);
@@ -238,10 +239,12 @@ export function PriceChart({
       return;
     }
     setHover(start + localFromEvent(e));
+    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top, w: rect.width, h: rect.height });
   }
 
   const hc = hover != null && hover >= start && hover < end ? candles[hover] : null;
   const hoverLocal = hc ? hover! - start : -1;
+  const hoverBuys = hc ? buyMarkers.filter((mk) => mk.date === hc.date) : [];
 
   return (
     <div ref={wrapRef} className="relative w-full overflow-hidden">
@@ -249,7 +252,7 @@ export function PriceChart({
         viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá"
         style={{ cursor: "crosshair", touchAction: "pan-y" }}
         onPointerMove={onMove}
-        onPointerLeave={() => { setHover(null); drag.current = null; }}
+        onPointerLeave={() => { setHover(null); setPos(null); drag.current = null; }}
         onPointerDown={(e) => { if (e.pointerType !== "touch") drag.current = { active: true }; }}
         onPointerUp={() => { drag.current = null; }}
       >
@@ -340,25 +343,47 @@ export function PriceChart({
         ))}
       </svg>
 
-      {hc ? (
-        <div className="pointer-events-none absolute right-2 top-2 rounded border border-[var(--color-border)] bg-[var(--color-surface)]/95 px-2 py-1 text-[10px] tabular shadow-sm">
-          <div className="font-semibold">{hc.date}</div>
-          <div className="mt-0.5 grid grid-cols-2 gap-x-2">
-            <span className="text-[var(--color-muted)]">O</span><span className="text-right">{fmt(hc.open)}</span>
-            <span className="text-[var(--color-muted)]">H</span><span className="text-right">{fmt(hc.high)}</span>
-            <span className="text-[var(--color-muted)]">L</span><span className="text-right">{fmt(hc.low)}</span>
-            <span className="text-[var(--color-muted)]">C</span>
-            <span className="text-right" style={{ color: hc.close >= hc.open ? UP : DOWN }}>{fmt(hc.close)}</span>
+      {hc && pos ? (() => {
+        // Popup ngay tại con trỏ; tự lật khi chạm mép phải/dưới.
+        const TW = 128;
+        const TH = hoverBuys.length ? 74 + hoverBuys.length * 14 : 74;
+        let left = pos.x + 14;
+        if (left + TW > pos.w) left = pos.x - TW - 14;
+        left = clamp(left, 2, Math.max(2, pos.w - TW - 2));
+        let top = pos.y + 14;
+        if (top + TH > pos.h) top = pos.y - TH - 14;
+        top = clamp(top, 2, Math.max(2, pos.h - TH - 2));
+        return (
+          <div className="pointer-events-none absolute z-10 rounded border border-[var(--color-border)] bg-[var(--color-surface)]/97 px-2 py-1 text-[10px] tabular shadow-md" style={{ left, top }}>
+            <div className="font-semibold">{hc.date}</div>
+            <div className="mt-0.5 grid grid-cols-2 gap-x-2">
+              <span className="text-[var(--color-muted)]">O</span><span className="text-right">{fmt(hc.open)}</span>
+              <span className="text-[var(--color-muted)]">H</span><span className="text-right">{fmt(hc.high)}</span>
+              <span className="text-[var(--color-muted)]">L</span><span className="text-right">{fmt(hc.low)}</span>
+              <span className="text-[var(--color-muted)]">C</span>
+              <span className="text-right" style={{ color: hc.close >= hc.open ? UP : DOWN }}>{fmt(hc.close)}</span>
+            </div>
+            {hoverBuys.length ? (
+              <div className="mt-1 border-t border-[var(--color-border)] pt-1">
+                {hoverBuys.map((mk, k) => (
+                  <div key={k} className="flex items-center gap-1" style={{ color: BUYC }}>
+                    <span aria-hidden>◆</span>
+                    <span>{mk.strong ? "STRONG BUY" : "BUY"}</span>
+                    <span className="ml-auto">{fmt(mk.price)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
-        </div>
-      ) : null}
+        );
+      })() : null}
 
       {/* Zoom −/+ (chạm được) — góc trên trái */}
       <div className="absolute left-1.5 top-1.5 flex gap-1">
         <button onClick={() => zoomBy(1.3)} aria-label="Thu nhỏ"
-          className="h-8 w-8 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">−</button>
+          className="h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">−</button>
         <button onClick={() => zoomBy(0.75)} aria-label="Phóng to"
-          className="h-8 w-8 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">+</button>
+          className="h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">+</button>
       </div>
 
       {/* Thanh chọn khoảng xem — nút to, dễ chạm trên điện thoại */}
@@ -372,7 +397,7 @@ export function PriceChart({
           const active = o.k >= n ? count >= n : count === Math.min(o.k, n) && start === Math.max(0, n - o.k);
           return (
             <button key={o.lb} onClick={() => (o.k >= n ? showAll() : showRecent(o.k))}
-              className={`min-h-[32px] rounded-md border px-3 py-1 text-xs font-medium ${active ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"}`}>
+              className={`min-h-[28px] rounded-md border px-2.5 py-0.5 text-[11px] font-medium ${active ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"}`}>
               {o.lb}
             </button>
           );
