@@ -43,13 +43,14 @@ FACTORS = ("mean_reversion", "breakout", "flow",
 
 # Weight theo KHUNG — 2 bảng điểm từ 1 lần tính (xem DESIGN mục 4b)
 FACTOR_WEIGHTS = {
-    "trade": {   # 1-5 ngày — nghiêng mean-reversion (evidence: MR thắng áp đảo)
-        "mean_reversion": 0.30,
-        "breakout":       0.08,
-        "flow":           0.25,
+    "trade": {   # v4.18: rebalance theo forward-IC THẬT — MR dương mạnh nhất,
+                 # breakout/flow yếu/âm nên hạ; đồng bộ với _W_TRADE_V4 trong scorer.
+        "mean_reversion": 0.50,
+        "breakout":       0.05,
+        "flow":           0.15,
         "fundamental":    0.20,
         "growth":         0.10,
-        "context":        0.07,
+        "context":        0.00,
     },
     "hold": {    # ~1 tháng — dist_52w anchor (t=5.8), fundamentals nặng hơn
         "mean_reversion": 0.15,

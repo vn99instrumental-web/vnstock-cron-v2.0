@@ -1,16 +1,16 @@
 {
-  "version_label": "v4.17-baseline",
+  "version_label": "v4.18",
   "status": "production",
-  "based_on": "utils/v2f_registry.py @ REGISTRY_VERSION=3, GATE_VERSION=7, SCORING_VERSION=v4.17",
-  "note": "Baseline trích từ registry hiện hành (E4). Promote sẽ GHI ĐÈ file này (server-only). E5 scorer đọc file này + fallback registry khi thiếu/hỏng.",
+  "based_on": "utils/v2f_registry.py @ REGISTRY_VERSION=3, GATE_VERSION=7, SCORING_VERSION=v4.18",
+  "note": "v4.18 (2026-09-17): rebalance weight TRADE theo forward-IC thật (MR 0.27->0.50; breakout 0.13->0.05; flow 0.27->0.15). Ghi production theo yêu cầu owner, KHÔNG shadow. Nguồn scoring thật = _W_TRADE_V4 trong steps/v2f_step_scoring_v4.py; file này để hiển thị/đồng bộ.",
   "factor_weights": {
     "trade": {
-      "mean_reversion": 0.30,
-      "breakout": 0.08,
-      "flow": 0.25,
+      "mean_reversion": 0.50,
+      "breakout": 0.05,
+      "flow": 0.15,
       "fundamental": 0.20,
       "growth": 0.10,
-      "context": 0.07
+      "context": 0.00
     },
     "hold": {
       "mean_reversion": 0.15,

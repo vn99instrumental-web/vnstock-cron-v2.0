@@ -128,3 +128,17 @@
 - **Chốt:** `run_id = f"{signal_date}_{snap_time}"` (vd `2026-09-03_09:27`). `kind='intraday'`.
 - **Evidence:** predictions 2026-09 — 1 "run" = đúng `(signal_date, snap_time)` → mỗi run 100 mã, `scoring_version` hằng số trong run (0 run có >1 version), flow/universe hằng. 37 run/tháng. Không cần đưa version vào run_id (đã hằng). Mọi run v4 là snap intraday → kind='intraday'; daily flow chưa xuất hiện trong ledger v4.
 - **Hệ quả:** Human-readable, idempotent (cùng run → cùng id → upsert không nhân đôi). Nếu sau này có daily flow, map lại `kind` theo flow/snap.
+
+---
+
+## ADR-011 — v4.18: tái cân bằng weight TRADE theo forward-IC (GHI PRODUCTION, KHÔNG shadow)
+- **Trạng thái:** ✅ ACCEPTED (2026-09-17) — owner yêu cầu ghi thẳng production, KHÔNG qua shadow (override rule shadow-first của CLAUDE.md §4).
+- **Bối cảnh:** Forward rank-IC (bảng v4_ic_metrics) cho v4.1 (n=896), v4.8/v4.9 (n=400):
+  - mean_reversion: IC DƯƠNG mạnh & bền nhất (v4.1 +0.14/+0.16 @3-5d; v4.8 +0.25/+0.28).
+  - breakout: IC ÂM bền ở MỌI version (v4.1 −0.24/−0.26; v4.8 −0.29/−0.40) — phản tác dụng (regime hồi phục).
+  - flow: yếu/âm (~−0.05, trong nhiễu); fundamental: mixed (+ ở 10d v4.1, − ở v4.9); growth: ≈0.
+  - Trọng số production cũ (_W_TRADE_V4): MR 0.27 · breakout 0.1307 · flow 0.2724 · fund 0.2179 · growth 0.109 · context 0 → đặt ~40% vào flow+fundamental (yếu) và 13% vào breakout (âm).
+- **Chốt (weight TRADE mới, tổng=1):** mean_reversion 0.50 · fundamental 0.20 · flow 0.15 · growth 0.10 · breakout 0.05 · context 0.
+- **Nơi sửa (nguồn chân lý scoring):** `steps/v2f_step_scoring_v4.py::_W_TRADE_V4` (lever thật) + bump `SCORING_VERSION` v4.17→v4.18 (RESET forward-validation bucket). Đồng bộ `utils/v2f_registry.py::FACTOR_WEIGHTS['trade']` + `config/scoring/active.json` (hiển thị).
+- **Rủi ro (trung thực):** KHÔNG shadow → thay đổi chưa được kiểm chứng forward đi thẳng production. IC dùng để quyết là của v4.1/v4.8/v4.9, KHÔNG phải v4.17 (v4.17 chưa đủ outcome). n=400–896 (~1–2 tháng). breakout âm là do regime hồi phục hiện tại, có thể lật khi trending → chỉ hạ trọng số, KHÔNG invert. Giữ shadow đối chứng "MR-off" (score_trade_nomr).
+- **Theo dõi:** sau ~30 phiên v4.18, đọc IC score_trade — kỳ vọng về dương như v4.1 (+0.05). Nếu xấu hơn → revert (git history giữ v4.17).
