@@ -58,6 +58,16 @@ export default async function ICPage() {
 
   const rows = (data ?? []) as ICRow[];
 
+  // Version production HIỆN TẠI (đọc động từ run mới nhất — version-agnostic).
+  const { data: curRun } = await supabase
+    .from("v4_runs")
+    .select("scoring_version")
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const curVer = (curRun?.scoring_version as string | undefined) ?? null;
+  const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
+
   if (!rows.length) {
     return (
       <>
@@ -85,6 +95,22 @@ export default async function ICPage() {
         title="Chất lượng nhân tố (IC)"
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
+
+      {curVer ? (
+        <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
+          <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HIỆN TẠI</span>
+          <span className="font-mono font-semibold">scoring {curVer}</span>
+          {curHasIC ? (
+            <span className="text-[var(--color-muted)]">— IC bên dưới (đánh dấu &ldquo;hiện tại&rdquo;).</span>
+          ) : (
+            <span className="text-[var(--color-muted)]">
+              — <b className="text-[var(--color-ink)]">chưa đủ dữ liệu forward để tính IC</b>. Mỗi lần đổi version là reset
+              forward-validation → cần tích luỹ outcomes vài phiên rồi evaluator (Python) mới ghi IC. Bảng dưới là các
+              version cũ đã đủ mẫu, dùng để tham chiếu.
+            </span>
+          )}
+        </div>
+      ) : null}
 
       <details open className="card mb-4 p-3 text-[13px]">
         <summary className="cursor-pointer select-none text-sm font-semibold">ℹ️ IC là gì &amp; đọc bảng thế nào?</summary>
@@ -167,7 +193,12 @@ export default async function ICPage() {
         );
         return (
           <div key={version} className="mb-6">
-            <h2 className="mb-2 font-mono text-sm font-semibold">scoring {version}</h2>
+            <h2 className="mb-2 flex items-center gap-2 font-mono text-sm font-semibold">
+              scoring {version}
+              {version === curVer ? (
+                <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span>
+              ) : null}
+            </h2>
             <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
               <table className="w-full text-sm">
                 <thead className="bg-black/[0.03] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
