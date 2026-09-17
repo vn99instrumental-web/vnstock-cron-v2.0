@@ -8,10 +8,10 @@ export function PageHeader({
   desc?: string;
 }) {
   return (
-    <div className="mb-4 sm:mb-5">
-      <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
+    <div className="mb-3">
+      <h1 className="text-lg font-bold tracking-tight sm:text-xl">{title}</h1>
       {desc ? (
-        <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-[var(--color-muted)]">{desc}</p>
+        <p className="mt-0.5 max-w-3xl text-[12px] leading-snug text-[var(--color-muted)]">{desc}</p>
       ) : null}
     </div>
   );
