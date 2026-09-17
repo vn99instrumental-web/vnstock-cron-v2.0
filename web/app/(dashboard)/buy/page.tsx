@@ -85,7 +85,7 @@ export default async function BuyPage() {
     <>
       <PageHeader
         title="Mua"
-        desc={`${signals.length} mã BUY / STRONG BUY — chọn 1 mã để xem diễn biến giá, entry ±3/6% và kỳ vọng lịch sử`}
+        desc={`${signals.length} mã BUY / STRONG BUY · chọn 1 mã xem chi tiết`}
       />
       <BuyBoard
         signals={signals}
