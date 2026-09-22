@@ -174,6 +174,17 @@ export function BuyBoard({
   const [showList, setShowList] = useState(true);
   const [hideThin, setHideThin] = useState(false); // D — ẩn mã thanh khoản < 10 tỷ
   const [byIndustry, setByIndustry] = useState(true); // nhóm danh sách theo ngành
+  const [indFilter, setIndFilter] = useState("all"); // lọc theo 1 ngành
+
+  // Danh sách ngành có trong tín hiệu (cho dropdown filter), kèm số mã.
+  const industryOpts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of signals) {
+      const ind = String((s.breakdown ?? {}).industry ?? "— Khác");
+      m.set(ind, (m.get(ind) ?? 0) + 1);
+    }
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [signals]);
 
   useEffect(() => {
     if (!sel) return;
@@ -263,6 +274,7 @@ export function BuyBoard({
   const displayed = useMemo(() => {
     const qq = q.trim().toUpperCase();
     let arr = qq ? signals.filter((s) => s.symbol.includes(qq)) : [...signals];
+    if (indFilter !== "all") arr = arr.filter((s) => String((s.breakdown ?? {}).industry ?? "— Khác") === indFilter);
     if (hideThin) arr = arr.filter((s) => { const a = adtvOf(s); return a == null || a >= 10; });
     const cmpNull = (a: number | null, b: number | null, dir: 1 | -1) => {
       if (a == null && b == null) return 0;
@@ -283,7 +295,7 @@ export function BuyBoard({
     });
     return arr;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signals, q, sortKey, hideThin, robMap]);
+  }, [signals, q, sortKey, hideThin, indFilter, robMap]);
 
   // Nhóm danh sách theo ngành (giữ thứ tự sort trong mỗi ngành; ngành nhiều mã trước).
   const industryGroups = useMemo(() => {
@@ -410,6 +422,31 @@ export function BuyBoard({
             ))}
           </select>
         </div>
+        {industryOpts.length > 1 ? (
+          <div className="flex items-center gap-1.5 border-b border-[var(--color-border)] px-2 py-1.5">
+            <span className="shrink-0 text-[11px] text-[var(--color-muted)]">Ngành</span>
+            <select
+              value={indFilter}
+              onChange={(e) => setIndFilter(e.target.value)}
+              className="min-h-[30px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]"
+              title="Lọc theo ngành"
+            >
+              <option value="all">Tất cả ngành ({signals.length})</option>
+              {industryOpts.map(([ind, count]) => (
+                <option key={ind} value={ind}>{ind} ({count})</option>
+              ))}
+            </select>
+            {indFilter !== "all" ? (
+              <button
+                onClick={() => setIndFilter("all")}
+                className="shrink-0 rounded-md border border-[var(--color-border)] px-2 py-1 text-[11px] text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"
+                title="Bỏ lọc ngành"
+              >
+                ✕
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         <label className="flex min-h-[30px] items-center gap-2 border-b border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)] cursor-pointer active:bg-black/5 dark:active:bg-white/5">
           <input type="checkbox" checked={byIndustry} onChange={(e) => setByIndustry(e.target.checked)} className="h-4 w-4" />
           Nhóm theo ngành (kèm IC ngành)
