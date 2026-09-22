@@ -221,6 +221,12 @@ export function PriceChart({
   xLabels.add(m - 1);
   if (sigLocal >= 0) xLabels.add(sigLocal);
 
+  // Nhãn trục X: khung xem trải dài (zoom out nhìn tổng thể) → thêm NĂM (MM/YY);
+  // khung ngắn giữ MM-DD cho gọn.
+  const spanDays = m > 1 ? (new Date(vis[m - 1].date).getTime() - new Date(vis[0].date).getTime()) / 864e5 : 0;
+  const longView = spanDays > 180;
+  const xLabelText = (d: string) => (longView ? `${d.slice(5, 7)}/${d.slice(2, 4)}` : d.slice(5));
+
   function localFromEvent(e: React.PointerEvent<SVGSVGElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
     const vx = ((e.clientX - rect.left) / rect.width) * W;
@@ -339,7 +345,7 @@ export function PriceChart({
         ) : null}
 
         {[...xLabels].sort((a, b) => a - b).map((i) => (
-          <text key={i} x={cx(i)} y={H - 6} fontSize={8} textAnchor="middle" fill="var(--color-muted)">{vis[i]?.date.slice(5)}</text>
+          <text key={i} x={cx(i)} y={H - 6} fontSize={8} textAnchor="middle" fill="var(--color-muted)">{vis[i] ? xLabelText(vis[i].date) : ""}</text>
         ))}
       </svg>
 
