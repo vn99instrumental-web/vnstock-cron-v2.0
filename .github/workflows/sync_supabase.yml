@@ -34,7 +34,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install deps
-        run: pip install --quiet requests
+        run: pip install --quiet requests numpy
 
       - name: Guard secret
         run: |
@@ -50,3 +50,6 @@ jobs:
 
       - name: Export forward IC → Supabase
         run: python3 scripts/export_ic_to_supabase.py
+
+      - name: Phân tích đóng góp biên (hồi quy đa biến) → Supabase
+        run: python3 scripts/analyze_marginal_ic.py
