@@ -140,7 +140,39 @@ export const FACTOR_GROUPS: {
     members: ["s_mkt_context"], desc: "Trạng thái thị trường chung." },
 ];
 
-export interface GroupMemberView { key: string; name: string; score: number; span: number; dir: Dir; text: string }
+export interface GroupMemberView { key: string; name: string; score: number; span: number; dir: Dir; text: string; raw?: string }
+
+/** Định dạng VND gọn: tỷ / triệu, kèm dấu. */
+function vndShort(v: number): string {
+  const a = Math.abs(v);
+  const s = v >= 0 ? "+" : "−";
+  if (a >= 1e9) return `${s}${(a / 1e9).toFixed(1)} tỷ`;
+  if (a >= 1e6) return `${s}${(a / 1e6).toFixed(0)} triệu`;
+  return `${s}${a.toFixed(0)}`;
+}
+
+/**
+ * Giá trị THÔ cập nhật đến snapshot ra tín hiệu, gắn kèm 1 số chỉ báo con.
+ * Ledger chủ yếu lưu ĐIỂM; chỉ vài field thô có sẵn (thanh khoản, khối ngoại,
+ * order flow). Trả null nếu không có field thô cho chỉ báo đó.
+ */
+function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
+  const g = (k: string) => num(b[k]);
+  if (key === "s_vol_ratio_h") {
+    const adtv = g("adtv_bil");
+    return adtv != null ? `Thanh khoản ${adtv.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} tỷ/phiên` : undefined;
+  }
+  if (key === "s_ff_net") {
+    const net = g("ff_intra_net"), ratio = g("ff_intra_ratio");
+    if (net == null) return undefined;
+    return `KN ròng ${vndShort(net)}${ratio != null ? ` (${(ratio * 100).toFixed(1)}% GT)` : ""}`;
+  }
+  if (key === "s_of_phasefix") {
+    const bp = g("of_bp_pts");
+    return bp != null && bp !== 0 ? `Áp lực lệnh ${bp > 0 ? "+" : ""}${bp}` : undefined;
+  }
+  return undefined;
+}
 export interface FactorGroupView {
   key: string; label: string; desc: string; norm: number; dir: Dir;
   rawTotal: number; spanTotal: number; members: GroupMemberView[];
@@ -163,6 +195,7 @@ export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] 
       members.push({
         key: k, name: meta?.name ?? k, score, span, dir,
         text: dir === "buy" ? (meta?.buy ?? "") : dir === "sell" ? (meta?.sell ?? "") : "trung tính",
+        raw: rawAnnot(k, b),
       });
     }
     members.sort((a, z) => Math.abs(z.score) - Math.abs(a.score));

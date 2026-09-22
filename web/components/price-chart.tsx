@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candle, Levels } from "@/lib/chart";
-import { computeBB, computeEMA } from "@/lib/chart";
+import { computeBB, computeEMA, computeSupertrend } from "@/lib/chart";
 
 // Chart nến custom SVG (interactive). Hover → crosshair + tooltip. Ctrl+lăn = zoom
 // quanh con trỏ, kéo = pan (kiểu TradingView).
@@ -17,8 +17,11 @@ const MIN_VIS = 5;
 const UP = "#16a34a";
 const DOWN = "#dc2626";
 const ACCENT = "#2563eb";
+const EMA20C = "#0891b2"; // cyan
 const EMA50C = "#ea580c";
 const EMA200C = "#7c3aed";
+const STU = "#059669"; // Supertrend xanh (uptrend)
+const STD = "#e11d48"; // Supertrend đỏ (downtrend)
 const BUYC = "#9333ea"; // tím — marker tín hiệu BUY (phân biệt với nến đỏ/xanh)
 const BBC = "#64748b";
 // màu đường % (đậm dần theo mức)
@@ -54,10 +57,12 @@ export function PriceChart({
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
 
-  // EMA/BB chỉ phụ thuộc chuỗi nến → memo để pan/zoom không tính lại mỗi khung.
+  // EMA/BB/Supertrend chỉ phụ thuộc chuỗi nến → memo để pan/zoom không tính lại mỗi khung.
+  const ema20 = useMemo(() => computeEMA(candles, 20), [candles]);
   const ema50 = useMemo(() => computeEMA(candles, 50), [candles]);
   const ema200 = useMemo(() => computeEMA(candles, 200), [candles]);
   const bb = useMemo(() => computeBB(candles, 20, 2), [candles]);
+  const supertrend = useMemo(() => computeSupertrend(candles, 10, 3), [candles]);
 
   // Zoom helpers (dùng cho nút chạm).
   const showAll = () => setView({ start: 0, count: n });
@@ -194,7 +199,21 @@ export function PriceChart({
     for (let g = start; g < end; g++) { const v = vals[g]; if (v != null) pts.push(`${cx(g - start)},${y(v)}`); }
     return pts.length ? <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={sw} strokeDasharray={dash} opacity={0.9} /> : null;
   };
-  const emaHas = { e50: ema50.slice(start, end).some((v) => v != null), e200: ema200.slice(start, end).some((v) => v != null) };
+  const emaHas = {
+    e20: ema20.slice(start, end).some((v) => v != null),
+    e50: ema50.slice(start, end).some((v) => v != null),
+    e200: ema200.slice(start, end).some((v) => v != null),
+  };
+
+  // Supertrend: vẽ thành các đoạn đổi màu theo dir (xanh=up, đỏ=down).
+  const stSegs: { d: string; up: boolean }[] = [];
+  for (let g = start + 1; g < end; g++) {
+    const a = supertrend[g - 1], b2 = supertrend[g];
+    if (a?.value == null || b2?.value == null || a.dir == null || b2.dir == null) continue;
+    if (a.dir !== b2.dir) continue; // bỏ đoạn ngay lúc lật (tránh nối chéo)
+    stSegs.push({ d: `M ${cx(g - 1 - start)},${y(a.value)} L ${cx(g - start)},${y(b2.value)}`, up: b2.dir === "up" });
+  }
+  const stHas = supertrend.slice(start, end).some((s) => s.value != null);
 
   // Bollinger fill band (upper→lower) trong vùng xem.
   const bbUpper: (number | null)[] = bb.map((b) => b.upper);
@@ -297,6 +316,12 @@ export function PriceChart({
           );
         })}
 
+        {/* Supertrend — đoạn xanh (tăng) / đỏ (giảm) */}
+        {stSegs.map((s, k) => (
+          <path key={`st${k}`} d={s.d} fill="none" stroke={s.up ? STU : STD} strokeWidth={1.6} opacity={0.9} />
+        ))}
+
+        {line(ema20, EMA20C)}
         {line(ema50, EMA50C)}
         {line(ema200, EMA200C)}
 
@@ -392,12 +417,53 @@ export function PriceChart({
           className="h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">+</button>
       </div>
 
+      {/* Vị trí giá so với EMA/Supertrend — nhận diện xu hướng nhanh */}
+      {(() => {
+        const lastGlobal = end - 1;
+        const lastClose = vis[m - 1]?.close;
+        if (lastClose == null) return null;
+        const chip = (label: string, val: number | null | undefined) => {
+          if (val == null) return (
+            <span key={label} className="rounded border border-[var(--color-border)] px-1.5 py-0.5 text-[var(--color-muted)]">{label} —</span>
+          );
+          const above = lastClose >= val;
+          const pct = val !== 0 ? ((lastClose - val) / val) * 100 : 0;
+          const col = above ? "var(--color-buy)" : "var(--color-sell)";
+          return (
+            <span key={label} className="rounded border px-1.5 py-0.5 tabular" style={{ borderColor: col, color: col }}
+              title={`Giá ${fmt(lastClose)} ${above ? "TRÊN" : "DƯỚI"} ${label} (${fmt(val)})`}>
+              {label} {above ? "↑" : "↓"} {pct >= 0 ? "+" : ""}{pct.toFixed(1)}%
+            </span>
+          );
+        };
+        const st = supertrend[lastGlobal];
+        return (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px]">
+            <span className="text-[var(--color-muted)]">Vị trí giá:</span>
+            {chip("EMA20", ema20[lastGlobal])}
+            {chip("EMA50", ema50[lastGlobal])}
+            {chip("EMA200", ema200[lastGlobal])}
+            {st?.dir ? (
+              <span className="rounded border px-1.5 py-0.5 font-medium"
+                style={{ borderColor: st.dir === "up" ? STU : STD, color: st.dir === "up" ? STU : STD }}
+                title="Supertrend: xanh = xu hướng tăng (giá trên đường), đỏ = giảm">
+                Supertrend {st.dir === "up" ? "▲ tăng" : "▼ giảm"}
+              </span>
+            ) : null}
+          </div>
+        );
+      })()}
+
       {/* Thanh chọn khoảng xem — nút to, dễ chạm trên điện thoại */}
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-        <span className="text-[10px] text-[var(--color-muted)]">Xem:</span>
+        <span className="text-[10px] text-[var(--color-muted)]">Xem (phiên):</span>
         {[
-          { lb: "20 phiên", k: 20 },
-          { lb: "60 phiên", k: 60 },
+          { lb: "10", k: 10 },
+          { lb: "20", k: 20 },
+          { lb: "30", k: 30 },
+          { lb: "40", k: 40 },
+          { lb: "50", k: 50 },
+          { lb: "60", k: 60 },
           { lb: "Tất cả", k: n },
         ].map((o) => {
           const active = o.k >= n ? count >= n : count === Math.min(o.k, n) && start === Math.max(0, n - o.k);
@@ -412,9 +478,11 @@ export function PriceChart({
       </div>
 
       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] text-[var(--color-muted)]">
+        {emaHas.e20 ? <span><span style={{ color: EMA20C }}>—</span> EMA20</span> : null}
         {emaHas.e50 ? <span><span style={{ color: EMA50C }}>—</span> EMA50</span> : null}
         {emaHas.e200 ? <span><span style={{ color: EMA200C }}>—</span> EMA200</span>
           : <span className="italic">EMA200 cần ≥200 phiên (hiện {n})</span>}
+        {stHas ? <span><span style={{ color: STU }}>—</span>/<span style={{ color: STD }}>—</span> Supertrend</span> : null}
         <span><span style={{ color: BBC }}>▭</span> Bollinger(20,2)</span>
         <span><span style={{ color: ACCENT }}>—</span> Entry</span>
         <span><span style={{ color: PCT_COLOR[3] }}>┈</span> +3/+6% · <span style={{ color: PCT_COLOR[-3] }}>┈</span> −3/−6%</span>
