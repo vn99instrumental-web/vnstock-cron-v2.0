@@ -25,6 +25,21 @@ function icMeaning(ic: number | null): { strength: string; dir: string } {
   return { strength, dir };
 }
 
+// ── IC breakdown (chỉ số con / ngành) — ước lượng Spearman gộp, tham chiếu ──
+interface BrkRow { key: string; horizon: number; ic: number | null; n: number }
+type BrkGroup = { name: string; h: Map<number, { ic: number | null; n: number }> };
+
+function groupBrk(rows: BrkRow[]): BrkGroup[] {
+  const m = new Map<string, Map<number, { ic: number | null; n: number }>>();
+  for (const r of rows) {
+    if (!m.has(r.key)) m.set(r.key, new Map());
+    m.get(r.key)!.set(r.horizon, { ic: r.ic, n: r.n });
+  }
+  const out: BrkGroup[] = [...m.entries()].map(([name, h]) => ({ name, h }));
+  out.sort((a, b) => (b.h.get(5)?.ic ?? -99) - (a.h.get(5)?.ic ?? -99)); // mạnh nhất @5d lên đầu
+  return out;
+}
+
 const HORIZONS = [1, 3, 5, 10];
 const FACTOR_ORDER = [
   "score_trade", "mean_reversion", "breakout", "flow",
@@ -47,6 +62,54 @@ function icCell(ic: number | null): { bg: string; fg: string } {
   return { bg, fg: a > 0.45 ? "#fff" : "var(--color-ink)" };
 }
 
+/** Bảng heatmap breakdown: hàng = chỉ số/ngành (đã sort theo IC 5d), cột = horizon. */
+function BreakdownTable({
+  groups, colLabel, nameOf, minN = 30,
+}: {
+  groups: BrkGroup[];
+  colLabel: string;
+  nameOf: (k: string) => string;
+  minN?: number;
+}) {
+  const rows = groups.filter((g) => (g.h.get(5)?.n ?? 0) >= minN);
+  if (!rows.length) return <p className="text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu.</p>;
+  return (
+    <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+      <table className="w-full text-sm">
+        <thead className="bg-black/[0.03] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
+          <tr>
+            <th className="px-3 py-2 text-left">{colLabel}</th>
+            {HORIZONS.map((h) => <th key={h} className="px-3 py-2 text-center">{h}d</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((g) => (
+            <tr key={g.name} className="border-t border-[var(--color-border)]">
+              <td className="px-3 py-2 font-medium" title={g.name !== nameOf(g.name) ? g.name : undefined}>{nameOf(g.name)}</td>
+              {HORIZONS.map((h) => {
+                const c = g.h.get(h);
+                const ic = c?.ic ?? null;
+                const { bg, fg } = icCell(ic);
+                const m = icMeaning(ic);
+                const title = c
+                  ? `${nameOf(g.name)} · sau ${h} phiên\n` +
+                    (ic === null ? "Chưa đủ dữ liệu" : `IC ${(ic >= 0 ? "+" : "") + ic.toFixed(3)} — ${m.strength}, ${m.dir}`) +
+                    `\nn = ${c.n} quan sát (gộp mọi version)`
+                  : "—";
+                return (
+                  <td key={h} className="tabular cursor-help px-3 py-2 text-center" style={{ backgroundColor: bg, color: fg }} title={title}>
+                    {ic === null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default async function ICPage() {
   const supabase = await createClient();
   const { data } = await supabase
@@ -67,6 +130,21 @@ export default async function ICPage() {
     .maybeSingle();
   const curVer = (curRun?.scoring_version as string | undefined) ?? null;
   const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
+
+  // IC breakdown (ước lượng Spearman gộp) — chỉ số con & ngành.
+  const [indRes, indusRes] = await Promise.all([
+    supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
+    supabase.from("v4_ic_by_industry").select("industry, horizon, ic, n"),
+  ]);
+  const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
+    arr.map((r) => ({
+      key: String(r[keyField]),
+      horizon: Number(r.horizon),
+      ic: r.ic == null ? null : Number(r.ic),
+      n: Number(r.n),
+    }));
+  const indGroups = groupBrk(toBrk((indRes.data ?? []) as Record<string, unknown>[], "indicator"));
+  const indusGroups = groupBrk(toBrk((indusRes.data ?? []) as Record<string, unknown>[], "industry"));
 
   if (!rows.length) {
     return (
@@ -256,9 +334,30 @@ export default async function ICPage() {
           </div>
         );
       })}
-      <p className="text-xs text-[var(--color-muted)]">
+      <p className="mb-6 text-xs text-[var(--color-muted)]">
         Độ đậm màu theo |IC| (chuẩn hoá ±0.20). Hover ô để xem cỡ mẫu n.
       </p>
+
+      {/* ── IC theo CHỈ SỐ CON ── */}
+      <section className="mb-6">
+        <h2 className="mb-1 text-sm font-semibold">🔬 IC theo chỉ số con — chỉ báo nào dự báo tốt?</h2>
+        <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+          Ước lượng <b>Spearman rank-IC gộp</b> (toàn kỳ, gộp mọi version) giữa từng chỉ báo <code>s_*</code> và lợi
+          nhuận sau N phiên — <b>tham chiếu</b>, không phải IC chính thức của evaluator (không tách theo ngày/version).
+          Xanh = dự báo thuận, đỏ = nghịch. Rê chuột xem n.
+        </p>
+        <BreakdownTable groups={indGroups} colLabel="Chỉ báo" nameOf={(k) => signalName(k)} minN={200} />
+      </section>
+
+      {/* ── IC theo NGÀNH ── */}
+      <section className="mb-4">
+        <h2 className="mb-1 text-sm font-semibold">🏭 IC theo ngành — điểm số hiệu quả ở ngành nào?</h2>
+        <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+          Spearman rank-IC gộp giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành. Cho biết điểm
+          của mô hình <b>đáng tin ở ngành nào</b> (xanh) và <b>ngược ở ngành nào</b> (đỏ). Lọc ngành có n≥100.
+        </p>
+        <BreakdownTable groups={indusGroups} colLabel="Ngành" nameOf={(k) => k} minN={100} />
+      </section>
     </>
   );
 }
