@@ -2,7 +2,7 @@ import { PageHeader, EmptyState } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
-import { MarginalTable, type MarginalRow } from "@/components/marginal-table";
+import { FactorICTable, type MargRow } from "@/components/factor-ic-table";
 
 export const dynamic = "force-dynamic";
 
@@ -141,7 +141,7 @@ export default async function ICPage() {
     supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n"),
   ]);
   const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
-  const marginalRows = (margRes.data ?? []) as MarginalRow[];
+  const marginalRows = (margRes.data ?? []) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
     arr.map((r) => ({
       key: String(r[keyField]),
@@ -183,14 +183,14 @@ export default async function ICPage() {
     );
   }
 
-  // group theo version → factor → horizon → ic
-  const byVer = new Map<string, Map<string, Map<number, ICRow>>>();
-  for (const r of rows) {
-    if (!byVer.has(r.config_version)) byVer.set(r.config_version, new Map());
-    const fm = byVer.get(r.config_version)!;
-    if (!fm.has(r.factor)) fm.set(r.factor, new Map());
-    fm.get(r.factor)!.set(r.horizon, r);
-  }
+  // Danh sách version để render bảng hợp nhất: có IC official HOẶC có marginal.
+  // Sort: version hiện tại lên đầu, rồi giảm dần theo số.
+  const verList = [...new Set([
+    ...rows.map((r) => r.config_version),
+    ...marginalRows.map((r) => r.version),
+  ])].sort(
+    (a, b) => (b === curVer ? 1 : 0) - (a === curVer ? 1 : 0) || b.localeCompare(a, undefined, { numeric: true }),
+  );
 
   return (
     <>
@@ -290,78 +290,23 @@ export default async function ICPage() {
         </div>
       </details>
 
-      {[...byVer.entries()].map(([version, fm]) => {
-        const factors = FACTOR_ORDER.filter((f) => fm.has(f)).concat(
-          [...fm.keys()].filter((f) => !FACTOR_ORDER.includes(f)),
-        );
-        return (
-          <div key={version} className="mb-6">
-            <h2 className="mb-2 flex items-center gap-2 font-mono text-sm font-semibold">
-              scoring {version}
-              {version === curVer ? (
-                <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span>
-              ) : null}
-            </h2>
-            <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
-              <table className="w-full text-sm">
-                <thead className="bg-black/[0.03] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
-                  <tr>
-                    <th className="px-3 py-2 text-left">Factor</th>
-                    {HORIZONS.map((h) => (
-                      <th key={h} className="px-3 py-2 text-center">{h}d</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {factors.map((f) => (
-                    <tr key={f} className="border-t border-[var(--color-border)]">
-                      <td
-                        className="cursor-help px-3 py-2 font-medium"
-                        title={
-                          FACTOR_INFO[f]
-                            ? `${FACTOR_INFO[f].label}\n${FACTOR_INFO[f].desc}` +
-                              (FACTOR_INFO[f].members.length ? `\n\nGồm: ${FACTOR_INFO[f].members.join(", ")}` : "")
-                            : f
-                        }
-                      >
-                        {f}
-                      </td>
-                      {HORIZONS.map((h) => {
-                        const r = fm.get(f)?.get(h);
-                        const ic = r?.ic ?? null;
-                        const { bg, fg } = icCell(ic);
-                        const info = FACTOR_INFO[f];
-                        const m = icMeaning(ic);
-                        const title = r
-                          ? `${info?.label ?? f} · sau ${h} phiên\n` +
-                            (ic === null
-                              ? "Chưa đủ dữ liệu tính IC"
-                              : `IC ${(ic >= 0 ? "+" : "") + ic.toFixed(3)} — ${m.strength}, ${m.dir}`) +
-                            `\nn = ${r.n ?? "?"} quan sát` +
-                            (info?.desc ? `\n\n${info.desc}` : "")
-                          : `${info?.label ?? f} · sau ${h} phiên — chưa có dữ liệu`;
-                        return (
-                          <td
-                            key={h}
-                            className="tabular cursor-help px-3 py-2 text-center"
-                            style={{ backgroundColor: bg, color: fg }}
-                            title={title}
-                          >
-                            {ic === null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      })}
+      <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+        Mỗi version: hàng <b>nhân tố</b> = IC chính thức (evaluator Python, chuẩn theo-ngày) × 1/3/5/10 phiên. Bấm nhân
+        tố có dấu ▸ để <b>bung ra chỉ báo con</b> kèm <b>đóng góp biên</b> (hồi quy đa biến, khử trùng lặp) + cột
+        <b> Kết luận</b> (GIỮ/tăng · GIẢM/đảo · trùng lặp) — dùng để combine version mới. Rê chuột ô để xem n / t-stat.
+      </p>
+      {verList.map((version) => (
+        <FactorICTable
+          key={version}
+          version={version}
+          curVer={curVer}
+          official={rows.filter((r) => r.config_version === version)}
+          marginal={marginalRows.filter((r) => r.version === version)}
+        />
+      ))}
       <p className="mb-6 text-xs text-[var(--color-muted)]">
-        Độ đậm màu theo |IC| (chuẩn hoá ±0.20). Hover ô để xem cỡ mẫu n. Bảng trên là <b>IC chính thức</b> (evaluator
-        Python, chuẩn theo-ngày) — chỉ version tích đủ ≥3 phiên chín mới xuất hiện.
+        Ô nhân tố: độ đậm theo |IC| (±0.20). Ô chỉ báo (bung): độ đậm theo |hệ số biên| (±0.30), <b>in đậm = |t|≥2</b>
+        (có ý nghĩa). IC official chỉ có ở version tích đủ ≥3 phiên chín; đóng góp biên có ở version đủ mẫu hồi quy (n≥150).
       </p>
 
       {/* ── Ma trận IC nhân tố × MỌI version (ước lượng) — công cụ combine ── */}
@@ -395,19 +340,6 @@ export default async function ICPage() {
         </div>
       </section>
 
-      {/* ── Đóng góp BIÊN (hồi quy đa biến) — khử trùng lặp để combine ── */}
-      {marginalRows.length ? (
-        <section className="mb-6">
-          <h2 className="mb-1 text-sm font-semibold">🧪 Đóng góp biên của chỉ báo (hồi quy đa biến) — combine chuẩn</h2>
-          <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-            IC đơn biến bị <b>thổi phồng</b> khi nhiều chỉ báo trùng tín hiệu (Williams %R, overext EMA, RS-reversal đều
-            đo &ldquo;quá bán&rdquo;). Hồi quy đa biến tách <b>đóng góp RIÊNG</b> của từng chỉ báo khi đã kiểm soát các
-            chỉ báo còn lại → biết chỉ báo nào <b>thật sự thêm sức dự báo</b> để combine version mới, khử trùng lặp.
-            Cross-sectional, demean trong phiên (khử thị trường chung), chuẩn hoá — ước lượng tham chiếu.
-          </p>
-          <MarginalTable rows={marginalRows} curVer={curVer} />
-        </section>
-      ) : null}
 
       {/* ── IC theo NGÀNH (gộp + per-version) ── */}
       <section className="mb-4">
