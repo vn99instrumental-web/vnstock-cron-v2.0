@@ -78,6 +78,22 @@ export default async function BuyPage() {
     .maybeSingle();
   const { data: expData } = await supabase.from("v4_buy_expectancy").select("*");
 
+  // Độ tươi data (tính server-side để gộp thẳng vào dòng header, tiết kiệm 1 dòng).
+  const startedAt = (runRow?.started_at as string | undefined) ?? null;
+  let freshTxt = "";
+  if (startedAt) {
+    const min = Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 60000));
+    const ago = min < 1 ? "vừa xong" : min < 60 ? `${min} phút trước` : (() => {
+      const h = Math.floor(min / 60);
+      return h < 24 ? `${h} giờ trước` : `${Math.floor(h / 24)} ngày trước`;
+    })();
+    const ict = new Date(Date.now() + 7 * 3600e3);
+    const dow = ict.getUTCDay();
+    const hh = ict.getUTCHours() + ict.getUTCMinutes() / 60;
+    const marketOpen = dow >= 1 && dow <= 5 && hh >= 9 && hh <= 15;
+    freshTxt = ` · Run ${latestBuy.run_id} · cập nhật ${ago} · ${marketOpen ? "phiên ĐANG MỞ" : "ngoài phiên"}`;
+  }
+
   // D/E/F — độ vững tín hiệu (thanh khoản từ breakdown; độ bền/đồng thuận từ view).
   const { data: robData } = await supabase.from("v4_buy_robustness").select("*");
 
@@ -95,7 +111,7 @@ export default async function BuyPage() {
     <>
       <PageHeader
         title="Mua"
-        desc={`${signals.length} mã BUY / STRONG BUY · chọn 1 mã xem chi tiết`}
+        desc={`${signals.length} mã BUY / STRONG BUY${freshTxt}`}
       />
       <BuyBoard
         signals={signals}
