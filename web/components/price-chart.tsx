@@ -215,6 +215,25 @@ export function PriceChart({
   }
   const stHas = supertrend.slice(start, end).some((s) => s.value != null);
 
+  // Nền vùng Supertrend: gộp các nến cùng hướng thành 1 dải (xanh nhạt=tăng, đỏ nhạt=giảm).
+  const stBands: { x: number; w: number; up: boolean }[] = [];
+  {
+    let runStart = -1;
+    let runDir: "up" | "down" | null = null;
+    const flush = (endG: number) => {
+      if (runDir && runStart >= 0) {
+        const x0 = cx(runStart - start) - slot / 2;
+        const x1 = cx(endG - start) + slot / 2;
+        stBands.push({ x: x0, w: x1 - x0, up: runDir === "up" });
+      }
+    };
+    for (let g = start; g < end; g++) {
+      const d = supertrend[g]?.dir ?? null;
+      if (d !== runDir) { flush(g - 1); runDir = d; runStart = d ? g : -1; }
+    }
+    flush(end - 1);
+  }
+
   // Bollinger fill band (upper→lower) trong vùng xem.
   const bbUpper: (number | null)[] = bb.map((b) => b.upper);
   const bbLower: (number | null)[] = bb.map((b) => b.lower);
@@ -286,6 +305,12 @@ export function PriceChart({
             <line x1={M.left} x2={M.left + plotW} y1={y(t)} y2={y(t)} stroke="var(--color-border)" strokeWidth={0.5} />
             <text x={M.left - 5} y={y(t) + 3} fontSize={9} textAnchor="end" fill="var(--color-muted)" className="tabular">{fmt(t)}</text>
           </g>
+        ))}
+
+        {/* Nền vùng Supertrend (xanh/đỏ rất nhạt) */}
+        {stBands.map((band, k) => (
+          <rect key={`stb${k}`} x={band.x} y={M.top} width={band.w} height={plotH}
+            fill={band.up ? STU : STD} opacity={0.06} />
         ))}
 
         {/* Bollinger band (nền mờ) */}
@@ -464,6 +489,7 @@ export function PriceChart({
           { lb: "40", k: 40 },
           { lb: "50", k: 50 },
           { lb: "60", k: 60 },
+          { lb: "200", k: 200 },
           { lb: "Tất cả", k: n },
         ].map((o) => {
           const active = o.k >= n ? count >= n : count === Math.min(o.k, n) && start === Math.max(0, n - o.k);
