@@ -2,6 +2,7 @@ import { PageHeader, EmptyState } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
+import { MarginalTable, type MarginalRow } from "@/components/marginal-table";
 
 export const dynamic = "force-dynamic";
 
@@ -133,12 +134,14 @@ export default async function ICPage() {
   const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
 
   // IC breakdown (ước lượng Spearman gộp) — chỉ số con, ngành (gộp & theo version).
-  const [indRes, indusVerRes, factorVerRes] = await Promise.all([
+  const [indRes, indusVerRes, factorVerRes, margRes] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
     supabase.from("v4_ic_by_industry_ver").select("version, industry, horizon, ic, n"),
     supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n"),
+    supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n"),
   ]);
   const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
+  const marginalRows = (margRes.data ?? []) as MarginalRow[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
     arr.map((r) => ({
       key: String(r[keyField]),
@@ -391,6 +394,20 @@ export default async function ICPage() {
           ))}
         </div>
       </section>
+
+      {/* ── Đóng góp BIÊN (hồi quy đa biến) — khử trùng lặp để combine ── */}
+      {marginalRows.length ? (
+        <section className="mb-6">
+          <h2 className="mb-1 text-sm font-semibold">🧪 Đóng góp biên của chỉ báo (hồi quy đa biến) — combine chuẩn</h2>
+          <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+            IC đơn biến bị <b>thổi phồng</b> khi nhiều chỉ báo trùng tín hiệu (Williams %R, overext EMA, RS-reversal đều
+            đo &ldquo;quá bán&rdquo;). Hồi quy đa biến tách <b>đóng góp RIÊNG</b> của từng chỉ báo khi đã kiểm soát các
+            chỉ báo còn lại → biết chỉ báo nào <b>thật sự thêm sức dự báo</b> để combine version mới, khử trùng lặp.
+            Cross-sectional, demean trong phiên (khử thị trường chung), chuẩn hoá — ước lượng tham chiếu.
+          </p>
+          <MarginalTable rows={marginalRows} curVer={curVer} />
+        </section>
+      ) : null}
 
       {/* ── IC theo NGÀNH (gộp + per-version) ── */}
       <section className="mb-4">
