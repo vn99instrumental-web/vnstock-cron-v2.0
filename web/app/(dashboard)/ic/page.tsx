@@ -131,10 +131,11 @@ export default async function ICPage() {
   const curVer = (curRun?.scoring_version as string | undefined) ?? null;
   const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
 
-  // IC breakdown (ước lượng Spearman gộp) — chỉ số con & ngành.
-  const [indRes, indusRes] = await Promise.all([
+  // IC breakdown (ước lượng Spearman gộp) — chỉ số con, ngành (gộp & theo version).
+  const [indRes, indusRes, indusVerRes] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
     supabase.from("v4_ic_by_industry").select("industry, horizon, ic, n"),
+    supabase.from("v4_ic_by_industry_ver").select("version, industry, horizon, ic, n"),
   ]);
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
     arr.map((r) => ({
@@ -145,6 +146,26 @@ export default async function ICPage() {
     }));
   const indGroups = groupBrk(toBrk((indRes.data ?? []) as Record<string, unknown>[], "indicator"));
   const indusGroups = groupBrk(toBrk((indusRes.data ?? []) as Record<string, unknown>[], "industry"));
+
+  // Chỉ số con GOM THEO FACTOR (mean_reversion gồm indicator nào…).
+  const indByName = new Map(indGroups.map((g) => [g.name, g]));
+  const indByFactor = FACTOR_GROUPS.map((fg) => ({
+    key: fg.key,
+    label: fg.label,
+    members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
+  })).filter((f) => f.members.length);
+
+  // IC theo ngành TÁCH THEO VERSION (chỉ version có ≥3 ngành đủ n).
+  const verMap = new Map<string, BrkRow[]>();
+  for (const r of (indusVerRes.data ?? []) as Record<string, unknown>[]) {
+    const v = String(r.version);
+    if (!verMap.has(v)) verMap.set(v, []);
+    verMap.get(v)!.push({ key: String(r.industry), horizon: Number(r.horizon), ic: r.ic == null ? null : Number(r.ic), n: Number(r.n) });
+  }
+  const indusByVer = [...verMap.entries()]
+    .map(([version, rws]) => ({ version, groups: groupBrk(rws) }))
+    .filter((x) => x.groups.filter((g) => (g.h.get(5)?.n ?? 0) >= 30).length >= 3)
+    .sort((a, b) => (b.version === curVer ? 1 : 0) - (a.version === curVer ? 1 : 0) || b.version.localeCompare(a.version, undefined, { numeric: true }));
 
   if (!rows.length) {
     return (
@@ -338,25 +359,51 @@ export default async function ICPage() {
         Độ đậm màu theo |IC| (chuẩn hoá ±0.20). Hover ô để xem cỡ mẫu n.
       </p>
 
-      {/* ── IC theo CHỈ SỐ CON ── */}
+      {/* ── IC theo CHỈ SỐ CON — gom theo nhóm nhân tố ── */}
       <section className="mb-6">
-        <h2 className="mb-1 text-sm font-semibold">🔬 IC theo chỉ số con — chỉ báo nào dự báo tốt?</h2>
+        <h2 className="mb-1 text-sm font-semibold">🔬 IC theo chỉ số con — gom theo nhóm nhân tố</h2>
         <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          Ước lượng <b>Spearman rank-IC gộp</b> (toàn kỳ, gộp mọi version) giữa từng chỉ báo <code>s_*</code> và lợi
-          nhuận sau N phiên — <b>tham chiếu</b>, không phải IC chính thức của evaluator (không tách theo ngày/version).
-          Xanh = dự báo thuận, đỏ = nghịch. Rê chuột xem n.
+          Mỗi nhóm nhân tố (mean_reversion, breakout…) gồm các <b>chỉ báo thành viên</b> bên dưới. IC = chỉ báo nào
+          <b> dự báo tốt</b> (xanh) / <b>ngược</b> (đỏ). Ước lượng Spearman rank-IC gộp toàn kỳ (mọi version) — tham
+          chiếu, không phải IC chính thức evaluator. Rê chuột xem n.
         </p>
-        <BreakdownTable groups={indGroups} colLabel="Chỉ báo" nameOf={(k) => signalName(k)} minN={200} />
+        <div className="flex flex-col gap-3">
+          {indByFactor.map((f) => (
+            <div key={f.key}>
+              <div className="mb-1 text-[13px] font-semibold">
+                {f.label} <span className="font-mono text-[11px] font-normal text-[var(--color-muted)]">{f.key}</span>
+              </div>
+              <BreakdownTable groups={f.members} colLabel="Chỉ báo" nameOf={(k) => signalName(k)} minN={100} />
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* ── IC theo NGÀNH ── */}
+      {/* ── IC theo NGÀNH (gộp + per-version) ── */}
       <section className="mb-4">
         <h2 className="mb-1 text-sm font-semibold">🏭 IC theo ngành — điểm số hiệu quả ở ngành nào?</h2>
         <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          Spearman rank-IC gộp giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành. Cho biết điểm
-          của mô hình <b>đáng tin ở ngành nào</b> (xanh) và <b>ngược ở ngành nào</b> (đỏ). Lọc ngành có n≥100.
+          Spearman rank-IC gộp giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành. Điểm của mô hình
+          <b> đáng tin ở ngành nào</b> (xanh) và <b>ngược ở ngành nào</b> (đỏ).
         </p>
+        <div className="mb-1 text-[12px] font-medium">Gộp mọi version (n≥100):</div>
         <BreakdownTable groups={indusGroups} colLabel="Ngành" nameOf={(k) => k} minN={100} />
+
+        {indusByVer.length ? (
+          <div className="mt-3">
+            <div className="mb-1 text-[12px] font-medium">Tách theo scoring version (n≥30):</div>
+            {indusByVer.map((v) => (
+              <details key={v.version} className="mb-1.5 rounded-md border border-[var(--color-border)] p-2" open={v.version === curVer}>
+                <summary className="cursor-pointer select-none font-mono text-[13px] font-semibold">
+                  scoring {v.version}{v.version === curVer ? " (hiện tại)" : ""}
+                </summary>
+                <div className="mt-1.5">
+                  <BreakdownTable groups={v.groups} colLabel="Ngành" nameOf={(k) => k} minN={30} />
+                </div>
+              </details>
+            ))}
+          </div>
+        ) : null}
       </section>
     </>
   );
