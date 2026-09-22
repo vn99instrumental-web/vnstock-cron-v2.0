@@ -150,6 +150,7 @@ export function BuyBoard({
   runId,
   runStartedAt = null,
   newestRunId = null,
+  industryIC = {},
 }: {
   signals: BuySignal[];
   expectancy?: ExpectancyRow[];
@@ -157,6 +158,8 @@ export function BuyBoard({
   runId?: string;
   runStartedAt?: string | null;
   newestRunId?: string | null;
+  /** IC score↔lợi nhuận 5 phiên theo ngành (Spearman gộp) — badge chất lượng ngành. */
+  industryIC?: Record<string, { ic: number | null; n: number }>;
 }) {
   const robMap = useMemo(
     () => new Map(robustness.map((r) => [r.symbol, r])),
@@ -170,6 +173,7 @@ export function BuyBoard({
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [showList, setShowList] = useState(true);
   const [hideThin, setHideThin] = useState(false); // D — ẩn mã thanh khoản < 10 tỷ
+  const [byIndustry, setByIndustry] = useState(true); // nhóm danh sách theo ngành
 
   useEffect(() => {
     if (!sel) return;
@@ -281,10 +285,61 @@ export function BuyBoard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signals, q, sortKey, hideThin, robMap]);
 
+  // Nhóm danh sách theo ngành (giữ thứ tự sort trong mỗi ngành; ngành nhiều mã trước).
+  const industryGroups = useMemo(() => {
+    const m = new Map<string, BuySignal[]>();
+    for (const s of displayed) {
+      const ind = String((s.breakdown ?? {}).industry ?? "— Khác");
+      (m.get(ind) ?? m.set(ind, []).get(ind)!).push(s);
+    }
+    return [...m.entries()].sort((a, b) => b[1].length - a[1].length);
+  }, [displayed]);
+
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
   const b = sel?.breakdown ?? {};
   const groups = useMemo(() => factorGroupViews(b), [b]);
   const buyDays = new Set(markers.map((m) => m.date)).size;
+
+  // 1 dòng mã trong danh sách (dùng chung cho chế độ phẳng & nhóm ngành).
+  const symbolRow = (s: BuySignal) => {
+    const active = sel?.id === s.id;
+    const chg = s.changePct;
+    const ff = ffNum(s);
+    return (
+      <li key={s.id}>
+        <button
+          onClick={() => {
+            setSel(s);
+            if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+              setShowList(false);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          className={`flex w-full flex-col gap-0.5 border-b border-[var(--color-border)] px-2.5 py-1.5 text-left ${
+            active ? "bg-[var(--color-accent)]/10" : "hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
+          }`}
+        >
+          <span className="flex min-w-0 items-center gap-1.5 text-xs">
+            <span className="font-semibold">{s.symbol}</span>
+            <DecisionBadge decision={s.decision} />
+            <ConfChip conf={(s.breakdown ?? {}).confidence} />
+            <span className="tabular ml-auto text-[10px] text-[var(--color-muted)]">score {fmtNum(s.score_trade)}</span>
+          </span>
+          <span className="flex items-center gap-2 text-[11px] tabular">
+            <span>{fmtNum((s.breakdown ?? {}).price)}</span>
+            <span className={signClass(chg)}>{chg == null ? "—" : fmtPct(chg)}</span>
+            <span className="ml-auto" title="Khối ngoại ròng phiên (mua−bán)" style={{ color: ff == null ? "var(--color-muted)" : ff >= 0 ? "var(--color-buy)" : "var(--color-sell)" }}>
+              KN {fmtBil(ff)}
+            </span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <LiqBadge adtv={adtvOf(s)} />
+            <PersistChip r={robMap.get(s.symbol)} />
+          </span>
+        </button>
+      </li>
+    );
+  };
 
   // C — độ tươi dữ liệu.
   const fresh = (() => {
@@ -355,7 +410,11 @@ export function BuyBoard({
             ))}
           </select>
         </div>
-        <label className="flex min-h-[34px] items-center gap-2 border-b border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)] cursor-pointer active:bg-black/5 dark:active:bg-white/5">
+        <label className="flex min-h-[30px] items-center gap-2 border-b border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)] cursor-pointer active:bg-black/5 dark:active:bg-white/5">
+          <input type="checkbox" checked={byIndustry} onChange={(e) => setByIndustry(e.target.checked)} className="h-4 w-4" />
+          Nhóm theo ngành (kèm IC ngành)
+        </label>
+        <label className="flex min-h-[30px] items-center gap-2 border-b border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)] cursor-pointer active:bg-black/5 dark:active:bg-white/5">
           <input type="checkbox" checked={hideThin} onChange={(e) => setHideThin(e.target.checked)} className="h-4 w-4" />
           Ẩn mã thanh khoản &lt; 10 tỷ/phiên
         </label>
@@ -363,49 +422,35 @@ export function BuyBoard({
           {displayed.length}/{signals.length} mã · %so giá TC · ⚡ thanh khoản · bền = số phiên giữ BUY · KN = khối ngoại ròng
         </div>
         <ul className="max-h-[70vh] overflow-y-auto">
-          {displayed.map((s) => {
-            const active = sel?.id === s.id;
-            const chg = s.changePct;
-            const ff = ffNum(s);
-            return (
-              <li key={s.id}>
-                <button
-                  onClick={() => {
-                    setSel(s);
-                    // Mobile: ẩn list để hiện chart + thông số ngay (tránh detail bị đẩy dưới list dài).
-                    if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
-                      setShowList(false);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }
-                  }}
-                  className={`flex w-full flex-col gap-0.5 border-b border-[var(--color-border)] px-2.5 py-1.5 text-left ${
-                    active ? "bg-[var(--color-accent)]/10" : "hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
-                  }`}
-                >
-                  <span className="flex min-w-0 items-center gap-1.5 text-xs">
-                    <span className="font-semibold">{s.symbol}</span>
-                    <DecisionBadge decision={s.decision} />
-                    <ConfChip conf={(s.breakdown ?? {}).confidence} />
-                    <span className="tabular ml-auto text-[10px] text-[var(--color-muted)]">score {fmtNum(s.score_trade)}</span>
-                  </span>
-                  <span className="flex items-center gap-2 text-[11px] tabular">
-                    <span>{fmtNum((s.breakdown ?? {}).price)}</span>
-                    <span className={signClass(chg)}>{chg == null ? "—" : fmtPct(chg)}</span>
-                    <span className="ml-auto" title="Khối ngoại ròng phiên (mua−bán)" style={{ color: ff == null ? "var(--color-muted)" : ff >= 0 ? "var(--color-buy)" : "var(--color-sell)" }}>
-                      KN {fmtBil(ff)}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <LiqBadge adtv={adtvOf(s)} />
-                    <PersistChip r={robMap.get(s.symbol)} />
-                  </span>
-                </button>
-              </li>
-            );
-          })}
           {displayed.length === 0 ? (
             <li className="px-2.5 py-4 text-center text-xs text-[var(--color-muted)]">Không có mã khớp “{q}”.</li>
-          ) : null}
+          ) : byIndustry ? (
+            industryGroups.map(([ind, syms]) => {
+              const icRec = industryIC[ind];
+              const ic = icRec?.ic ?? null;
+              const icColor = ic == null ? "var(--color-muted)" : ic > 0.05 ? "var(--color-buy)" : ic < -0.05 ? "var(--color-sell)" : "var(--color-muted)";
+              return (
+                <li key={ind}>
+                  <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">
+                    <span className="truncate">{ind}</span>
+                    <span className="text-[10px] font-normal text-[var(--color-muted)]">{syms.length} mã</span>
+                    {ic != null ? (
+                      <span
+                        className="tabular ml-auto shrink-0 text-[10px]"
+                        style={{ color: icColor }}
+                        title={`IC score↔lợi nhuận 5 phiên của ngành = ${ic.toFixed(3)} (Spearman gộp, n=${icRec?.n ?? "?"}). ${ic > 0.05 ? "điểm ĐÁNG TIN ở ngành này" : ic < -0.05 ? "điểm ĐANG NGƯỢC ở ngành này" : "trung tính"}`}
+                      >
+                        IC {ic >= 0 ? "+" : ""}{ic.toFixed(2)}
+                      </span>
+                    ) : null}
+                  </div>
+                  <ul>{syms.map(symbolRow)}</ul>
+                </li>
+              );
+            })
+          ) : (
+            displayed.map(symbolRow)
+          )}
         </ul>
       </div>
 
