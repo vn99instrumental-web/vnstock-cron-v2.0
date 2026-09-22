@@ -46,6 +46,10 @@ export function PriceChart({
   const n = candles.length;
   const wrapRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ start: 0, count: n });
+  const [show, setShow] = useState({
+    ema20: true, ema50: true, ema200: true, stLine: true, stBg: true,
+    bb: true, pct: true, entry: true, zones: false,
+  });
   const [hover, setHover] = useState<number | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number; w: number; h: number } | null>(null); // vị trí con trỏ (px trong svg)
   const drag = useRef<{ active: boolean } | null>(null);
@@ -307,25 +311,52 @@ export function PriceChart({
           </g>
         ))}
 
+        {/* Zone khuyến nghị mua/bán (heuristic mean-reversion, theo Bollinger nến cuối) */}
+        {show.zones ? (() => {
+          const z = bb[end - 1];
+          if (!z || z.mid == null || z.upper == null || z.lower == null) return null;
+          const sigma = (z.upper - z.mid) / 2;
+          const hiV = z.mid + sigma, loV = z.mid - sigma;
+          const yTop = M.top, yBot = M.top + plotH;
+          const yHi = clamp(y(hiV), yTop, yBot);
+          const yLo = clamp(y(loV), yTop, yBot);
+          const lbl = (yy: number, text: string, col: string, xx = M.left + 4) =>
+            <text x={xx} y={yy} fontSize={8} fill={col} opacity={0.85}>{text}</text>;
+          return (
+            <g>
+              <rect x={M.left} y={yTop} width={plotW} height={Math.max(0, yHi - yTop)} fill="#dc2626" opacity={0.07} />
+              <rect x={M.left} y={yHi} width={plotW} height={Math.max(0, yLo - yHi)} fill="#f59e0b" opacity={0.07} />
+              <rect x={M.left} y={yLo} width={plotW} height={Math.max(0, yBot - yLo)} fill="#16a34a" opacity={0.08} />
+              {yHi - yTop > 10 ? lbl(yTop + 9, "Đắt · tránh đuổi", "#dc2626", M.left + 70) : null}
+              {yLo - yHi > 10 ? lbl((yHi + yLo) / 2 + 3, "Trung tính", "#b45309") : null}
+              {yBot - yLo > 10 ? lbl(yBot - 4, "Nên mua · chiết khấu", "#16a34a") : null}
+            </g>
+          );
+        })() : null}
+
         {/* Nền vùng Supertrend (xanh/đỏ rất nhạt) */}
-        {stBands.map((band, k) => (
+        {show.stBg ? stBands.map((band, k) => (
           <rect key={`stb${k}`} x={band.x} y={M.top} width={band.w} height={plotH}
             fill={band.up ? STU : STD} opacity={0.06} />
-        ))}
+        )) : null}
 
         {/* Bollinger band (nền mờ) */}
-        {bbBand ? <polygon points={bbBand} fill={BBC} opacity={0.08} /> : null}
-        {line(bbUpper, BBC, 0.8, "3 2")}
-        {line(bbLower, BBC, 0.8, "3 2")}
-        {line(bbMid, BBC, 0.8, "1 2")}
+        {show.bb ? (
+          <>
+            {bbBand ? <polygon points={bbBand} fill={BBC} opacity={0.08} /> : null}
+            {line(bbUpper, BBC, 0.8, "3 2")}
+            {line(bbLower, BBC, 0.8, "3 2")}
+            {line(bbMid, BBC, 0.8, "1 2")}
+          </>
+        ) : null}
 
         {/* đường ±3/±6% quanh entry — màu xanh/đỏ rõ */}
-        {pctPairs.filter(({ v }) => inY(v)).map(({ p, v }) => (
+        {show.pct ? pctPairs.filter(({ v }) => inY(v)).map(({ p, v }) => (
           <g key={p}>
             <line x1={M.left} x2={M.left + plotW} y1={y(v)} y2={y(v)} stroke={PCT_COLOR[p]} strokeWidth={1} strokeDasharray="5 3" opacity={0.9} />
             <text x={M.left + plotW + 4} y={y(v) + 3} fontSize={9} fill={PCT_COLOR[p]} className="tabular">{p > 0 ? "+" : ""}{p}% {fmt(v)}</text>
           </g>
-        ))}
+        )) : null}
 
         {/* nến */}
         {vis.map((c, i) => {
@@ -342,20 +373,20 @@ export function PriceChart({
         })}
 
         {/* Supertrend — đoạn xanh (tăng) / đỏ (giảm) */}
-        {stSegs.map((s, k) => (
+        {show.stLine ? stSegs.map((s, k) => (
           <path key={`st${k}`} d={s.d} fill="none" stroke={s.up ? STU : STD} strokeWidth={1.6} opacity={0.9} />
-        ))}
+        )) : null}
 
-        {line(ema20, EMA20C)}
-        {line(ema50, EMA50C)}
-        {line(ema200, EMA200C)}
+        {show.ema20 ? line(ema20, EMA20C) : null}
+        {show.ema50 ? line(ema50, EMA50C) : null}
+        {show.ema200 ? line(ema200, EMA200C) : null}
 
         {sigLocal >= 0 ? (
           <line x1={cx(sigLocal)} x2={cx(sigLocal)} y1={M.top} y2={M.top + plotH} stroke={ACCENT} strokeWidth={0.5} strokeDasharray="2 2" opacity={0.5} />
         ) : null}
 
         {/* Entry (giữ lại làm mốc gốc) */}
-        {inY(levels.entry) ? (
+        {show.entry && inY(levels.entry) ? (
           <g>
             <line x1={M.left} x2={M.left + plotW} y1={y(levels.entry)} y2={y(levels.entry)} stroke={ACCENT} strokeWidth={1} opacity={0.9} />
             <text x={M.left + plotW + 4} y={y(levels.entry) + 3} fontSize={9} fill={ACCENT} className="tabular">Entry {fmt(levels.entry)}</text>
@@ -478,6 +509,26 @@ export function PriceChart({
           </div>
         );
       })()}
+
+      {/* Bật/tắt chỉ báo — multi-select checkbox (collapse cho gọn) */}
+      <details className="mt-1.5 text-[11px]">
+        <summary className="inline-flex min-h-[26px] cursor-pointer select-none items-center rounded-md border border-[var(--color-border)] px-2 py-0.5 text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5">
+          ⚙ Hiện/ẩn chỉ báo
+        </summary>
+        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+          {([
+            { k: "ema20", lb: "EMA20" }, { k: "ema50", lb: "EMA50" }, { k: "ema200", lb: "EMA200" },
+            { k: "stLine", lb: "Supertrend" }, { k: "stBg", lb: "Nền Supertrend" },
+            { k: "bb", lb: "Bollinger" }, { k: "pct", lb: "±3/6%" }, { k: "entry", lb: "Entry" },
+            { k: "zones", lb: "Zone mua/bán" },
+          ] as { k: keyof typeof show; lb: string }[]).map((o) => (
+            <label key={o.k} className="flex cursor-pointer items-center gap-1">
+              <input type="checkbox" checked={show[o.k]} onChange={(e) => setShow((s) => ({ ...s, [o.k]: e.target.checked }))} className="h-3.5 w-3.5" />
+              {o.lb}
+            </label>
+          ))}
+        </div>
+      </details>
 
       {/* Thanh chọn khoảng xem — nút to, dễ chạm trên điện thoại */}
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
