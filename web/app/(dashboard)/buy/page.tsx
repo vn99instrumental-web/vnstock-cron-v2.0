@@ -81,6 +81,16 @@ export default async function BuyPage() {
   // D/E/F — độ vững tín hiệu (thanh khoản từ breakdown; độ bền/đồng thuận từ view).
   const { data: robData } = await supabase.from("v4_buy_robustness").select("*");
 
+  // IC score↔lợi nhuận 5 phiên theo ngành (badge chất lượng ngành trong danh sách).
+  const { data: indusICData } = await supabase
+    .from("v4_ic_by_industry")
+    .select("industry, ic, n")
+    .eq("horizon", 5);
+  const industryIC: Record<string, { ic: number | null; n: number }> = {};
+  for (const r of (indusICData ?? []) as { industry: string; ic: number | string | null; n: number }[]) {
+    industryIC[r.industry] = { ic: r.ic == null ? null : Number(r.ic), n: Number(r.n) };
+  }
+
   return (
     <>
       <PageHeader
@@ -94,6 +104,7 @@ export default async function BuyPage() {
         runId={latestBuy.run_id}
         runStartedAt={(runRow?.started_at as string | undefined) ?? null}
         newestRunId={(newestRun?.run_id as string | undefined) ?? null}
+        industryIC={industryIC}
       />
     </>
   );
