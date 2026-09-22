@@ -158,20 +158,61 @@ function vndShort(v: number): string {
  */
 function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
   const g = (k: string) => num(b[k]);
-  if (key === "s_vol_ratio_h") {
-    const adtv = g("adtv_bil");
-    return adtv != null ? `Thanh khoản ${adtv.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} tỷ/phiên` : undefined;
+  const price = g("price");
+  switch (key) {
+    // ── Mean reversion ──
+    case "s_willr_mr": {
+      const wr = g("willr_14");
+      return wr != null ? `Williams %R ${wr.toFixed(0)}` : undefined;
+    }
+    case "s_bb_mr": {
+      const bb = g("bb_position");
+      return bb != null ? `%B Bollinger ${bb.toFixed(2)}` : undefined;
+    }
+    case "s_overext_ema": {
+      let d = g("price_vs_ema200_pct");
+      const ema = g("ema200");
+      if (d == null && price != null && ema != null && ema !== 0) d = ((price - ema) / ema) * 100;
+      return d != null ? `Giãn EMA200 ${d >= 0 ? "+" : ""}${d.toFixed(1)}%` : undefined;
+    }
+    case "s_rs_reversal": {
+      const sr = g("return_20d"), vr = g("vnindex_return_20d");
+      if (sr == null) return undefined;
+      if (vr != null) {
+        const rs = (1 + sr / 100) / (1 + vr / 100);
+        return `RS 20 phiên ${rs.toFixed(2)} (mã ${sr >= 0 ? "+" : ""}${sr.toFixed(0)}% vs VNI ${vr >= 0 ? "+" : ""}${vr.toFixed(0)}%)`;
+      }
+      return `Lợi nhuận 20 phiên ${sr >= 0 ? "+" : ""}${sr.toFixed(0)}%`;
+    }
+    case "s_deep_dd": {
+      const lo = g("low_52w");
+      return price != null && lo != null && lo !== 0 ? `Trên đáy 52T +${(((price - lo) / lo) * 100).toFixed(0)}%` : undefined;
+    }
+    // ── Breakout ──
+    case "s_dist_52w": {
+      const hi = g("high_52w");
+      return price != null && hi != null && hi !== 0 ? `Cách đỉnh 52T ${(((price - hi) / hi) * 100).toFixed(0)}%` : undefined;
+    }
+    case "s_vol_ratio_h": {
+      const vr = g("vol_ma_ratio"), adtv = g("adtv_bil");
+      const parts: string[] = [];
+      if (vr != null) parts.push(`KL ${vr.toFixed(2)}× TB`);
+      if (adtv != null) parts.push(`TK ${adtv.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} tỷ`);
+      return parts.length ? parts.join(" · ") : undefined;
+    }
+    // ── Flow ──
+    case "s_ff_net": {
+      const net = g("ff_intra_net"), ratio = g("ff_intra_ratio");
+      if (net == null) return undefined;
+      return `KN ròng ${vndShort(net)}${ratio != null ? ` (${(ratio * 100).toFixed(1)}% GT)` : ""}`;
+    }
+    case "s_of_phasefix": {
+      const bp = g("of_bp_pts");
+      return bp != null && bp !== 0 ? `Áp lực lệnh ${bp > 0 ? "+" : ""}${bp}` : undefined;
+    }
+    default:
+      return undefined;
   }
-  if (key === "s_ff_net") {
-    const net = g("ff_intra_net"), ratio = g("ff_intra_ratio");
-    if (net == null) return undefined;
-    return `KN ròng ${vndShort(net)}${ratio != null ? ` (${(ratio * 100).toFixed(1)}% GT)` : ""}`;
-  }
-  if (key === "s_of_phasefix") {
-    const bp = g("of_bp_pts");
-    return bp != null && bp !== 0 ? `Áp lực lệnh ${bp > 0 ? "+" : ""}${bp}` : undefined;
-  }
-  return undefined;
 }
 export interface FactorGroupView {
   key: string; label: string; desc: string; norm: number; dir: Dir;

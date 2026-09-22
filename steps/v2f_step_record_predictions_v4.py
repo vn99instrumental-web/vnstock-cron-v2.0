@@ -276,6 +276,14 @@ def run():
         for k, v in sig.items():
             if k.startswith("s_") or k.endswith("_norm"):
                 rec[k] = v
+        # GIÁ TRỊ THÔ chỉ báo (để app hiện "giá trị mới nhất", vd Williams %R=-85)
+        # — thuần metadata, KHÔNG ảnh hưởng scoring. Chỉ copy field có sẵn trong sig.
+        for k in ("willr_14", "bb_position", "price_vs_ema200_pct", "ema200",
+                  "return_20d", "vnindex_return_20d", "high_52w", "low_52w",
+                  "vol_ma_ratio", "cmf", "stoch_k", "rsi_14"):
+            v = sig.get(k)
+            if v is not None:
+                rec[k] = v
         new_records.append(rec)
 
     if not new_records:
