@@ -103,6 +103,55 @@ export function computeBB(candles: Candle[], period = 20, mult = 2): {
   return out;
 }
 
+/**
+ * Supertrend (ATR Wilder). Trả mỗi nến {value, dir}: dir='up' → xu hướng tăng
+ * (đường nằm DƯỚI giá, xanh), 'down' → giảm (đường TRÊN giá, đỏ).
+ * ⚠️ ATR tính từ high/low của nến SNAP (không phải tick thật) → xấp xỉ.
+ */
+export function computeSupertrend(
+  candles: Candle[], period = 10, mult = 3,
+): { value: number | null; dir: "up" | "down" | null }[] {
+  const n = candles.length;
+  const out = Array.from({ length: n }, () => ({ value: null as number | null, dir: null as "up" | "down" | null }));
+  if (n < period + 1) return out;
+
+  // True Range + ATR (Wilder smoothing).
+  const tr: number[] = new Array(n).fill(0);
+  tr[0] = candles[0].high - candles[0].low;
+  for (let i = 1; i < n; i++) {
+    const h = candles[i].high, l = candles[i].low, pc = candles[i - 1].close;
+    tr[i] = Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc));
+  }
+  const atr: number[] = new Array(n).fill(NaN);
+  let seed = 0;
+  for (let i = 1; i <= period; i++) seed += tr[i];
+  atr[period] = seed / period;
+  for (let i = period + 1; i < n; i++) atr[i] = (atr[i - 1] * (period - 1) + tr[i]) / period;
+
+  let prevFU = 0, prevFL = 0, prevST = 0;
+  for (let i = period; i < n; i++) {
+    const hl2 = (candles[i].high + candles[i].low) / 2;
+    const bu = hl2 + mult * atr[i];
+    const bl = hl2 - mult * atr[i];
+    const pc = candles[i - 1].close;
+    const fu = (bu < prevFU || pc > prevFU) ? bu : prevFU;
+    const fl = (bl > prevFL || pc < prevFL) ? bl : prevFL;
+
+    let st: number;
+    if (i === period) {
+      st = candles[i].close <= fu ? fu : fl; // khởi tạo
+    } else if (prevST === prevFU) {
+      st = candles[i].close <= fu ? fu : fl;
+    } else {
+      st = candles[i].close >= fl ? fl : fu;
+    }
+    const dir: "up" | "down" = st === fl ? "up" : "down";
+    out[i] = { value: st, dir };
+    prevFU = fu; prevFL = fl; prevST = st;
+  }
+  return out;
+}
+
 /** Nến nào chạm TP (high ≥ tp) — dùng highlight. */
 export function tpHit(candles: Candle[], levels: Levels) {
   const hit1 = levels.tp1 != null && candles.some((c) => c.date >= levels.signalDate && c.high >= levels.tp1!);

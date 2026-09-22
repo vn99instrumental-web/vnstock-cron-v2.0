@@ -594,7 +594,9 @@ export function BuyBoard({
 
             {/* 6 NHÓM YẾU TỐ — từ breakdown, hiện NGAY (không chờ tải giá) */}
             <div className="mt-2 border-t border-[var(--color-border)] pt-1.5">
-                  <h3 className="mb-1.5 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do</h3>
+                  <h3 className="mb-1.5 text-xs font-semibold">6 nhóm yếu tố — chỉ báo, điểm & lý do
+                    <span className="ml-1 font-normal text-[10px] text-[var(--color-muted)]">· giá trị thô (thanh khoản, khối ngoại…) cập nhật theo snapshot ra tín hiệu</span>
+                  </h3>
                   <div className="grid gap-1.5 lg:grid-cols-2">
                     {groups.map((g) => (
                       <div key={g.key} className="rounded-md border border-[var(--color-border)] p-1.5">
@@ -620,6 +622,11 @@ export function BuyBoard({
                                 </span>
                                 <span className="shrink-0 font-medium">{m.name}</span>
                                 <span className="text-[var(--color-muted)]">— {m.text}</span>
+                                {m.raw ? (
+                                  <span className="ml-auto shrink-0 rounded bg-black/5 px-1 text-[10px] font-medium tabular text-[var(--color-ink)] dark:bg-white/10" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">
+                                    {m.raw}
+                                  </span>
+                                ) : null}
                               </li>
                             ))}
                           </ul>
