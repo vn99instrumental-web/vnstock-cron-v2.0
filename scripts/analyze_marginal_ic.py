@@ -32,6 +32,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
+import os
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -40,6 +42,10 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from eval_forward_ic import daily_last, _load, _f  # noqa: E402
+from sync_supabase import Supabase  # noqa: E402
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger("marginal_ic")
 
 PRED_GLOB = str(Path(__file__).resolve().parent.parent / "output/history/v2f_predictions_v4/*.jsonl")
 OUT_GLOB = str(Path(__file__).resolve().parent.parent / "output/history/v2f_outcomes_v4/*.jsonl")
@@ -205,10 +211,10 @@ def main() -> int:
             n5 = next((r["n"] for r in vrows if r["horizon"] == 5), None)
             print(f"{ver}: {len(vrows)} rows | R²(5d)={r2_5} | n(5d)={n5}")
 
-    print(f"TỔNG: {len(all_rows)} dòng, {len(set(r['version'] for r in all_rows))} version.")
+    log.info("Tính xong: %d dòng, %d version.", len(all_rows), len(set(r["version"] for r in all_rows)))
     if args.json:
         json.dump(all_rows, open(args.json, "w"))
-        print("Đã ghi", args.json)
+        log.info("Đã ghi JSON %s", args.json)
     if args.dry_run:
         # in top marginal cho version nhiều mẫu nhất @5d
         best = max(by_version, key=lambda v: len(by_version[v]))
@@ -216,6 +222,20 @@ def main() -> int:
         r5 = [r for r in all_rows if r["version"] == best and r["horizon"] == 5 and r["indicator"] != "_model_r2"]
         for r in sorted(r5, key=lambda x: -abs(x["coef"])):
             print(f"  {r['indicator']:15} [{r['factor']:14}] coef={r['coef']:+.3f} t={r['tstat']:+.1f} | univarIC={r['univar_ic']}")
+        log.info("DRY-RUN: bỏ qua ghi Supabase.")
+        return 0
+    if not all_rows:
+        log.info("Không có dòng nào đủ mẫu — không ghi.")
+        return 0
+
+    url = os.environ.get("SUPABASE_URL") or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+    if not url or not key:
+        log.error("Thiếu env SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY (server-only).")
+        return 2
+    sb = Supabase(url, key)
+    sb.upsert("v4_marginal_ic", all_rows, on_conflict="version,indicator,horizon")
+    log.info("=== MARGINAL IC DONE === %d dòng.", len(all_rows))
     return 0
 
 
