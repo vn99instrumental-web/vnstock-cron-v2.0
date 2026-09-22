@@ -1,6 +1,7 @@
 import { PageHeader, EmptyState } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
+import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
 
 export const dynamic = "force-dynamic";
 
@@ -132,11 +133,12 @@ export default async function ICPage() {
   const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
 
   // IC breakdown (ước lượng Spearman gộp) — chỉ số con, ngành (gộp & theo version).
-  const [indRes, indusRes, indusVerRes] = await Promise.all([
+  const [indRes, indusVerRes, factorVerRes] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
-    supabase.from("v4_ic_by_industry").select("industry, horizon, ic, n"),
     supabase.from("v4_ic_by_industry_ver").select("version, industry, horizon, ic, n"),
+    supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n"),
   ]);
+  const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
     arr.map((r) => ({
       key: String(r[keyField]),
@@ -145,7 +147,6 @@ export default async function ICPage() {
       n: Number(r.n),
     }));
   const indGroups = groupBrk(toBrk((indRes.data ?? []) as Record<string, unknown>[], "indicator"));
-  const indusGroups = groupBrk(toBrk((indusRes.data ?? []) as Record<string, unknown>[], "industry"));
 
   // Chỉ số con GOM THEO FACTOR (mean_reversion gồm indicator nào…).
   const indByName = new Map(indGroups.map((g) => [g.name, g]));
@@ -356,8 +357,20 @@ export default async function ICPage() {
         );
       })}
       <p className="mb-6 text-xs text-[var(--color-muted)]">
-        Độ đậm màu theo |IC| (chuẩn hoá ±0.20). Hover ô để xem cỡ mẫu n.
+        Độ đậm màu theo |IC| (chuẩn hoá ±0.20). Hover ô để xem cỡ mẫu n. Bảng trên là <b>IC chính thức</b> (evaluator
+        Python, chuẩn theo-ngày) — chỉ version tích đủ ≥3 phiên chín mới xuất hiện.
       </p>
+
+      {/* ── Ma trận IC nhân tố × MỌI version (ước lượng) — công cụ combine ── */}
+      <section className="mb-6">
+        <h2 className="mb-1 text-sm font-semibold">🧮 So sánh nhân tố qua tất cả version — chọn yếu tố để combine</h2>
+        <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+          Hàng = version, cột = nhân tố. Tìm nhân tố <b>dương ổn định qua nhiều version</b> (xanh nhiều cột) để tăng
+          trọng số; nhân tố <b>đỏ dai dẳng</b> để giảm/đảo. Phủ hết mọi version (kể cả version cũ n nhỏ) —
+          <b> ước lượng pooled</b>, tham chiếu; con số chuẩn xem bảng official phía trên.
+        </p>
+        <FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} />
+      </section>
 
       {/* ── IC theo CHỈ SỐ CON — gom theo nhóm nhân tố ── */}
       <section className="mb-6">
@@ -383,15 +396,12 @@ export default async function ICPage() {
       <section className="mb-4">
         <h2 className="mb-1 text-sm font-semibold">🏭 IC theo ngành — điểm số hiệu quả ở ngành nào?</h2>
         <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          Spearman rank-IC gộp giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành. Điểm của mô hình
-          <b> đáng tin ở ngành nào</b> (xanh) và <b>ngược ở ngành nào</b> (đỏ).
+          Spearman rank-IC gộp giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành, <b>riêng từng
+          version</b> (điểm mô hình đáng tin ở ngành nào — xanh, ngược ở ngành nào — đỏ). Ước lượng tham chiếu.
         </p>
-        <div className="mb-1 text-[12px] font-medium">Gộp mọi version (n≥100):</div>
-        <BreakdownTable groups={indusGroups} colLabel="Ngành" nameOf={(k) => k} minN={100} />
 
         {indusByVer.length ? (
-          <div className="mt-3">
-            <div className="mb-1 text-[12px] font-medium">Tách theo scoring version (n≥30):</div>
+          <div>
             {indusByVer.map((v) => (
               <details key={v.version} className="mb-1.5 rounded-md border border-[var(--color-border)] p-2" open={v.version === curVer}>
                 <summary className="cursor-pointer select-none font-mono text-[13px] font-semibold">

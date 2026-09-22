@@ -386,20 +386,13 @@ export function BuyBoard({
 
   return (
     <div className="flex flex-col gap-1.5">
-      {/* C — thanh độ tươi dữ liệu */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-1 text-[11px]">
-        <span className="font-medium">Run {runId ?? "—"}</span>
-        {fresh ? (
-          <span className={fresh.stale ? "font-medium text-[var(--color-sell)]" : "text-[var(--color-muted)]"}>
-            cập nhật {agoText(fresh.ageMin)} · {fresh.marketOpen ? "phiên ĐANG MỞ" : "ngoài phiên"}
-            {fresh.stale ? " ⚠ data có thể trễ" : ""}
-          </span>
-        ) : null}
-        {runStale ? (
-          <span className="text-[var(--color-sell)]">⚠ có run mới hơn ({newestRunId}) chưa đủ BUY — đang xem run có BUY gần nhất</span>
-        ) : null}
-        <span className="ml-auto italic text-[var(--color-muted)]">Snapshot 5×/ngày · không realtime</span>
-      </div>
+      {/* C — chỉ hiện dòng cảnh báo khi data trễ / có run mới hơn (bình thường ẩn để tiết kiệm chiều cao) */}
+      {(fresh?.stale || runStale) ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md border border-[var(--color-sell)]/40 bg-[var(--color-surface)] px-2.5 py-1 text-[11px] text-[var(--color-sell)]">
+          {fresh?.stale ? <span className="font-medium">⚠ data có thể trễ (cập nhật {agoText(fresh.ageMin)}, phiên đang mở)</span> : null}
+          {runStale ? <span>⚠ có run mới hơn ({newestRunId}) chưa đủ BUY — đang xem run có BUY gần nhất</span> : null}
+        </div>
+      ) : null}
 
       <div className={showList ? "grid gap-3 md:grid-cols-[300px_1fr]" : "block"}>
       {/* LIST trái */}
