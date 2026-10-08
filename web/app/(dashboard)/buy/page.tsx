@@ -1,6 +1,7 @@
 import { PageHeader, EmptyState } from "@/components/ui";
 import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyName } from "@/lib/company-names";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,10 @@ export default async function BuyPage() {
     .in("decision", ["BUY", "STRONG BUY"])
     .order("score_trade", { ascending: false });
 
-  const signals = (data ?? []) as BuySignal[];
+  const signals = ((data ?? []) as BuySignal[]).map((signal) => ({
+    ...signal,
+    companyName: getCompanyName(signal.symbol),
+  }));
 
   // % thay đổi so với giá TC (giá đóng cửa phiên liền trước) — lấy prevClose từ v4_ohlc.
   if (signals.length) {

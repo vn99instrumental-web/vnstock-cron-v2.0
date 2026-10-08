@@ -13,6 +13,7 @@ import {
 export interface BuySignal {
   id: number;
   symbol: string;
+  companyName?: string | null;
   decision: string | null;
   score_trade: number | null;
   signal_date: string;
@@ -496,7 +497,17 @@ export function BuyBoard({
               >
                 {showList ? "‹ Ẩn DS" : "☰ DS"}
               </button>
-              <h2 className="text-sm font-semibold">{sel.symbol}</h2>
+              <h2 className="flex min-w-0 items-baseline gap-1.5 text-sm">
+                <span className="shrink-0 font-semibold">{sel.symbol}</span>
+                {sel.companyName ? (
+                  <span
+                    className="max-w-[min(36rem,70vw)] truncate font-medium text-[var(--color-muted)]"
+                    title={sel.companyName}
+                  >
+                    &middot; {sel.companyName}
+                  </span>
+                ) : null}
+              </h2>
               <DecisionBadge decision={sel.decision} />
               <ConfChip conf={b.confidence} withLabel />
               <span className="text-[11px] text-[var(--color-muted)]">
