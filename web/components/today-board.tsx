@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge } from "@/components/ui";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
-import { CONFIDENCE_LABEL } from "@/lib/interpret";
+import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
 
 export interface TodaySignal {
   symbol: string;
@@ -20,6 +20,7 @@ export interface TodaySignal {
   entry: string | number | null;
   stop: string | number | null;
   tp1: string | number | null;
+  breakdown: Record<string, unknown> | null;
 }
 
 /** Nhãn Quality v2.3 (dashboard html v4): khối ngoại mạnh & cơ bản tốt. */
@@ -42,6 +43,7 @@ interface Snap {
   ffNet: number | null; ffRatio: number | null; nAlign: number | null;
   ffScore: number | null; fundScore: number | null;
   entry: number | null; stop: number | null; tp1: number | null;
+  breakdown: Record<string, unknown>;
 }
 interface Group {
   symbol: string; snaps: Snap[]; latest: Snap;
@@ -95,10 +97,41 @@ function AlignChip({ n }: { n: number | null }) {
   );
 }
 
+function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) {
+  const groups = factorGroupViews(breakdown);
+  return (
+    <div className="grid gap-1.5 py-2 lg:grid-cols-2">
+      {groups.map((g) => (
+        <div key={g.key} className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold">{g.label}</span>
+            <span className="tabular text-[10px] font-semibold" style={{ color: DIR_COLOR[g.dir] }}>
+              {g.rawTotal > 0 ? "+" : ""}{g.rawTotal}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
+            </span>
+            <span className="ml-auto text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
+          </div>
+          {g.members.length ? (
+            <ul className="mt-1 space-y-1">
+              {g.members.map((m) => (
+                <li key={m.key} className="flex flex-wrap items-start gap-x-1.5 text-[11px] leading-tight">
+                  <span className="tabular w-10 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>{m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span></span>
+                  <span className="font-medium">{m.name}</span>
+                  <span className="text-[var(--color-muted)]">— {m.text}</span>
+                  {m.raw ? <span className="ml-auto rounded bg-black/5 px-1 text-[10px] tabular dark:bg-white/10">{m.raw}</span> : null}
+                </li>
+              ))}
+            </ul>
+          ) : <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Không có chỉ báo nổi bật ở snapshot này.</p>}
+        </div>
+      ))}
+    </div>
+  );
+}
 export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; totalSnaps: number }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [buyOnly, setBuyOnly] = useState(true); // mặc định chỉ hiện mã có tín hiệu BUY hôm nay
   const [open, setOpen] = useState<string | null>(null);
+  const [openSnap, setOpenSnap] = useState<string | null>(null);
   const [q, setQ] = useState("");
 
   const groups = useMemo<Group[]>(() => {
@@ -111,6 +144,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
         ffNet: num(s.ff_intra_net), ffRatio: num(s.ff_intra_ratio), nAlign: num(s.n_aligned),
         ffScore: num(s.ff_score), fundScore: num(s.fundamental_score),
         entry: num(s.entry), stop: num(s.stop), tp1: num(s.tp1),
+        breakdown: s.breakdown ?? {},
       });
       by.set(s.symbol, arr);
     }
@@ -216,29 +250,31 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
                     const prev = i > 0 ? g.snaps[i - 1].decision : null;
                     const changed = prev != null && prev !== s.decision;
                     const ffCls = s.ffNet == null ? "text-[var(--color-muted)]" : s.ffNet > 0 ? "text-[var(--color-buy)]" : s.ffNet < 0 ? "text-[var(--color-sell)]" : "text-[var(--color-muted)]";
+const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
+                    const snapOpen = openSnap === snapKey;
                     return (
-                      <tr key={i} className="border-t border-[var(--color-border)]/60">
-                        <td className="py-1 tabular whitespace-nowrap">{hmVN(s.snap_time)}</td>
-                        <td className="py-1"><span className="inline-flex items-center gap-1"><DecisionBadge decision={s.decision} />{changed ? <span className="text-[10px] text-[var(--color-accent)]">↳ đổi</span> : null}</span></td>
-                        <td className="py-1 text-right tabular">{fmtNum(s.score)}</td>
-                        <td className="py-1 text-right tabular text-[var(--color-muted)]">{fmtNum(s.price)}</td>
-                        <td className="py-1 text-right tabular whitespace-nowrap text-[11px]">
-                          {isBuy(s.decision) && s.entry != null ? (
-                            <span>
-                              <span className="text-[var(--color-accent)]">{fmtNum(s.entry)}</span>
-                              <span className="text-[var(--color-muted)]">/</span>
-                              <span className="text-[var(--color-sell)]">{fmtNum(s.stop)}</span>
-                              <span className="text-[var(--color-muted)]">/</span>
-                              <span className="text-[var(--color-buy)]">{fmtNum(s.tp1)}</span>
-                            </span>
-                          ) : (
-                            <span className="text-[var(--color-muted)]">—</span>
-                          )}
-                        </td>
-                        <td className={`py-1 text-right tabular whitespace-nowrap ${ffCls}`}>{fmtBil(s.ffNet)}</td>
-                      </tr>
-                    );
-                  })}
+                      <Fragment key={snapKey}>
+                        <tr
+                          className={`cursor-pointer border-t border-[var(--color-border)]/60 ${snapOpen ? "bg-[var(--color-accent)]/[0.04]" : "hover:bg-black/[0.025] dark:hover:bg-white/[0.025]"}`}
+                          onClick={() => setOpenSnap(snapOpen ? null : snapKey)}
+                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setOpenSnap(snapOpen ? null : snapKey); }}
+                          role="button"
+                          tabIndex={0}
+                          aria-expanded={snapOpen}
+                          title="Click để xem 6 nhóm yếu tố tại thời điểm này"
+                        >
+                          <td className="py-1 tabular whitespace-nowrap"><span className="mr-1 text-[var(--color-muted)]">{snapOpen ? "▴" : "▾"}</span>{hmVN(s.snap_time)}</td>
+                          <td className="py-1"><span className="inline-flex items-center gap-1"><DecisionBadge decision={s.decision} />{changed ? <span className="text-[10px] text-[var(--color-accent)]">↳ đổi</span> : null}</span></td>
+                          <td className="py-1 text-right tabular">{fmtNum(s.score)}</td>
+                          <td className="py-1 text-right tabular text-[var(--color-muted)]">{fmtNum(s.price)}</td>
+                          <td className="py-1 text-right tabular whitespace-nowrap text-[11px]">
+                            {isBuy(s.decision) && s.entry != null ? <span><span className="text-[var(--color-accent)]">{fmtNum(s.entry)}</span><span className="text-[var(--color-muted)]">/</span><span className="text-[var(--color-sell)]">{fmtNum(s.stop)}</span><span className="text-[var(--color-muted)]">/</span><span className="text-[var(--color-buy)]">{fmtNum(s.tp1)}</span></span> : <span className="text-[var(--color-muted)]">—</span>}
+                          </td>
+                          <td className={`py-1 text-right tabular whitespace-nowrap ${ffCls}`}>{fmtBil(s.ffNet)}</td>
+                        </tr>
+                        {snapOpen ? <tr><td colSpan={6} className="border-t border-[var(--color-border)]/40 px-1"><SnapshotFactors breakdown={s.breakdown} /></td></tr> : null}
+                      </Fragment>
+                    );                  })}
                 </tbody>
               </table>
             </div>
