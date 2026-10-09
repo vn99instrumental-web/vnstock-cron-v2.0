@@ -158,6 +158,14 @@
 - ✅ Mỗi version và category là một bảng `<details>` collapse/expand; version hiện tại và `score_trade` mở mặc định, các phần còn lại thu gọn.
 - ✅ Supabase live đã có đủ 7 category ở mọi version official; view mới không phát sinh cảnh báo Security Advisor. `tsc --noEmit` và Next production build PASS; cảnh báo local thiếu `eslint-plugin-react-hooks` vẫn không chặn build.
 
+## 4l. Ổn định IC ngành và collapse toàn bảng scoring (2026-10-09)
+
+- ✅ Root cause xác minh: mỗi version của view IC ngành mất khoảng 8,7 giây trước tối ưu; 5 truy vấn song song có thể lỗi/timeout riêng lẻ, trong khi UI cũ âm thầm lọc bỏ version lỗi nên danh sách thay đổi giữa các lần tải.
+- ✅ Thêm index `idx_v4_signals_scoring_version`; đo lại truy vấn v4.18 còn khoảng 2,4 giây. DDL đã apply live và lưu tại migration `0020_index_signals_scoring_version.sql`.
+- ✅ Query IC ngành retry một lần; UI luôn giữ đủ header của mọi version official và hiển thị lỗi ngay trong version tương ứng thay vì âm thầm thay bằng version khác.
+- ✅ Toàn bộ bảng IC scoring có nút collapse/expand riêng; version hiện tại mở mặc định, version cũ thu gọn.
+- ✅ TypeScript PASS; Next production build PASS. Supabase Advisor không phát sinh cảnh báo mới từ index.
+
 ---
 ## 5. Việc kế tiếp (next actions)
 

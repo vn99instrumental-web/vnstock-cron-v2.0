@@ -83,6 +83,7 @@ export function FactorICTable({
   }, [marginal]);
 
   const [open, setOpen] = useState<Set<string>>(new Set());
+  const [tableOpen, setTableOpen] = useState(version === curVer);
   const toggle = (k: string) =>
     setOpen((s) => {
       const n = new Set(s);
@@ -100,17 +101,24 @@ export function FactorICTable({
   if (!rows.length) return null;
 
   return (
-    <div className="mb-6">
-      <h2 className="mb-2 flex flex-wrap items-center gap-2 font-mono text-sm font-semibold">
-        scoring {version}
+    <section className="mb-6">
+      <button
+        type="button"
+        className="mb-2 flex min-h-10 w-full flex-wrap items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+        aria-expanded={tableOpen}
+        onClick={() => setTableOpen((value) => !value)}
+      >
+        <span className="text-[var(--color-muted)]" aria-hidden="true">{tableOpen ? "▾" : "▸"}</span>
+        <span className="font-mono text-sm font-semibold">scoring {version}</span>
         {version === curVer ? (
           <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span>
         ) : null}
         {r2 != null ? (
           <span className="text-[11px] font-normal text-[var(--color-muted)]">· hồi quy đa biến R²(5d) = {(r2 * 100).toFixed(1)}%</span>
         ) : null}
-      </h2>
-      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+        <span className="ml-auto text-[11px] font-normal text-[var(--color-muted)]">{tableOpen ? "Ẩn toàn bộ bảng" : "Hiện toàn bộ bảng"}</span>
+      </button>
+      {tableOpen ? <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
         <table className="w-full text-sm">
           <thead className="bg-black/[0.03] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
             <tr>
@@ -139,8 +147,8 @@ export function FactorICTable({
             })}
           </tbody>
         </table>
-      </div>
-    </div>
+      </div> : null}
+    </section>
   );
 }
 

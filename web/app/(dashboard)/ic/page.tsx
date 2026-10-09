@@ -159,18 +159,19 @@ export default async function ICPage() {
     supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n"),
     supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n"),
     Promise.all(
-      officialVersions.map((version) =>
-        supabase
+      officialVersions.map(async (version) => {
+        const fetchVersion = () => supabase
           .from("v4_ic_by_industry_factor_ver")
           .select("version, factor, industry, horizon, ic, n")
           .eq("version", version)
           .order("factor", { ascending: true })
           .order("industry", { ascending: true })
-          .order("horizon", { ascending: true }),
-      ),
+          .order("horizon", { ascending: true });
+        const first = await fetchVersion();
+        return first.error ? fetchVersion() : first;
+      }),
     ),
   ]);
-  const industryError = industryResults.find((result) => result.error)?.error ?? null;
   const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
   const marginalRows = (margRes.data ?? []) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
@@ -190,14 +191,17 @@ export default async function ICPage() {
     members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
   })).filter((f) => f.members.length);
 
-  const industryRows = industryResults.flatMap((result) => (result.data ?? []) as Record<string, unknown>[]);
-  const industryByVersion = officialVersions.map((version) => ({
+  const industryByVersion = officialVersions.map((version, index) => ({
     version,
+    error: industryResults[index]?.error?.message ?? null,
     factors: FACTOR_ORDER.map((factor) => ({
       factor,
-      groups: groupBrk(toBrk(industryRows.filter((row) => row.version === version && row.factor === factor), "industry")),
+      groups: groupBrk(toBrk(
+        ((industryResults[index]?.data ?? []) as Record<string, unknown>[]).filter((row) => row.factor === factor),
+        "industry",
+      )),
     })).filter((item) => item.groups.length),
-  })).filter((item) => item.factors.length);
+  }));
 
   if (!rows.length) {
     return (
@@ -265,7 +269,7 @@ export default async function ICPage() {
           </span>
         </div>
 
-        {industryByVersion.length ? (
+        {officialVersions.length ? (
           <div className="space-y-2">
             {industryByVersion.map((versionData) => (
               <details
@@ -278,7 +282,11 @@ export default async function ICPage() {
                   <span className="font-sans text-[11px] font-normal text-[var(--color-muted)]">{versionData.factors.length} category</span>
                 </summary>
                 <div className="mt-2 space-y-2">
-                  {versionData.factors.map((factorData) => {
+                  {versionData.error ? (
+                    <div className="rounded-md border border-dashed border-[var(--color-border)] px-3 py-4 text-center text-xs text-[var(--color-muted)]">
+                      Không tải được dữ liệu của scoring {versionData.version}. Vui lòng tải lại trang.
+                    </div>
+                  ) : versionData.factors.map((factorData) => {
                     const info = FACTOR_INFO[factorData.factor];
                     return (
                       <details
@@ -305,7 +313,7 @@ export default async function ICPage() {
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-[var(--color-border)] px-3 py-6 text-center text-xs text-[var(--color-muted)]">
-            {industryError ? "Không tải được IC theo ngành từ Supabase. Vui lòng tải lại trang." : "Chưa có IC theo ngành cho các scoring version có IC official."}
+            Chưa có IC theo ngành cho các scoring version có IC official.
           </div>
         )}
       </section>
