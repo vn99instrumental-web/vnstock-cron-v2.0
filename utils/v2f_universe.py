@@ -61,12 +61,8 @@ _VAL_COL = "accumulated_value"
 _RANK_COLS = ["symbol", _PCT_COL, _ABS_COL, _VAL_COL]
 
 
-def fetch_index_members(group: str = INDEX_GROUP) -> list:
-    """Thành viên 1 index qua Listing.symbols_by_group. Trả [] nếu fail."""
-    res = vci_safe_run(
-        f"symbols_by_group({group})",
-        lambda: Listing(source="VCI").symbols_by_group(group=group),
-    )
+def _parse_symbols(res) -> list:
+    """Chuẩn hoá symbol từ các dạng trả về của vnstock Listing."""
     if res is None:
         return []
     try:
@@ -75,17 +71,45 @@ def fetch_index_members(group: str = INDEX_GROUP) -> list:
         elif isinstance(res, pd.DataFrame):
             if res.empty:
                 return []
-            col = "symbol" if "symbol" in res.columns else res.columns[0]
+            col = next((c for c in res.columns
+                        if str(c).strip().lower() in ("symbol", "ticker", "code")),
+                       res.columns[0])
             syms = res[col].dropna().astype(str).tolist()
         elif isinstance(res, (list, tuple)):
             syms = [str(s) for s in res]
         else:
             return []
     except Exception as e:
-        log.warning(f"  [v2f-universe] parse {group} members lỗi: {e}")
+        log.warning(f"  [v2f-universe] parse symbols lỗi: {e}")
         return []
-    return [s.strip().upper() for s in syms if s and s.strip()]
+    return list(dict.fromkeys(s.strip().upper() for s in syms if s and s.strip()))
 
+
+def fetch_index_members(group: str = INDEX_GROUP) -> list:
+    """Thành viên 1 index qua Listing.symbols_by_group, có fallback theo sàn."""
+    res = vci_safe_run(
+        f"symbols_by_group({group})",
+        lambda: Listing(source="VCI").symbols_by_group(group=group),
+    )
+    members = _parse_symbols(res)
+    if members:
+        return members
+
+    # VCI has intermittently returned an empty JSON for symbols_by_group(VN100)
+    # while symbols_by_exchange(HSX) is still healthy. Keep the index call as
+    # the source of truth, but fail over for the equivalent VN100/HOSE universe.
+    exchange = {"VN100": "HSX"}.get(group.upper())
+    if exchange:
+        log.warning("[v2f-universe] %s rỗng; fallback symbols_by_exchange(%s)",
+                    group, exchange)
+        fallback = vci_safe_run(
+            f"symbols_by_exchange({exchange})",
+            lambda: Listing(source="VCI").symbols_by_exchange(exchange=exchange),
+        )
+        members = _parse_symbols(fallback)
+        if members:
+            log.info("[v2f-universe] fallback %s: %d mã", exchange, len(members))
+    return members
 
 def _build_core_universe(index_groups: list) -> list:
     """
