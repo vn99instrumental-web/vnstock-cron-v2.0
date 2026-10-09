@@ -3,7 +3,7 @@
 > Tái sinh từ **chứng cứ repo thật** (không suy diễn). Đọc đầu mỗi phiên.
 > Do skill `project-update` cập nhật sau mỗi merge.
 
-**Cập nhật:** 2026-09-12 (grill vòng 2) · **HEAD gốc:** `38de5bb` · **Branch:** `claude/bold-pascal-768taz` · **PRD:** v2.0 GRILLED
+**Cập nhật:** 2026-10-09 · **Branch:** `main` · **PRD:** v2.0 GRILLED
 
 ---
 
@@ -130,6 +130,14 @@
 - ✅ `lib/chart.ts` (buildCandles/tpHit) + `buy-board.tsx` (fetch chuỗi giá qua supabase client, chỉ đọc `price:breakdown->>price` cho nhẹ).
 - ✅ Nav thêm mục "Mua". `tsc --noEmit` + `next build` PASS (route /buy 3.72kB).
 - ⏳ Cần **merge → main** để Vercel deploy; app-test/visual-qa sau khi live.
+
+## 4i. Phân tích tín hiệu — đồng bộ với Buy (2026-10-09)
+
+- ✅ Root cause: tab Buy đọc `v4_signals` đến 2026-10-08; tab Phân tích chỉ đọc outcome đã đủ 10 phiên trong `v4_signal_results`, tối đa 2026-09-24. Cron weekly tạo outcome nhưng trước đây không sync Supabase ngay.
+- ✅ Migration `0018_signal_analysis_feed.sql`: view `security_invoker` giữ snapshot BUY mới nhất theo mã/ngày và left-join outcome; tín hiệu chưa chín vẫn hiện nhưng outcome để null.
+- ✅ `/phan-tich` phân trang qua giới hạn PostgREST 1.000 dòng và tách mẫu đã chín khỏi mẫu đang chờ khi tính tỷ lệ TP/SL.
+- ✅ `cron_weekly.yml` sync outcome lên Supabase sau khi commit/push ledger thành công.
+- ✅ Live verified: 1.426 mã-ngày đến 2026-10-08; 831 đã chín, 595 chờ; tháng 10 có 341 dòng chờ. TypeScript PASS; Next production build exit 0 (local ESLint cảnh báo thiếu plugin `react-hooks`).
 
 ## 5. Việc kế tiếp (next actions)
 

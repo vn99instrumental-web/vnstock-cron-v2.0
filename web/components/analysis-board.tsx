@@ -147,20 +147,30 @@ export function AnalysisBoard({
   const meta = useMemo(() => {
     const dates = dailyResults.map((r) => r.signal_date).sort();
     const hasOwn = dailyResults.some((r) => r.own_outcome != null);
-    return { n: dailyResults.length, nSym: symbols.length, d0: dates[0], d1: dates[dates.length - 1], hasOwn };
+    const mature = dailyResults.filter((r) => r.std_outcome != null).length;
+    return {
+      n: dailyResults.length,
+      mature,
+      pending: dailyResults.length - mature,
+      nSym: symbols.length,
+      d0: dates[0],
+      d1: dates[dates.length - 1],
+      hasOwn,
+    };
   }, [dailyResults, symbols]);
 
   // Đếm kết quả cho target đang chọn (tổng + theo quyết định) — theo NGÀY.
   const agg = useMemo(() => {
     const tally = (rows: SignalResult[]) => {
-      let tp = 0, sl = 0, open = 0;
+      let tp = 0, sl = 0, open = 0, pending = 0;
       for (const r of rows) {
         const o = r[target] as string | null;
-        if (o === "tp") tp++;
+        if (o == null) pending++;
+        else if (o === "tp") tp++;
         else if (o === "sl") sl++;
         else open++;
       }
-      return { tp, sl, open, n: rows.length };
+      return { tp, sl, open, pending, n: tp + sl + open };
     };
     return {
       all: tally(dailyResults),
@@ -248,7 +258,9 @@ export function AnalysisBoard({
       {/* Phạm vi dữ liệu — KPI tiles gọn, dễ quét */}
       <div className="flex flex-wrap items-stretch gap-2">
         {[
-          { v: meta.n, lb: "tín hiệu-ngày đã chín" },
+          { v: meta.n, lb: "tín hiệu-ngày" },
+          { v: meta.mature, lb: "đã đủ 10 phiên" },
+          { v: meta.pending, lb: "đang chờ chín" },
           { v: meta.nSym, lb: "mã" },
           { v: `${meta.d0?.slice(5) ?? "?"} → ${meta.d1?.slice(5) ?? "?"}`, lb: "khoảng thời gian" },
         ].map((t) => (
@@ -301,21 +313,21 @@ export function AnalysisBoard({
                 { label: "Tất cả BUY", a: agg.all },
                 { label: "BUY", a: agg.buy },
                 { label: "STRONG BUY", a: agg.sbuy },
-              ].filter((r) => r.a.n > 0).map((r) => {
+              ].filter((r) => r.a.n > 0 || r.a.pending > 0).map((r) => {
                 const pct = (x: number) => (r.a.n ? Math.round((100 * x) / r.a.n) : 0);
                 return (
                   <div key={r.label} className="flex items-center gap-3">
-                    <span className="w-24 shrink-0 text-xs font-medium">{r.label} <span className="text-[10px] text-[var(--color-muted)]">n={r.a.n}</span></span>
+                    <span className="w-24 shrink-0 text-xs font-medium">{r.label} <span className="text-[10px] text-[var(--color-muted)]">n={r.a.n}{r.a.pending ? ` · chờ ${r.a.pending}` : ""}</span></span>
                     <div className="flex-1"><HitBar tp={r.a.tp} open={r.a.open} sl={r.a.sl} /></div>
                     <span className="tabular w-40 shrink-0 text-right text-[11px]">
-                      <b style={{ color: BUY }}>TP {pct(r.a.tp)}%</b> · <span style={{ color: MUTED }}>chờ {pct(r.a.open)}%</span> · <b style={{ color: SELL }}>SL {pct(r.a.sl)}%</b>
+                      <b style={{ color: BUY }}>TP {pct(r.a.tp)}%</b> · <span style={{ color: MUTED }}>chưa chạm {pct(r.a.open)}%</span> · <b style={{ color: SELL }}>SL {pct(r.a.sl)}%</b>
                     </span>
                   </div>
                 );
               })}
             </div>
             <p className="mt-2 text-[10px] italic text-[var(--color-muted)]">
-              Quy ước bảo thủ: nếu 1 ngày vừa chạm TP vừa chạm SL (không rõ thứ tự trong phiên) → tính SL trước.
+              Tỷ lệ chỉ tính trên tín hiệu đã đủ outcome; tín hiệu mới được tách riêng ở “chờ”. Quy ước bảo thủ: nếu 1 ngày vừa chạm TP vừa chạm SL (không rõ thứ tự trong phiên) → tính SL trước.
             </p>
           </div>
 

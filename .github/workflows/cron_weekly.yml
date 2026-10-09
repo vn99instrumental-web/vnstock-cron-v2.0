@@ -106,6 +106,7 @@ jobs:
 
       # -- Commit (pull --rebase + retry, giong intraday) --
       - name: Commit history ledger
+        id: commit_ledger
         if: always()      # LUÔN vớt outcomes đã sinh, kể cả khi step trước fail
         run: |
           git config user.name  "github-actions[bot]"
@@ -133,3 +134,20 @@ jobs:
             echo "push failed after 5 attempts"
             exit 1
           fi
+      # Đồng bộ outcome ngay sau weekly thay vì chờ intraday kế tiếp. Chạy sau
+      # commit/push để Supabase không đi trước nguồn chân lý trong Git.
+      - name: Sync weekly outcomes → Supabase
+        if: ${{ always() && steps.commit_ledger.outcome == 'success' }}
+        env:
+          SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "❌ Chưa set SUPABASE_SERVICE_ROLE_KEY — weekly outcomes chưa được sync."
+            exit 1
+          fi
+          CUR=$(date -u +%Y-%m)
+          PREV=$(date -u -d '1 month ago' +%Y-%m)
+          echo "Sync outcome months: $CUR $PREV"
+          /opt/vnstock/.venv/bin/python scripts/sync_supabase.py \
+            --only outcomes --months "$CUR" "$PREV"
