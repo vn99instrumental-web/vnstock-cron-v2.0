@@ -1,9 +1,9 @@
 """
-utils/v2f_universe.py — Universe cho nhánh V2F (full VN100 + HNX30, monitor cả rổ)
+utils/v2f_universe.py — Universe cho nhánh V2F (full VN100, monitor cả rổ)
 ==================================================================================
 FORK của utils/universe_v2.py. KHÁC BIỆT DUY NHẤT:
   - V2  (universe_v2): VN100 → cắt top_x gainer + top_x loser (~40 mã).
-  - V2F (file này)   : lấy ĐỦ rổ core (VN100 + HNX30 = ~130 mã), KHÔNG cắt.
+  - V2F (file này)   : lấy ĐỦ rổ VN100 = 100 mã, KHÔNG cắt.
     'group' chỉ là provenance theo dấu %change; scoring tự surface mã tăng/giảm.
 
 Lý do tách file (không tham số hoá): yêu cầu giữ V2 hiện tại nguyên vẹn và
@@ -17,27 +17,22 @@ ISOLATION:
 OUTPUT ranking rows giữ ĐÚNG schema mà scoring đọc:
     symbol, price_change_percent_1d, price_change_1d, accumulated_value, group
 
-MULTI-GROUP (2026-06-24):
-  Universe = hợp các group trong V2F_INDEX_GROUPS, gom theo THỨ TỰ liệt kê,
-  dedupe bằng `seen` set. Mặc định "VN100,HNX30".
-  - VN100 = sàn HSX, HNX30 = sàn HNX → hai rổ RỜI NHAU (overlap=0, đã verify
-    bằng diag_hnx30_coverage 2026-06-24: 0 trùng, universe gộp = 130 mã).
-  - Movers (%change) lấy từ TopStock index=VNINDEX = chỉ HOSE → mã HNX KHÔNG
-    có trong movers → pct=None → mặc định GAINER (đúng quy ước hiện hành;
-    _attach_daily_change tự xử None). 'group' chỉ là provenance.
-  - Fundamentals của HNX30 đã nằm sẵn trong finance cache (step_finance_scan
-    _CORE_INDEX_GROUPS = ["VN100","HNX30"]) → không tốn thêm call KBS.
-
+CURRENT SCOPE (2026-10-09):
+  Universe chỉ gồm đúng 100 thành viên VN100. Không dùng HNX30 và không dùng toàn bộ HSX.
+  Nếu API group cũ rỗng: thử Reference.index.members("VN100"), sau đó dùng snapshot
+  VN100 gần nhất đã commit; mọi nguồn đều phải qua chốt đúng 100 mã.
 ENV overrides:
-    V2F_INDEX_GROUPS = "VN100,HNX30"  # danh sách rổ core (phẩy ngăn cách)
+    V2F_INDEX_GROUPS = "VN100"        # chỉ lấy đúng rổ VN100
     V2F_INDEX_GROUP  = "VN100"        # [deprecated] fallback nếu GROUPS rỗng
     V2F_RANK_LIMIT   = "300"          # limit kéo gainer/loser toàn TT (pass 1)
 """
 import os
 import logging
+import json
+from pathlib import Path
 
 import pandas as pd
-from vnstock_data import TopStock, Listing
+from vnstock_data import TopStock, Listing, Reference
 
 from utils.vci_throttle import vci_safe_run
 
@@ -59,6 +54,7 @@ _PCT_COL = "price_change_percent_1d"
 _ABS_COL = "price_change_1d"
 _VAL_COL = "accumulated_value"
 _RANK_COLS = ["symbol", _PCT_COL, _ABS_COL, _VAL_COL]
+_LAST_GOOD_RANKING = Path(__file__).resolve().parent.parent / "output" / "v2f_ranking.json"
 
 
 def _parse_symbols(res) -> list:
@@ -85,30 +81,53 @@ def _parse_symbols(res) -> list:
     return list(dict.fromkeys(s.strip().upper() for s in syms if s and s.strip()))
 
 
+def _valid_index_members(group: str, members: list) -> bool:
+    """VN100 phải đủ đúng 100 mã; group khác chỉ cần không rỗng."""
+    if group.upper() == "VN100" and len(members) != 100:
+        log.error("[v2f-universe] từ chối %s: cần đúng 100 mã, nhận %d", group, len(members))
+        return False
+    return bool(members)
+
+
 def fetch_index_members(group: str = INDEX_GROUP) -> list:
-    """Thành viên 1 index qua Listing.symbols_by_group, có fallback theo sàn."""
+    """Lấy đúng thành viên index; không bao giờ mở rộng sang toàn sàn."""
     res = vci_safe_run(
         f"symbols_by_group({group})",
         lambda: Listing(source="VCI").symbols_by_group(group=group),
     )
     members = _parse_symbols(res)
-    if members:
+    if _valid_index_members(group, members):
         return members
 
-    # VCI has intermittently returned an empty JSON for symbols_by_group(VN100)
-    # while symbols_by_exchange(HSX) is still healthy. Keep the index call as
-    # the source of truth, but fail over for the equivalent VN100/HOSE universe.
-    exchange = {"VN100": "HSX"}.get(group.upper())
-    if exchange:
-        log.warning("[v2f-universe] %s rỗng; fallback symbols_by_exchange(%s)",
-                    group, exchange)
-        fallback = vci_safe_run(
-            f"symbols_by_exchange({exchange})",
-            lambda: Listing(source="VCI").symbols_by_exchange(exchange=exchange),
-        )
-        members = _parse_symbols(fallback)
-        if members:
-            log.info("[v2f-universe] fallback %s: %d mã", exchange, len(members))
+    # API Reference mới tách rõ thành phần chỉ số khỏi danh sách toàn sàn.
+    try:
+        ref = Reference()
+        index_api = getattr(ref, "index", None)
+        members_fn = getattr(index_api, "members", None)
+        if callable(members_fn):
+            fallback = vci_safe_run(
+                f"Reference.index.members({group})",
+                lambda: members_fn(group),
+            )
+            members = _parse_symbols(fallback)
+            if _valid_index_members(group, members):
+                log.info("[v2f-universe] Reference index fallback %s: %d mã", group, len(members))
+                return members
+    except Exception as e:
+        log.warning("[v2f-universe] Reference index fallback không khả dụng: %s", e)
+
+    # Cuối cùng dùng snapshot index gần nhất đã commit. Chỉ nhận đúng 100 mã để
+    # tránh vô tình dùng file từng được tạo từ toàn bộ HSX.
+    if group.upper() == "VN100":
+        try:
+            rows = json.loads(_LAST_GOOD_RANKING.read_text(encoding="utf-8"))
+            cached = _parse_symbols(pd.DataFrame(rows))
+            if len(cached) == 100:
+                log.warning("[v2f-universe] dùng snapshot VN100 gần nhất: 100 mã")
+                return cached
+            log.error("[v2f-universe] từ chối snapshot: cần 100 mã, nhận %d", len(cached))
+        except Exception as e:
+            log.error("[v2f-universe] không đọc được snapshot VN100: %s", e)
     return members
 
 def _build_core_universe(index_groups: list) -> list:
@@ -164,12 +183,12 @@ def _movers_lookup(gainers, losers, universe: set) -> dict:
 def build_v2f_universe(index_groups=None,
                        rank_limit: int = RANK_LIMIT):
     """
-    Trả về (symbol_jobs, ranking_rows) cho TOÀN BỘ rổ core (VN100 + HNX30, ~130 mã).
+    Trả về (symbol_jobs, ranking_rows) cho TOÀN BỘ rổ VN100 (100 mã).
       symbol_jobs  : list[(symbol, group)] — universe pass 2 (đã dedupe)
       ranking_rows : list[dict]            — ghi v2f_ranking.json cho scoring
 
     index_groups: list[str] | str | None
-      - None  → dùng INDEX_GROUPS (mặc định ["VN100","HNX30"]).
+      - None  → dùng INDEX_GROUPS (mặc định ["VN100"]).
       - str   → 1 group đơn (tương thích ngược cách gọi cũ build_v2f_universe("VN100")).
       - list  → gom nhiều group theo thứ tự, dedupe.
 
