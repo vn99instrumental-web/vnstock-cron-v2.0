@@ -1,0 +1,76 @@
+name: Sync data daily → Supabase
+
+# Chạy sau giờ thị trường (16:30 ICT = 09:30 UTC) để cập nhật OHLC
+# cho return 3/5 phiên, mirror ledger và refresh IC nếu có outcome mới.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 9 * * 1-5'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-data-daily
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+      VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+      VNSTOCK_INTERACTIVE: '0'
+      VNSTOCK_LANGUAGE: en
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore vnstock cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-${{ github.run_number }}
+          restore-keys: |
+            vnstock-stable-v4-
+
+      - name: Select Python runtime
+        id: python
+        shell: bash
+        run: |
+          if [ -x /opt/vnstock/.venv/bin/python ]; then
+            echo "python=/opt/vnstock/.venv/bin/python" >> "$GITHUB_OUTPUT"
+          else
+            python3 -m pip install --quiet vnstock_data pandas requests numpy
+            echo "python=python3" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Guard secrets
+        shell: bash
+        run: |
+          test -n "$SUPABASE_SERVICE_ROLE_KEY" || { echo 'Missing SUPABASE_SERVICE_ROLE_KEY'; exit 1; }
+          test -n "$VNSTOCK_API_KEY" || { echo 'Missing VNSTOCK_API_KEY'; exit 1; }
+
+      - name: Refresh daily OHLC for analysis (45 days)
+        run: ${{ steps.python.outputs.python }} scripts/export_ohlc_to_supabase.py --days 45
+
+      - name: Sync recent ledger to Supabase
+        shell: bash
+        run: |
+          CUR=$(date -u +%Y-%m)
+          PREV=$(date -u -d '1 month ago' +%Y-%m)
+          ${{ steps.python.outputs.python }} scripts/sync_supabase.py --months "$CUR" "$PREV"
+
+      - name: Refresh forward IC metrics
+        run: ${{ steps.python.outputs.python }} scripts/export_ic_to_supabase.py

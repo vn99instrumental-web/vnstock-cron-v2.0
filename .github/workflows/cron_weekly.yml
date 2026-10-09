@@ -151,3 +151,9 @@ jobs:
           echo "Sync outcome months: $CUR $PREV"
           /opt/vnstock/.venv/bin/python scripts/sync_supabase.py \
             --only outcomes --months "$CUR" "$PREV"
+
+      - name: Refresh forward IC metrics → Supabase
+        env:
+          SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/export_ic_to_supabase.py
