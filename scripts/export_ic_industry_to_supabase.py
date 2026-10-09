@@ -82,6 +82,8 @@ def main():
         log.error("Missing SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY")
         return 2
     sb = Supabase(url, key)
+    # Create the parent first; child metrics reference it via foreign key.
+    sb.upsert("v4_ic_industry_batch", [{"batch_id": batch_id, "data_asof": asof, "row_count": len(rows), "status": "pending"}], on_conflict="batch_id")
     for i in range(0, len(rows), BATCH):
         sb.upsert("v4_ic_industry_metrics", rows[i:i+BATCH], on_conflict="batch_id,version,factor,industry,horizon")
     sb.upsert("v4_ic_industry_batch", [{"batch_id": batch_id, "data_asof": asof,
