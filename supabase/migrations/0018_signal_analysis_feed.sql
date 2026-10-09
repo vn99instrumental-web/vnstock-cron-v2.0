@@ -42,6 +42,7 @@ base as (
     o.confidence as outcome_confidence,
     o.t0_close,
     o.ret_1d,
+    o.ret_3d,
     o.ret_5d,
     o.ret_10d,
     o.mfe_pct,
@@ -58,6 +59,8 @@ hits as (
   from base b
   left join lateral (
     select
+      (array_agg(x.close order by x.date))[3] as close_3,
+      (array_agg(x.close order by x.date))[5] as close_5,
       min(x.date) filter (where x.high >= b.t0_close * 1.06) as d_up6,
       min(x.date) filter (where x.low  <= b.t0_close * 0.96) as d_dn4,
       min(x.date) filter (where x.high >= b.t0_close * 1.03) as d_up3,
@@ -69,7 +72,7 @@ hits as (
     where x.symbol = b.symbol
       and x.date > b.signal_date
       and x.date <= b.signal_date + 16
-  ) h on b.outcome_pred_id is not null
+  ) h on true
 )
 select
   pred_id,
@@ -80,7 +83,8 @@ select
   coalesce(outcome_confidence, signal_confidence) as confidence,
   coalesce(t0_close, signal_price) as t0_close,
   ret_1d,
-  ret_5d,
+  coalesce(ret_3d, case when close_3 is not null then (close_3 - coalesce(t0_close, signal_price)) / nullif(coalesce(t0_close, signal_price), 0) * 100 end) as ret_3d,
+  coalesce(ret_5d, case when close_5 is not null then (close_5 - coalesce(t0_close, signal_price)) / nullif(coalesce(t0_close, signal_price), 0) * 100 end) as ret_5d,
   ret_10d,
   mfe_pct,
   mae_pct,

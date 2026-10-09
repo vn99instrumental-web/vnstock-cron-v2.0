@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 const RESULT_COLUMNS =
-  "pred_id, symbol, signal_date, snap_time, decision, confidence, t0_close, ret_1d, ret_5d, ret_10d, mfe_pct, mae_pct, own_entry, own_tp1, own_tp2, own_stop, std_outcome, std_days, std3_outcome, own_outcome, own_days";
+  "pred_id, symbol, signal_date, snap_time, decision, confidence, t0_close, ret_1d, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct, own_entry, own_tp1, own_tp2, own_stop, std_outcome, std_days, std3_outcome, own_outcome, own_days";
 const PAGE_SIZE = 1000;
 
 export default async function PhanTichPage() {

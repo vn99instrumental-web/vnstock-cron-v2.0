@@ -18,6 +18,7 @@ export interface SignalResult {
   confidence: string | null;
   t0_close: number | string | null;
   ret_1d: number | string | null;
+  ret_3d: number | string | null;
   ret_5d: number | string | null;
   ret_10d: number | string | null;
   mfe_pct: number | string | null;
@@ -124,6 +125,7 @@ export function AnalysisBoard({
   const [splitDim, setSplitDim] = useState<"none" | "confidence" | "regime">("none");
   const [bucket, setBucket] = useState<string>("");
   const [showAllCorr, setShowAllCorr] = useState(false);
+  const [symbolQuery, setSymbolQuery] = useState("");
 
   // GỘP THEO NGÀY: outcome forward tính 1 lần/ngày nên mọi snap cùng ngày giống hệt.
   // Giữ 1 dòng/(mã, ngày) — snap MUỘN nhất trong ngày — để không lặp & thấy khác biệt qua ngày.
@@ -141,7 +143,12 @@ export function AnalysisBoard({
     () => [...new Set(dailyResults.map((r) => r.symbol))].sort(),
     [dailyResults],
   );
+  const filteredSymbols = useMemo(() => {
+    const q = symbolQuery.trim().toUpperCase();
+    return q ? symbols.filter((s) => s.toUpperCase().includes(q)) : symbols;
+  }, [symbols, symbolQuery]);
   const [sym, setSym] = useState<string>(symbols[0] ?? "");
+  const activeSym = filteredSymbols.includes(sym) ? sym : (filteredSymbols[0] ?? symbols[0] ?? "");
 
   // Khung dữ liệu (độ tươi, phạm vi).
   const meta = useMemo(() => {
@@ -238,8 +245,8 @@ export function AnalysisBoard({
   );
 
   const symRows = useMemo(
-    () => dailyResults.filter((r) => r.symbol === sym).sort((a, b) => a.signal_date.localeCompare(b.signal_date)),
-    [dailyResults, sym],
+    () => dailyResults.filter((r) => r.symbol === activeSym).sort((a, b) => a.signal_date.localeCompare(b.signal_date)),
+    [dailyResults, activeSym],
   );
 
   const TabBtn = ({ k, label }: { k: "overall" | "symbol"; label: string }) => (
@@ -447,7 +454,7 @@ export function AnalysisBoard({
           {/* Timeline trực quan: cột = lãi 5 phiên, màu = kết quả */}
           <div className="card p-3">
             <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h3 className="text-sm font-semibold">Diễn biến tín hiệu {sym} theo thời gian</h3>
+              <h3 className="text-sm font-semibold">Diễn biến tín hiệu {activeSym} theo thời gian</h3>
               <span className="text-[10px] text-[var(--color-muted)]">cột = lãi 5 phiên · màu = kết quả</span>
               <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[10px]">
                 {([["std3_outcome", "±3%"], ["std_outcome", "+6/−4"]] as const).map(([k, lb]) => (
@@ -471,6 +478,7 @@ export function AnalysisBoard({
                   <th className="px-2 py-1.5 font-medium">Kết quả +6/−4</th>
                   <th className="px-2 py-1.5 font-medium">TP/SL model</th>
                   <th className="px-2 py-1.5 text-right font-medium">Lãi 5 phiên</th>
+                  <th className="px-2 py-1.5 text-right font-medium">Lãi 3 phiên</th>
                   <th className="px-2 py-1.5 text-right font-medium">Đỉnh/Đáy (MFE/MAE)</th>
                 </tr>
               </thead>
@@ -480,6 +488,7 @@ export function AnalysisBoard({
                   const o6 = outcomeMeta(r.std_outcome);
                   const oOwn = outcomeMeta(r.own_outcome);
                   const ret5 = num(r.ret_5d);
+                  const ret3 = num(r.ret_3d);
                   return (
                     <tr key={r.pred_id} className="border-b border-[var(--color-border)] last:border-0">
                       <td className="px-2 py-1.5 tabular">{r.signal_date}</td>
@@ -490,6 +499,7 @@ export function AnalysisBoard({
                       <td className="px-2 py-1.5"><span className="inline-flex items-center gap-1"><OutcomeDot o={r.std_outcome} /><span style={{ color: o6.color }}>{o6.label}{r.std_outcome === "tp" || r.std_outcome === "sl" ? ` · ${num(r.std_days) ?? "?"}n` : ""}</span></span></td>
                       <td className="px-2 py-1.5" style={{ color: oOwn.color }}>{r.own_outcome == null ? "—" : oOwn.label}</td>
                       <td className="px-2 py-1.5 text-right tabular"><span className={signClass(ret5)}>{ret5 != null ? fmtPct(ret5) : "—"}</span></td>
+                      <td className="px-2 py-1.5 text-right tabular"><span className={signClass(ret3)}>{ret3 != null ? fmtPct(ret3) : "—"}</span></td>
                       <td className="px-2 py-1.5 text-right tabular"><span style={{ color: BUY }}>{num(r.mfe_pct) != null ? "+" + num(r.mfe_pct)!.toFixed(1) : "—"}</span> / <span style={{ color: SELL }}>{num(r.mae_pct) != null ? num(r.mae_pct)!.toFixed(1) : "—"}</span></td>
                     </tr>
                   );
