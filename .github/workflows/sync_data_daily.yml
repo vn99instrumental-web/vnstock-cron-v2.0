@@ -4,8 +4,6 @@ name: Sync data daily → Supabase
 # cho return 3/5 phiên, mirror ledger và refresh IC nếu có outcome mới.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 9 * * 1-5'
 
 permissions:
   contents: read
@@ -74,3 +72,5 @@ jobs:
 
       - name: Refresh forward IC metrics
         run: ${{ steps.python.outputs.python }} scripts/export_ic_to_supabase.py
+      - name: Refresh IC industry snapshot
+        run: ${{ steps.python.outputs.python }} scripts/export_ic_industry_to_supabase.py

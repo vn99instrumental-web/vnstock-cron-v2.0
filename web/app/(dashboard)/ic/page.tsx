@@ -154,24 +154,13 @@ export default async function ICPage() {
 
   // IC breakdown: chỉ số con và IC ngành tách theo version × category.
   // Mỗi version là một request riêng để không chạm giới hạn 1.000 dòng của PostgREST.
-  const [indRes, factorVerRes, margRes, industryResults] = await Promise.all([
+  const [indRes, factorVerRes, margRes, industryBatchRes] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
     supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n"),
     supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n"),
-    Promise.all(
-      officialVersions.map(async (version) => {
-        const fetchVersion = () => supabase
-          .from("v4_ic_by_industry_factor_ver")
-          .select("version, factor, industry, horizon, ic, n")
-          .eq("version", version)
-          .order("factor", { ascending: true })
-          .order("industry", { ascending: true })
-          .order("horizon", { ascending: true });
-        const first = await fetchVersion();
-        return first.error ? fetchVersion() : first;
-      }),
-    ),
+    supabase.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
+  const { data: industryData } = industryBatchRes.data ? await supabase.from("v4_ic_industry_metrics").select("version, factor, industry, horizon, ic, n").eq("batch_id", industryBatchRes.data.batch_id).order("factor", { ascending: true }).order("industry", { ascending: true }).order("horizon", { ascending: true }) : { data: [] };
   const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
   const marginalRows = (margRes.data ?? []) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
@@ -191,13 +180,13 @@ export default async function ICPage() {
     members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
   })).filter((f) => f.members.length);
 
-  const industryByVersion = officialVersions.map((version, index) => ({
+  const industryByVersion = officialVersions.map((version) => ({
     version,
-    error: industryResults[index]?.error?.message ?? null,
+    error: industryBatchRes.error?.message ?? null,
     factors: FACTOR_ORDER.map((factor) => ({
       factor,
       groups: groupBrk(toBrk(
-        ((industryResults[index]?.data ?? []) as Record<string, unknown>[]).filter((row) => row.factor === factor),
+        ((industryData ?? []) as Record<string, unknown>[]).filter((row) => row.version === version && row.factor === factor),
         "industry",
       )),
     })).filter((item) => item.groups.length),
