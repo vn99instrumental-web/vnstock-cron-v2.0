@@ -290,6 +290,16 @@ export function AnalysisBoard({
         </div>
       </details>
 
+      {/* Tìm mã luôn hiển thị ở đầu tab Phân tích */}
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-[var(--color-muted)]">Tìm mã:</span>
+        <input value={symbolQuery} onChange={(e) => { setSymbolQuery(e.target.value); setTab("symbol"); }} placeholder="VD: FPT" aria-label="Tìm mã cổ phiếu" className="w-28 rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm uppercase" />
+        <select value={activeSym} onChange={(e) => { setSym(e.target.value); setTab("symbol"); }} aria-label="Chọn mã cổ phiếu" className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm">
+          {filteredSymbols.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <span className="text-[var(--color-muted)]">{symbols.length} mã</span>
+      </div>
+
       {/* Tab segmented */}
       <div className="inline-flex w-fit card p-0.5">
         <TabBtn k="overall" label="Góc tổng thể" />
