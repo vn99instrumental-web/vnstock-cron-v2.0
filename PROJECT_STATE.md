@@ -150,6 +150,14 @@
 - ✅ Thêm bảng thuật ngữ chuyên môn (Spearman, IC, Williams %R, Bollinger, EMA, RS, breakout, order flow, t-stat, R², horizon, n) sau bảng số lượng mẫu; mặc định thu gọn.
 - ✅ `tsc --noEmit` PASS; Next production build PASS. Build còn cảnh báo môi trường local thiếu `eslint-plugin-react-hooks`, không chặn compile.
 
+## 4k. IC ngành theo version/category + đồng bộ chọn mã (2026-10-09)
+
+- ✅ Ô tìm mã và ô chọn mã trong tab Phân tích dùng chung state: tìm/chọn kết quả sẽ đổi ngay mã đang xem; ô chọn mã đặt ngay sau ô tìm kiếm và bỏ dropdown trùng lặp phía dưới.
+- ✅ Migration `0019_ic_by_industry_factor_ver.sql` tạo view `v4_ic_by_industry_factor_ver` với `security_invoker`, tính Spearman IC theo `version × category × industry × horizon`.
+- ✅ IC theo ngành hiển thị 5 version official (`v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`) và 7 category (`score_trade`, mean reversion, breakout, flow, fundamental, growth, context).
+- ✅ Mỗi version và category là một bảng `<details>` collapse/expand; version hiện tại và `score_trade` mở mặc định, các phần còn lại thu gọn.
+- ✅ Supabase live đã có đủ 7 category ở mọi version official; view mới không phát sinh cảnh báo Security Advisor. `tsc --noEmit` và Next production build PASS; cảnh báo local thiếu `eslint-plugin-react-hooks` vẫn không chặn build.
+
 ---
 ## 5. Việc kế tiếp (next actions)
 

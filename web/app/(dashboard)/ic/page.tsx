@@ -148,20 +148,29 @@ export default async function ICPage() {
     .maybeSingle();
   const curVer = (curRun?.scoring_version as string | undefined) ?? null;
   const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
+  const officialVersions = [...new Set(rows.map((r) => r.config_version))].sort(
+    (a, b) => (b === curVer ? 1 : 0) - (a === curVer ? 1 : 0) || b.localeCompare(a, undefined, { numeric: true }),
+  );
 
-  // IC breakdown (ước lượng Spearman gộp) — chỉ số con, ngành (gộp & theo version).
-  const [indRes, indusVerRes, factorVerRes, margRes] = await Promise.all([
+  // IC breakdown: chỉ số con và IC ngành tách theo version × category.
+  // Mỗi version là một request riêng để không chạm giới hạn 1.000 dòng của PostgREST.
+  const [indRes, factorVerRes, margRes, industryResults] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
-    supabase
-      .from("v4_ic_by_industry_ver")
-      .select("version, industry, horizon, ic, n")
-      .eq("version", curVer ?? "__no_current_version__")
-      .order("industry", { ascending: true })
-      .order("horizon", { ascending: true }),
     supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n"),
     supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n"),
+    Promise.all(
+      officialVersions.map((version) =>
+        supabase
+          .from("v4_ic_by_industry_factor_ver")
+          .select("version, factor, industry, horizon, ic, n")
+          .eq("version", version)
+          .order("factor", { ascending: true })
+          .order("industry", { ascending: true })
+          .order("horizon", { ascending: true }),
+      ),
+    ),
   ]);
-  const industryError = indusVerRes.error;
+  const industryError = industryResults.find((result) => result.error)?.error ?? null;
   const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
   const marginalRows = (margRes.data ?? []) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
@@ -181,8 +190,14 @@ export default async function ICPage() {
     members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
   })).filter((f) => f.members.length);
 
-  // Chỉ lấy version production hiện tại: bảng ngắn, rõ và không chạm giới hạn PostgREST.
-  const industryGroups = groupBrk(toBrk((indusVerRes.data ?? []) as Record<string, unknown>[], "industry"));
+  const industryRows = industryResults.flatMap((result) => (result.data ?? []) as Record<string, unknown>[]);
+  const industryByVersion = officialVersions.map((version) => ({
+    version,
+    factors: FACTOR_ORDER.map((factor) => ({
+      factor,
+      groups: groupBrk(toBrk(industryRows.filter((row) => row.version === version && row.factor === factor), "industry")),
+    })).filter((item) => item.groups.length),
+  })).filter((item) => item.factors.length);
 
   if (!rows.length) {
     return (
@@ -196,10 +211,8 @@ export default async function ICPage() {
     );
   }
 
-  // Chỉ hiện version có IC official. Version chỉ có marginal (như v4.6) không tạo bảng rỗng.
-  const verList = [...new Set(rows.map((r) => r.config_version))].sort(
-    (a, b) => (b === curVer ? 1 : 0) - (a === curVer ? 1 : 0) || b.localeCompare(a, undefined, { numeric: true }),
-  );
+  // Chỉ hiện version có IC official; version chỉ có marginal không tạo bảng rỗng.
+  const verList = officialVersions;
 
   const sampleByVersion = verList.map((version) => {
     const byHorizon = new Map<number, number>();
@@ -242,9 +255,9 @@ export default async function ICPage() {
       <section className="card mb-6 p-3 sm:p-4">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div>
-            <h2 className="text-sm font-semibold">IC theo ngành{curVer ? ` — scoring ${curVer}` : ""}</h2>
+            <h2 className="text-sm font-semibold">IC theo ngành và nhóm scoring</h2>
             <p className="mt-1 text-[12px] text-[var(--color-muted)]">
-              Khả năng dự báo của <code>score_trade</code> theo từng ngành ở version hiện tại. Xanh = thuận, đỏ = nghịch.
+              Mỗi scoring version được tách theo điểm tổng và 6 category. Mở version, sau đó mở category cần xem.
             </p>
           </div>
           <span className="rounded-md border border-[var(--color-border)] px-2 py-1 text-[11px] text-[var(--color-muted)]">
@@ -252,20 +265,50 @@ export default async function ICPage() {
           </span>
         </div>
 
-        {industryGroups.length ? (
-          <div>
-            <BreakdownTable groups={industryGroups} colLabel="Ngành" nameOf={(key) => key} minN={1} showSample />
-            <p className="mt-1.5 text-[11px] text-[var(--color-muted)]">
-              Đang hiển thị {industryGroups.length} ngành của scoring {curVer}. Thận trọng với ô có n &lt; 30; cỡ mẫu nhỏ khiến IC dễ biến động.
-            </p>
+        {industryByVersion.length ? (
+          <div className="space-y-2">
+            {industryByVersion.map((versionData) => (
+              <details
+                key={versionData.version}
+                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5"
+                open={versionData.version === curVer}
+              >
+                <summary className="flex cursor-pointer select-none items-center justify-between gap-2 font-mono text-[13px] font-semibold">
+                  <span>scoring {versionData.version}{versionData.version === curVer ? " (hiện tại)" : ""}</span>
+                  <span className="font-sans text-[11px] font-normal text-[var(--color-muted)]">{versionData.factors.length} category</span>
+                </summary>
+                <div className="mt-2 space-y-2">
+                  {versionData.factors.map((factorData) => {
+                    const info = FACTOR_INFO[factorData.factor];
+                    return (
+                      <details
+                        key={factorData.factor}
+                        className="rounded-md border border-[var(--color-border)] bg-black/[0.015] p-2 dark:bg-white/[0.02]"
+                        open={factorData.factor === "score_trade"}
+                      >
+                        <summary className="flex cursor-pointer select-none items-center justify-between gap-2 text-[12px] font-semibold">
+                          <span>{info?.label ?? factorData.factor}</span>
+                          <span className="font-normal text-[var(--color-muted)]">{factorData.groups.length} ngành</span>
+                        </summary>
+                        <div className="mt-2">
+                          <BreakdownTable groups={factorData.groups} colLabel="Ngành" nameOf={(key) => key} minN={1} showSample />
+                        </div>
+                      </details>
+                    );
+                  })}
+                  <p className="text-[11px] text-[var(--color-muted)]">
+                    Đây là IC pooled để so tương đối giữa ngành/category. Thận trọng với ô có n &lt; 30; IC official theo ngày vẫn nằm ở bảng scoring phía trên.
+                  </p>
+                </div>
+              </details>
+            ))}
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-[var(--color-border)] px-3 py-6 text-center text-xs text-[var(--color-muted)]">
-            {industryError ? "Không tải được IC theo ngành từ Supabase. Vui lòng tải lại trang." : `Chưa có IC theo ngành cho scoring ${curVer ?? "hiện tại"}.`}
+            {industryError ? "Không tải được IC theo ngành từ Supabase. Vui lòng tải lại trang." : "Chưa có IC theo ngành cho các scoring version có IC official."}
           </div>
         )}
       </section>
-
       {verList.filter((version) => version !== curVer).map((version) => (
         <FactorICTable
           key={version}

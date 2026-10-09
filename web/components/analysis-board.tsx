@@ -148,7 +148,19 @@ export function AnalysisBoard({
     return q ? symbols.filter((s) => s.toUpperCase().includes(q)) : symbols;
   }, [symbols, symbolQuery]);
   const [sym, setSym] = useState<string>(symbols[0] ?? "");
-  const activeSym = filteredSymbols.includes(sym) ? sym : (filteredSymbols[0] ?? symbols[0] ?? "");
+  const activeSym = filteredSymbols.includes(sym) ? sym : (filteredSymbols[0] ?? sym ?? symbols[0] ?? "");
+  const searchSymbol = (value: string) => {
+    const query = value.toUpperCase();
+    setSymbolQuery(query);
+    setTab("symbol");
+    const firstMatch = symbols.find((symbol) => symbol.toUpperCase().includes(query.trim()));
+    if (firstMatch) setSym(firstMatch);
+  };
+  const selectSymbol = (value: string) => {
+    setSym(value);
+    setSymbolQuery(value);
+    setTab("symbol");
+  };
 
   // Khung dữ liệu (độ tươi, phạm vi).
   const meta = useMemo(() => {
@@ -293,9 +305,9 @@ export function AnalysisBoard({
       {/* Tìm mã luôn hiển thị ở đầu tab Phân tích */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="text-[var(--color-muted)]">Tìm mã:</span>
-        <input value={symbolQuery} onChange={(e) => { setSymbolQuery(e.target.value); setTab("symbol"); }} placeholder="VD: FPT" aria-label="Tìm mã cổ phiếu" className="w-28 rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm uppercase" />
-        <select value={activeSym} onChange={(e) => { setSym(e.target.value); setTab("symbol"); }} aria-label="Chọn mã cổ phiếu" className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm">
-          {filteredSymbols.map((s) => <option key={s} value={s}>{s}</option>)}
+        <input value={symbolQuery} onChange={(e) => searchSymbol(e.target.value)} placeholder="VD: FPT" aria-label="Tìm mã cổ phiếu" className="w-28 rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm uppercase" />
+        <select value={activeSym} onChange={(e) => selectSymbol(e.target.value)} aria-label="Chọn mã cổ phiếu" className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm" disabled={!filteredSymbols.length}>
+          {filteredSymbols.length ? filteredSymbols.map((s) => <option key={s} value={s}>{s}</option>) : <option value={activeSym}>Không tìm thấy mã</option>}
         </select>
         <span className="text-[var(--color-muted)]">{symbols.length} mã</span>
       </div>
@@ -451,10 +463,8 @@ export function AnalysisBoard({
         /* ===== TỪNG MÃ ===== */
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-[var(--color-muted)]">Chọn mã:</span>
-            <select value={sym} onChange={(e) => setSym(e.target.value)} className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm">
-              {symbols.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <span className="text-[var(--color-muted)]">Mã đang xem:</span>
+            <span className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm font-semibold">{activeSym}</span>
             <span className="text-[var(--color-muted)]">{symRows.length} ngày có tín hiệu</span>
             <span className="ml-auto flex items-center gap-2 text-[10px] text-[var(--color-muted)]">
               <OutcomeDot o="tp" /> chạm TP <OutcomeDot o="sl" /> chạm SL <OutcomeDot o="open" /> chưa chạm
