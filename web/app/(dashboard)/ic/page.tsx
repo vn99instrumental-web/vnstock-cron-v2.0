@@ -47,6 +47,20 @@ const FACTOR_ORDER = [
   "score_trade", "mean_reversion", "breakout", "flow",
   "fundamental", "growth", "context",
 ];
+const TECHNICAL_TERMS = [
+  { term: "Spearman (ρ)", meaning: "Đo mức độ hai biến tăng hoặc giảm cùng thứ tự, không yêu cầu quan hệ tuyến tính.", formula: "ρ = 1 − 6Σd² / [n(n²−1)] (khi không có hạng trùng)", reading: "+1: cùng chiều hoàn toàn; 0: không có quan hệ hạng; −1: ngược chiều hoàn toàn." },
+  { term: "IC (Information Coefficient)", meaning: "Spearman giữa điểm tín hiệu hôm nay và lợi nhuận tương lai; đo khả năng xếp hạng cổ phiếu.", formula: "IC = Spearman(score, future return)", reading: "|IC| < 0,02: yếu; 0,02–0,05: có tín hiệu; 0,05–0,10: tốt; > 0,10: mạnh. IC âm là dự báo ngược." },
+  { term: "Williams %R", meaning: "Cho biết giá đóng cửa đang nằm gần đỉnh hay đáy của biên giá N phiên.", formula: "%R = −100 × (HighN − Close) / (HighN − LowN)", reading: "Từ −100 đến 0. Dưới −80: quá bán; trên −20: quá mua. Không nên dùng riêng lẻ làm lệnh mua/bán." },
+  { term: "Bollinger Bands / %B", meaning: "Đo vị trí giá so với dải biến động quanh trung bình động.", formula: "%B = (Price − Lower Band) / (Upper Band − Lower Band)", reading: "%B < 0: dưới dải dưới; 0–1: trong dải; > 1: trên dải trên. Cần kết hợp xu hướng và khối lượng." },
+  { term: "EMA", meaning: "Trung bình động đặt trọng số lớn hơn cho giá gần hiện tại.", formula: "EMAₜ = αPriceₜ + (1−α)EMAₜ₋₁; α = 2/(N+1)", reading: "Giá trên EMA thường thiên tăng; dưới EMA thường thiên giảm. Khoảng cách quá xa có thể báo trạng thái quá căng." },
+  { term: "Relative Strength (RS)", meaning: "So sánh hiệu suất của một mã với chỉ số tham chiếu trong cùng giai đoạn.", formula: "RS = (1 + return mã) / (1 + return chỉ số)", reading: "> 1: mã mạnh hơn thị trường; < 1: yếu hơn. RS tăng đều đáng tin hơn một điểm tăng đơn lẻ." },
+  { term: "Breakout", meaning: "Giá vượt vùng cản hoặc đỉnh trước, thường dùng để nhận biết xu hướng mới.", formula: "Price > resistance; xác nhận thường kèm Volume / Volume MA > 1", reading: "Tốt hơn khi đóng cửa trên cản và khối lượng tăng. Vượt cản rồi quay xuống nhanh có thể là breakout giả." },
+  { term: "Order flow", meaning: "Chênh lệch tương đối giữa khối lượng mua chủ động và bán chủ động.", formula: "OF ≈ (Buy active − Sell active) / (Buy active + Sell active)", reading: "> 0: áp lực mua; < 0: áp lực bán; gần 0: cân bằng. Cách phân loại lệnh phụ thuộc nguồn dữ liệu." },
+  { term: "t-stat", meaning: "Đo hệ số ước lượng lớn bao nhiêu so với sai số của chính nó.", formula: "t = coefficient / standard error", reading: "Quy ước |t| ≥ 2: có ý nghĩa thống kê tương đối; |t| nhỏ: chưa đủ bằng chứng. Không đồng nghĩa chắc chắn có lãi." },
+  { term: "R²", meaning: "Tỷ lệ biến động của lợi nhuận được mô hình giải thích trên mẫu đã dùng.", formula: "R² = 1 − SSE/SST", reading: "Từ 0 đến 1; cao hơn là khớp mẫu tốt hơn, nhưng quá cao trên mẫu nhỏ có thể là overfit." },
+  { term: "Horizon", meaning: "Số phiên từ ngày phát tín hiệu đến ngày đo lợi nhuận.", formula: "ReturnNh = Price(t+N) / Price(t) − 1", reading: "1d/3d phản ánh rất ngắn hạn; 5d/10d phản ánh độ bền dài hơn của tín hiệu." },
+  { term: "n (cỡ mẫu)", meaning: "Số quan sát hợp lệ dùng để tính chỉ số.", formula: "n = số cặp (score, future return) hợp lệ", reading: "n càng lớn thường càng ổn định. Với bảng ngành, n < 30 nên xem là tham khảo thận trọng." },
+];
 
 interface ICRow {
   config_version: string;
@@ -138,7 +152,12 @@ export default async function ICPage() {
   // IC breakdown (ước lượng Spearman gộp) — chỉ số con, ngành (gộp & theo version).
   const [indRes, indusVerRes, factorVerRes, margRes] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
-    supabase.from("v4_ic_by_industry_ver").select("version, industry, horizon, ic, n"),
+    supabase
+      .from("v4_ic_by_industry_ver")
+      .select("version, industry, horizon, ic, n")
+      .eq("version", curVer ?? "__no_current_version__")
+      .order("industry", { ascending: true })
+      .order("horizon", { ascending: true }),
     supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n"),
     supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n"),
   ]);
@@ -162,16 +181,8 @@ export default async function ICPage() {
     members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
   })).filter((f) => f.members.length);
 
-  // IC theo ngành TÁCH THEO VERSION; hiển thị n để người dùng tự đánh giá độ tin cậy.
-  const verMap = new Map<string, BrkRow[]>();
-  for (const r of (indusVerRes.data ?? []) as Record<string, unknown>[]) {
-    const v = String(r.version);
-    if (!verMap.has(v)) verMap.set(v, []);
-    verMap.get(v)!.push({ key: String(r.industry), horizon: Number(r.horizon), ic: r.ic == null ? null : Number(r.ic), n: Number(r.n) });
-  }
-  const indusByVer = [...verMap.entries()]
-    .map(([version, rws]) => ({ version, groups: groupBrk(rws) }))
-    .sort((a, b) => (b.version === curVer ? 1 : 0) - (a.version === curVer ? 1 : 0) || b.version.localeCompare(a.version, undefined, { numeric: true }));
+  // Chỉ lấy version production hiện tại: bảng ngắn, rõ và không chạm giới hạn PostgREST.
+  const industryGroups = groupBrk(toBrk((indusVerRes.data ?? []) as Record<string, unknown>[], "industry"));
 
   if (!rows.length) {
     return (
@@ -185,12 +196,8 @@ export default async function ICPage() {
     );
   }
 
-  // Danh sách version để render bảng hợp nhất: có IC official HOẶC có marginal.
-  // Sort: version hiện tại lên đầu, rồi giảm dần theo số.
-  const verList = [...new Set([
-    ...rows.map((r) => r.config_version),
-    ...marginalRows.map((r) => r.version),
-  ])].sort(
+  // Chỉ hiện version có IC official. Version chỉ có marginal (như v4.6) không tạo bảng rỗng.
+  const verList = [...new Set(rows.map((r) => r.config_version))].sort(
     (a, b) => (b === curVer ? 1 : 0) - (a === curVer ? 1 : 0) || b.localeCompare(a, undefined, { numeric: true }),
   );
 
@@ -222,7 +229,7 @@ export default async function ICPage() {
           )}
         </div>
       ) : null}
-      {verList.map((version) => (
+      {verList.filter((version) => version === curVer).map((version) => (
         <FactorICTable
           key={version}
           version={version}
@@ -231,13 +238,13 @@ export default async function ICPage() {
           marginal={marginalRows.filter((r) => r.version === version)}
         />
       ))}
-      {/* IC theo ngành: version hiện tại mở sẵn, version cũ thu gọn. */}
+
       <section className="card mb-6 p-3 sm:p-4">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div>
-            <h2 className="text-sm font-semibold">IC theo ngành</h2>
+            <h2 className="text-sm font-semibold">IC theo ngành{curVer ? ` — scoring ${curVer}` : ""}</h2>
             <p className="mt-1 text-[12px] text-[var(--color-muted)]">
-              Khả năng dự báo của <code>score_trade</code> theo từng ngành và từng scoring version. Xanh = thuận, đỏ = nghịch.
+              Khả năng dự báo của <code>score_trade</code> theo từng ngành ở version hiện tại. Xanh = thuận, đỏ = nghịch.
             </p>
           </div>
           <span className="rounded-md border border-[var(--color-border)] px-2 py-1 text-[11px] text-[var(--color-muted)]">
@@ -245,33 +252,29 @@ export default async function ICPage() {
           </span>
         </div>
 
-        {indusByVer.length ? (
-          <div className="space-y-2">
-            {indusByVer.map((v, index) => (
-              <details
-                key={v.version}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5"
-                open={v.version === curVer || (!curVer && index === 0)}
-              >
-                <summary className="flex cursor-pointer select-none items-center justify-between gap-2 font-mono text-[13px] font-semibold">
-                  <span>scoring {v.version}{v.version === curVer ? " (hiện tại)" : ""}</span>
-                  <span className="font-sans text-[11px] font-normal text-[var(--color-muted)]">{v.groups.length} ngành</span>
-                </summary>
-                <div className="mt-2">
-                  <BreakdownTable groups={v.groups} colLabel="Ngành" nameOf={(k) => k} minN={1} showSample />
-                  <p className="mt-1.5 text-[11px] text-[var(--color-muted)]">
-                    Thận trọng với ô có n &lt; 30; cỡ mẫu nhỏ khiến IC dễ biến động.
-                  </p>
-                </div>
-              </details>
-            ))}
+        {industryGroups.length ? (
+          <div>
+            <BreakdownTable groups={industryGroups} colLabel="Ngành" nameOf={(key) => key} minN={1} showSample />
+            <p className="mt-1.5 text-[11px] text-[var(--color-muted)]">
+              Đang hiển thị {industryGroups.length} ngành của scoring {curVer}. Thận trọng với ô có n &lt; 30; cỡ mẫu nhỏ khiến IC dễ biến động.
+            </p>
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-[var(--color-border)] px-3 py-6 text-center text-xs text-[var(--color-muted)]">
-            {industryError ? "Không tải được IC theo ngành từ Supabase. Vui lòng tải lại trang." : "Chưa có dữ liệu IC theo ngành trong phiên bản đang chọn."}
+            {industryError ? "Không tải được IC theo ngành từ Supabase. Vui lòng tải lại trang." : `Chưa có IC theo ngành cho scoring ${curVer ?? "hiện tại"}.`}
           </div>
         )}
       </section>
+
+      {verList.filter((version) => version !== curVer).map((version) => (
+        <FactorICTable
+          key={version}
+          version={version}
+          curVer={curVer}
+          official={rows.filter((r) => r.config_version === version)}
+          marginal={marginalRows.filter((r) => r.version === version)}
+        />
+      ))}
       <details className="card mb-4 p-3">
         <summary className="cursor-pointer select-none text-sm font-semibold">Cách đọc bảng IC</summary>
         <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]">
@@ -325,6 +328,31 @@ export default async function ICPage() {
       <details className="card mb-6 p-3">
         <summary className="cursor-pointer select-none text-sm font-semibold">Số lượng mẫu theo scoring version</summary>
         <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]"><table className="w-full text-xs"><thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-3 py-2 text-right">{h} phiên</th>)}</tr></thead><tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-mono">{version}{version === curVer ? " (hiện tại)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="tabular px-3 py-2 text-right">{byHorizon.get(h)?.toLocaleString() ?? "—"}</td>)}</tr>)}</tbody></table></div>
+      </details>
+      <details className="card mb-6 p-3">
+        <summary className="cursor-pointer select-none text-sm font-semibold">Thuật ngữ chuyên môn và cách đọc</summary>
+        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]">
+          <table className="w-full min-w-[980px] text-xs">
+            <thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]">
+              <tr>
+                <th className="px-3 py-2 text-left">Thuật ngữ</th>
+                <th className="px-3 py-2 text-left">Định nghĩa dễ hiểu</th>
+                <th className="px-3 py-2 text-left">Công thức cơ bản</th>
+                <th className="px-3 py-2 text-left">Cách đọc / tốt / xấu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TECHNICAL_TERMS.map((item) => (
+                <tr key={item.term} className="border-t border-[var(--color-border)] align-top">
+                  <td className="px-3 py-2 font-semibold">{item.term}</td>
+                  <td className="px-3 py-2 text-[var(--color-muted)]">{item.meaning}</td>
+                  <td className="px-3 py-2 font-mono text-[11px]">{item.formula}</td>
+                  <td className="px-3 py-2 text-[var(--color-muted)]">{item.reading}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </details>
     </>
   );

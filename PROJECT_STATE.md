@@ -144,7 +144,10 @@
 - ✅ Toàn bộ chuỗi tiếng Việt lỗi mã hóa trong trang IC đã được sửa.
 - ✅ Các phần diễn giải phía dưới được chuyển thành bảng trong `<details>` và mặc định thu gọn; bảng scoring và IC theo ngành vẫn ở phía trên.
 - ✅ UI phân biệt lỗi truy vấn Supabase với trạng thái không có dữ liệu, tránh báo nhầm “chưa đủ phiên”.
-- ✅ Supabase live: scoring v4.18 có 15 ngành ở đủ horizon 1/3/5/10; `n` theo ngành từ 31 đến 558. IC official v4.18 có 6 factor, `n=700` mỗi horizon.
+- ✅ Supabase live: scoring v4.18 có 15 ngành ở đủ horizon 1/3/5/10; `n` theo ngành từ 31 đến 558. Quyền đọc đã xác minh bằng role `authenticated`.
+- ✅ UI chỉ tải 60 dòng IC ngành của version hiện tại và đặt bảng ngay sau scoring hiện tại; tránh bị khuất sau nhiều version và tránh giới hạn PostgREST.
+- ✅ Chỉ render version có IC official, vì vậy v4.6 (0 dòng `v4_ic_metrics`) không còn xuất hiện dưới dạng bảng trống.
+- ✅ Thêm bảng thuật ngữ chuyên môn (Spearman, IC, Williams %R, Bollinger, EMA, RS, breakout, order flow, t-stat, R², horizon, n) sau bảng số lượng mẫu; mặc định thu gọn.
 - ✅ `tsc --noEmit` PASS; Next production build PASS. Build còn cảnh báo môi trường local thiếu `eslint-plugin-react-hooks`, không chặn compile.
 
 ---
