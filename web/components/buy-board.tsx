@@ -146,17 +146,32 @@ function agoText(min: number): string {
 
 function GuideSketch({ kind }: { kind: "ema" | "momentum" | "reversion" | "breakout" | "flow" | "fundamental" | "trend" }) {
   const paths: Record<string, string[]> = {
-    ema: ["M4 24 C16 21 28 20 40 12 S64 8 76 4", "M4 8 C18 10 28 14 40 17 S64 21 76 23"],
-    momentum: ["M4 20 C14 6 22 25 34 13 S55 6 76 18", "M4 23 C20 21 35 20 50 17 S65 13 76 10"],
-    reversion: ["M4 15 C14 4 22 27 34 15 S55 4 76 15", "M4 15 C20 15 34 15 50 15 S65 15 76 15"],
-    breakout: ["M4 23 L20 23 L20 17 L38 17 L38 20 L53 20 L53 7 L76 7", "M4 26 L76 26"],
-    flow: ["M4 22 L16 22 L22 14 L30 19 L40 9 L50 15 L60 6 L76 10", "M4 25 L76 25"],
-    fundamental: ["M4 23 L18 21 L30 20 L42 16 L56 12 L76 8", "M4 25 L76 25"],
-    trend: ["M4 23 C18 22 26 17 38 15 S60 8 76 5", "M4 8 C20 11 30 14 42 17 S62 21 76 23"],
+    ema: ["M4 24 C16 21 28 20 40 12 S64 8 76 4", "M4 8 C18 10 28 14 40 17 S64 21 76 23"], momentum: ["M4 20 C14 6 22 25 34 13 S55 6 76 18", "M4 23 C20 21 35 20 50 17 S65 13 76 10"], reversion: ["M4 15 C14 4 22 27 34 15 S55 4 76 15", "M4 15 C20 15 34 15 50 15 S65 15 76 15"], breakout: ["M4 23 L20 23 L20 17 L38 17 L38 20 L53 20 L53 7 L76 7", "M4 26 L76 26"], flow: ["M4 22 L16 22 L22 14 L30 19 L40 9 L50 15 L60 6 L76 10", "M4 25 L76 25"], fundamental: ["M4 23 L18 21 L30 20 L42 16 L56 12 L76 8", "M4 25 L76 25"], trend: ["M4 23 C18 22 26 17 38 15 S60 8 76 5", "M4 8 C20 11 30 14 42 17 S62 21 76 23"],
   };
+  const legends: Record<string, [string, string]> = { ema: ["Giá / EMA50", "EMA200"], trend: ["Giá", "Supertrend"], momentum: ["RSI / MACD", "Ngưỡng"], reversion: ["Giá", "Trung bình"], breakout: ["Giá", "Kháng cự"], flow: ["Giá", "Dòng tiền"], fundamental: ["Kết quả", "Mốc 0"] };
   const color = kind === "reversion" ? "#ca8a04" : "var(--color-buy)";
-  return <svg aria-hidden="true" viewBox="0 0 80 30" className="h-8 w-20 shrink-0"><path d="M2 26H78" stroke="var(--color-border)" strokeWidth="1" /><path d={paths[kind][1]} fill="none" stroke="var(--color-sell)" strokeWidth="1.5" opacity=".7" /><path d={paths[kind][0]} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" /></svg>;
+  return <div className="min-w-[112px]"><svg aria-hidden="true" viewBox="0 0 112 34" className="h-9 w-28"><path d="M2 29H110" stroke="var(--color-border)" /><path d={paths[kind][1]} transform="scale(1.35 1)" fill="none" stroke="var(--color-sell)" strokeWidth="1.5" opacity=".7" /><path d={paths[kind][0]} transform="scale(1.35 1)" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" /></svg><div className="mt-0.5 flex gap-2 text-[9px] text-[var(--color-muted)]"><span><i className="mr-1 inline-block h-0.5 w-3 align-middle" style={{ background: color }} />{legends[kind][0]}</span><span><i className="mr-1 inline-block h-0.5 w-3 align-middle bg-[var(--color-sell)]" />{legends[kind][1]}</span></div></div>;
 }
+
+const FACTOR_GUIDE = [
+  ["Mean reversion", "Williams %R", "Vị trí giá đóng cửa trong biên cao–thấp 14 phiên.", "< −80 và quay lên: quá bán đang hồi.", "> −20 hoặc tiếp tục giảm dưới −80.", "momentum"],
+  ["Mean reversion", "Bollinger %B", "Vị trí giá trong dải Bollinger: 0=dải dưới, 1=dải trên.", "%B < 0 rồi quay vào dải.", "%B > 1 quá nóng hoặc < 0 tiếp tục mở rộng.", "reversion"],
+  ["Mean reversion", "Overextension EMA", "Phần trăm giá lệch khỏi EMA200.", "Lệch âm sâu rồi thu hẹp.", "Khoảng cách âm tiếp tục nới rộng.", "ema"],
+  ["Mean reversion", "RS reversal", "Sức mạnh tương đối 20 phiên so với VN-Index.", "RS ngừng giảm và quay lên trước giá.", "Mã tiếp tục yếu hơn chỉ số.", "trend"],
+  ["Mean reversion", "Deep drawdown", "Mức giảm từ đỉnh/độ gần đáy 52 tuần.", "Gần đáy nhưng ổn định, có flow xác nhận.", "Rơi sâu kèm cơ bản xấu hoặc bán mạnh.", "reversion"],
+  ["Breakout", "Distance 52W high", "Khoảng cách giá tới đỉnh 52 tuần.", "Tiệm cận/vượt đỉnh và giữ được vùng vượt.", "Cách đỉnh xa hoặc breakout thất bại.", "breakout"],
+  ["Breakout", "Supertrend / ADX", "Hướng trend theo ATR và độ mạnh xu hướng.", "Giá trên Supertrend; ADX ≥25 và tăng.", "Giá dưới Supertrend; ADX cao trong downtrend.", "trend"],
+  ["Breakout", "Volume ratio", "Khối lượng hiện tại so với trung bình.", ">1.5× khi vượt kháng cự.", "Tăng giá với volume <1× hoặc bán đột biến.", "breakout"],
+  ["Flow", "Foreign flow", "Mua bán ròng khối ngoại theo giá trị/tỷ trọng.", "Mua ròng bền và tỷ trọng tăng.", "Bán ròng lớn, kéo dài.", "flow"],
+  ["Flow", "Order-flow pressure", "Chênh lệch mua chủ động và bán chủ động.", "Dương và tăng qua nhiều snapshot.", "Âm sâu hoặc đảo từ dương sang âm.", "flow"],
+  ["Flow", "Proprietary 5D", "Mua bán ròng tự doanh trong 5 phiên.", "Mua ròng tích lũy.", "Bán ròng liên tục.", "flow"],
+  ["Flow", "Insider activity", "Giao dịch nội bộ gần đây.", "Mua thực, quy mô đáng kể.", "Bán lớn hoặc dồn dập.", "flow"],
+  ["Flow", "Depth wall", "Tương quan độ sâu lệnh mua/bán.", "Tường mua dày và duy trì.", "Tường bán dày hoặc tường mua bị rút.", "flow"],
+  ["Fundamental", "Fundamental core", "Tổng hợp định giá và chất lượng lợi nhuận.", "Lợi nhuận tốt, định giá hợp lý.", "Lợi nhuận suy yếu, định giá đắt.", "fundamental"],
+  ["Fundamental", "Cash-flow core", "Chất lượng dòng tiền hoạt động so với lợi nhuận.", "CFO dương, theo kịp lợi nhuận.", "Lãi tăng nhưng CFO âm.", "fundamental"],
+  ["Growth", "Growth core", "Tăng trưởng doanh thu/lợi nhuận qua kỳ.", "Tăng trưởng dương và tăng tốc.", "Âm, giảm tốc hoặc nền thấp bất thường.", "fundamental"],
+  ["Context", "Market context", "Regime thị trường và độ rộng VN100.", "Uptrend/breadth tích cực.", "Downtrend/deep-down, số mã giảm áp đảo.", "trend"],
+] as const;
 export function BuyBoard({
   signals,
   expectancy = [],
@@ -693,18 +708,22 @@ export function BuyBoard({
           <h4 className="mb-2 text-xs font-semibold">Factor trong 6 nhóm và cách diễn giải nhanh</h4>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[860px] text-xs">
-              <thead className="bg-black/[0.03] text-left text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2">Nhóm</th><th className="px-3 py-2">Factor</th><th className="px-3 py-2">Tốt khi</th><th className="px-3 py-2">Xấu khi</th><th className="px-3 py-2">Ví dụ</th></tr></thead>
+              <thead className="bg-black/[0.03] text-left text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2">Nhóm</th><th className="px-3 py-2">Factor / định nghĩa</th><th className="px-3 py-2">Tốt khi</th><th className="px-3 py-2">Xấu khi</th><th className="px-3 py-2">Minh họa + legend</th></tr></thead>
               <tbody className="divide-y divide-[var(--color-border)]">
-                <tr><td className="px-3 py-2 font-medium">Xu hướng</td><td className="px-3 py-2">EMA20/50/200, ADX, slope</td><td className="px-3 py-2">EMA ngắn trên EMA dài, ADX tăng</td><td className="px-3 py-2">EMA cắt xuống, ADX thấp</td><td className="px-3 py-2 text-[var(--color-muted)]">EMA50 &gt; EMA200 và cùng dốc lên.</td></tr>
-                <tr><td className="px-3 py-2 font-medium">Động lượng</td><td className="px-3 py-2">RSI, MACD, ROC, Stochastic</td><td className="px-3 py-2">RSI trên 50, MACD dương</td><td className="px-3 py-2">Phân kỳ giảm, RSI dưới 50</td><td className="px-3 py-2 text-[var(--color-muted)]">RSI 55→65 tốt hơn RSI 85 rồi quay đầu.</td></tr>
-                <tr><td className="px-3 py-2 font-medium">Mean reversion</td><td className="px-3 py-2">Bollinger z-score, lệch EMA, RSI thấp</td><td className="px-3 py-2">Lệch thấp rồi bật, khoảng cách thu hẹp</td><td className="px-3 py-2">Lệch thấp tiếp tục mở rộng</td><td className="px-3 py-2 text-[var(--color-muted)]">Bật lên và tạo đáy cao dần.</td></tr>
-                <tr><td className="px-3 py-2 font-medium">Breakout</td><td className="px-3 py-2">Kháng cự, ATR, volume, range</td><td className="px-3 py-2">Vượt đỉnh với volume và giữ giá</td><td className="px-3 py-2">Vượt rồi đóng cửa quay xuống</td><td className="px-3 py-2 text-[var(--color-muted)]">Breakout + volume trên trung bình.</td></tr>
-                <tr><td className="px-3 py-2 font-medium">Dòng tiền</td><td className="px-3 py-2">OBV, MFI, volume delta, khối ngoại</td><td className="px-3 py-2">Giá và dòng tiền cùng tăng</td><td className="px-3 py-2">Giá tăng nhưng dòng tiền giảm</td><td className="px-3 py-2 text-[var(--color-muted)]">OBV xác nhận đỉnh mới của giá.</td></tr>
-                <tr><td className="px-3 py-2 font-medium">Cơ bản / bối cảnh</td><td className="px-3 py-2">EPS, doanh thu, định giá, ngành, regime</td><td className="px-3 py-2">Lợi nhuận tăng, định giá hợp lý</td><td className="px-3 py-2">Lợi nhuận giảm, định giá cao</td><td className="px-3 py-2 text-[var(--color-muted)]">Dùng để đánh giá độ bền, không thay điểm vào.</td></tr>
+                {FACTOR_GUIDE.map(([group, factor, meaning, good, bad, sketch]) => (
+                  <tr key={factor}>
+                    <td className="px-3 py-2 font-medium">{group}</td>
+                    <td className="px-3 py-2"><b>{factor}</b><p className="mt-0.5 text-[var(--color-muted)]">{meaning}</p></td>
+                    <td className="px-3 py-2 text-[var(--color-buy)]">{good}</td>
+                    <td className="px-3 py-2 text-[var(--color-sell)]">{bad}</td>
+                    <td className="px-3 py-2"><GuideSketch kind={sketch} /></td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-        </div>      </details>
+        </div>
+      </details>
     </div>
   );
 }
