@@ -29,6 +29,8 @@ alter table public.v4_ic_industry_metrics enable row level security;
 
 grant select on public.v4_ic_industry_batch to anon, authenticated;
 grant select on public.v4_ic_industry_metrics to anon, authenticated;
+grant all on public.v4_ic_industry_batch to service_role;
+grant all on public.v4_ic_industry_metrics to service_role;
 
 drop policy if exists "public read ic industry batches" on public.v4_ic_industry_batch;
 create policy "public read ic industry batches"
