@@ -6,11 +6,11 @@ import { FactorICTable, type MargRow } from "@/components/factor-ic-table";
 
 export const dynamic = "force-dynamic";
 
-/** Ã nghÄ©a tá»«ng nhÃ¢n tá»‘ (bÃ¡m Ä‘á»‹nh nghÄ©a pipeline: FACTOR_GROUPS). */
+/** Ý nghĩa từng nhân tố (bám định nghĩa pipeline: FACTOR_GROUPS). */
 const FACTOR_INFO: Record<string, { label: string; desc: string; members: string[] }> = {
   score_trade: {
-    label: "Äiá»ƒm tá»•ng (score_trade)",
-    desc: "Gá»™p táº¥t cáº£ cÃ¡c nhÃ³m nhÃ¢n tá»‘ thÃ nh 1 Ä‘iá»ƒm cuá»‘i â€” cháº¥t lÆ°á»£ng cá»§a tÃ­n hiá»‡u MUA nÃ³i chung. IC hÃ ng nÃ y = Ä‘á»™ tin cáº­y cá»§a quyáº¿t Ä‘á»‹nh.",
+    label: "Điểm tổng (score_trade)",
+    desc: "Gá»™p tất cả các nhóm nhân tố thành 1 Điểm cuối — chất lượng cá»§a tín hiệu MUA nói chung. IC hàng này = độ tin cậy cá»§a quyết định.",
     members: [],
   },
   ...Object.fromEntries(
@@ -18,16 +18,16 @@ const FACTOR_INFO: Record<string, { label: string; desc: string; members: string
   ),
 };
 
-/** Diá»…n giáº£i Ä‘á»™ máº¡nh + hÆ°á»›ng cá»§a má»™t Ã´ IC (dÃ¹ng cho tooltip). */
+/** Diá»…n giải độ mạnh + hướng cá»§a má»™t ô IC (dùng cho tooltip). */
 function icMeaning(ic: number | null): { strength: string; dir: string } {
-  if (ic === null || !Number.isFinite(ic)) return { strength: "chÆ°a cÃ³ dá»¯ liá»‡u", dir: "" };
+  if (ic === null || !Number.isFinite(ic)) return { strength: "chưa có dữ liệu", dir: "" };
   const a = Math.abs(ic);
-  const strength = a < 0.02 ? "gáº§n nhÆ° khÃ´ng dá»± bÃ¡o" : a < 0.05 ? "cÃ³ tÃ­n hiá»‡u" : a < 0.1 ? "tá»‘t" : "ráº¥t máº¡nh";
-  const dir = ic > 0 ? "thuáº­n (Ä‘iá»ƒm cao â‡’ lá»i cao)" : ic < 0 ? "nghá»‹ch (Ä‘iá»ƒm cao â‡’ lá»—)" : "trung tÃ­nh";
+  const strength = a < 0.02 ? "gần như không dá»± báo" : a < 0.05 ? "có tín hiệu" : a < 0.1 ? "tốt" : "rất mạnh";
+  const dir = ic > 0 ? "thuận (Điểm cao ⇒ lời cao)" : ic < 0 ? "nghịch (Điểm cao ⇒ lá»—)" : "trung tính";
   return { strength, dir };
 }
 
-// â”€â”€ IC breakdown (chá»‰ sá»‘ con / ngÃ nh) â€” Æ°á»›c lÆ°á»£ng Spearman gá»™p, tham chiáº¿u â”€â”€
+// ── IC breakdown (chỉ số con / ngành) — ước lượng Spearman gộp, tham chiếu ──
 interface BrkRow { key: string; horizon: number; ic: number | null; n: number }
 type BrkGroup = { name: string; h: Map<number, { ic: number | null; n: number }> };
 
@@ -38,7 +38,7 @@ function groupBrk(rows: BrkRow[]): BrkGroup[] {
     m.get(r.key)!.set(r.horizon, { ic: r.ic, n: r.n });
   }
   const out: BrkGroup[] = [...m.entries()].map(([name, h]) => ({ name, h }));
-  out.sort((a, b) => (b.h.get(5)?.ic ?? -99) - (a.h.get(5)?.ic ?? -99)); // máº¡nh nháº¥t @5d lÃªn Ä‘áº§u
+  out.sort((a, b) => (b.h.get(5)?.ic ?? -99) - (a.h.get(5)?.ic ?? -99)); // mạnh nhất @5d lên đầu
   return out;
 }
 
@@ -56,7 +56,7 @@ interface ICRow {
   n: number | null;
 }
 
-/** MÃ u diverging: dÆ°Æ¡ng xanh lÃ¡, Ã¢m Ä‘á», Ä‘áº­m theo |IC| (chuáº©n hoÃ¡ Â±0.2). */
+/** Màu diverging: dương xanh lá, âm đỏ, đậm theo |IC| (chuẩn hoá ±0.2). */
 function icCell(ic: number | null): { bg: string; fg: string } {
   if (ic === null || !Number.isFinite(ic)) return { bg: "transparent", fg: "var(--color-muted)" };
   const a = Math.min(1, Math.abs(ic) / 0.2) * 0.8;
@@ -64,7 +64,7 @@ function icCell(ic: number | null): { bg: string; fg: string } {
   return { bg, fg: a > 0.45 ? "#fff" : "var(--color-ink)" };
 }
 
-/** Báº£ng heatmap breakdown: hÃ ng = chá»‰ sá»‘/ngÃ nh (Ä‘Ã£ sort theo IC 5d), cá»™t = horizon. */
+/** Bảng heatmap breakdown: hàng = chỉ số/ngành (đã sort theo IC 5d), cột = horizon. */
 function BreakdownTable({
   groups, colLabel, nameOf, minN = 30,
 }: {
@@ -74,7 +74,7 @@ function BreakdownTable({
   minN?: number;
 }) {
   const rows = groups.filter((g) => (g.h.get(5)?.n ?? 0) >= minN);
-  if (!rows.length) return <p className="text-xs text-[var(--color-muted)]">ChÆ°a Ä‘á»§ dá»¯ liá»‡u.</p>;
+  if (!rows.length) return <p className="text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu.</p>;
   return (
     <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
       <table className="w-full text-sm">
@@ -94,13 +94,13 @@ function BreakdownTable({
                 const { bg, fg } = icCell(ic);
                 const m = icMeaning(ic);
                 const title = c
-                  ? `${nameOf(g.name)} Â· sau ${h} phiÃªn\n` +
-                    (ic === null ? "ChÆ°a Ä‘á»§ dá»¯ liá»‡u" : `IC ${(ic >= 0 ? "+" : "") + ic.toFixed(3)} â€” ${m.strength}, ${m.dir}`) +
-                    `\nn = ${c.n} quan sÃ¡t (gá»™p má»i version)`
-                  : "â€”";
+                  ? `${nameOf(g.name)} · sau ${h} phiên\n` +
+                    (ic === null ? "Chưa đủ dữ liệu" : `IC ${(ic >= 0 ? "+" : "") + ic.toFixed(3)} — ${m.strength}, ${m.dir}`) +
+                    `\nn = ${c.n} quan sát (gá»™p mọi version)`
+                  : "—";
                 return (
                   <td key={h} className="tabular cursor-help px-3 py-2 text-center" style={{ backgroundColor: bg, color: fg }} title={title}>
-                    {ic === null ? "â€”" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
+                    {ic === null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
                   </td>
                 );
               })}
@@ -123,7 +123,7 @@ export default async function ICPage() {
 
   const rows = (data ?? []) as ICRow[];
 
-  // Version production HIá»†N Táº I (Ä‘á»c Ä‘á»™ng tá»« run má»›i nháº¥t â€” version-agnostic).
+  // Version production HIỆN TẠI (đọc động từ run mới nhất — version-agnostic).
   const { data: curRun } = await supabase
     .from("v4_runs")
     .select("scoring_version")
@@ -133,7 +133,7 @@ export default async function ICPage() {
   const curVer = (curRun?.scoring_version as string | undefined) ?? null;
   const curHasIC = !!curVer && rows.some((r) => r.config_version === curVer);
 
-  // IC breakdown (Æ°á»›c lÆ°á»£ng Spearman gá»™p) â€” chá»‰ sá»‘ con, ngÃ nh (gá»™p & theo version).
+  // IC breakdown (ước lượng Spearman gộp) — chỉ số con, ngành (gộp & theo version).
   const [indRes, indusVerRes, factorVerRes, margRes] = await Promise.all([
     supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
     supabase.from("v4_ic_by_industry_ver").select("version, industry, horizon, ic, n"),
@@ -151,7 +151,7 @@ export default async function ICPage() {
     }));
   const indGroups = groupBrk(toBrk((indRes.data ?? []) as Record<string, unknown>[], "indicator"));
 
-  // Chá»‰ sá»‘ con GOM THEO FACTOR (mean_reversion gá»“m indicator nÃ oâ€¦).
+  // Chỉ số con GOM THEO FACTOR (mean_reversion gồm indicator nào…).
   const indByName = new Map(indGroups.map((g) => [g.name, g]));
   const indByFactor = FACTOR_GROUPS.map((fg) => ({
     key: fg.key,
@@ -159,7 +159,7 @@ export default async function ICPage() {
     members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
   })).filter((f) => f.members.length);
 
-  // IC theo ngÃ nh TÃCH THEO VERSION (chá»‰ version cÃ³ â‰¥3 ngÃ nh Ä‘á»§ n).
+  // IC theo ngành TÁCH THEO VERSION (chỉ version có ≥3 ngành đủ n).
   const verMap = new Map<string, BrkRow[]>();
   for (const r of (indusVerRes.data ?? []) as Record<string, unknown>[]) {
     const v = String(r.version);
@@ -174,17 +174,17 @@ export default async function ICPage() {
   if (!rows.length) {
     return (
       <>
-        <PageHeader title="Cháº¥t lÆ°á»£ng nhÃ¢n tá»‘ (IC)" desc="Forward rank-IC theo factor Ã— horizon." />
+        <PageHeader title="Chất lượng nhân tố (IC)" desc="Forward rank-IC theo factor × horizon." />
         <EmptyState
-          title="ChÆ°a cÃ³ dá»¯ liá»‡u IC"
-          hint="Cháº¡y scripts/export_ic_to_supabase.py (evaluator Python, E6) sau khi cÃ³ outcomes. Báº£ng v4_ic_metrics hiá»‡n rá»—ng."
+          title="Chưa có dữ liệu IC"
+          hint="Chạy scripts/export_ic_to_supabase.py (evaluator Python, E6) sau khi có outcomes. Bảng v4_ic_metrics hiện rá»—ng."
         />
       </>
     );
   }
 
-  // Danh sÃ¡ch version Ä‘á»ƒ render báº£ng há»£p nháº¥t: cÃ³ IC official HOáº¶C cÃ³ marginal.
-  // Sort: version hiá»‡n táº¡i lÃªn Ä‘áº§u, rá»“i giáº£m dáº§n theo sá»‘.
+  // Danh sách version để render bảng hợp nhất: có IC official HOẶC có marginal.
+  // Sort: version hiện tại lên đầu, rồi giảm dần theo số.
   const verList = [...new Set([
     ...rows.map((r) => r.config_version),
     ...marginalRows.map((r) => r.version),
@@ -201,36 +201,25 @@ export default async function ICPage() {
   return (
     <>
       <PageHeader
-        title="Cháº¥t lÆ°á»£ng nhÃ¢n tá»‘ (IC)"
-        desc="Forward rank-IC (Spearman theo ngÃ y â†’ trung bÃ¬nh). TÃ­nh báº±ng Python â€” nguá»“n chÃ¢n lÃ½. Xanh = dá»± bÃ¡o thuáº­n, Ä‘á» = nghá»‹ch."
+        title="Chất lượng nhân tố (IC)"
+        desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dá»± báo thuận, đỏ = nghịch."
       />
 
       {curVer ? (
         <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
-          <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HIá»†N Táº I</span>
+          <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HIỆN TẠI</span>
           <span className="font-mono font-semibold">scoring {curVer}</span>
           {curHasIC ? (
-            <span className="text-[var(--color-muted)]">â€” IC bÃªn dÆ°á»›i (Ä‘Ã¡nh dáº¥u &ldquo;hiá»‡n táº¡i&rdquo;).</span>
+            <span className="text-[var(--color-muted)]">— IC bên dưới (đánh dấu &ldquo;hiện tại&rdquo;).</span>
           ) : (
             <span className="text-[var(--color-muted)]">
-              â€” <b className="text-[var(--color-ink)]">chÆ°a Ä‘á»§ dá»¯ liá»‡u forward Ä‘á»ƒ tÃ­nh IC</b>. Má»—i láº§n Ä‘á»•i version lÃ  reset
-              forward-validation â†’ cáº§n tÃ­ch luá»¹ outcomes vÃ i phiÃªn rá»“i evaluator (Python) má»›i ghi IC. Báº£ng dÆ°á»›i lÃ  cÃ¡c
-              version cÅ© Ä‘Ã£ Ä‘á»§ máº«u, dÃ¹ng Ä‘á»ƒ tham chiáº¿u.
+              — <b className="text-[var(--color-ink)]">chưa đủ dữ liệu forward để tính IC</b>. Má»—i lần đổi version là reset
+              forward-validation → cần tích luỹ outcomes vài phiên rồi evaluator (Python) má»›i ghi IC. Bảng dưới là các
+              version cÅ© đã đủ mẫu, dùng để tham chiếu.
             </span>
           )}
         </div>
       ) : null}
-
-      <details className="card mb-6 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">Số lượng dữ liệu theo scoring version</summary>
-        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = sá»‘ quan sÃ¡t forward Ä‘Ã£ Ä‘á»§ dá»¯ liá»‡u cho tá»«ng horizon; cÃ¡c horizon cÃ³ thá»ƒ cÃ³ sá»‘ máº«u khÃ¡c nhau.</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiÃªn</th>)}</tr></thead>
-            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiá»‡n táº¡i)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "â€”"}</td>)}</tr>)}</tbody>
-          </table>
-        </div>
-      </details>
       {verList.map((version) => (
         <FactorICTable
           key={version}
@@ -241,60 +230,60 @@ export default async function ICPage() {
         />
       ))}
       <details className="card mb-4 p-3 text-[13px]">
-        <summary className="cursor-pointer select-none text-sm font-semibold">â„¹ï¸ IC lÃ  gÃ¬ &amp; Ä‘á»c báº£ng tháº¿ nÃ o?</summary>
+        <summary className="cursor-pointer select-none text-sm font-semibold">ℹ️ IC là gì &amp; đọc bảng thế nào?</summary>
         <div className="mt-2 flex flex-col gap-2 leading-relaxed text-[var(--color-muted)]">
           <p>
-            <b className="text-[var(--color-ink)]">IC (Information Coefficient)</b> = tÆ°Æ¡ng quan háº¡ng (Spearman) giá»¯a
-            Ä‘iá»ƒm nhÃ¢n tá»‘ lÃºc ra tÃ­n hiá»‡u vÃ  <b className="text-[var(--color-ink)]">lá»£i nhuáº­n thá»±c táº¿ sau N phiÃªn</b>.
-            NÃ³i cÃ¡ch khÃ¡c: Ä‘iá»ƒm cao cÃ³ <i>tháº­t sá»±</i> Ä‘i kÃ¨m lá»i cao hÆ¡n khÃ´ng.
+            <b className="text-[var(--color-ink)]">IC (Information Coefficient)</b> = tương quan hạng (Spearman) giữa
+            Điểm nhân tố lúc ra tín hiệu và <b className="text-[var(--color-ink)]">lợi nhuận thá»±c tế sau N phiên</b>.
+            Nói cách khác: Điểm cao có <i>thật sá»±</i> Đi kèm lời cao hÆ¡n không.
           </p>
 
           <div>
-            <div className="mb-1 font-medium text-[var(--color-ink)]">Äá»c Ä‘á»™ máº¡nh |IC| (Ä‘á»‹nh lÆ°á»£ng):</div>
+            <div className="mb-1 font-medium text-[var(--color-ink)]">Đọc độ mạnh |IC| (định lượng):</div>
             <ul className="grid gap-x-4 gap-y-0.5 sm:grid-cols-2">
-              <li>â‰ˆ 0 â†’ gáº§n nhÆ° khÃ´ng dá»± bÃ¡o</li>
-              <li>0.02 â€“ 0.05 â†’ cÃ³ tÃ­n hiá»‡u (Ä‘Ã£ Ä‘Ã¡ng dÃ¹ng)</li>
-              <li>0.05 â€“ 0.10 â†’ tá»‘t</li>
-              <li>&gt; 0.10 â†’ ráº¥t máº¡nh (hiáº¿m â€” soi ká»¹ cá»¡ máº«u n káº»o overfit)</li>
+              <li>≈ 0 → gần như không dá»± báo</li>
+              <li>0.02 – 0.05 → có tín hiệu (đã đáng dùng)</li>
+              <li>0.05 – 0.10 → tốt</li>
+              <li>&gt; 0.10 → rất mạnh (hiếm — soi kỹ cỡ mẫu n kẻo overfit)</li>
             </ul>
           </div>
 
           <p>
-            <b className="text-[var(--color-ink)]">Dáº¥u &amp; mÃ u:</b>{" "}
-            <span className="font-semibold text-[var(--color-buy)]">+ xanh</span> = nhÃ¢n tá»‘ cao â‡’ lá»i cao (dá»± bÃ¡o
-            thuáº­n, Ä‘Ãºng ká»³ vá»ng);{" "}
-            <span className="font-semibold text-[var(--color-sell)]">âˆ’ Ä‘á»</span> = nhÃ¢n tá»‘ cao â‡’ lá»— (nghá»‹ch â€” factor
-            Ä‘ang pháº£n tÃ¡c dá»¥ng, nÃªn cÃ¢n nháº¯c giáº£m/Ä‘áº£o trá»ng sá»‘). MÃ u cÃ ng Ä‘áº­m â‡’ |IC| cÃ ng lá»›n (chuáº©n hoÃ¡ Â±0.20).
+            <b className="text-[var(--color-ink)]">Dấu &amp; màu:</b>{" "}
+            <span className="font-semibold text-[var(--color-buy)]">+ xanh</span> = nhân tố cao ⇒ lời cao (dá»± báo
+            thuận, đúng kỳ vọng);{" "}
+            <span className="font-semibold text-[var(--color-sell)]">− đỏ</span> = nhân tố cao ⇒ lá»— (nghịch — factor
+            Đang phản tác dụng, nên cân nhắc giảm/đảo trọng số). Màu càng đậm ⇒ |IC| càng lá»›n (chuẩn hoá ±0.20).
           </p>
 
           <p>
-            <b className="text-[var(--color-ink)]">Cá»™t 1d/3d/5d/10d:</b> Ä‘o vá»›i lá»£i nhuáº­n sau 1/3/5/10 phiÃªn â€” má»™t
-            nhÃ¢n tá»‘ cÃ³ thá»ƒ máº¡nh á»Ÿ khung nÃ y nhÆ°ng yáº¿u á»Ÿ khung khÃ¡c. So ngang Ä‘á»ƒ biáº¿t factor dá»± bÃ¡o ngáº¯n hay dÃ i háº¡n.
+            <b className="text-[var(--color-ink)]">Cá»™t 1d/3d/5d/10d:</b> Đo vá»›i lợi nhuận sau 1/3/5/10 phiên — má»™t
+            nhân tố có thể mạnh ở khung này nhưng yếu ở khung khác. So ngang để biết factor dá»± báo ngắn hay dài hạn.
           </p>
 
           <p>
-            <b className="text-[var(--color-ink)]">HÃ ng:</b> <code>score_trade</code> = Ä‘iá»ƒm tá»•ng (cháº¥t lÆ°á»£ng tÃ­n hiá»‡u
-            chung); cÃ¡c hÃ ng cÃ²n láº¡i = tá»«ng nhÃ³m nhÃ¢n tá»‘.
+            <b className="text-[var(--color-ink)]">Hàng:</b> <code>score_trade</code> = Điểm tổng (chất lượng tín hiệu
+            chung); các hàng còn lại = từng nhóm nhân tố.
           </p>
 
           <p>
-            <b className="text-[var(--color-ink)]">n (rÃª chuá»™t lÃªn Ã´) = cá»¡ máº«u.</b> n nhá» â†’ IC nhiá»…u, chÆ°a tin Ä‘Æ°á»£c.
-            Æ¯u tiÃªn Ã´ cÃ³ n lá»›n vÃ  qua nhiá»u phiÃªn.
+            <b className="text-[var(--color-ink)]">n (rê chuá»™t lên ô) = cỡ mẫu.</b> n nhỏ → IC nhiá»…u, chưa tin được.
+            Ưu tiên ô có n lá»›n và qua nhiều phiên.
           </p>
 
           <p>
-            <b className="text-[var(--color-ink)]">NhÃ³m theo version:</b> má»—i láº§n Ä‘á»•i SCORING_VERSION lÃ  reset
-            forward-validation â†’ IC tÃ­nh riÃªng tá»«ng version. So version má»›i vá»›i cÅ© Ä‘á»ƒ biáº¿t thay Ä‘á»•i cÃ³ cáº£i thiá»‡n khÃ´ng.
+            <b className="text-[var(--color-ink)]">Nhóm theo version:</b> má»—i lần đổi SCORING_VERSION là reset
+            forward-validation → IC tính riêng từng version. So version má»›i vá»›i cÅ© để biết thay đổi có cải thiện không.
           </p>
 
           <p className="italic">
-            LÆ°u Ã½: Ä‘Ã¢y lÃ  <b>forward IC</b> (Ä‘o trÃªn tÆ°Æ¡ng lai tháº­t, khÃ´ng pháº£i backtest) â€” Ä‘Ã¡ng tin hÆ¡n, nhÆ°ng váº«n cáº§n
-            Ä‘á»§ máº«u &amp; nhiá»u phiÃªn má»›i káº¿t luáº­n. Con sá»‘ chÃ­nh thá»©c do evaluator Python tÃ­nh.
+            Lưu ý: đây là <b>forward IC</b> (Đo trên tương lai thật, không phải backtest) — đáng tin hÆ¡n, nhưng vẫn cần
+            đủ mẫu &amp; nhiều phiên má»›i kết luận. Con số chính thức do evaluator Python tính.
           </p>
         </div>
       </details>
       <details className="card mb-6 p-3 text-[13px]">
-        <summary className="cursor-pointer select-none text-sm font-semibold">ðŸ“– Ã nghÄ©a tá»«ng nhÃ¢n tá»‘ (rÃª chuá»™t lÃªn tÃªn hÃ ng / tá»«ng Ã´ Ä‘á»ƒ xem nhanh)</summary>
+        <summary className="cursor-pointer select-none text-sm font-semibold">📖 Ý nghĩa từng nhân tố (rê chuá»™t lên tên hàng / từng ô để xem nhanh)</summary>
         <div className="mt-2 flex flex-col gap-2.5">
           {FACTOR_ORDER.filter((k) => FACTOR_INFO[k]).map((k) => {
             const info = FACTOR_INFO[k];
@@ -305,7 +294,7 @@ export default async function ICPage() {
                 <div className="text-[12px] text-[var(--color-muted)]">{info.desc}</div>
                 {info.members.length ? (
                   <div className="mt-0.5 text-[11px] text-[var(--color-muted)]">
-                    <span className="font-medium">Chá»‰ bÃ¡o thÃ nh viÃªn:</span> {info.members.join(" Â· ")}
+                    <span className="font-medium">Chỉ báo thành viên:</span> {info.members.join(" · ")}
                   </div>
                 ) : null}
               </div>
@@ -314,55 +303,35 @@ export default async function ICPage() {
         </div>
       </details>
       <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-        Má»—i version: hÃ ng <b>nhÃ¢n tá»‘</b> = IC chÃ­nh thá»©c (evaluator Python, chuáº©n theo-ngÃ y) Ã— 1/3/5/10 phiÃªn. Báº¥m nhÃ¢n
-        tá»‘ cÃ³ dáº¥u â–¸ Ä‘á»ƒ <b>bung ra chá»‰ bÃ¡o con</b> kÃ¨m <b>Ä‘Ã³ng gÃ³p biÃªn</b> (há»“i quy Ä‘a biáº¿n, khá»­ trÃ¹ng láº·p) + cá»™t
-        <b> Káº¿t luáº­n</b> (GIá»®/tÄƒng Â· GIáº¢M/Ä‘áº£o Â· trÃ¹ng láº·p) â€” dÃ¹ng Ä‘á»ƒ combine version má»›i. RÃª chuá»™t Ã´ Ä‘á»ƒ xem n / t-stat.
+        Má»—i version: hàng <b>nhân tố</b> = IC chính thức (evaluator Python, chuẩn theo-ngày) × 1/3/5/10 phiên. Bấm nhân
+        tố có dấu â–¸ để <b>bung ra chỉ báo con</b> kèm <b>đóng góp biên</b> (hồi quy Đa biến, khá»­ trùng lặp) + cá»™t
+        <b> Kết luận</b> (GIá»®/tăng · GIẢM/đảo · trùng lặp) — dùng để combine version má»›i. Rê chuá»™t ô để xem n / t-stat.
       </p>
       <p className="mb-6 text-xs text-[var(--color-muted)]">
-        Ã” nhÃ¢n tá»‘: Ä‘á»™ Ä‘áº­m theo |IC| (Â±0.20). Ã” chá»‰ bÃ¡o (bung): Ä‘á»™ Ä‘áº­m theo |há»‡ sá»‘ biÃªn| (Â±0.30), <b>in Ä‘áº­m = |t|â‰¥2</b>
-        (cÃ³ Ã½ nghÄ©a). IC official chá»‰ cÃ³ á»Ÿ version tÃ­ch Ä‘á»§ â‰¥3 phiÃªn chÃ­n; Ä‘Ã³ng gÃ³p biÃªn cÃ³ á»Ÿ version Ä‘á»§ máº«u há»“i quy (nâ‰¥150).
+        Ô nhân tố: độ đậm theo |IC| (±0.20). Ô chỉ báo (bung): độ đậm theo |hệ số biên| (±0.30), <b>in đậm = |t|≥2</b>
+        (có ý nghĩa). IC official chỉ có ở version tích đủ ≥3 phiên chín; đóng góp biên có ở version đủ mẫu hồi quy (n≥150).
       </p>
 
-      {/* â”€â”€ Ma tráº­n IC nhÃ¢n tá»‘ Ã— Má»ŒI version (Æ°á»›c lÆ°á»£ng) â€” cÃ´ng cá»¥ combine â”€â”€ */}
+      {/* ── Ma trận IC nhân tố × MỌI version (ước lượng) — công cụ combine ── */}
       <section className="mb-6">
-        <h2 className="mb-1 text-sm font-semibold">ðŸ§® So sÃ¡nh nhÃ¢n tá»‘ qua táº¥t cáº£ version â€” chá»n yáº¿u tá»‘ Ä‘á»ƒ combine</h2>
-        <section className="card mb-6 p-3">
-        <h2 className="mb-1 text-sm font-semibold">Sá»‘ lÆ°á»£ng dá»¯ liá»‡u theo scoring version</h2>
-        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = sá»‘ quan sÃ¡t forward Ä‘Ã£ Ä‘á»§ dá»¯ liá»‡u cho tá»«ng horizon; cÃ¡c horizon cÃ³ thá»ƒ cÃ³ sá»‘ máº«u khÃ¡c nhau.</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiÃªn</th>)}</tr></thead>
-            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiá»‡n táº¡i)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "â€”"}</td>)}</tr>)}</tbody>
-          </table>
-        </div>
-      </section>
+        <h2 className="mb-1 text-sm font-semibold">🧮 So sánh nhân tố qua tất cả version — chọn yếu tố để combine</h2>
 
       <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          HÃ ng = version, cá»™t = nhÃ¢n tá»‘. TÃ¬m nhÃ¢n tá»‘ <b>dÆ°Æ¡ng á»•n Ä‘á»‹nh qua nhiá»u version</b> (xanh nhiá»u cá»™t) Ä‘á»ƒ tÄƒng
-          trá»ng sá»‘; nhÃ¢n tá»‘ <b>Ä‘á» dai dáº³ng</b> Ä‘á»ƒ giáº£m/Ä‘áº£o. Phá»§ háº¿t má»i version (ká»ƒ cáº£ version cÅ© n nhá») â€”
-          <b> Æ°á»›c lÆ°á»£ng pooled</b>, tham chiáº¿u; con sá»‘ chuáº©n xem báº£ng official phÃ­a trÃªn.
+          Hàng = version, cá»™t = nhân tố. Tìm nhân tố <b>dương ổn định qua nhiều version</b> (xanh nhiều cá»™t) để tăng
+          trọng số; nhân tố <b>đỏ dai dẳng</b> để giảm/đảo. Phá»§ hết mọi version (kể cả version cÅ© n nhỏ) —
+          <b> ước lượng pooled</b>, tham chiếu; con số chuẩn xem bảng official phía trên.
         </p>
         <FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} />
       </section>
 
-      {/* â”€â”€ IC theo CHá»ˆ Sá» CON â€” gom theo nhÃ³m nhÃ¢n tá»‘ â”€â”€ */}
+      {/* ── IC theo CHỈ SỐ CON — gom theo nhóm nhân tố ── */}
       <section className="mb-6">
-        <h2 className="mb-1 text-sm font-semibold">ðŸ”¬ IC theo chá»‰ sá»‘ con â€” gom theo nhÃ³m nhÃ¢n tá»‘</h2>
-        <section className="card mb-6 p-3">
-        <h2 className="mb-1 text-sm font-semibold">Sá»‘ lÆ°á»£ng dá»¯ liá»‡u theo scoring version</h2>
-        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = sá»‘ quan sÃ¡t forward Ä‘Ã£ Ä‘á»§ dá»¯ liá»‡u cho tá»«ng horizon; cÃ¡c horizon cÃ³ thá»ƒ cÃ³ sá»‘ máº«u khÃ¡c nhau.</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiÃªn</th>)}</tr></thead>
-            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiá»‡n táº¡i)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "â€”"}</td>)}</tr>)}</tbody>
-          </table>
-        </div>
-      </section>
+        <h2 className="mb-1 text-sm font-semibold">🔬 IC theo chỉ số con — gom theo nhóm nhân tố</h2>
 
       <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          Má»—i nhÃ³m nhÃ¢n tá»‘ (mean_reversion, breakoutâ€¦) gá»“m cÃ¡c <b>chá»‰ bÃ¡o thÃ nh viÃªn</b> bÃªn dÆ°á»›i. IC = chá»‰ bÃ¡o nÃ o
-          <b> dá»± bÃ¡o tá»‘t</b> (xanh) / <b>ngÆ°á»£c</b> (Ä‘á»). Æ¯á»›c lÆ°á»£ng Spearman rank-IC gá»™p toÃ n ká»³ (má»i version) â€” tham
-          chiáº¿u, khÃ´ng pháº£i IC chÃ­nh thá»©c evaluator. RÃª chuá»™t xem n.
+          Má»—i nhóm nhân tố (mean_reversion, breakout…) gồm các <b>chỉ báo thành viên</b> bên dưới. IC = chỉ báo nào
+          <b> dá»± báo tốt</b> (xanh) / <b>ngược</b> (đỏ). Ước lượng Spearman rank-IC gá»™p toàn kỳ (mọi version) — tham
+          chiếu, không phải IC chính thức evaluator. Rê chuá»™t xem n.
         </p>
         <div className="flex flex-col gap-3">
           {indByFactor.map((f) => (
@@ -370,30 +339,20 @@ export default async function ICPage() {
               <div className="mb-1 text-[13px] font-semibold">
                 {f.label} <span className="font-mono text-[11px] font-normal text-[var(--color-muted)]">{f.key}</span>
               </div>
-              <BreakdownTable groups={f.members} colLabel="Chá»‰ bÃ¡o" nameOf={(k) => signalName(k)} minN={100} />
+              <BreakdownTable groups={f.members} colLabel="Chỉ báo" nameOf={(k) => signalName(k)} minN={100} />
             </div>
           ))}
         </div>
       </section>
 
 
-      {/* â”€â”€ IC theo NGÃ€NH (gá»™p + per-version) â”€â”€ */}
+      {/* ── IC theo NGÀNH (gộp + per-version) ── */}
       <section className="mb-4">
-        <h2 className="mb-1 text-sm font-semibold">ðŸ­ IC theo ngÃ nh â€” Ä‘iá»ƒm sá»‘ hiá»‡u quáº£ á»Ÿ ngÃ nh nÃ o?</h2>
-        <section className="card mb-6 p-3">
-        <h2 className="mb-1 text-sm font-semibold">Sá»‘ lÆ°á»£ng dá»¯ liá»‡u theo scoring version</h2>
-        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = sá»‘ quan sÃ¡t forward Ä‘Ã£ Ä‘á»§ dá»¯ liá»‡u cho tá»«ng horizon; cÃ¡c horizon cÃ³ thá»ƒ cÃ³ sá»‘ máº«u khÃ¡c nhau.</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiÃªn</th>)}</tr></thead>
-            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiá»‡n táº¡i)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "â€”"}</td>)}</tr>)}</tbody>
-          </table>
-        </div>
-      </section>
+        <h2 className="mb-1 text-sm font-semibold">🏭 IC theo ngành — điểm số hiệu quả ở ngành nào?</h2>
 
       <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          Spearman rank-IC gá»™p giá»¯a <code>score_trade</code> vÃ  lá»£i nhuáº­n sau N phiÃªn, tÃ¡ch theo ngÃ nh, <b>riÃªng tá»«ng
-          version</b> (Ä‘iá»ƒm mÃ´ hÃ¬nh Ä‘Ã¡ng tin á»Ÿ ngÃ nh nÃ o â€” xanh, ngÆ°á»£c á»Ÿ ngÃ nh nÃ o â€” Ä‘á»). Æ¯á»›c lÆ°á»£ng tham chiáº¿u.
+          Spearman rank-IC gá»™p giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành, <b>riêng từng
+          version</b> (Điểm mô hình đáng tin ở ngành nào — xanh, ngược ở ngành nào — đỏ). Ước lượng tham chiếu.
         </p>
 
         {indusByVer.length ? (
@@ -401,16 +360,26 @@ export default async function ICPage() {
             {indusByVer.map((v) => (
               <details key={v.version} className="mb-1.5 rounded-md border border-[var(--color-border)] p-2" open={v.version === curVer}>
                 <summary className="cursor-pointer select-none font-mono text-[13px] font-semibold">
-                  scoring {v.version}{v.version === curVer ? " (hiá»‡n táº¡i)" : ""}
+                  scoring {v.version}{v.version === curVer ? " (hiện tại)" : ""}
                 </summary>
                 <div className="mt-1.5">
-                  <BreakdownTable groups={v.groups} colLabel="NgÃ nh" nameOf={(k) => k} minN={30} />
+                  <BreakdownTable groups={v.groups} colLabel="Ngành" nameOf={(k) => k} minN={30} />
                 </div>
               </details>
             ))}
           </div>
         ) : null}
       </section>
+      <details className="card mb-6 p-3">
+        <summary className="cursor-pointer select-none text-sm font-semibold">Số lượng mẫu theo scoring version</summary>
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiên</th>)}</tr></thead>
+            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiện tại)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "—"}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      </details>
+
     </>
   );
 }
