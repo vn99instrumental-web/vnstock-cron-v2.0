@@ -66,12 +66,13 @@ function icCell(ic: number | null): { bg: string; fg: string } {
 
 /** Bảng heatmap breakdown: hàng = chỉ số/ngành (đã sort theo IC 5d), cột = horizon. */
 function BreakdownTable({
-  groups, colLabel, nameOf, minN = 30,
+  groups, colLabel, nameOf, minN = 30, showSample = false,
 }: {
   groups: BrkGroup[];
   colLabel: string;
   nameOf: (k: string) => string;
   minN?: number;
+  showSample?: boolean;
 }) {
   const rows = groups.filter((g) => (g.h.get(5)?.n ?? 0) >= minN);
   if (!rows.length) return <p className="text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu.</p>;
@@ -99,8 +100,9 @@ function BreakdownTable({
                     `\nn = ${c.n} quan sát (gá»™p mọi version)`
                   : "—";
                 return (
-                  <td key={h} className="tabular cursor-help px-3 py-2 text-center" style={{ backgroundColor: bg, color: fg }} title={title}>
-                    {ic === null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
+                  <td key={h} className="tabular min-w-[76px] cursor-help px-3 py-2 text-center" style={{ backgroundColor: bg, color: fg }} title={title}>
+                    <div>{ic === null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}</div>
+                    {showSample && c ? <div className="mt-0.5 text-[10px] opacity-70">n={c.n}</div> : null}
                   </td>
                 );
               })}
@@ -159,7 +161,7 @@ export default async function ICPage() {
     members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
   })).filter((f) => f.members.length);
 
-  // IC theo ngành TÁCH THEO VERSION (chỉ version có ≥3 ngành đủ n).
+  // IC theo ngành TÁCH THEO VERSION; hiển thị n để người dùng tự đánh giá độ tin cậy.
   const verMap = new Map<string, BrkRow[]>();
   for (const r of (indusVerRes.data ?? []) as Record<string, unknown>[]) {
     const v = String(r.version);
@@ -168,7 +170,6 @@ export default async function ICPage() {
   }
   const indusByVer = [...verMap.entries()]
     .map(([version, rws]) => ({ version, groups: groupBrk(rws) }))
-    .filter((x) => x.groups.filter((g) => (g.h.get(5)?.n ?? 0) >= 30).length >= 3)
     .sort((a, b) => (b.version === curVer ? 1 : 0) - (a.version === curVer ? 1 : 0) || b.version.localeCompare(a.version, undefined, { numeric: true }));
 
   if (!rows.length) {
@@ -229,6 +230,47 @@ export default async function ICPage() {
           marginal={marginalRows.filter((r) => r.version === version)}
         />
       ))}
+      {/* IC theo ngành: version hiện tại mở sẵn, version cũ thu gọn. */}
+      <section className="card mb-6 p-3 sm:p-4">
+        <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold">IC theo ngành</h2>
+            <p className="mt-1 text-[12px] text-[var(--color-muted)]">
+              Khả năng dự báo của <code>score_trade</code> theo từng ngành và từng scoring version. Xanh = thuận, đỏ = nghịch.
+            </p>
+          </div>
+          <span className="rounded-md border border-[var(--color-border)] px-2 py-1 text-[11px] text-[var(--color-muted)]">
+            IC Spearman · n = cỡ mẫu
+          </span>
+        </div>
+
+        {indusByVer.length ? (
+          <div className="space-y-2">
+            {indusByVer.map((v, index) => (
+              <details
+                key={v.version}
+                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5"
+                open={v.version === curVer || (!curVer && index === 0)}
+              >
+                <summary className="flex cursor-pointer select-none items-center justify-between gap-2 font-mono text-[13px] font-semibold">
+                  <span>scoring {v.version}{v.version === curVer ? " (hiện tại)" : ""}</span>
+                  <span className="font-sans text-[11px] font-normal text-[var(--color-muted)]">{v.groups.length} ngành</span>
+                </summary>
+                <div className="mt-2">
+                  <BreakdownTable groups={v.groups} colLabel="Ngành" nameOf={(k) => k} minN={1} showSample />
+                  <p className="mt-1.5 text-[11px] text-[var(--color-muted)]">
+                    Thận trọng với ô có n &lt; 30; cỡ mẫu nhỏ khiến IC dễ biến động.
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-dashed border-[var(--color-border)] px-3 py-6 text-center text-xs text-[var(--color-muted)]">
+            Chưa có dữ liệu IC theo ngành. Dữ liệu sẽ xuất hiện sau khi outcomes đủ phiên và view Supabase được cập nhật.
+          </div>
+        )}
+      </section>
       <details className="card mb-4 p-3 text-[13px]">
         <summary className="cursor-pointer select-none text-sm font-semibold">ℹ️ IC là gì &amp; đọc bảng thế nào?</summary>
         <div className="mt-2 flex flex-col gap-2 leading-relaxed text-[var(--color-muted)]">
@@ -346,30 +388,6 @@ export default async function ICPage() {
       </section>
 
 
-      {/* ── IC theo NGÀNH (gộp + per-version) ── */}
-      <section className="mb-4">
-        <h2 className="mb-1 text-sm font-semibold">🏭 IC theo ngành — điểm số hiệu quả ở ngành nào?</h2>
-
-      <p className="mb-2 text-[12px] text-[var(--color-muted)]">
-          Spearman rank-IC gá»™p giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành, <b>riêng từng
-          version</b> (Điểm mô hình đáng tin ở ngành nào — xanh, ngược ở ngành nào — đỏ). Ước lượng tham chiếu.
-        </p>
-
-        {indusByVer.length ? (
-          <div>
-            {indusByVer.map((v) => (
-              <details key={v.version} className="mb-1.5 rounded-md border border-[var(--color-border)] p-2" open={v.version === curVer}>
-                <summary className="cursor-pointer select-none font-mono text-[13px] font-semibold">
-                  scoring {v.version}{v.version === curVer ? " (hiện tại)" : ""}
-                </summary>
-                <div className="mt-1.5">
-                  <BreakdownTable groups={v.groups} colLabel="Ngành" nameOf={(k) => k} minN={30} />
-                </div>
-              </details>
-            ))}
-          </div>
-        ) : null}
-      </section>
       <details className="card mb-6 p-3">
         <summary className="cursor-pointer select-none text-sm font-semibold">Số lượng mẫu theo scoring version</summary>
         <div className="mt-3 overflow-x-auto">
