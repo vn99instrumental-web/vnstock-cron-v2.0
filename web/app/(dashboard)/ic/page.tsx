@@ -192,6 +192,12 @@ export default async function ICPage() {
     (a, b) => (b === curVer ? 1 : 0) - (a === curVer ? 1 : 0) || b.localeCompare(a, undefined, { numeric: true }),
   );
 
+  const sampleByVersion = verList.map((version) => {
+    const byHorizon = new Map<number, number>();
+    for (const r of rows) if (r.config_version === version && r.n != null) byHorizon.set(r.horizon, Math.max(byHorizon.get(r.horizon) ?? 0, Number(r.n)));
+    return { version, byHorizon };
+  });
+
   return (
     <>
       <PageHeader
@@ -290,6 +296,17 @@ export default async function ICPage() {
         </div>
       </details>
 
+      <section className="card mb-6 p-3">
+        <h2 className="mb-1 text-sm font-semibold">Số lượng dữ liệu theo scoring version</h2>
+        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = số quan sát forward đã đủ dữ liệu cho từng horizon; các horizon có thể có số mẫu khác nhau.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiên</th>)}</tr></thead>
+            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiện tại)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "—"}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
       <p className="mb-2 text-[12px] text-[var(--color-muted)]">
         Mỗi version: hàng <b>nhân tố</b> = IC chính thức (evaluator Python, chuẩn theo-ngày) × 1/3/5/10 phiên. Bấm nhân
         tố có dấu ▸ để <b>bung ra chỉ báo con</b> kèm <b>đóng góp biên</b> (hồi quy đa biến, khử trùng lặp) + cột
@@ -312,7 +329,18 @@ export default async function ICPage() {
       {/* ── Ma trận IC nhân tố × MỌI version (ước lượng) — công cụ combine ── */}
       <section className="mb-6">
         <h2 className="mb-1 text-sm font-semibold">🧮 So sánh nhân tố qua tất cả version — chọn yếu tố để combine</h2>
-        <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+        <section className="card mb-6 p-3">
+        <h2 className="mb-1 text-sm font-semibold">Số lượng dữ liệu theo scoring version</h2>
+        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = số quan sát forward đã đủ dữ liệu cho từng horizon; các horizon có thể có số mẫu khác nhau.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiên</th>)}</tr></thead>
+            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiện tại)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "—"}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <p className="mb-2 text-[12px] text-[var(--color-muted)]">
           Hàng = version, cột = nhân tố. Tìm nhân tố <b>dương ổn định qua nhiều version</b> (xanh nhiều cột) để tăng
           trọng số; nhân tố <b>đỏ dai dẳng</b> để giảm/đảo. Phủ hết mọi version (kể cả version cũ n nhỏ) —
           <b> ước lượng pooled</b>, tham chiếu; con số chuẩn xem bảng official phía trên.
@@ -323,7 +351,18 @@ export default async function ICPage() {
       {/* ── IC theo CHỈ SỐ CON — gom theo nhóm nhân tố ── */}
       <section className="mb-6">
         <h2 className="mb-1 text-sm font-semibold">🔬 IC theo chỉ số con — gom theo nhóm nhân tố</h2>
-        <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+        <section className="card mb-6 p-3">
+        <h2 className="mb-1 text-sm font-semibold">Số lượng dữ liệu theo scoring version</h2>
+        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = số quan sát forward đã đủ dữ liệu cho từng horizon; các horizon có thể có số mẫu khác nhau.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiên</th>)}</tr></thead>
+            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiện tại)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "—"}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <p className="mb-2 text-[12px] text-[var(--color-muted)]">
           Mỗi nhóm nhân tố (mean_reversion, breakout…) gồm các <b>chỉ báo thành viên</b> bên dưới. IC = chỉ báo nào
           <b> dự báo tốt</b> (xanh) / <b>ngược</b> (đỏ). Ước lượng Spearman rank-IC gộp toàn kỳ (mọi version) — tham
           chiếu, không phải IC chính thức evaluator. Rê chuột xem n.
@@ -344,7 +383,18 @@ export default async function ICPage() {
       {/* ── IC theo NGÀNH (gộp + per-version) ── */}
       <section className="mb-4">
         <h2 className="mb-1 text-sm font-semibold">🏭 IC theo ngành — điểm số hiệu quả ở ngành nào?</h2>
-        <p className="mb-2 text-[12px] text-[var(--color-muted)]">
+        <section className="card mb-6 p-3">
+        <h2 className="mb-1 text-sm font-semibold">Số lượng dữ liệu theo scoring version</h2>
+        <p className="mb-2 text-[11px] text-[var(--color-muted)]">n = số quan sát forward đã đủ dữ liệu cho từng horizon; các horizon có thể có số mẫu khác nhau.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="text-[var(--color-muted)]"><tr className="border-b border-[var(--color-border)]"><th className="px-2 py-1.5 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-2 py-1.5 text-right">{h} phiên</th>)}</tr></thead>
+            <tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-b border-[var(--color-border)] last:border-0"><td className="px-2 py-1.5 font-mono">{version}{version === curVer ? " (hiện tại)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="px-2 py-1.5 text-right tabular">{byHorizon.get(h)?.toLocaleString() ?? "—"}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <p className="mb-2 text-[12px] text-[var(--color-muted)]">
           Spearman rank-IC gộp giữa <code>score_trade</code> và lợi nhuận sau N phiên, tách theo ngành, <b>riêng từng
           version</b> (điểm mô hình đáng tin ở ngành nào — xanh, ngược ở ngành nào — đỏ). Ước lượng tham chiếu.
         </p>
