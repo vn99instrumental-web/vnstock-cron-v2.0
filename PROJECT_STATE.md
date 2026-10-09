@@ -165,6 +165,8 @@
 - ✅ Query IC ngành retry một lần; UI luôn giữ đủ header của mọi version official và hiển thị lỗi ngay trong version tương ứng thay vì âm thầm thay bằng version khác.
 - ✅ Toàn bộ bảng IC scoring có nút collapse/expand riêng; version hiện tại mở mặc định, version cũ thu gọn.
 - ✅ TypeScript PASS; Next production build PASS. Supabase Advisor không phát sinh cảnh báo mới từ index.
+- ✅ Tối ưu tiếp join `snap_time`: index biểu thức `idx_v4_signals_lookup_snap_time` và view dùng kiểu `time` thay vì chuỗi; đo truy vấn v4.18 còn khoảng 1,8 giây, giảm nguy cơ reload thiếu IC ngành.
+- ✅ Block IC ngành đã chuyển xuống sau toàn bộ bảng scoring (kết thúc ở v4.1), ngay trước “Cách đọc bảng IC”.
 
 ---
 ## 5. Việc kế tiếp (next actions)

@@ -256,6 +256,15 @@ export default async function ICPage() {
         />
       ))}
 
+      {verList.filter((version) => version !== curVer).map((version) => (
+        <FactorICTable
+          key={version}
+          version={version}
+          curVer={curVer}
+          official={rows.filter((r) => r.config_version === version)}
+          marginal={marginalRows.filter((r) => r.version === version)}
+        />
+      ))}
       <section className="card mb-6 p-3 sm:p-4">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div>
@@ -317,15 +326,6 @@ export default async function ICPage() {
           </div>
         )}
       </section>
-      {verList.filter((version) => version !== curVer).map((version) => (
-        <FactorICTable
-          key={version}
-          version={version}
-          curVer={curVer}
-          official={rows.filter((r) => r.config_version === version)}
-          marginal={marginalRows.filter((r) => r.version === version)}
-        />
-      ))}
       <details className="card mb-4 p-3">
         <summary className="cursor-pointer select-none text-sm font-semibold">Cách đọc bảng IC</summary>
         <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]">
