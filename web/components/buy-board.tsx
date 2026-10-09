@@ -649,9 +649,37 @@ export function BuyBoard({
                   </div>
                 </div>
           </>
-        ) : null}
+) : null}
       </div>
       </div>
+
+      <details className="card mt-3 overflow-hidden">
+        <summary className="cursor-pointer select-none px-3 py-2 text-sm font-semibold text-[var(--color-ink)]">
+          Cách đọc tín hiệu Buy: giá, EMA và 6 nhóm yếu tố
+          <span className="ml-2 text-[10px] font-normal text-[var(--color-muted)]">(mở để xem hướng dẫn)</span>
+        </summary>
+        <div className="overflow-x-auto border-t border-[var(--color-border)]">
+          <table className="w-full min-w-[860px] text-xs">
+            <thead className="bg-black/[0.03] text-left text-[var(--color-muted)] dark:bg-white/[0.03]">
+              <tr>
+                <th className="px-3 py-2">Nhóm / vị trí giá</th>
+                <th className="px-3 py-2">Tốt / ủng hộ BUY</th>
+                <th className="px-3 py-2">Cảnh báo / xấu</th>
+                <th className="px-3 py-2">Cách đọc mức độ</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--color-border)]">
+              <tr><td className="px-3 py-2 font-medium">Giá so với EMA</td><td className="px-3 py-2">Giá trên EMA50 và EMA200; EMA50 dốc lên, EMA50 nằm trên EMA200.</td><td className="px-3 py-2">Giá dưới EMA200 hoặc EMA50 cắt xuống EMA200; giá cách EMA quá xa dễ bị kéo về.</td><td className="px-3 py-2 text-[var(--color-muted)]">Trên cả hai EMA = xu hướng khỏe; chỉ trên EMA50 = hồi phục ngắn hạn; dưới EMA200 = ưu tiên thận trọng.</td></tr>
+              <tr><td className="px-3 py-2 font-medium">Xu hướng (trend)</td><td className="px-3 py-2">Higher-high/higher-low, giá giữ trên vùng hỗ trợ động.</td><td className="px-3 py-2">Lower-high/lower-low, phá hỗ trợ và EMA dốc xuống.</td><td className="px-3 py-2 text-[var(--color-muted)]">Tốt khi nhiều chỉ báo cùng xác nhận; một chỉ báo đơn lẻ chỉ là tín hiệu yếu.</td></tr>
+              <tr><td className="px-3 py-2 font-medium">Động lượng (momentum)</td><td className="px-3 py-2">RSI/MACD tăng từ vùng thấp, động lượng dương nhưng chưa quá nóng.</td><td className="px-3 py-2">Phân kỳ giảm, RSI quá cao rồi quay đầu, MACD cắt xuống.</td><td className="px-3 py-2 text-[var(--color-muted)]">Tăng vừa phải = tích cực; tăng quá nóng = không nên đuổi giá.</td></tr>
+              <tr><td className="px-3 py-2 font-medium">Mean reversion</td><td className="px-3 py-2">Giá bật lên từ vùng lệch thấp, quay về gần đường trung bình với lực bán giảm.</td><td className="px-3 py-2">Giá tiếp tục rơi dưới dải thấp hoặc chưa có dấu hiệu cân bằng.</td><td className="px-3 py-2 text-[var(--color-muted)]">Tín hiệu tốt nhất khi có điểm bật + nhóm trend/flow xác nhận.</td></tr>
+              <tr><td className="px-3 py-2 font-medium">Breakout / biến động</td><td className="px-3 py-2">Vượt kháng cự với thanh khoản tăng, biên độ xác nhận và giữ được vùng breakout.</td><td className="px-3 py-2">Breakout giả, nến rút chân, biến động tăng nhưng không có thanh khoản.</td><td className="px-3 py-2 text-[var(--color-muted)]">Vượt + giữ + volume xác nhận = mạnh; chỉ vượt trong một snapshot = yếu.</td></tr>
+              <tr><td className="px-3 py-2 font-medium">Dòng tiền (flow)</td><td className="px-3 py-2">Khối lượng/OBV/khối ngoại cùng cải thiện, dòng tiền mua chủ động chiếm ưu thế.</td><td className="px-3 py-2">Giá tăng nhưng dòng tiền giảm, bán chủ động hoặc khối ngoại rút.</td><td className="px-3 py-2 text-[var(--color-muted)]">Flow xác nhận giá thì đáng tin hơn; giá tăng không có flow là cảnh báo.</td></tr>
+              <tr><td className="px-3 py-2 font-medium">Cơ bản / bối cảnh</td><td className="px-3 py-2">Tăng trưởng lợi nhuận, định giá và ngành hỗ trợ; thị trường ở regime thuận lợi.</td><td className="px-3 py-2">Kết quả suy yếu, định giá cao, ngành/market regime bất lợi.</td><td className="px-3 py-2 text-[var(--color-muted)]">Dùng để lọc độ bền của tín hiệu, không dùng thay thế điểm vào.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>
   );
 }
