@@ -300,9 +300,6 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.v4_backfill }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    concurrency:
-      group: vnstock-intraday-v2f      # cùng group với job run → không push chồng
-      cancel-in-progress: false
     env:
       VNSTOCK_INTERACTIVE: "0"
       VNSTOCK_LANGUAGE:    en
