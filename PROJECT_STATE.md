@@ -169,6 +169,18 @@
 - ✅ Block IC ngành đã chuyển xuống sau toàn bộ bảng scoring (kết thúc ở v4.1), ngay trước “Cách đọc bảng IC”.
 
 ---
+## 4m. Parallel historical scoring v4.1-v4.18 (2026-10-12)
+
+- Production remains `v4.18`; `v4.1` through `v4.17` now run as live shadow scorers against the same current VN100 snapshot.
+- Historical source is pinned to the final Git commit of each version and stored in `assets/scoring-history-v4.1-v4.17.tar.gz`; `scripts/build_historical_scoring_bundle.py` rebuilds the auditable bundle.
+- `scripts/run_historical_scoring.py` isolates every version and its hysteresis state, fails closed on partial coverage, and emits one ephemeral combined signal file for the ledger recorder.
+- Migration `0024_parallel_scoring_versions.sql` is applied live: signal/outcome uniqueness includes `scoring_version`, runs use versioned IDs, IC joins match the same version, and Buy/Analysis remain production-only.
+- `/today` lists every available scoring version and loads only the selected version, avoiding an 18-version payload on each page load.
+- Verified locally: all 18 versions produced 100 VN100 rows each (1,800 total); Python compile, multi-version transform, Supabase dry-run, TypeScript, workflow YAML, and Next production build passed.
+- Supabase rollback test accepted two versions for one symbol/snapshot. Relevant views use `security_invoker`; no new security-advisor finding was introduced.
+
+---
+
 ## 5. Việc kế tiếp (next actions)
 
 1. **Owner (thủ công)**: set secret GH `SUPABASE_SERVICE_ROLE_KEY` + merge branch → main → data tự chảy (E1.9).

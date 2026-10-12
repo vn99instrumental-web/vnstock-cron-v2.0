@@ -14,6 +14,7 @@ export default async function BuyPage() {
     .from("v4_signals")
     .select("run_id, signal_date, snap_time")
     .in("decision", ["BUY", "STRONG BUY"])
+    .eq("scoring_version", "v4.18")
     .order("signal_date", { ascending: false })
     .order("snap_time", { ascending: false })
     .limit(1)
@@ -36,6 +37,7 @@ export default async function BuyPage() {
     .from("v4_runs")
     .select("run_id")
     .order("started_at", { ascending: false })
+    .eq("scoring_version", "v4.18")
     .limit(1)
     .maybeSingle();
 
@@ -103,8 +105,9 @@ export default async function BuyPage() {
 
   // IC score↔lợi nhuận 5 phiên theo ngành (badge chất lượng ngành trong danh sách).
   const { data: indusICData } = await supabase
-    .from("v4_ic_by_industry")
+    .from("v4_ic_by_industry_ver")
     .select("industry, ic, n")
+    .eq("version", "v4.18")
     .eq("horizon", 5);
   const industryIC: Record<string, { ic: number | null; n: number }> = {};
   for (const r of (indusICData ?? []) as { industry: string; ic: number | string | null; n: number }[]) {

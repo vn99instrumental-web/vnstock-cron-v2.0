@@ -43,7 +43,8 @@ log = logging.getLogger(__name__)
 
 FLOW              = "v2f_v4"
 SCHEMA_VERSION    = 1
-SIGNALS_FILE      = "v2f_signals_v4.json"
+SIGNALS_FILE      = "v2f_signals_v4_all.json"
+SIGNALS_FILE_FALLBACK = "v2f_signals_v4.json"
 # Quality v2.3 (⭐): ff_score / fundamental_score CHỈ do scorer v2.3 tính
 # (ghi ở v2f_signals.json — cùng run, cùng universe). Scorer v4 KHÔNG sinh 2
 # field này. Nối chúng vào ledger v4 làm THAM CHIẾU để app tái lập nhãn Quality
@@ -103,19 +104,19 @@ def _load_trade_map(trade_data) -> dict:
     return out
 
 
-def _load_existing_ids(path: Path) -> set:
+def _load_existing_keys(path: Path) -> set:
     if not path.exists():
         return set()
-    ids = set()
+    keys = set()
     with path.open(encoding="utf-8") as f:
         for ln in f:
             try:
-                pid = json.loads(ln).get("pred_id")
-                if pid:
-                    ids.add(pid)
+                row = json.loads(ln)
+                keys.add((row.get("symbol"), row.get("signal_date"),
+                          row.get("snap_time"), row.get("scoring_version")))
             except json.JSONDecodeError:
                 continue
-    return ids
+    return keys
 
 
 def run():
@@ -126,6 +127,9 @@ def run():
         return
 
     signals = load_json(SIGNALS_FILE)
+    if not signals:
+        log.warning("Combined V4 signals unavailable; falling back to production")
+        signals = load_json(SIGNALS_FILE_FALLBACK)
     if not signals:
         log.warning(f"{SIGNALS_FILE} not found/rỗng — skip (shadow fail-soft)")
         return
@@ -175,15 +179,17 @@ def run():
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{snap_date[:7]}.jsonl"
 
-    existing = _load_existing_ids(out_path)
-    log.info(f"Existing pred_ids in {out_path.name}: {len(existing)}")
+    existing = _load_existing_keys(out_path)
+    log.info(f"Existing prediction keys in {out_path.name}: {len(existing)}")
 
     new_records = []
     for sig in signals:
         sym      = sig.get("symbol")
         decision = sig.get("decision", "NEUTRAL")
-        pred_id  = f"{sym}_{snap_date}_{snap_time}_v2fv4"
-        if not sym or pred_id in existing:
+        version = sig.get("scoring_version") or "v4.1"
+        pred_id = f"{sym}_{snap_date}_{snap_time}_v2fv4_{version}"
+        dedup_key = (sym, snap_date, snap_time, version)
+        if not sym or dedup_key in existing:
             continue
 
         trade = trade_map.get(sym, {}) if decision in ("BUY", "STRONG BUY") else {}
@@ -193,7 +199,7 @@ def run():
             "symbol"          : sym,
             "signal_date"     : snap_date,
             "snap_time"       : snap_time,
-            "scoring_version" : sig.get("scoring_version") or "v4.1",
+            "scoring_version" : version,
             "registry_version": sig.get("registry_version"),
             "gate_version"    : sig.get("gate_version"),
             "flow"            : FLOW,

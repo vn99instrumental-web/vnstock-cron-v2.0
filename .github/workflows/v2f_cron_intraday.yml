@@ -184,6 +184,11 @@ jobs:
         run: |
           /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v4.py
 
+      - name: Step Scoring V4.1-V4.17 (pinned historical shadows)
+        continue-on-error: true
+        run: |
+          /opt/vnstock/.venv/bin/python scripts/run_historical_scoring.py
+
       - name: Step Price Levels V4 (độc lập v2.3)
         continue-on-error: true
         run: |
@@ -221,6 +226,7 @@ jobs:
             output/v2f_signals.json \
             output/v2f_signals.csv \
             output/v2f_trade_levels.json \
+            output/scoring_states/ \
             output/v2f_trade_levels.csv \
             output/history/v2f_predictions/ \
             output/v2f_signals_v4.json \
@@ -335,6 +341,9 @@ jobs:
       # Chạy đúng 2 step V4 trên data ĐÃ CÓ trong output/ (zero API)
       - name: Step Scoring V4 (backfill trên data cũ)
         run: /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v4.py
+      - name: Step Scoring V4.1-V4.17 (backfill shadows)
+        run: /opt/vnstock/.venv/bin/python scripts/run_historical_scoring.py
+
 
       - name: Step Record Predictions V4 (backfill)
         env:
@@ -348,6 +357,7 @@ jobs:
           for p in \
             output/v2f_signals_v4.json \
             output/v2f_v4_regime_state.json \
+            output/scoring_states/ \
             output/history/v2f_predictions_v4/ ; do
             git add "$p" 2>/dev/null || true
           done

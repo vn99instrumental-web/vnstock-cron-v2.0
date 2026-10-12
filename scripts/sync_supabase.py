@@ -22,7 +22,7 @@ Cách chạy:
   python3 scripts/sync_supabase.py --dry-run       # chỉ transform + đếm, KHÔNG gọi network
   python3 scripts/sync_supabase.py --only outcomes # chỉ 1 nguồn (predictions|outcomes)
 
-run_id (ADR-006): "<signal_date>_<snap_time>", vd "2026-09-03_09:27". kind='intraday'.
+run_id: "<signal_date>_<snap_time>_<scoring_version>"; one run per version.
 """
 from __future__ import annotations
 
@@ -74,8 +74,8 @@ def _snap_ts(signal_date: str, snap_time: str) -> str | None:
     return f"{signal_date}T{t}{ICT_OFFSET}"
 
 
-def _run_id(signal_date: str, snap_time: str) -> str:
-    return f"{signal_date}_{snap_time}"
+def _run_id(signal_date: str, snap_time: str, scoring_version: str | None) -> str:
+    return f"{signal_date}_{snap_time}_{scoring_version or 'unknown'}"
 
 
 def _months_available() -> list[str]:
@@ -107,7 +107,7 @@ def build_signal_row(p: dict) -> dict:
     """1 prediction ledger → 1 row v4_signals. breakdown = full record (lossless mirror)."""
     sd, st = p.get("signal_date"), p.get("snap_time")
     return {
-        "run_id":              _run_id(sd, st),
+        "run_id":              _run_id(sd, st, p.get("scoring_version")),
         "signal_date":         sd,
         "snap_time":           _snap_ts(sd, st),
         "symbol":              p.get("symbol"),
@@ -136,20 +136,20 @@ def build_run_rows(preds: list[dict]) -> list[dict]:
     """Group predictions theo (signal_date, snap_time) → v4_runs (ADR-006)."""
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for p in preds:
-        groups[(p.get("signal_date"), p.get("snap_time"))].append(p)
+        groups[(p.get("signal_date"), p.get("snap_time"), p.get("scoring_version"))].append(p)
 
     rows = []
-    for (sd, st), items in groups.items():
+    for (sd, st, version), items in groups.items():
         first = items[0]
         dec_count = defaultdict(int)
         for it in items:
             dec_count[it.get("decision")] += 1
         n_buy = sum(v for k, v in dec_count.items() if k in BUY_DECISIONS)
         rows.append({
-            "run_id":          _run_id(sd, st),
+            "run_id":          _run_id(sd, st, version),
             "kind":            "intraday",                  # mọi run v4 là snap intraday (evidence)
             "started_at":      _snap_ts(sd, st),
-            "scoring_version": first.get("scoring_version"),
+            "scoring_version": version,
             "gate_version":    None if first.get("gate_version") is None else str(first.get("gate_version")),
             "universe_size":   len(items),
             "n_buy":           n_buy,
@@ -286,9 +286,9 @@ def main() -> int:
     if run_rows:
         sb.upsert("v4_runs", run_rows, on_conflict="run_id")
     if sig_rows:
-        sb.upsert("v4_signals", sig_rows, on_conflict="symbol,signal_date,snap_time")
+        sb.upsert("v4_signals", sig_rows, on_conflict="symbol,signal_date,snap_time,scoring_version")
     if out_rows:
-        sb.upsert("v4_outcomes", out_rows, on_conflict="symbol,signal_date,snap_time,lens")
+        sb.upsert("v4_outcomes", out_rows, on_conflict="symbol,signal_date,snap_time,lens,scoring_version")
 
     log.info("=== SYNC DONE === runs=%d signals=%d outcomes=%d",
              len(run_rows), len(sig_rows), len(out_rows))

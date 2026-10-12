@@ -268,6 +268,7 @@ export function BuyBoard({
             .select("signal_date, snap_time, decision, price:breakdown->>price")
             .eq("symbol", sel.symbol)
             .order("signal_date", { ascending: true })
+            .eq("scoring_version", "v4.18")
             .order("snap_time", { ascending: true }),
           supabase
             .from("v4_ohlc")

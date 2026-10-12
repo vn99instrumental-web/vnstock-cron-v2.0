@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge } from "@/components/ui";
+import { useRouter } from "next/navigation";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
 import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
 
@@ -131,7 +132,8 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
 }
 export function TodayBoard({ signals, currentVersion, versionDates }: { signals: TodaySignal[]; currentVersion: string; versionDates: Record<string, string> }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
-  const [version, setVersion] = useState(currentVersion);
+  const router = useRouter();
+  const version = currentVersion;
   const [buyOnly, setBuyOnly] = useState(true); // mặc định chỉ hiện mã có tín hiệu BUY hôm nay
   const [open, setOpen] = useState<string | null>(null);
   const [openSnap, setOpenSnap] = useState<string | null>(null);
@@ -309,7 +311,7 @@ const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
           Scoring
           <select
             value={version}
-            onChange={(e) => { setVersion(e.target.value); setOpen(null); setOpenSnap(null); }}
+            onChange={(e) => router.push(`/today?version=${encodeURIComponent(e.target.value)}`)}
             className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
           >
             {availableVersions.map((v) => <option key={v} value={v}>{v} · {versionDates[v]}</option>)}
