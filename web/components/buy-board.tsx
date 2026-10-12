@@ -144,15 +144,54 @@ function agoText(min: number): string {
   return h < 24 ? `${h} giờ trước` : `${Math.floor(h / 24)} ngày trước`;
 }
 
-function GuideSketch({ kind }: { kind: "ema" | "momentum" | "reversion" | "breakout" | "flow" | "fundamental" | "trend" }) {
-  const paths: Record<string, string[]> = {
-    ema: ["M4 24 C16 21 28 20 40 12 S64 8 76 4", "M4 8 C18 10 28 14 40 17 S64 21 76 23"], momentum: ["M4 20 C14 6 22 25 34 13 S55 6 76 18", "M4 23 C20 21 35 20 50 17 S65 13 76 10"], reversion: ["M4 15 C14 4 22 27 34 15 S55 4 76 15", "M4 15 C20 15 34 15 50 15 S65 15 76 15"], breakout: ["M4 23 L20 23 L20 17 L38 17 L38 20 L53 20 L53 7 L76 7", "M4 26 L76 26"], flow: ["M4 22 L16 22 L22 14 L30 19 L40 9 L50 15 L60 6 L76 10", "M4 25 L76 25"], fundamental: ["M4 23 L18 21 L30 20 L42 16 L56 12 L76 8", "M4 25 L76 25"], trend: ["M4 23 C18 22 26 17 38 15 S60 8 76 5", "M4 8 C20 11 30 14 42 17 S62 21 76 23"],
+function GuideSketch({ kind, indicator }: { kind: "ema" | "momentum" | "reversion" | "breakout" | "flow" | "fundamental" | "trend"; indicator?: string }) {
+  const factorPaths: Record<string, string> = {
+    ema: "M3 20 C18 19 30 17 44 15 S60 13 69 12",
+    trend: "M3 21 L14 20 L24 18 L34 17 L45 14 L57 12 L69 10",
+    momentum: "M3 18 H69",
+    reversion: "M3 8 C17 5 28 5 37 8 S57 11 69 8 M3 25 C17 28 28 28 37 25 S57 22 69 25",
+    breakout: "M3 15 H69",
+    flow: "M3 23 L14 21 L25 18 L36 15 L48 11 L59 9 L69 6",
+    fundamental: "M3 18 H69",
   };
-  const legends: Record<string, [string, string]> = { ema: ["Giá / EMA50", "EMA200"], trend: ["Giá", "Supertrend"], momentum: ["RSI / MACD", "Ngưỡng"], reversion: ["Giá", "Trung bình"], breakout: ["Giá", "Kháng cự"], flow: ["Giá", "Dòng tiền"], fundamental: ["Kết quả", "Mốc 0"] };
-  const color = kind === "reversion" ? "#ca8a04" : "var(--color-buy)";
-  return <div className="min-w-[112px]"><svg aria-hidden="true" viewBox="0 0 112 34" className="h-9 w-28"><path d="M2 29H110" stroke="var(--color-border)" /><path d={paths[kind][1]} transform="scale(1.35 1)" fill="none" stroke="var(--color-sell)" strokeWidth="1.5" opacity=".7" /><path d={paths[kind][0]} transform="scale(1.35 1)" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" /></svg><div className="mt-0.5 flex gap-2 text-[9px] text-[var(--color-muted)]"><span><i className="mr-1 inline-block h-0.5 w-3 align-middle" style={{ background: color }} />{legends[kind][0]}</span><span><i className="mr-1 inline-block h-0.5 w-3 align-middle bg-[var(--color-sell)]" />{legends[kind][1]}</span></div></div>;
+  const goodPrice: Record<string, string> = {
+    ema: "M3 25 C17 23 28 19 40 14 S58 8 69 6",
+    trend: "M3 25 L14 23 L24 20 L34 15 L45 12 L57 8 L69 5",
+    momentum: "M3 25 C14 24 22 19 31 15 S48 9 69 8",
+    reversion: "M3 18 C13 26 22 27 31 21 S49 11 69 8",
+    breakout: "M3 24 L22 22 L35 20 L43 14 L54 9 L69 7",
+    flow: "M3 26 L14 24 L25 20 L36 16 L48 12 L59 8 L69 6",
+    fundamental: "M3 25 L16 23 L28 20 L40 16 L55 11 L69 7",
+  };
+  const badPrice: Record<string, string> = {
+    ema: "M3 8 C17 10 28 14 40 18 S58 24 69 26",
+    trend: "M3 7 L14 10 L24 13 L34 17 L45 20 L57 24 L69 26",
+    momentum: "M3 8 C14 9 22 13 31 17 S48 24 69 25",
+    reversion: "M3 14 C14 20 23 25 33 26 S53 28 69 29",
+    breakout: "M3 23 L22 20 L38 12 L48 17 L58 22 L69 25",
+    flow: "M3 8 L14 10 L25 13 L36 17 L48 21 L59 24 L69 26",
+    fundamental: "M3 8 L16 11 L28 14 L40 18 L55 22 L69 25",
+  };
+  const factorLabel = indicator ?? ({ ema: "EMA200", trend: "Supertrend", momentum: "Ngưỡng", reversion: "Bollinger / TB", breakout: "Kháng cự", flow: "Flow", fundamental: "Mốc so sánh" } as Record<string, string>)[kind];
+  const panel = (good: boolean) => (
+    <div className={`rounded border px-1 pt-0.5 ${good ? "border-[var(--color-buy)]/40" : "border-[var(--color-sell)]/40"}`}>
+      <div className="text-[9px] font-semibold" style={{ color: good ? "var(--color-buy)" : "var(--color-sell)" }}>{good ? "TỐT" : "XẤU"}</div>
+      <svg aria-hidden="true" viewBox="0 0 72 32" className="h-8 w-[72px]">
+        <path d={factorPaths[kind]} fill="none" stroke="var(--color-muted)" strokeWidth="1.3" strokeDasharray="3 2" />
+        <path d={good ? goodPrice[kind] : badPrice[kind]} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+  return (
+    <div className="min-w-[168px]">
+      <div className="flex gap-1">{panel(true)}{panel(false)}</div>
+      <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[9px] text-[var(--color-muted)]">
+        <span><i className="mr-1 inline-block h-0.5 w-3 align-middle bg-blue-600" />Giá</span>
+        <span><i className="mr-1 inline-block w-3 border-t border-dashed border-[var(--color-muted)] align-middle" />{factorLabel}</span>
+      </div>
+    </div>
+  );
 }
-
 const FACTOR_GUIDE = [
   ["Mean reversion", "Williams %R", "Vị trí giá đóng cửa trong biên cao–thấp 14 phiên.", "< −80 và quay lên: quá bán đang hồi.", "> −20 hoặc tiếp tục giảm dưới −80.", "momentum"],
   ["Mean reversion", "Bollinger %B", "Vị trí giá trong dải Bollinger: 0=dải dưới, 1=dải trên.", "%B < 0 rồi quay vào dải.", "%B > 1 quá nóng hoặc < 0 tiếp tục mở rộng.", "reversion"],
@@ -707,7 +746,7 @@ export function BuyBoard({
         <div className="border-t border-[var(--color-border)] px-3 py-3">
           <h4 className="mb-2 text-xs font-semibold">Factor trong 6 nhóm và cách diễn giải nhanh</h4>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-xs">
+            <table className="w-full min-w-[1080px] text-xs">
               <thead className="bg-black/[0.03] text-left text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2">Nhóm</th><th className="px-3 py-2">Factor / định nghĩa</th><th className="px-3 py-2">Tốt khi</th><th className="px-3 py-2">Xấu khi</th><th className="px-3 py-2">Minh họa + legend</th></tr></thead>
               <tbody className="divide-y divide-[var(--color-border)]">
                 {FACTOR_GUIDE.map(([group, factor, meaning, good, bad, sketch]) => (
@@ -716,7 +755,7 @@ export function BuyBoard({
                     <td className="px-3 py-2"><b>{factor}</b><p className="mt-0.5 text-[var(--color-muted)]">{meaning}</p></td>
                     <td className="px-3 py-2 text-[var(--color-buy)]">{good}</td>
                     <td className="px-3 py-2 text-[var(--color-sell)]">{bad}</td>
-                    <td className="px-3 py-2"><GuideSketch kind={sketch} /></td>
+                    <td className="px-3 py-2"><GuideSketch kind={sketch} indicator={factor} /></td>
                   </tr>
                 ))}
               </tbody>
