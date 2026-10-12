@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
 import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
@@ -219,6 +220,8 @@ export function BuyBoard({
   runStartedAt = null,
   newestRunId = null,
   industryIC = {},
+  currentVersion = "v4.18",
+  versionDates = {},
 }: {
   signals: BuySignal[];
   expectancy?: ExpectancyRow[];
@@ -228,7 +231,14 @@ export function BuyBoard({
   newestRunId?: string | null;
   /** IC score↔lợi nhuận 5 phiên theo ngành (Spearman gộp) — badge chất lượng ngành. */
   industryIC?: Record<string, { ic: number | null; n: number }>;
+  currentVersion?: string;
+  versionDates?: Record<string, string>;
 }) {
+  const router = useRouter();
+  const availableVersions = useMemo(
+    () => Object.keys(versionDates).sort((a, b) => Number(b.split(".")[1]) - Number(a.split(".")[1])),
+    [versionDates],
+  );
   const robMap = useMemo(
     () => new Map(robustness.map((r) => [r.symbol, r])),
     [robustness],
@@ -243,6 +253,12 @@ export function BuyBoard({
   const [hideThin, setHideThin] = useState(false); // D — ẩn mã thanh khoản < 10 tỷ
   const [byIndustry, setByIndustry] = useState(true); // nhóm danh sách theo ngành
   const [indFilter, setIndFilter] = useState("all"); // lọc theo 1 ngành
+
+  useEffect(() => {
+    setSel(signals[0] ?? null);
+    setCandles([]);
+    setMarkers([]);
+  }, [signals]);
 
   // Danh sách ngành có trong tín hiệu (cho dropdown filter), kèm số mã.
   const industryOpts = useMemo(() => {
@@ -268,7 +284,7 @@ export function BuyBoard({
             .select("signal_date, snap_time, decision, price:breakdown->>price")
             .eq("symbol", sel.symbol)
             .order("signal_date", { ascending: true })
-            .eq("scoring_version", "v4.18")
+            .eq("scoring_version", currentVersion)
             .order("snap_time", { ascending: true }),
           supabase
             .from("v4_ohlc")
@@ -320,7 +336,7 @@ export function BuyBoard({
       }
     })();
     return () => { alive = false; };
-  }, [sel]);
+  }, [sel, currentVersion]);
 
   const levels: Levels | null = useMemo(() => {
     if (!sel) return null;
@@ -445,16 +461,40 @@ export function BuyBoard({
   };
   const exp = sel ? expLookup(sel.decision, (sel.breakdown ?? {}).confidence) : null;
 
+  const versionSelector = (
+    <div className="card flex flex-wrap items-center gap-2 p-2">
+      <label className="flex min-h-[30px] items-center gap-1.5 text-[11px] text-[var(--color-muted)]">
+        Scoring
+        <select
+          value={currentVersion}
+          onChange={(e) => router.push("/buy?version=" + encodeURIComponent(e.target.value))}
+          className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
+        >
+          {availableVersions.map((version) => (
+            <option key={version} value={version}>{version} · {versionDates[version]}</option>
+          ))}
+        </select>
+      </label>
+      <span className="text-[11px] text-[var(--color-muted)]">
+        Danh sách, biểu đồ và thống kê đang dùng {currentVersion}
+      </span>
+    </div>
+  );
+
   if (!signals.length) {
     return (
-      <div className="rounded-lg border border-dashed border-[var(--color-border)] px-6 py-12 text-center text-sm text-[var(--color-muted)]">
-        Run mới nhất chưa có mã BUY/STRONG BUY.
+      <div className="flex flex-col gap-1.5">
+        {versionSelector}
+        <div className="rounded-lg border border-dashed border-[var(--color-border)] px-6 py-12 text-center text-sm text-[var(--color-muted)]">
+          Run gần nhất của {currentVersion} chưa có mã BUY/STRONG BUY.
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-1.5">
+      {versionSelector}
       {/* C — chỉ hiện dòng cảnh báo khi data trễ / có run mới hơn (bình thường ẩn để tiết kiệm chiều cao) */}
       {(fresh?.stale || runStale) ? (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md border border-[var(--color-sell)]/40 bg-[var(--color-surface)] px-2.5 py-1 text-[11px] text-[var(--color-sell)]">

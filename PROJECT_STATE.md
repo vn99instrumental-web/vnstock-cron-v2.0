@@ -3,7 +3,7 @@
 > Tái sinh từ **chứng cứ repo thật** (không suy diễn). Đọc đầu mỗi phiên.
 > Do skill `project-update` cập nhật sau mỗi merge.
 
-**Cập nhật:** 2026-10-09 · **Branch:** `main` · **PRD:** v2.0 GRILLED
+**Cập nhật:** 2026-10-12 · **Branch:** `main` · **PRD:** v2.0 GRILLED
 
 ---
 
@@ -174,10 +174,17 @@
 - Production remains `v4.18`; `v4.1` through `v4.17` now run as live shadow scorers against the same current VN100 snapshot.
 - Historical source is pinned to the final Git commit of each version and stored in `assets/scoring-history-v4.1-v4.17.tar.gz`; `scripts/build_historical_scoring_bundle.py` rebuilds the auditable bundle.
 - `scripts/run_historical_scoring.py` isolates every version and its hysteresis state, fails closed on partial coverage, and emits one ephemeral combined signal file for the ledger recorder.
-- Migration `0024_parallel_scoring_versions.sql` is applied live: signal/outcome uniqueness includes `scoring_version`, runs use versioned IDs, IC joins match the same version, and Buy/Analysis remain production-only.
+- Migration `0024_parallel_scoring_versions.sql` is applied live: signal/outcome uniqueness includes `scoring_version`, runs use versioned IDs, and IC joins match the same version. Analysis remains production-only; Buy defaults to production but is now selectable by version (section 4n).
 - `/today` lists every available scoring version and loads only the selected version, avoiding an 18-version payload on each page load.
 - Verified locally: all 18 versions produced 100 VN100 rows each (1,800 total); Python compile, multi-version transform, Supabase dry-run, TypeScript, workflow YAML, and Next production build passed.
 - Supabase rollback test accepted two versions for one symbol/snapshot. Relevant views use `security_invoker`; no new security-advisor finding was introduced.
+
+## 4n. Buy scoring-version selector + version-safe metrics (2026-10-12)
+
+- `/buy` now defaults to `v4.18` but allows selecting every scoring version available in `v4_runs`; list, chart markers, industry IC, expectancy, and robustness all follow the selected version.
+- Migration `0025_buy_metrics_by_scoring_version.sql` is applied live. `v4_buy_expectancy` and `v4_buy_robustness` append `scoring_version`, remain `security_invoker`, and no longer mix metrics across versions.
+- Live continuity audit: `v4.17` has data from 2026-08-28 through 2026-09-17, no rows for 2026-09-18 through 2026-10-09, then resumes on 2026-10-12 with four 100-symbol snapshots. Parallel scoring keeps it continuous going forward; the historical gap has not been reconstructed.
+- Verified: TypeScript passed, Next production build passed, migration rollback test and live view queries passed. Existing unrelated Supabase advisor findings remain; this migration introduced no new finding.
 
 ---
 
