@@ -7,6 +7,8 @@ import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/
 
 export interface TodaySignal {
   symbol: string;
+  scoring_version: string;
+  signal_date: string;
   decision: string | null;
   score_trade: number | string | null;
   snap_time: string | null;
@@ -127,16 +129,21 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
     </div>
   );
 }
-export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; totalSnaps: number }) {
+export function TodayBoard({ signals, currentVersion, versionDates }: { signals: TodaySignal[]; currentVersion: string; versionDates: Record<string, string> }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
+  const [version, setVersion] = useState(currentVersion);
   const [buyOnly, setBuyOnly] = useState(true); // mặc định chỉ hiện mã có tín hiệu BUY hôm nay
   const [open, setOpen] = useState<string | null>(null);
   const [openSnap, setOpenSnap] = useState<string | null>(null);
   const [q, setQ] = useState("");
 
+  const versionSignals = useMemo(() => signals.filter((s) => s.scoring_version === version), [signals, version]);
+  const totalSnaps = useMemo(() => new Set(versionSignals.map((s) => String(s.snap_time))).size, [versionSignals]);
+  const availableVersions = Object.keys(versionDates).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+
   const groups = useMemo<Group[]>(() => {
     const by = new Map<string, Snap[]>();
-    for (const s of signals) {
+    for (const s of versionSignals) {
       const arr = by.get(s.symbol) ?? [];
       arr.push({
         snap_time: s.snap_time, decision: s.decision, score: num(s.score_trade),
@@ -162,7 +169,7 @@ export function TodayBoard({ signals, totalSnaps }: { signals: TodaySignal[]; to
       });
     }
     return out;
-  }, [signals]);
+  }, [versionSignals]);
 
   const displayed = useMemo(() => {
     const qq = q.trim().toUpperCase();
@@ -298,6 +305,16 @@ const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
           placeholder="Tìm mã…"
           className="min-h-[30px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase sm:max-w-[200px]"
         />
+<label className="flex min-h-[30px] items-center gap-1.5 text-[11px] text-[var(--color-muted)]">
+          Scoring
+          <select
+            value={version}
+            onChange={(e) => { setVersion(e.target.value); setOpen(null); setOpenSnap(null); }}
+            className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
+          >
+            {availableVersions.map((v) => <option key={v} value={v}>{v} · {versionDates[v]}</option>)}
+          </select>
+        </label>
         <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]">
           {SORT_OPTS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
         </select>
@@ -305,7 +322,7 @@ const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
           <input type="checkbox" checked={buyOnly} onChange={(e) => setBuyOnly(e.target.checked)} className="h-4 w-4" />
           Chỉ BUY
         </label>
-        <span className="ml-auto text-[11px] text-[var(--color-muted)]">{total} mã · {totalSnaps} lần chạy hôm nay</span>
+        <span className="ml-auto text-[11px] text-[var(--color-muted)]">{total} mã · {totalSnaps} lần chạy · {versionDates[version]}</span>
       </div>
 
       {total === 0 ? (

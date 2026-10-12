@@ -30,25 +30,40 @@ export default async function TodayPage() {
 
   // Ngày của run mới nhất (prefix run_id "YYYY-MM-DD_HH:MM"). Lấy TẤT CẢ snap trong ngày
   // → gộp theo mã (1 mã có thể BUY nhiều lần chạy).
-  const theDate = String(run.run_id).split("_")[0];
-  const { data: sigs } = await supabase
-    .from("v4_signals")
-    .select("symbol, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score, entry:breakdown->>entry, stop:breakdown->>stop, tp1:breakdown->>tp1, breakdown")
-    .eq("signal_date", theDate)
-    .order("score_trade", { ascending: false });
-
-  const signals = (sigs ?? []) as TodaySignal[];
-  const totalSnaps = new Set(signals.map((s) => String(s.snap_time))).size;
-  const nSymbols = new Set(signals.map((s) => s.symbol)).size;
-
+const currentVersion = String(run.scoring_version || "v4.18");
+  const requestedVersions = [...new Set([currentVersion, "v4.17"])];
+  const versionResults = await Promise.all(requestedVersions.map(async (version) => {
+    const { data: latest } = await supabase
+      .from("v4_signals")
+      .select("signal_date")
+      .eq("scoring_version", version)
+      .order("signal_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const signalDate = latest?.signal_date as string | undefined;
+    if (!signalDate) return { version, signalDate: null, rows: [] as TodaySignal[] };
+    const { data } = await supabase
+      .from("v4_signals")
+      .select("symbol, signal_date, scoring_version, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score, entry:breakdown->>entry, stop:breakdown->>stop, tp1:breakdown->>tp1, breakdown")
+      .eq("scoring_version", version)
+      .eq("signal_date", signalDate)
+      .order("score_trade", { ascending: false });
+    return { version, signalDate, rows: (data ?? []) as TodaySignal[] };
+  }));
+  const signals = versionResults.flatMap((result) => result.rows);
+  const versionDates = Object.fromEntries(versionResults.filter((result) => result.signalDate).map((result) => [result.version, result.signalDate!])) as Record<string, string>;
+  const currentSignals = signals.filter((signal) => signal.scoring_version === currentVersion);
+  const currentDate = versionDates[currentVersion] ?? String(run.run_id).split("_")[0];
+  const totalSnaps = new Set(currentSignals.map((signal) => String(signal.snap_time))).size;
+  const nSymbols = new Set(currentSignals.map((signal) => signal.symbol)).size;
   return (
     <>
       <PageHeader
         title="Hôm nay"
-        desc={`${theDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${hmVN(run.started_at)} (giờ VN)`}
+        desc={`${currentDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${hmVN(run.started_at)} (giờ VN)`}
       />
       {signals.length ? (
-        <TodayBoard signals={signals} totalSnaps={totalSnaps} />
+        <TodayBoard signals={signals} currentVersion={currentVersion} versionDates={versionDates} />
       ) : (
         <EmptyState title="Phiên này chưa có tín hiệu" />
       )}
