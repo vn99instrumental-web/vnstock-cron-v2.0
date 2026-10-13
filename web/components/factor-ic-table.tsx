@@ -198,7 +198,10 @@ function FactorBlock({
           return (
             <td key={h} className="tabular px-3 py-2 text-center" style={{ backgroundColor: bg, color: fg }}
               title={c ? `IC official ${(ic != null && ic >= 0 ? "+" : "") + (ic == null ? "—" : ic.toFixed(3))} · n=${c.n ?? "?"} (evaluator, chuẩn theo-ngày)` : "chưa có IC official"}>
-              {ic == null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}
+              <div className="font-medium">{ic == null ? "—" : (ic >= 0 ? "+" : "") + ic.toFixed(3)}</div>
+              <div className="mt-0.5 text-[10px] font-normal opacity-80">
+                n = {c?.n != null ? Number(c.n).toLocaleString("vi-VN") : "—"}
+              </div>
             </td>
           );
         })}
