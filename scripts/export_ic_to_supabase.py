@@ -33,6 +33,7 @@ import logging
 import os
 import sys
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Import methodology IC chính thức + client Supabase (single source of truth).
@@ -148,6 +149,12 @@ def main() -> int:
     if not rows:
         log.info("Không có dòng IC nào đủ điều kiện — không ghi.")
         return 0
+
+    # Database defaults only run on INSERT. Because these rows are refreshed by
+    # UPSERT, explicitly advance the timestamp on every successful evaluator run.
+    computed_at = datetime.now(timezone.utc).isoformat()
+    for row in rows:
+        row["computed_at"] = computed_at
 
     url = os.environ.get("SUPABASE_URL") or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
     key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
