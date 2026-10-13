@@ -11,6 +11,16 @@ Giữ dữ liệu đủ dài để so sánh các scoring version đang được 
 - OHLC phục vụ tab Phân tích được làm mới theo cửa sổ 45 ngày.
 - Ledger trong Git vẫn là nguồn dữ liệu gốc để có thể khôi phục hoặc backfill.
 
+## Snapshot dung lượng
+
+Ngày 2026-10-14, database dùng 339 MB (~68% mốc 500 MB). Ba bảng dashboard lớn nhất:
+
+- `v4_signals`: 239 MB
+- `v4_outcomes`: 29 MB
+- `v4_ohlc`: 28 MB
+
+Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi vượt 80%; không tự động xóa lịch sử.
+
 ## Quy trình kiểm tra hằng tháng
 
 1. Kiểm tra dung lượng database và các bảng lớn nhất trong Supabase.

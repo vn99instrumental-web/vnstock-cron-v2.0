@@ -28,7 +28,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - `sync_supabase.yml`: đồng bộ đầy đủ predictions/outcomes và các bảng IC khi cần backfill.
 - `cron_weekly.yml`: hoàn thiện outcomes tuần, IC tổng và IC theo ngành.
 - Workflow không có lịch schedule bắt buộc; n8n là bộ điều phối bên ngoài.
-- Sau sync, workflow gọi `/api/revalidate`; nếu chưa cấu hình secret, dashboard tự làm mới tối đa sau 5 phút.
+- Sau sync, workflow gọi `/api/revalidate`; cặp secret GitHub/Vercel đã cấu hình và được kiểm chứng bằng workflow thật. TTL 5 phút vẫn là cơ chế dự phòng.
 
 ## Mốc cải thiện 2026-10-14
 
@@ -51,8 +51,8 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 ## Cấu hình cần xác nhận ngoài repo
 
-- Vercel `REVALIDATE_SECRET` và GitHub `DASHBOARD_REVALIDATE_SECRET` phải có cùng giá trị để invalidation chạy ngay.
-- Thiết lập Vercel “Ignored Build Step” chưa thể thay đổi bằng API nếu tài khoản hiện tại không có quyền project; TTL/cache không phụ thuộc thiết lập này.
+- DONE — Vercel `REVALIDATE_SECRET` và GitHub `DASHBOARD_REVALIDATE_SECRET` đã được đặt cùng giá trị, lưu dạng secret và không ghi vào repo.
+- DONE — Vercel “Ignored Build Step” = `git diff HEAD^ HEAD --quiet -- .`; Functions region = `hnd1`.
 - Nếu Supabase tiến gần giới hạn dung lượng, ưu tiên tạo project riêng cho dashboard; đây là thay đổi hạ tầng cần owner/billing và migration có kiểm soát.
 
 ## Kiểm chứng trước bàn giao
@@ -62,11 +62,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - PASS — TypeScript `tsc --noEmit`.
 - PASS — Next.js production build, 9 static pages và các dynamic route được tạo thành công.
 - PASS — security review route revalidation, truy vấn mới và Supabase policy; không có secret client-side hay advisory mới thuộc dashboard.
-- Hạn chế — browser local không kết nối được tới localhost trong sandbox; production route sau đăng nhập cần session owner để visual QA đầy đủ.
-- Live data tại thời điểm kiểm tra: run mới nhất `2026-10-13 07:12 UTC` (14:12 giờ Việt Nam), OHLC/outcome đến `2026-10-13`, IC tính lúc `2026-10-13 08:20 UTC` (15:20 giờ Việt Nam).
+- PASS — production deployment `dpl_2DVC47gS7ApgLVddiVx2ygS8QKHD` READY tại region `hnd1`; endpoint revalidation trả `401` khi thiếu token.
+- PASS — GitHub Actions run `38445496196`: OHLC, ledger, IC tổng, IC theo ngành và revalidation đều success.
+- PASS — sau run: IC tổng `2026-10-13 18:25:51 UTC`, IC ngành `2026-10-13 18:25:57 UTC`, 136 dòng IC tổng và 14.456 dòng IC ngành.
+- Hạn chế — production route sau đăng nhập cần session owner để visual QA đầy đủ.
 
 ## Việc tiếp theo
 
-- Theo dõi workflow sync đầu tiên sau khi cấu hình revalidation secret.
-- Theo dõi dung lượng Supabase hằng tháng theo `docs/DATA_RETENTION.md`.
+- Theo dõi dung lượng Supabase hằng tháng theo `docs/DATA_RETENTION.md`; snapshot 2026-10-14 là 339 MB (~68% mốc 500 MB).
 - Tách Supabase project khi cần độc lập quota hoặc isolation với các ứng dụng khác.
