@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/ui";
 import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { getCompanyName } from "@/lib/company-names";
-import { DEFAULT_SCORING_VERSION, isReviewVersion } from "@/lib/scoring-versions";
+import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 
 export const dynamic = "force-dynamic";
 
@@ -10,28 +10,14 @@ type BuyPageProps = { searchParams: Promise<{ version?: string }> };
 
 export default async function BuyPage({ searchParams }: BuyPageProps) {
   const params = await searchParams;
-  const supabase = createCachedPublicClient("version-metadata", DEFAULT_SCORING_VERSION);
-
-  const productionVersion = DEFAULT_SCORING_VERSION;
-  const { data: recentRuns } = await supabase
-    .from("v4_runs")
-    .select("run_id, started_at, scoring_version")
-    .not("scoring_version", "is", null)
-    .order("started_at", { ascending: false })
-    .limit(1000);
-  const versionDates: Record<string, string> = {};
-  for (const item of recentRuns ?? []) {
-    const version = String(item.scoring_version);
-    if (!isReviewVersion(version)) continue;
-    if (!versionDates[version]) versionDates[version] = String(item.run_id).split("_")[0];
-  }
-  const requestedVersion = typeof params.version === "string" ? params.version : productionVersion;
-  const currentVersion = isReviewVersion(requestedVersion) && versionDates[requestedVersion] ? requestedVersion : productionVersion;
+  const metadata = await getLatestVersionRuns("buy-metadata");
+  const currentVersion = resolveReviewVersion(params.version, metadata.byVersion);
+  const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
   const dataClient = createCachedPublicClient("buy", currentVersion);
 
   // Run MỚI NHẤT CÓ tín hiệu BUY thực sự trong v4_signals (bền vững kể cả khi run
   // mới nhất chưa sync đủ signals, hoặc tình cờ 0 BUY).
-  const { data: latestBuy } = await dataClient
+  const { data: latestBuy, error: latestBuyError } = await dataClient
     .from("v4_signals")
     .select("run_id, signal_date, snap_time")
     .in("decision", ["BUY", "STRONG BUY"])
@@ -40,6 +26,8 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
     .order("snap_time", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  if (metadata.error || latestBuyError) throw metadata.error ?? latestBuyError;
 
   // So với run mới nhất tổng thể (để báo nếu đang xem run cũ hơn).
   const { data: newestRun } = await dataClient

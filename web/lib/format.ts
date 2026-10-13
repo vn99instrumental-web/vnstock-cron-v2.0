@@ -57,3 +57,21 @@ export function fmtBil(v: unknown): string {
   if (Math.abs(b) >= 0.1) return (b >= 0 ? "+" : "") + b.toFixed(1) + " tỷ";
   return (n >= 0 ? "+" : "") + (n / 1e6).toFixed(0) + " tr";
 }
+
+/** Ngày + giờ Việt Nam cho timestamptz, không gắn nhãn múi giờ vào UI. */
+export function dateTimeVN(ts: unknown): string {
+  const raw = String(ts ?? "");
+  if (!raw) return "—";
+  const normalized = !raw.includes("T") && raw.includes(" ") ? raw.replace(" ", "T") : raw;
+  const date = new Date(normalized);
+  if (Number.isNaN(date.getTime())) return raw;
+  return new Intl.DateTimeFormat("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+}

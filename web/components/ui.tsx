@@ -41,6 +41,20 @@ export function EmptyState({
   );
 }
 
+export function QueryErrorState({
+  title = "Không tải được dữ liệu",
+  hint = "Hãy tải lại trang. Nếu lỗi còn lặp lại, kiểm tra trạng thái đồng bộ dữ liệu.",
+}: {
+  title?: string;
+  hint?: string;
+}) {
+  return (
+    <div role="alert" className="rounded-lg border border-[var(--color-sell)]/40 bg-[var(--color-sell)]/5 px-5 py-8 text-center">
+      <p className="text-sm font-semibold text-[var(--color-sell)]">{title}</p>
+      <p className="mx-auto mt-1 max-w-lg text-xs text-[var(--color-muted)]">{hint}</p>
+    </div>
+  );
+}
 /** Badge màu theo decision (semantic). */
 const DECISION_STYLES: Record<string, string> = {
   "STRONG BUY": "bg-[var(--color-strong-buy)] text-white",

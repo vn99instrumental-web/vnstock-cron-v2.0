@@ -89,7 +89,7 @@ export function FactorVerMatrix({
           </button>
         ))}
       </div>
-      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+      <div className="table-scroll overflow-x-auto rounded-lg border border-[var(--color-border)]">
         <table className="w-full text-sm">
           <thead className="bg-black/[0.03] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
             <tr>

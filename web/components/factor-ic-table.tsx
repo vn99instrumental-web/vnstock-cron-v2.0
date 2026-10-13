@@ -109,31 +109,23 @@ export function FactorICTable({
     <section className="mb-6">
       <button
         type="button"
-        className="mb-2 flex min-h-10 w-full flex-wrap items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+        className="mb-2 grid min-h-10 w-full grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
         aria-expanded={tableOpen}
         onClick={() => setTableOpen((value) => !value)}
       >
-        <span className="text-[var(--color-muted)]" aria-hidden="true">{tableOpen ? "▾" : "▸"}</span>
-        <span className="font-mono text-sm font-semibold">scoring {version}</span>
-        {version === curVer ? (
-          <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span>
-        ) : null}
-        <span className="text-[11px] font-normal text-[var(--color-muted)]" title="Thời điểm evaluator Python ghi bảng IC chính thức">
-          · cập nhật: {updatedAt ?? "chưa xác định"}
+        <span className="row-span-2 text-[var(--color-muted)]" aria-hidden="true">{tableOpen ? "▾" : "▸"}</span>
+        <span className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="font-mono text-sm font-semibold">scoring {version}</span>
+          {version === curVer ? <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span> : null}
+          <span className="text-[11px] font-normal text-[var(--color-muted)]">cập nhật {updatedAt ?? "chưa xác định"}</span>
         </span>
-        {r2 != null ? (
-          <span className="text-[11px] font-normal text-[var(--color-muted)]">· hồi quy đa biến R²(5d) = {(r2 * 100).toFixed(1)}%</span>
-        ) : null}
-        <span className="flex flex-wrap items-center gap-1 text-[10px] font-normal text-[var(--color-muted)]" aria-label={`Cỡ mẫu scoring ${version}`}>
-          {sampleSizes.map(({ horizon, n }) => (
-            <span key={horizon} className="rounded border border-[var(--color-border)] px-1.5 py-0.5 tabular-nums">
-              n {horizon}d: {n > 0 ? n.toLocaleString("vi-VN") : "—"}
-            </span>
-          ))}
+        <span className="row-span-2 text-[11px] font-normal text-[var(--color-muted)]">{tableOpen ? "Ẩn" : "Hiện"}</span>
+        <span className="flex min-w-0 flex-wrap items-center gap-1 text-[10px] font-normal text-[var(--color-muted)]" aria-label={`Cỡ mẫu scoring ${version}`}>
+          {sampleSizes.map(({ horizon, n }) => <span key={horizon} className="rounded border border-[var(--color-border)] px-1.5 py-0.5 tabular-nums">n {horizon}d: {n > 0 ? n.toLocaleString("vi-VN") : "—"}</span>)}
+          {r2 != null ? <span className="hidden sm:inline">R²(5d) {(r2 * 100).toFixed(1)}%</span> : null}
         </span>
-        <span className="ml-auto text-[11px] font-normal text-[var(--color-muted)]">{tableOpen ? "Ẩn toàn bộ bảng" : "Hiện toàn bộ bảng"}</span>
       </button>
-      {tableOpen ? <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+      {tableOpen ? <div className="table-scroll overflow-x-auto rounded-lg border border-[var(--color-border)]">
         <table className="w-full text-sm">
           <thead className="bg-black/[0.03] text-xs text-[var(--color-muted)] dark:bg-white/[0.03]">
             <tr>

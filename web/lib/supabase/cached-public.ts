@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
-import { DEFAULT_SCORING_VERSION } from "@/lib/scoring-versions";
+import { isReviewVersion } from "@/lib/scoring-versions";
 
-const CURRENT_TTL_SECONDS = 5 * 60;
+const ACTIVE_TTL_SECONDS = 5 * 60;
 const HISTORICAL_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 type NextFetchInit = RequestInit & {
@@ -14,8 +14,10 @@ type NextFetchInit = RequestInit & {
  * Never use this client for user-specific data or writes.
  */
 export function createCachedPublicClient(scope: string, scoringVersion: string) {
-  const revalidate = scoringVersion === DEFAULT_SCORING_VERSION
-    ? CURRENT_TTL_SECONDS
+  // All curated review versions are refreshed by the daily sync. Treating every
+  // non-default version as frozen made version switching serve week-old data.
+  const revalidate = isReviewVersion(scoringVersion)
+    ? ACTIVE_TTL_SECONDS
     : HISTORICAL_TTL_SECONDS;
   const tags = ["dashboard-data", `dashboard-${scope}`, `scoring-${scoringVersion}`];
 

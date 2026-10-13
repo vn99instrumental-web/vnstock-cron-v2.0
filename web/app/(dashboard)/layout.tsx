@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Nav, MobileNav } from "@/components/nav";
 import { VersionBadge } from "@/components/version-badge";
 import { SignOutButton } from "@/components/sign-out-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getUser, isOwner } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
@@ -37,6 +38,7 @@ export default async function DashboardLayout({
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 text-xs text-[var(--color-muted)] sm:gap-2">
+            <ThemeToggle />
             {user ? (
               <>
                 <span className="max-w-[92px] truncate sm:max-w-[160px]" title={user.email ?? ""}>{owner ? "👤 " : ""}{user.email}</span>

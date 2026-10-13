@@ -392,7 +392,7 @@ export function BuyBoard({
 
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
   const b = sel?.breakdown ?? {};
-  const groups = useMemo(() => factorGroupViews(b), [b]);
+  const groups = useMemo(() => factorGroupViews(sel?.breakdown ?? {}), [sel]);
   const buyDays = new Set(markers.map((m) => m.date)).size;
 
   // 1 dòng mã trong danh sách (dùng chung cho chế độ phẳng & nhóm ngành).

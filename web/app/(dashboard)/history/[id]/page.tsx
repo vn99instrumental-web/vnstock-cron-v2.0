@@ -47,30 +47,34 @@ export default async function SignalDetailPage({
   if (!Number.isFinite(numId)) notFound();
 
   const supabase = await createClient();
-  const { data: sig } = await supabase
+  const { data: sig, error: signalError } = await supabase
     .from("v4_signals")
     .select("*")
     .eq("id", numId)
     .maybeSingle();
 
+  if (signalError) throw signalError;
   if (!sig) notFound();
   const b: Record<string, unknown> = sig.breakdown ?? {};
 
   // Outcome (nếu đã chín): match theo symbol + signal_date + snap_time(text từ breakdown).
   const snapText = String(b.snap_time ?? "");
-  const { data: outcome } = await supabase
+  const { data: outcome, error: outcomeError } = await supabase
     .from("v4_outcomes")
     .select("ret_1d, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct, eval_date, n_bars, lens")
     .eq("symbol", sig.symbol)
     .eq("signal_date", sig.signal_date)
     .eq("snap_time", snapText)
+    .eq("scoring_version", sig.scoring_version)
     .maybeSingle();
+
+  if (outcomeError) throw outcomeError;
 
   const gates = (b.gates ?? {}) as Record<string, unknown>;
 
   return (
     <>
-      <Link href="/history" className="mb-3 inline-block text-xs text-[var(--color-accent)] hover:underline">
+      <Link href={`/history?version=${encodeURIComponent(sig.scoring_version ?? "v4.18")}`} className="mb-3 inline-block text-xs text-[var(--color-accent)] hover:underline">
         ← Lịch sử
       </Link>
       <PageHeader

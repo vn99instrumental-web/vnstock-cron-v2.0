@@ -79,8 +79,7 @@ export default function LoginPage() {
           <span className="text-sm font-semibold">VNStock Signals — Đăng nhập</span>
         </div>
         <p className="mb-4 text-xs text-[var(--color-muted)]">
-          Chỉ owner. Đăng nhập để vào cấu hình chấm điểm. Xem tín hiệu công khai
-          không cần đăng nhập.
+          Đăng nhập để truy cập ứng dụng và khu vực cấu hình chấm điểm dành cho owner.
         </p>
         <Suspense fallback={<p className="text-sm text-[var(--color-muted)]">…</p>}>
           <LoginForm />

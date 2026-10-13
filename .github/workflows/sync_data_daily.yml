@@ -74,3 +74,16 @@ jobs:
         run: ${{ steps.python.outputs.python }} scripts/export_ic_to_supabase.py
       - name: Refresh IC industry snapshot
         run: ${{ steps.python.outputs.python }} scripts/export_ic_industry_to_supabase.py
+
+      - name: Invalidate Vercel dashboard cache
+        continue-on-error: true
+        env:
+          DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          if [ -z "$DASHBOARD_REVALIDATE_SECRET" ]; then
+            echo "DASHBOARD_REVALIDATE_SECRET is not configured; 5-minute TTL remains active."
+            exit 0
+          fi
+          curl --fail --silent --show-error \
+            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+            -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"

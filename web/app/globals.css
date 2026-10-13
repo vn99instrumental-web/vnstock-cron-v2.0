@@ -35,6 +35,17 @@
   }
 }
 
+:root[data-theme="dark"] {
+  --color-bg: #0b0e14;
+  --color-surface: #131720;
+  --color-border: #263041;
+  --color-ink: #e5e7eb;
+  --color-muted: #94a3b8;
+  --color-accent: #3b82f6;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.30);
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }
 /* Elevation cho card — chiều sâu tinh tế (theo dõi theme). */
 :root { --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06); }
 @media (prefers-color-scheme: dark) {
@@ -84,3 +95,24 @@ a, button, [role="button"] { transition: background-color .15s ease, color .15s 
   .page-enter { animation: none; }
 }
 
+
+/* Bảng rộng: giữ cột định danh và gợi ý thao tác trên màn hình cảm ứng. */
+.table-scroll table > thead > tr > :first-child,
+.table-scroll table > tbody > tr > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  box-shadow: 1px 0 0 var(--color-border);
+}
+@media (max-width: 767px) and (hover: none) {
+  .table-scroll::before {
+    content: "Vuốt ngang →";
+    position: sticky;
+    left: 8px;
+    display: inline-block;
+    margin: 6px 8px 2px;
+    color: var(--color-muted);
+    font-size: 10px;
+  }
+}
