@@ -40,8 +40,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from eval_forward_ic import _spearman, daily_last, _load, _f  # noqa: E402
 from sync_supabase import Supabase  # noqa: E402
 
-PRED_GLOB = str(Path(__file__).resolve().parent.parent / "output/history/v2f_predictions_v4/*.jsonl")
-OUT_GLOB = str(Path(__file__).resolve().parent.parent / "output/history/v2f_outcomes_v4/*.jsonl")
+ROOT = Path(__file__).resolve().parent.parent
+REVIEW_CONFIG = __import__("json").loads((ROOT / "config/scoring/review_versions.json").read_text(encoding="utf-8"))
+REVIEW_VERSIONS = frozenset(REVIEW_CONFIG["versions"])
+PRED_GLOBS = [str(ROOT / "output/history/v2f_predictions_v4/*.jsonl"), str(ROOT / "output/history/v2f_predictions/*.jsonl")]
+OUT_GLOBS = [str(ROOT / "output/history/v2f_outcomes_v4/*.jsonl"), str(ROOT / "output/history/v2f_outcomes/*.jsonl")]
 
 # factor label (ghi vào v4_ic_metrics.factor) → cột trong prediction ledger.
 FACTOR_COLS = {
@@ -54,6 +57,15 @@ FACTOR_COLS = {
     "context":        "trade_context_norm",
 }
 HORIZONS = [1, 3, 5, 10]
+LEGACY_FACTOR_COLS = {
+    "score_trade": "total_score",
+    "mean_reversion": "norm_momentum",
+    "breakout": "norm_trend",
+    "flow": "norm_ff",
+    "fundamental": "norm_fundamental",
+    "growth": "growth_score",
+    "context": "context_score",
+}
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("export_ic")
@@ -72,7 +84,8 @@ def compute_ic_rows(preds: list[dict], outs: list[dict]) -> list[dict]:
     rows: list[dict] = []
     for version, vpreds in by_version.items():
         vpreds = daily_last(vpreds)  # 1 dòng/(symbol,signal_date)
-        for factor, col in FACTOR_COLS.items():
+        factor_cols = LEGACY_FACTOR_COLS if version == "v2.3" else FACTOR_COLS
+        for factor, col in factor_cols.items():
             for h in HORIZONS:
                 ret_key = f"ret_{h}d"
                 by_day = defaultdict(lambda: ([], []))
@@ -113,8 +126,8 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true", help="tính + in, KHÔNG ghi Supabase")
     args = ap.parse_args()
 
-    preds = _load(PRED_GLOB)
-    outs = _load(OUT_GLOB)
+    preds = [row for glob in PRED_GLOBS for row in _load(glob) if row.get("scoring_version") in REVIEW_VERSIONS]
+    outs = [row for glob in OUT_GLOBS for row in _load(glob) if row.get("scoring_version") in REVIEW_VERSIONS]
     if not preds or not outs:
         log.error("Không có dữ liệu ledger predictions/outcomes.")
         return 1

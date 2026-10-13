@@ -5,6 +5,7 @@ import { DecisionBadge } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
 import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
+import { availableReviewVersions } from "@/lib/scoring-versions";
 
 export interface TodaySignal {
   symbol: string;
@@ -141,7 +142,7 @@ export function TodayBoard({ signals, currentVersion, versionDates }: { signals:
 
   const versionSignals = useMemo(() => signals.filter((s) => s.scoring_version === version), [signals, version]);
   const totalSnaps = useMemo(() => new Set(versionSignals.map((s) => String(s.snap_time))).size, [versionSignals]);
-  const availableVersions = Object.keys(versionDates).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+  const availableVersions = availableReviewVersions(Object.keys(versionDates));
 
   const groups = useMemo<Group[]>(() => {
     const by = new Map<string, Snap[]>();

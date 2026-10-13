@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/ui";
 import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyName } from "@/lib/company-names";
+import { DEFAULT_SCORING_VERSION, isReviewVersion } from "@/lib/scoring-versions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   const params = await searchParams;
   const supabase = await createClient();
 
-  const productionVersion = "v4.18";
+  const productionVersion = DEFAULT_SCORING_VERSION;
   const { data: recentRuns } = await supabase
     .from("v4_runs")
     .select("run_id, started_at, scoring_version")
@@ -21,10 +22,11 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   const versionDates: Record<string, string> = {};
   for (const item of recentRuns ?? []) {
     const version = String(item.scoring_version);
+    if (!isReviewVersion(version)) continue;
     if (!versionDates[version]) versionDates[version] = String(item.run_id).split("_")[0];
   }
   const requestedVersion = typeof params.version === "string" ? params.version : productionVersion;
-  const currentVersion = versionDates[requestedVersion] ? requestedVersion : productionVersion;
+  const currentVersion = isReviewVersion(requestedVersion) && versionDates[requestedVersion] ? requestedVersion : productionVersion;
 
   // Run MỚI NHẤT CÓ tín hiệu BUY thực sự trong v4_signals (bền vững kể cả khi run
   // mới nhất chưa sync đủ signals, hoặc tình cờ 0 BUY).

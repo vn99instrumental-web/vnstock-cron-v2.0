@@ -36,12 +36,23 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
-import requests
+try:
+    import requests
+except ModuleNotFoundError:  # Dry-run/transform checks can run in a minimal Python runtime.
+    requests = None
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
-PRED_DIR = ROOT / "output" / "history" / "v2f_predictions_v4"
-OUTC_DIR = ROOT / "output" / "history" / "v2f_outcomes_v4"
+REVIEW_CONFIG = json.loads((ROOT / "config" / "scoring" / "review_versions.json").read_text(encoding="utf-8"))
+REVIEW_VERSIONS = frozenset(REVIEW_CONFIG["versions"])
+PRED_DIRS = (
+    ROOT / "output" / "history" / "v2f_predictions_v4",
+    ROOT / "output" / "history" / "v2f_predictions",
+)
+OUTC_DIRS = (
+    ROOT / "output" / "history" / "v2f_outcomes_v4",
+    ROOT / "output" / "history" / "v2f_outcomes",
+)
 
 ICT_OFFSET = "+07:00"                      # giờ VN
 BUY_DECISIONS = {"BUY", "STRONG BUY"}      # đếm n_buy
@@ -80,7 +91,7 @@ def _run_id(signal_date: str, snap_time: str, scoring_version: str | None) -> st
 
 def _months_available() -> list[str]:
     months = set()
-    for d in (PRED_DIR, OUTC_DIR):
+    for d in (*PRED_DIRS, *OUTC_DIRS):
         if d.exists():
             for f in d.glob("*.jsonl"):
                 if MONTH_RE.match(f.stem):
@@ -113,7 +124,7 @@ def build_signal_row(p: dict) -> dict:
         "symbol":              p.get("symbol"),
         "regime":              p.get("regime"),
         "decision":            p.get("decision"),
-        "score_trade":         _num(p.get("score_trade")),
+        "score_trade":         _num(p.get("score_trade", p.get("total_score"))),
         "pre_total":           None,                        # không có trong ledger v4
         "extras":              None,                        # không có trong ledger v4
         "w_reg":               None,                        # không có trong ledger v4
@@ -125,7 +136,7 @@ def build_signal_row(p: dict) -> dict:
         "score_trade_altfund": _num(p.get("score_trade_altfund")),
         "extras_guard_flag":   None,                        # không có trong ledger v4
         "entry":               _num(p.get("entry")),
-        "stop":                _num(p.get("stop")),
+        "stop":                _num(p.get("stop", p.get("stop_loss"))),
         "tp1":                 _num(p.get("tp1")),
         "scoring_version":     p.get("scoring_version"),
         "gate_version":        None if p.get("gate_version") is None else str(p.get("gate_version")),
@@ -203,6 +214,8 @@ class Supabase:
 
     def upsert(self, table: str, rows: list[dict], on_conflict: str) -> int:
         total = 0
+        if requests is None:
+            raise RuntimeError("Missing requests dependency for Supabase writes")
         for i in range(0, len(rows), BATCH):
             chunk = rows[i:i + BATCH]
             body = json.dumps(chunk, default=str)
@@ -249,7 +262,7 @@ def main() -> int:
 
     months = args.months or _months_available()
     if not months:
-        log.error("Không tìm thấy tháng ledger nào trong %s / %s", PRED_DIR, OUTC_DIR)
+        log.error("Không tìm thấy tháng ledger nào trong %s / %s", PRED_DIRS, OUTC_DIRS)
         return 1
     log.info("Tháng sync: %s | only=%s | dry_run=%s", months, args.only or "all", args.dry_run)
 
@@ -259,13 +272,19 @@ def main() -> int:
     out_rows: list[dict] = []
 
     if args.only != "outcomes":
-        preds = [p for m in months for p in _read_jsonl(PRED_DIR / f"{m}.jsonl")]
+        preds = [
+            p for d in PRED_DIRS for m in months for p in _read_jsonl(d / f"{m}.jsonl")
+            if p.get("scoring_version") in REVIEW_VERSIONS
+        ]
         sig_rows = [build_signal_row(p) for p in preds]
         run_rows = build_run_rows(preds)
         log.info("predictions: %d rows → %d signals, %d runs", len(preds), len(sig_rows), len(run_rows))
 
     if args.only != "predictions":
-        outs = [o for m in months for o in _read_jsonl(OUTC_DIR / f"{m}.jsonl")]
+        outs = [
+            o for d in OUTC_DIRS for m in months for o in _read_jsonl(d / f"{m}.jsonl")
+            if o.get("scoring_version") in REVIEW_VERSIONS
+        ]
         out_rows = [build_outcome_row(o) for o in outs]
         log.info("outcomes: %d rows → %d outcome rows", len(outs), len(out_rows))
 

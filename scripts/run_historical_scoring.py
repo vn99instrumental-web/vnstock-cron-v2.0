@@ -20,6 +20,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
+REVIEW_PATH = ROOT / "config" / "scoring" / "review_versions.json"
 OUTPUT = ROOT / "output"
 MANIFEST_PATH = ROOT / "config" / "scoring" / "historical_versions.json"
 COMBINED_PATH = OUTPUT / "v2f_signals_v4_all.json"
@@ -122,7 +123,8 @@ def main() -> None:
     production_rows = _validate_rows(_load_json(production_path), production_version)
 
     configured = sorted(manifest["versions"], key=_version_key)
-    selected = args.versions or configured
+    review_config = _load_json(REVIEW_PATH)
+    selected = args.versions or review_config["historical_scorers"]
     unknown = sorted(set(selected) - set(configured))
     if unknown:
         raise SystemExit(f"Unknown historical versions: {', '.join(unknown)}")

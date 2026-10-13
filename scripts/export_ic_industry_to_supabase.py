@@ -7,6 +7,7 @@ This makes the dashboard read an all-or-nothing snapshot.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
 import sys
@@ -19,12 +20,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from eval_forward_ic import _f, _load, _spearman, daily_last  # noqa: E402
 from sync_supabase import Supabase  # noqa: E402
 
-PRED_GLOB = str(Path(__file__).resolve().parent.parent / "output/history/v2f_predictions_v4/*.jsonl")
-OUT_GLOB = str(Path(__file__).resolve().parent.parent / "output/history/v2f_outcomes_v4/*.jsonl")
+ROOT = Path(__file__).resolve().parent.parent
+REVIEW_CONFIG = json.loads((ROOT / "config/scoring/review_versions.json").read_text(encoding="utf-8"))
+REVIEW_VERSIONS = frozenset(REVIEW_CONFIG["versions"])
+PRED_GLOBS = [str(ROOT / "output/history/v2f_predictions_v4/*.jsonl"), str(ROOT / "output/history/v2f_predictions/*.jsonl")]
+OUT_GLOBS = [str(ROOT / "output/history/v2f_outcomes_v4/*.jsonl"), str(ROOT / "output/history/v2f_outcomes/*.jsonl")]
 FACTORS = {"score_trade": "score_trade", "mean_reversion": "trade_mean_reversion_norm",
            "breakout": "trade_breakout_norm", "flow": "trade_flow_norm",
            "fundamental": "trade_fundamental_norm", "growth": "trade_growth_norm",
            "context": "trade_context_norm"}
+LEGACY_FACTORS = {"score_trade": "total_score", "mean_reversion": "norm_momentum",
+                  "breakout": "norm_trend", "flow": "norm_ff",
+                  "fundamental": "norm_fundamental", "growth": "growth_score",
+                  "context": "context_score"}
 HORIZONS = (1, 3, 5, 10)
 BATCH = 200
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -39,7 +47,8 @@ def compute_rows(preds, outs, batch_id):
     asof = None
     for version, source in by_version.items():
         last = daily_last(source)
-        for factor, col in FACTORS.items():
+        factor_cols = LEGACY_FACTORS if version == "v2.3" else FACTORS
+        for factor, col in factor_cols.items():
             for horizon in HORIZONS:
                 groups = defaultdict(lambda: defaultdict(lambda: ([], [])))
                 for p in last:
@@ -67,7 +76,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
-    preds, outs = _load(PRED_GLOB), _load(OUT_GLOB)
+    preds = [row for glob in PRED_GLOBS for row in _load(glob) if row.get("scoring_version") in REVIEW_VERSIONS]
+    outs = [row for glob in OUT_GLOBS for row in _load(glob) if row.get("scoring_version") in REVIEW_VERSIONS]
     if not preds or not outs:
         log.error("Missing prediction/outcome ledger")
         return 1

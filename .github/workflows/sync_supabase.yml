@@ -51,5 +51,8 @@ jobs:
       - name: Export forward IC → Supabase
         run: python3 scripts/export_ic_to_supabase.py
 
+      - name: Export IC by industry and scoring version to Supabase
+        run: python3 scripts/export_ic_industry_to_supabase.py
+
       - name: Phân tích đóng góp biên (hồi quy đa biến) → Supabase
         run: python3 scripts/analyze_marginal_ic.py

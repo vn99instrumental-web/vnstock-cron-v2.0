@@ -2,6 +2,7 @@ import { PageHeader, EmptyState } from "@/components/ui";
 import { TodayBoard, type TodaySignal } from "@/components/today-board";
 import { createClient } from "@/lib/supabase/server";
 import { hmVN } from "@/lib/format";
+import { DEFAULT_SCORING_VERSION, isReviewVersion } from "@/lib/scoring-versions";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export default async function TodayPage({ searchParams }: TodayPageProps) {
 
   // Ngày của run mới nhất (prefix run_id "YYYY-MM-DD_HH:MM"). Lấy TẤT CẢ snap trong ngày
   // → gộp theo mã (1 mã có thể BUY nhiều lần chạy).
-  const productionVersion = "v4.18";
+  const productionVersion = DEFAULT_SCORING_VERSION;
   const { data: recentRuns } = await supabase
     .from("v4_runs")
     .select("run_id, started_at, scoring_version")
@@ -44,11 +45,12 @@ export default async function TodayPage({ searchParams }: TodayPageProps) {
   const versionDates: Record<string, string> = {};
   for (const item of recentRuns ?? []) {
     const version = String(item.scoring_version);
+    if (!isReviewVersion(version)) continue;
     if (!versionDates[version]) versionDates[version] = String(item.run_id).split("_")[0];
   }
   versionDates[productionVersion] ??= String(run.run_id).split("_")[0];
   const requestedVersion = typeof params.version === "string" ? params.version : productionVersion;
-  const currentVersion = versionDates[requestedVersion] ? requestedVersion : productionVersion;
+  const currentVersion = isReviewVersion(requestedVersion) && versionDates[requestedVersion] ? requestedVersion : productionVersion;
   const currentDate = versionDates[currentVersion];
   const { data } = await supabase
     .from("v4_signals")

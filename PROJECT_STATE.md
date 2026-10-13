@@ -186,6 +186,15 @@
 - Live continuity audit: `v4.17` has data from 2026-08-28 through 2026-09-17, no rows for 2026-09-18 through 2026-10-09, then resumes on 2026-10-12 with four 100-symbol snapshots. Parallel scoring keeps it continuous going forward; the historical gap has not been reconstructed.
 - Verified: TypeScript passed, Next production build passed, migration rollback test and live view queries passed. Existing unrelated Supabase advisor findings remain; this migration introduced no new finding.
 
+## 4o. Curated scoring review set + legacy v2.3 (2026-10-12)
+
+- Vercel review set is fixed newest-first: `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`; other sparse versions are hidden and no longer run as live historical shadows.
+- `scripts/sync_supabase.py` mirrors both legacy and v4 ledgers into the versioned `v4_*` schema, filtered by `config/scoring/review_versions.json`.
+- Legacy IC maps native v2.3 fields onto the shared review categories; dry-run produced 24 official IC rows from 6,504 matured samples. The mapping is comparative, not a claim that v2.3 and v4 formulas are identical.
+- `/today`, `/buy`, `/ic`, and `/phan-tich` all expose the same curated selector and default to `v4.18`.
+- Migrations `0026` and `0027` are applied live. Analysis joins/partitions are scoring-version safe; all affected views use `security_invoker` and read-only grants.
+- Verified: Python compile, sync dry-run (9,200 October signals / 92 runs), v2.3 IC dry-run, industry IC dry-run (1,080 rows), TypeScript, Next production build, live view queries, and Supabase Security Advisor review.
+
 ---
 
 ## 5. Việc kế tiếp (next actions)

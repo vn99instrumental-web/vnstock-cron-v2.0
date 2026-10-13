@@ -83,7 +83,7 @@ export function FactorICTable({
   }, [marginal]);
 
   const [open, setOpen] = useState<Set<string>>(new Set());
-  const [tableOpen, setTableOpen] = useState(version === curVer);
+  const [tableOpen, setTableOpen] = useState(true);
   const toggle = (k: string) =>
     setOpen((s) => {
       const n = new Set(s);

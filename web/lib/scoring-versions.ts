@@ -1,0 +1,17 @@
+export const REVIEW_VERSIONS = ["v4.18", "v4.17", "v4.9", "v4.8", "v4.1", "v2.3"] as const;
+export const DEFAULT_SCORING_VERSION = REVIEW_VERSIONS[0];
+
+export type ReviewVersion = (typeof REVIEW_VERSIONS)[number];
+
+export function isReviewVersion(value: unknown): value is ReviewVersion {
+  return typeof value === "string" && REVIEW_VERSIONS.includes(value as ReviewVersion);
+}
+
+export function availableReviewVersions(available: Iterable<string>): ReviewVersion[] {
+  const values = new Set(available);
+  return REVIEW_VERSIONS.filter((version) => values.has(version));
+}
+
+export function versionLabel(version: string): string {
+  return version === "v2.3" ? "v2.3 · Legacy" : version;
+}

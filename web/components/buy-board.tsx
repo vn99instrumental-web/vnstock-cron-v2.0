@@ -10,6 +10,7 @@ import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import {
   factorGroupViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
 } from "@/lib/interpret";
+import { availableReviewVersions } from "@/lib/scoring-versions";
 
 export interface BuySignal {
   id: number;
@@ -235,10 +236,7 @@ export function BuyBoard({
   versionDates?: Record<string, string>;
 }) {
   const router = useRouter();
-  const availableVersions = useMemo(
-    () => Object.keys(versionDates).sort((a, b) => Number(b.split(".")[1]) - Number(a.split(".")[1])),
-    [versionDates],
-  );
+  const availableVersions = useMemo(() => availableReviewVersions(Object.keys(versionDates)), [versionDates]);
   const robMap = useMemo(
     () => new Map(robustness.map((r) => [r.symbol, r])),
     [robustness],
