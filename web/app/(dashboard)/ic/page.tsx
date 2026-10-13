@@ -3,8 +3,7 @@ import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
 import { FactorICTable, type MargRow } from "@/components/factor-ic-table";
-import { ScoringVersionSelect } from "@/components/scoring-version-select";
-import { DEFAULT_SCORING_VERSION, REVIEW_VERSIONS, isReviewVersion } from "@/lib/scoring-versions";
+import { DEFAULT_SCORING_VERSION, REVIEW_VERSIONS } from "@/lib/scoring-versions";
 
 export const dynamic = "force-dynamic";
 
@@ -130,11 +129,8 @@ function BreakdownTable({
   );
 }
 
-type ICPageProps = { searchParams: Promise<{ version?: string }> };
-
-export default async function ICPage({ searchParams }: ICPageProps) {
+export default async function ICPage() {
   const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
-  const params = await searchParams;
   const { data } = await supabase
     .from("v4_ic_metrics")
     .select("config_version, factor, horizon, ic, n")
@@ -143,57 +139,74 @@ export default async function ICPage({ searchParams }: ICPageProps) {
     .order("horizon", { ascending: true });
 
   const rows = (data ?? []) as ICRow[];
-
-  // Version production HIỆN TẠI (đọc động từ run mới nhất — version-agnostic).
   const curVer = DEFAULT_SCORING_VERSION;
   const officialVersions = REVIEW_VERSIONS.filter((version) => rows.some((row) => row.config_version === version));
-  const requestedVersion = typeof params.version === "string" ? params.version : curVer;
-  const currentVersion = isReviewVersion(requestedVersion) && officialVersions.includes(requestedVersion)
-    ? requestedVersion
-    : (officialVersions[0] ?? curVer);
-  const curHasIC = rows.some((r) => r.config_version === curVer);
-  const dataClient = createCachedPublicClient("ic", currentVersion);
+  const curHasIC = rows.some((row) => row.config_version === curVer);
+  const currentClient = createCachedPublicClient("ic", curVer);
 
-  // IC breakdown: chỉ số con và IC ngành tách theo version × category.
-  // Mỗi version là một request riêng để không chạm giới hạn 1.000 dòng của PostgREST.
-  const [indRes, factorVerRes, margRes, industryBatchRes] = await Promise.all([
-    currentVersion === curVer ? dataClient.from("v4_ic_by_indicator").select("indicator, horizon, ic, n") : Promise.resolve({ data: [] }),
-    dataClient.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n").eq("version", currentVersion),
-    dataClient.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n").eq("version", currentVersion),
-    dataClient.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
+  // Fetch every version independently so each result has its own cache TTL/tag and
+  // no request can be truncated by PostgREST's 1,000-row response limit.
+  const [indRes, industryBatchRes, perVersionRows] = await Promise.all([
+    currentClient.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
+    currentClient.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
+    Promise.all(officialVersions.map(async (version) => {
+      const client = createCachedPublicClient("ic", version);
+      const [factorRes, marginalRes] = await Promise.all([
+        client.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n").eq("version", version),
+        client.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n").eq("version", version),
+      ]);
+      return { version, factorRows: factorRes.data ?? [], marginalRows: marginalRes.data ?? [] };
+    })),
   ]);
-  const { data: industryData } = industryBatchRes.data ? await dataClient.from("v4_ic_industry_metrics").select("version, factor, industry, horizon, ic, n").eq("batch_id", industryBatchRes.data.batch_id).eq("version", currentVersion).order("factor", { ascending: true }).order("industry", { ascending: true }).order("horizon", { ascending: true }) : { data: [] };
-  const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
-  const marginalRows = (margRes.data ?? []) as (MargRow & { version: string })[];
+
+  const industryResults = industryBatchRes.data
+    ? await Promise.all(officialVersions.map(async (version) => {
+        const client = createCachedPublicClient("ic", version);
+        const result = await client
+          .from("v4_ic_industry_metrics")
+          .select("version, factor, industry, horizon, ic, n")
+          .eq("batch_id", industryBatchRes.data!.batch_id)
+          .eq("version", version)
+          .order("factor", { ascending: true })
+          .order("industry", { ascending: true })
+          .order("horizon", { ascending: true });
+        return { version, data: result.data ?? [], error: result.error?.message ?? null };
+      }))
+    : officialVersions.map((version) => ({
+        version,
+        data: [],
+        error: industryBatchRes.error?.message ?? null,
+      }));
+
+  const factorVerRows = perVersionRows.flatMap((result) => result.factorRows) as FactorVerRow[];
+  const marginalRows = perVersionRows.flatMap((result) => result.marginalRows) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
-    arr.map((r) => ({
-      key: String(r[keyField]),
-      horizon: Number(r.horizon),
-      ic: r.ic == null ? null : Number(r.ic),
-      n: Number(r.n),
+    arr.map((row) => ({
+      key: String(row[keyField]),
+      horizon: Number(row.horizon),
+      ic: row.ic == null ? null : Number(row.ic),
+      n: Number(row.n),
     }));
   const indGroups = groupBrk(toBrk((indRes.data ?? []) as Record<string, unknown>[], "indicator"));
 
-  // Chỉ số con GOM THEO FACTOR (mean_reversion gồm indicator nào…).
-  const indByName = new Map(indGroups.map((g) => [g.name, g]));
-  const indByFactor = FACTOR_GROUPS.map((fg) => ({
-    key: fg.key,
-    label: fg.label,
-    members: fg.members.map((m) => indByName.get(m)).filter((g): g is BrkGroup => !!g),
-  })).filter((f) => f.members.length);
+  const indByName = new Map(indGroups.map((group) => [group.name, group]));
+  const indByFactor = FACTOR_GROUPS.map((factorGroup) => ({
+    key: factorGroup.key,
+    label: factorGroup.label,
+    members: factorGroup.members.map((member) => indByName.get(member)).filter((group): group is BrkGroup => !!group),
+  })).filter((factor) => factor.members.length);
 
-  const industryByVersion = [currentVersion].map((version) => ({
-    version,
-    error: industryBatchRes.error?.message ?? null,
+  const industryByVersion = industryResults.map((result) => ({
+    version: result.version,
+    error: result.error,
     factors: FACTOR_ORDER.map((factor) => ({
       factor,
       groups: groupBrk(toBrk(
-        ((industryData ?? []) as Record<string, unknown>[]).filter((row) => row.version === version && row.factor === factor),
+        (result.data as Record<string, unknown>[]).filter((row) => row.factor === factor),
         "industry",
       )),
     })).filter((item) => item.groups.length),
   }));
-
   if (!rows.length) {
     return (
       <>
@@ -222,9 +235,6 @@ export default async function ICPage({ searchParams }: ICPageProps) {
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
 
-      <div className="mb-4">
-        <ScoringVersionSelect currentVersion={currentVersion} versions={[...officialVersions]} route="/ic" />
-      </div>
       {curVer ? (
         <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
           <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HIỆN TẠI</span>
@@ -240,12 +250,15 @@ export default async function ICPage({ searchParams }: ICPageProps) {
           )}
         </div>
       ) : null}
-      <FactorICTable
-        version={currentVersion}
-        curVer={curVer}
-        official={rows.filter((r) => r.config_version === currentVersion)}
-        marginal={marginalRows.filter((r) => r.version === currentVersion)}
-      />
+      {verList.map((version) => (
+        <FactorICTable
+          key={version}
+          version={version}
+          curVer={curVer}
+          official={rows.filter((row) => row.config_version === version)}
+          marginal={marginalRows.filter((row) => row.version === version)}
+        />
+      ))}
       <section className="card mb-6 p-3 sm:p-4">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div>
@@ -265,7 +278,7 @@ export default async function ICPage({ searchParams }: ICPageProps) {
               <details
                 key={versionData.version}
                 className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5"
-                open
+                open={versionData.version === curVer}
               >
                 <summary className="flex cursor-pointer select-none items-center justify-between gap-2 font-mono text-[13px] font-semibold">
                   <span>scoring {versionData.version}{versionData.version === curVer ? " (hiện tại)" : ""}</span>

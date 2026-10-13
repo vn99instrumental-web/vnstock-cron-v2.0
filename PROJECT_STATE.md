@@ -203,6 +203,13 @@
 - This is cache-only optimization: first load and full-page server navigation remain unchanged; repeated requests for the same version avoid Supabase round trips until TTL expiry.
 - Verified: TypeScript and Next production build passed. Local runtime cache-hit measurement was not executable because this workspace has no Supabase public environment variables; production verification is required after Vercel deploy.
 
+## 4q. IC shows all available review versions (2026-10-13)
+
+- `/ic` no longer has a scoring-version selector and ignores the `version` query parameter.
+- Every curated version with official rows in `v4_ic_metrics` is rendered newest-first. Production `v4.18` opens by default; historical scoring and industry tables remain collapsed.
+- Factor, marginal, and industry data are fetched independently per version, preserving version-specific Data Cache TTL/tags and avoiding PostgREST's 1,000-row response cap.
+- Verified: TypeScript and Next production build passed. Existing local `eslint-plugin-react-hooks` warning remains non-blocking.
+
 ---
 
 ## 5. Việc kế tiếp (next actions)
