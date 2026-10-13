@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/ui";
 import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
-import { createClient } from "@/lib/supabase/server";
+import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { getCompanyName } from "@/lib/company-names";
 import { DEFAULT_SCORING_VERSION, isReviewVersion } from "@/lib/scoring-versions";
 
@@ -10,7 +10,7 @@ type BuyPageProps = { searchParams: Promise<{ version?: string }> };
 
 export default async function BuyPage({ searchParams }: BuyPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
+  const supabase = createCachedPublicClient("version-metadata", DEFAULT_SCORING_VERSION);
 
   const productionVersion = DEFAULT_SCORING_VERSION;
   const { data: recentRuns } = await supabase
@@ -27,10 +27,11 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   }
   const requestedVersion = typeof params.version === "string" ? params.version : productionVersion;
   const currentVersion = isReviewVersion(requestedVersion) && versionDates[requestedVersion] ? requestedVersion : productionVersion;
+  const dataClient = createCachedPublicClient("buy", currentVersion);
 
   // Run MỚI NHẤT CÓ tín hiệu BUY thực sự trong v4_signals (bền vững kể cả khi run
   // mới nhất chưa sync đủ signals, hoặc tình cờ 0 BUY).
-  const { data: latestBuy } = await supabase
+  const { data: latestBuy } = await dataClient
     .from("v4_signals")
     .select("run_id, signal_date, snap_time")
     .in("decision", ["BUY", "STRONG BUY"])
@@ -41,7 +42,7 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
     .maybeSingle();
 
   // So với run mới nhất tổng thể (để báo nếu đang xem run cũ hơn).
-  const { data: newestRun } = await supabase
+  const { data: newestRun } = await dataClient
     .from("v4_runs")
     .select("run_id")
     .order("started_at", { ascending: false })
@@ -50,7 +51,7 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
     .maybeSingle();
 
   const { data } = latestBuy
-    ? await supabase
+    ? await dataClient
         .from("v4_signals")
         .select("id, symbol, decision, score_trade, signal_date, breakdown")
         .eq("run_id", latestBuy.run_id)
@@ -68,7 +69,7 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   if (signals.length) {
     const sigDate = latestBuy!.signal_date as string;
     const since = new Date(new Date(sigDate).getTime() - 14 * 864e5).toISOString().slice(0, 10);
-    const { data: ohlc } = await supabase
+    const { data: ohlc } = await dataClient
       .from("v4_ohlc")
       .select("symbol, date, close")
       .in("symbol", signals.map((s) => s.symbol))
@@ -87,14 +88,14 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   }
   // Thời điểm run (độ tươi data) + kỳ vọng lịch sử của BUY theo confidence.
   const { data: runRow } = latestBuy
-    ? await supabase
+    ? await dataClient
         .from("v4_runs")
         .select("started_at")
         .eq("run_id", latestBuy.run_id)
         .eq("scoring_version", currentVersion)
         .maybeSingle()
     : { data: null };
-  const { data: expData } = await supabase
+  const { data: expData } = await dataClient
     .from("v4_buy_expectancy")
     .select("*")
     .eq("scoring_version", currentVersion);
@@ -116,13 +117,13 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   }
 
   // D/E/F — độ vững tín hiệu (thanh khoản từ breakdown; độ bền/đồng thuận từ view).
-  const { data: robData } = await supabase
+  const { data: robData } = await dataClient
     .from("v4_buy_robustness")
     .select("*")
     .eq("scoring_version", currentVersion);
 
   // IC score↔lợi nhuận 5 phiên theo ngành (badge chất lượng ngành trong danh sách).
-  const { data: indusICData } = await supabase
+  const { data: indusICData } = await dataClient
     .from("v4_ic_by_industry_ver")
     .select("industry, ic, n")
     .eq("version", currentVersion)

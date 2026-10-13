@@ -3,7 +3,7 @@
 > Tái sinh từ **chứng cứ repo thật** (không suy diễn). Đọc đầu mỗi phiên.
 > Do skill `project-update` cập nhật sau mỗi merge.
 
-**Cập nhật:** 2026-10-12 · **Branch:** `main` · **PRD:** v2.0 GRILLED
+**Cập nhật:** 2026-10-13 · **Branch:** `main` · **PRD:** v2.0 GRILLED
 
 ---
 
@@ -194,6 +194,14 @@
 - `/today`, `/buy`, `/ic`, and `/phan-tich` all expose the same curated selector and default to `v4.18`.
 - Migrations `0026` and `0027` are applied live. Analysis joins/partitions are scoring-version safe; all affected views use `security_invoker` and read-only grants.
 - Verified: Python compile, sync dry-run (9,200 October signals / 92 runs), v2.3 IC dry-run, industry IC dry-run (1,080 rows), TypeScript, Next production build, live view queries, and Supabase Security Advisor review.
+
+## 4p. Dashboard query cache by scoring version (2026-10-13)
+
+- `/today`, `/buy`, `/ic`, and `/phan-tich` read public dashboard data through `web/lib/supabase/cached-public.ts`.
+- Supabase remains the source of truth. Next.js/Vercel Data Cache stores only anon, read-only GET responses; no cookies, user session, service-role key, or writes enter the cache.
+- Production `v4.18` uses a 5-minute TTL; historical scoring versions use a 7-day TTL. Cache tags are separated by dashboard scope and scoring version for future invalidation support.
+- This is cache-only optimization: first load and full-page server navigation remain unchanged; repeated requests for the same version avoid Supabase round trips until TTL expiry.
+- Verified: TypeScript and Next production build passed. Local runtime cache-hit measurement was not executable because this workspace has no Supabase public environment variables; production verification is required after Vercel deploy.
 
 ---
 

@@ -1,6 +1,6 @@
 import { PageHeader, EmptyState } from "@/components/ui";
 import { AnalysisBoard, type SignalResult, type FactorCorr, type FactorPair, type FactorCorrSplit } from "@/components/analysis-board";
-import { createClient } from "@/lib/supabase/server";
+import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { ScoringVersionSelect } from "@/components/scoring-version-select";
 import { DEFAULT_SCORING_VERSION, isReviewVersion } from "@/lib/scoring-versions";
 
@@ -14,7 +14,7 @@ type PhanTichPageProps = { searchParams: Promise<{ version?: string }> };
 
 export default async function PhanTichPage({ searchParams }: PhanTichPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
+  const supabase = createCachedPublicClient("version-metadata", DEFAULT_SCORING_VERSION);
 
   const { data: recentRuns } = await supabase
     .from("v4_runs")
@@ -32,25 +32,26 @@ export default async function PhanTichPage({ searchParams }: PhanTichPageProps) 
   const currentVersion = isReviewVersion(requestedVersion) && versionDates[requestedVersion]
     ? requestedVersion
     : DEFAULT_SCORING_VERSION;
+  const dataClient = createCachedPublicClient("analysis", currentVersion);
 
   const [{ data: firstResults, error: resultsError }, { data: corr }, { data: pairs }, { data: split }] = await Promise.all([
-    supabase
+    dataClient
       .from("v4_signal_analysis_feed")
       .select(RESULT_COLUMNS)
       .eq("scoring_version", currentVersion)
       .order("signal_date", { ascending: false })
       .order("symbol", { ascending: true })
       .range(0, PAGE_SIZE - 1),
-    supabase.from("v4_hit_factor_corr").select("*").eq("scoring_version", currentVersion),
-    supabase.from("v4_factor_pair_corr").select("*").eq("scoring_version", currentVersion),
-    supabase.from("v4_hit_factor_corr_split").select("*").eq("scoring_version", currentVersion),
+    dataClient.from("v4_hit_factor_corr").select("*").eq("scoring_version", currentVersion),
+    dataClient.from("v4_factor_pair_corr").select("*").eq("scoring_version", currentVersion),
+    dataClient.from("v4_hit_factor_corr_split").select("*").eq("scoring_version", currentVersion),
   ]);
 
   if (resultsError) throw resultsError;
 
   const rows = [...((firstResults ?? []) as SignalResult[])];
   for (let from = PAGE_SIZE; rows.length === from; from += PAGE_SIZE) {
-    const { data: next, error } = await supabase
+    const { data: next, error } = await dataClient
       .from("v4_signal_analysis_feed")
       .select(RESULT_COLUMNS)
       .order("signal_date", { ascending: false })

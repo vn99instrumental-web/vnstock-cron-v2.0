@@ -1,6 +1,6 @@
 import { PageHeader, EmptyState } from "@/components/ui";
 import { TodayBoard, type TodaySignal } from "@/components/today-board";
-import { createClient } from "@/lib/supabase/server";
+import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { hmVN } from "@/lib/format";
 import { DEFAULT_SCORING_VERSION, isReviewVersion } from "@/lib/scoring-versions";
 
@@ -10,7 +10,7 @@ type TodayPageProps = { searchParams: Promise<{ version?: string }> };
 
 export default async function TodayPage({ searchParams }: TodayPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
+  const supabase = createCachedPublicClient("version-metadata", DEFAULT_SCORING_VERSION);
 
   // Run mới nhất = (signal_date, snap_time) lớn nhất → started_at desc.
   const { data: run } = await supabase
@@ -52,7 +52,8 @@ export default async function TodayPage({ searchParams }: TodayPageProps) {
   const requestedVersion = typeof params.version === "string" ? params.version : productionVersion;
   const currentVersion = isReviewVersion(requestedVersion) && versionDates[requestedVersion] ? requestedVersion : productionVersion;
   const currentDate = versionDates[currentVersion];
-  const { data } = await supabase
+  const dataClient = createCachedPublicClient("today", currentVersion);
+  const { data } = await dataClient
     .from("v4_signals")
     .select("symbol, signal_date, scoring_version, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score, entry:breakdown->>entry, stop:breakdown->>stop, tp1:breakdown->>tp1, breakdown")
     .eq("scoring_version", currentVersion)

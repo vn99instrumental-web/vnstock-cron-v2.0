@@ -1,5 +1,5 @@
 import { PageHeader, EmptyState } from "@/components/ui";
-import { createClient } from "@/lib/supabase/server";
+import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
 import { FactorICTable, type MargRow } from "@/components/factor-ic-table";
@@ -133,7 +133,7 @@ function BreakdownTable({
 type ICPageProps = { searchParams: Promise<{ version?: string }> };
 
 export default async function ICPage({ searchParams }: ICPageProps) {
-  const supabase = await createClient();
+  const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
   const params = await searchParams;
   const { data } = await supabase
     .from("v4_ic_metrics")
@@ -152,16 +152,17 @@ export default async function ICPage({ searchParams }: ICPageProps) {
     ? requestedVersion
     : (officialVersions[0] ?? curVer);
   const curHasIC = rows.some((r) => r.config_version === curVer);
+  const dataClient = createCachedPublicClient("ic", currentVersion);
 
   // IC breakdown: chỉ số con và IC ngành tách theo version × category.
   // Mỗi version là một request riêng để không chạm giới hạn 1.000 dòng của PostgREST.
   const [indRes, factorVerRes, margRes, industryBatchRes] = await Promise.all([
-    currentVersion === curVer ? supabase.from("v4_ic_by_indicator").select("indicator, horizon, ic, n") : Promise.resolve({ data: [] }),
-    supabase.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n").eq("version", currentVersion),
-    supabase.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n").eq("version", currentVersion),
-    supabase.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
+    currentVersion === curVer ? dataClient.from("v4_ic_by_indicator").select("indicator, horizon, ic, n") : Promise.resolve({ data: [] }),
+    dataClient.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n").eq("version", currentVersion),
+    dataClient.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n").eq("version", currentVersion),
+    dataClient.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
-  const { data: industryData } = industryBatchRes.data ? await supabase.from("v4_ic_industry_metrics").select("version, factor, industry, horizon, ic, n").eq("batch_id", industryBatchRes.data.batch_id).eq("version", currentVersion).order("factor", { ascending: true }).order("industry", { ascending: true }).order("horizon", { ascending: true }) : { data: [] };
+  const { data: industryData } = industryBatchRes.data ? await dataClient.from("v4_ic_industry_metrics").select("version, factor, industry, horizon, ic, n").eq("batch_id", industryBatchRes.data.batch_id).eq("version", currentVersion).order("factor", { ascending: true }).order("industry", { ascending: true }).order("horizon", { ascending: true }) : { data: [] };
   const factorVerRows = (factorVerRes.data ?? []) as FactorVerRow[];
   const marginalRows = (margRes.data ?? []) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
