@@ -207,6 +207,7 @@
 
 - `/ic` no longer has a scoring-version selector and ignores the `version` query parameter.
 - Every curated version with official rows in `v4_ic_metrics` is rendered newest-first. Production `v4.18` opens by default; historical scoring and industry tables remain collapsed.
+- Each scoring-version header shows official sample size separately for 1d/3d/5d/10d, so sample coverage remains visible while the table is collapsed.
 - Factor, marginal, and industry data are fetched independently per version, preserving version-specific Data Cache TTL/tags and avoiding PostgREST's 1,000-row response cap.
 - Verified: TypeScript and Next production build passed. Existing local `eslint-plugin-react-hooks` warning remains non-blocking.
 

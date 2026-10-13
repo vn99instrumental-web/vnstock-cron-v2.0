@@ -81,6 +81,10 @@ export function FactorICTable({
     const row = marginal.find((r) => r.indicator === "_model_r2" && r.horizon === 5);
     return row?.coef ?? null;
   }, [marginal]);
+  const sampleSizes = useMemo(() => HORIZONS.map((horizon) => ({
+    horizon,
+    n: official.reduce((max, row) => row.horizon === horizon && row.n != null ? Math.max(max, Number(row.n)) : max, 0),
+  })), [official]);
 
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [tableOpen, setTableOpen] = useState(version === curVer);
@@ -116,6 +120,13 @@ export function FactorICTable({
         {r2 != null ? (
           <span className="text-[11px] font-normal text-[var(--color-muted)]">· hồi quy đa biến R²(5d) = {(r2 * 100).toFixed(1)}%</span>
         ) : null}
+        <span className="flex flex-wrap items-center gap-1 text-[10px] font-normal text-[var(--color-muted)]" aria-label={`Cỡ mẫu scoring ${version}`}>
+          {sampleSizes.map(({ horizon, n }) => (
+            <span key={horizon} className="rounded border border-[var(--color-border)] px-1.5 py-0.5 tabular-nums">
+              n {horizon}d: {n > 0 ? n.toLocaleString("vi-VN") : "—"}
+            </span>
+          ))}
+        </span>
         <span className="ml-auto text-[11px] font-normal text-[var(--color-muted)]">{tableOpen ? "Ẩn toàn bộ bảng" : "Hiện toàn bộ bảng"}</span>
       </button>
       {tableOpen ? <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
