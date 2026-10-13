@@ -60,6 +60,39 @@ BATCH = 200                                # số row/1 request PostgREST (nhỏ
 MAX_RETRY = 5                              # retry cho lỗi tạm (5xx / timeout / mạng)
 MONTH_RE = re.compile(r"^\d{4}-\d{2}$")
 
+# Supabase là serving layer, không phải bản sao lossless của ledger. Giữ các field
+# mà dashboard/drill-down thực sự đọc; bản gốc đầy đủ vẫn nằm trong Git JSONL và
+# được các job IC đọc trực tiếp. JSONB lặp tên khóa trên mỗi signal nên việc đưa
+# toàn bộ prediction vào đây làm bảng v4_signals lớn hơn dữ liệu CSV rất nhiều.
+SIGNAL_BREAKDOWN_KEYS = frozenset({
+    # Join / nhãn / phân nhóm
+    "pred_id", "industry", "sector_group", "confidence", "snap_time",
+    "size_band", "exchange", "gates",
+    # Giá, mức giao dịch và dữ liệu thô dùng để diễn giải
+    "price", "entry", "stop", "stop_loss", "tp1", "tp2", "adtv_bil",
+    "willr_14", "bb_position", "price_vs_ema200_pct", "ema200",
+    "return_20d", "vnindex_return_20d", "low_52w", "high_52w",
+    "vol_ma_ratio", "ff_intra_net", "ff_intra_ratio", "of_bp_pts",
+    "n_supergroups_aligned", "ff_score", "fundamental_score",
+    # Factor chi tiết
+    "s_willr_mr", "s_bb_mr", "s_overext_ema", "s_rs_reversal", "s_deep_dd",
+    "s_dist_52w", "s_vol_ratio_h", "s_ff_net", "s_of_phasefix", "s_prop_5d",
+    "s_insider", "s_fund_core", "s_growth_core", "s_mkt_context", "s_trend_st",
+    "s_depth_wall", "s_cf_core",
+    # 6 nhóm, rank và shadow dùng trong trang chi tiết
+    "trade_mean_reversion_norm", "trade_breakout_norm", "trade_flow_norm",
+    "trade_fundamental_norm", "trade_growth_norm", "trade_context_norm",
+    "rank_fund_grp", "rank_fund_uni", "rank_trend_grp", "rank_ff_grp",
+    "rank_cf_grp", "rank_growth_grp",
+    "score_trade_nomr", "decision_nomr", "_nomr_delta",
+    "score_trade_altfund", "decision_altfund", "_altfund_delta",
+    "score_trade_rank", "decision_rank", "_rank_delta",
+    "score_trade_gate1", "decision_gate1", "_gate1_delta",
+    # Mapping factor của scoring legacy v2.3
+    "total_score", "norm_momentum", "norm_trend", "norm_ff",
+    "norm_fundamental", "growth_score", "context_score",
+})
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("sync_supabase")
 
@@ -115,8 +148,15 @@ def _read_jsonl(path: Path):
 
 # ── Transform ────────────────────────────────────────────────────────────────
 def build_signal_row(p: dict) -> dict:
-    """1 prediction ledger → 1 row v4_signals. breakdown = full record (lossless mirror)."""
+    """1 prediction ledger → 1 row v4_signals với serving payload gọn."""
     sd, st = p.get("signal_date"), p.get("snap_time")
+    breakdown = {
+        key: value for key, value in p.items()
+        if value is not None and (
+            key in SIGNAL_BREAKDOWN_KEYS
+            or (isinstance(value, (int, float)) and not isinstance(value, bool))
+        )
+    }
     return {
         "run_id":              _run_id(sd, st, p.get("scoring_version")),
         "signal_date":         sd,
@@ -128,7 +168,7 @@ def build_signal_row(p: dict) -> dict:
         "pre_total":           None,                        # không có trong ledger v4
         "extras":              None,                        # không có trong ledger v4
         "w_reg":               None,                        # không có trong ledger v4
-        "breakdown":           p,                           # full record → drill-down đầy đủ
+        "breakdown":           breakdown,                   # lossless source vẫn là Git ledger
         "decision_nomr":       p.get("decision_nomr"),
         "score_trade_nomr":    _num(p.get("score_trade_nomr")),
         "mr_delta":            _num(p.get("_nomr_delta")),

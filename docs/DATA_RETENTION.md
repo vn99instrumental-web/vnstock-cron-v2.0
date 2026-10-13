@@ -21,6 +21,13 @@ Ngày 2026-10-14, database dùng 339 MB (~68% mốc 500 MB). Ba bảng dashboard
 
 Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi vượt 80%; không tự động xóa lịch sử.
 
+### Tối ưu serving payload
+
+- Đo thực tế ngày 2026-10-14: `v4_signals` có 93.790 dòng, tổng 243 MB; riêng JSONB `breakdown` có 152 MB dữ liệu logic, trung bình 1.620 byte/dòng. Vì mỗi giá trị nhỏ hơn ngưỡng TOAST mặc định, PostgreSQL giữ phần lớn inline và không nén.
+- Ledger prediction JSONL hiện có khoảng 145 MB trước khi tính index/metadata; vì vậy đổi trực tiếp sang CSV không tự đưa toàn bộ dữ liệu xuống dưới 50 MB.
+- Từ migration `0029`, sync chỉ ghi projection phục vụ UI và giữ toàn bộ biến số numeric cần cho Phân tích/IC. Thử trên 80.630 dòng thuộc 6 version review giảm payload JSON tuần tự từ 131,2 MB xuống 90,6 MB (31%).
+- Bản ghi lossless vẫn nằm trong Git JSONL. Việc archive/xóa các version cũ trong production vẫn cần một đợt maintenance có backup và xác nhận riêng.
+
 ## Quy trình kiểm tra hằng tháng
 
 1. Kiểm tra dung lượng database và các bảng lớn nhất trong Supabase.
