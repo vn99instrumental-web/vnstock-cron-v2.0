@@ -51,12 +51,13 @@ function verdict(coef: number | null, t: number | null, uic: number | null): str
  * ĐÓNG GÓP BIÊN (hồi quy đa biến) — hợp nhất 2 bảng thành 1 view / version.
  */
 export function FactorICTable({
-  version, curVer, official, marginal,
+  version, curVer, official, marginal, updatedAt,
 }: {
   version: string;
   curVer: string | null;
   official: OfficialICRow[];
   marginal: MargRow[];
+  updatedAt?: string | null;
 }) {
   // official: factor → horizon → {ic,n}
   const offMap = useMemo(() => {
@@ -117,6 +118,9 @@ export function FactorICTable({
         {version === curVer ? (
           <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span>
         ) : null}
+        <span className="text-[11px] font-normal text-[var(--color-muted)]" title="Thời điểm evaluator Python ghi bảng IC chính thức">
+          · cập nhật: {updatedAt ?? "chưa xác định"}
+        </span>
         {r2 != null ? (
           <span className="text-[11px] font-normal text-[var(--color-muted)]">· hồi quy đa biến R²(5d) = {(r2 * 100).toFixed(1)}%</span>
         ) : null}

@@ -69,6 +69,14 @@ interface ICRow {
   horizon: number;
   ic: number | null;
   n: number | null;
+  computed_at: string | null;
+}
+
+function formatUpdatedAt(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("vi-VN", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Ho_Chi_Minh" }).format(date);
 }
 
 /** Màu diverging: dương xanh lá, âm đỏ, đậm theo |IC| (chuẩn hoá ±0.2). */
@@ -133,7 +141,7 @@ export default async function ICPage() {
   const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
   const { data } = await supabase
     .from("v4_ic_metrics")
-    .select("config_version, factor, horizon, ic, n")
+    .select("config_version, factor, horizon, ic, n, computed_at")
     .order("config_version", { ascending: false })
     .order("factor", { ascending: true })
     .order("horizon", { ascending: true });
@@ -222,6 +230,11 @@ export default async function ICPage() {
   // Chỉ hiện version có IC official; version chỉ có marginal không tạo bảng rỗng.
   const verList = officialVersions;
 
+  const updatedAtByVersion = new Map(verList.map((version) => {
+    const latest = rows.filter((row) => row.config_version === version && row.computed_at).map((row) => row.computed_at as string).sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0];
+    return [version, formatUpdatedAt(latest)] as const;
+  }));
+
   const sampleByVersion = verList.map((version) => {
     const byHorizon = new Map<number, number>();
     for (const r of rows) if (r.config_version === version && r.n != null) byHorizon.set(r.horizon, Math.max(byHorizon.get(r.horizon) ?? 0, Number(r.n)));
@@ -257,6 +270,7 @@ export default async function ICPage() {
           curVer={curVer}
           official={rows.filter((row) => row.config_version === version)}
           marginal={marginalRows.filter((row) => row.version === version)}
+          updatedAt={updatedAtByVersion.get(version)}
         />
       ))}
       <section className="card mb-6 p-3 sm:p-4">
