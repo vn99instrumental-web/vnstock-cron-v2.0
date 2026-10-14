@@ -19,7 +19,7 @@ export interface MargRow {
   n: number | null;
 }
 
-const HORIZONS = [1, 3, 5, 10];
+const HORIZONS = [3, 5, 10];
 const FACTOR_ROWS = [
   { key: "score_trade", label: "Điểm tổng", members: [] as string[] },
   ...FACTOR_GROUPS.map((g) => ({ key: g.key, label: g.label, members: g.members })),

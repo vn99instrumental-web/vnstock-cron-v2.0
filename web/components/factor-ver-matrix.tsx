@@ -20,7 +20,7 @@ const FACTORS: { key: string; short: string; full: string }[] = [
   { key: "context", short: "Context", full: "context — bối cảnh thị trường chung" },
 ];
 
-const HZ = [1, 3, 5, 10];
+const HZ = [3, 5, 10];
 
 /** Màu diverging: dương xanh, âm đỏ, đậm theo |IC| (chuẩn hoá ±0.2). */
 function cell(ic: number | null): { bg: string; fg: string } {

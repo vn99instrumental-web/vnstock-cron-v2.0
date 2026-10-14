@@ -1,4 +1,4 @@
-import { PageHeader, EmptyState, InsightStrip } from "@/components/ui";
+import { PageHeader, EmptyState } from "@/components/ui";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
@@ -43,7 +43,7 @@ function groupBrk(rows: BrkRow[]): BrkGroup[] {
   return out;
 }
 
-const HORIZONS = [1, 3, 5, 10];
+const HORIZONS = [3, 5, 10];
 const FACTOR_ORDER = [
   "score_trade", "mean_reversion", "breakout", "flow",
   "fundamental", "growth", "context",
@@ -59,7 +59,7 @@ const TECHNICAL_TERMS = [
   { term: "Order flow", meaning: "Chênh lệch tương đối giữa khối lượng mua chủ động và bán chủ động.", formula: "OF ≈ (Buy active − Sell active) / (Buy active + Sell active)", reading: "> 0: áp lực mua; < 0: áp lực bán; gần 0: cân bằng. Cách phân loại lệnh phụ thuộc nguồn dữ liệu." },
   { term: "t-stat", meaning: "Đo hệ số ước lượng lớn bao nhiêu so với sai số của chính nó.", formula: "t = coefficient / standard error", reading: "Quy ước |t| ≥ 2: có ý nghĩa thống kê tương đối; |t| nhỏ: chưa đủ bằng chứng. Không đồng nghĩa chắc chắn có lãi." },
   { term: "R²", meaning: "Tỷ lệ biến động của lợi nhuận được mô hình giải thích trên mẫu đã dùng.", formula: "R² = 1 − SSE/SST", reading: "Từ 0 đến 1; cao hơn là khớp mẫu tốt hơn, nhưng quá cao trên mẫu nhỏ có thể là overfit." },
-  { term: "Horizon", meaning: "Số phiên từ ngày phát tín hiệu đến ngày đo lợi nhuận.", formula: "ReturnNh = Price(t+N) / Price(t) − 1", reading: "1d/3d phản ánh rất ngắn hạn; 5d/10d phản ánh độ bền dài hơn của tín hiệu." },
+  { term: "Horizon", meaning: "Số phiên từ ngày phát tín hiệu đến ngày đo lợi nhuận.", formula: "ReturnNh = Price(t+N) / Price(t) − 1", reading: "3d phản ánh ngắn hạn; 5d/10d phản ánh độ bền dài hơn. Khung 1d được ẩn khỏi so sánh chất lượng vì nhiễu cao." },
   { term: "n (cỡ mẫu)", meaning: "Số quan sát hợp lệ dùng để tính chỉ số.", formula: "n = số cặp (score, future return) hợp lệ", reading: "n càng lớn thường càng ổn định. Với bảng ngành, n < 30 nên xem là tham khảo thận trọng." },
 ];
 
@@ -247,18 +247,20 @@ export default async function ICPage() {
   });
 
   const currentOfficial = rows.filter((row) => row.config_version === curVer);
-  const horizon5 = currentOfficial.filter((row) => row.horizon === 5 && row.ic != null).sort((a, b) => Number(b.ic) - Number(a.ic));
-  const bestFactor = horizon5[0];
-  const worstFactor = horizon5[horizon5.length - 1];
-  const stablePositive = FACTOR_ORDER.filter((factor) => {
-    const values = currentOfficial.filter((row) => row.factor === factor && row.ic != null);
-    return values.length === HORIZONS.length && values.every((row) => Number(row.ic) > 0);
-  }).length;
-  const currentIndustry = industryByVersion.find((item) => item.version === curVer)?.factors
-    .find((item) => item.factor === "score_trade")?.groups.filter((group) => (group.h.get(5)?.n ?? 0) >= 30) ?? [];
-  const bestIndustry = currentIndustry[0];
-  const worstIndustry = currentIndustry[currentIndustry.length - 1];
-  const currentSample5 = sampleByVersion.find((item) => item.version === curVer)?.byHorizon.get(5) ?? 0;
+  const currentSamples = sampleByVersion.find((item) => item.version === curVer)?.byHorizon;
+  const qualityByHorizon = HORIZONS.map((horizon) => {
+    const ranked = currentOfficial
+      .filter((row) => row.horizon === horizon && row.ic != null)
+      .sort((a, b) => Number(b.ic) - Number(a.ic));
+    return {
+      horizon,
+      best: ranked[0] ?? null,
+      worst: ranked[ranked.length - 1] ?? null,
+      positive: ranked.filter((row) => Number(row.ic) > 0).length,
+      available: ranked.length,
+      sample: currentSamples?.get(horizon) ?? 0,
+    };
+  });
 
   return (
     <>
@@ -267,14 +269,51 @@ export default async function ICPage() {
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
 
-      <InsightStrip metrics={[
-        { value: bestFactor ? `${Number(bestFactor.ic) >= 0 ? "+" : ""}${Number(bestFactor.ic).toFixed(3)}` : "—", label: "Factor tốt nhất @5d", detail: bestFactor ? FACTOR_INFO[bestFactor.factor]?.label ?? bestFactor.factor : "chưa đủ dữ liệu", tone: Number(bestFactor?.ic ?? 0) >= 0 ? "positive" : "negative" },
-        { value: worstFactor ? `${Number(worstFactor.ic) >= 0 ? "+" : ""}${Number(worstFactor.ic).toFixed(3)}` : "—", label: "Factor yếu nhất @5d", detail: worstFactor ? FACTOR_INFO[worstFactor.factor]?.label ?? worstFactor.factor : "chưa đủ dữ liệu", tone: Number(worstFactor?.ic ?? 0) >= 0 ? "positive" : "negative" },
-        { value: stablePositive, label: "Factor dương ổn định", detail: "cùng dấu ở 1/3/5/10d", tone: "positive" },
-        { value: currentSample5.toLocaleString("vi-VN"), label: "Mẫu IC 5d", detail: `scoring ${curVer}` },
-        { value: bestIndustry?.name ?? "—", label: "Ngành dẫn đầu @5d", detail: bestIndustry ? `n=${bestIndustry.h.get(5)?.n ?? 0}` : "yêu cầu n≥30", tone: "positive" },
-        { value: worstIndustry?.name ?? "—", label: "Ngành yếu nhất @5d", detail: worstIndustry ? `n=${worstIndustry.h.get(5)?.n ?? 0}` : "yêu cầu n≥30", tone: worstIndustry ? "negative" : "default" },
-      ]} />
+      <section className="card mb-4 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-3 py-2">
+          <h2 className="text-sm font-semibold">Chất lượng IC theo thời gian nắm giữ</h2>
+          <span className="text-[10px] text-[var(--color-muted)]">3 / 5 / 10 phiên · scoring {curVer}</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px] text-xs">
+            <thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]">
+              <tr>
+                <th className="px-3 py-2 text-left">Horizon</th>
+                <th className="px-3 py-2 text-left">Factor tốt nhất</th>
+                <th className="px-3 py-2 text-left">Factor yếu nhất</th>
+                <th className="px-3 py-2 text-right">Factor IC dương</th>
+                <th className="px-3 py-2 text-right">Cỡ mẫu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {qualityByHorizon.map(({ horizon, best, worst, positive, available, sample }) => {
+                const bestIc = best?.ic == null ? null : Number(best.ic);
+                const worstIc = worst?.ic == null ? null : Number(worst.ic);
+                const bestColor = icCell(bestIc);
+                const worstColor = icCell(worstIc);
+                return (
+                  <tr key={horizon} className="border-t border-[var(--color-border)]">
+                    <td className="px-3 py-2 font-mono font-semibold">{horizon}d</td>
+                    <td className="px-3 py-2" style={{ backgroundColor: bestColor.bg, color: bestColor.fg }}>
+                      <span className="font-medium">{best ? FACTOR_INFO[best.factor]?.label ?? best.factor : "—"}</span>
+                      <span className="tabular ml-2 text-[11px]">{bestIc == null ? "—" : `${bestIc >= 0 ? "+" : ""}${bestIc.toFixed(3)}`}</span>
+                    </td>
+                    <td className="px-3 py-2" style={{ backgroundColor: worstColor.bg, color: worstColor.fg }}>
+                      <span className="font-medium">{worst ? FACTOR_INFO[worst.factor]?.label ?? worst.factor : "—"}</span>
+                      <span className="tabular ml-2 text-[11px]">{worstIc == null ? "—" : `${worstIc >= 0 ? "+" : ""}${worstIc.toFixed(3)}`}</span>
+                    </td>
+                    <td className="tabular px-3 py-2 text-right">{positive}/{available || "—"}</td>
+                    <td className="tabular px-3 py-2 text-right">{sample ? sample.toLocaleString("vi-VN") : "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p className="border-t border-[var(--color-border)] px-3 py-2 text-[10px] text-[var(--color-muted)]">
+          Khung 1 phiên được ẩn khỏi phần đánh giá chất lượng để giảm nhiễu rất ngắn hạn; dữ liệu gốc không bị xóa.
+        </p>
+      </section>
 
       <section className="card mb-4 p-3">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -390,7 +429,7 @@ export default async function ICPage() {
               <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">IC</td><td className="px-3 py-2 text-[var(--color-muted)]">Tương quan hạng Spearman giữa điểm nhân tố khi phát tín hiệu và lợi nhuận thực tế sau N phiên.</td></tr>
               <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Độ mạnh |IC|</td><td className="px-3 py-2 text-[var(--color-muted)]">Dưới 0,02: gần như không dự báo; 0,02–0,05: có tín hiệu; 0,05–0,10: tốt; trên 0,10: rất mạnh và cần kiểm tra cỡ mẫu.</td></tr>
               <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Dấu và màu</td><td className="px-3 py-2 text-[var(--color-muted)]"><span className="font-semibold text-[var(--color-buy)]">Dương, màu xanh</span>: dự báo thuận. <span className="font-semibold text-[var(--color-sell)]">Âm, màu đỏ</span>: dự báo nghịch. Màu đậm hơn nghĩa là |IC| lớn hơn.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">1d / 3d / 5d / 10d</td><td className="px-3 py-2 text-[var(--color-muted)]">Lợi nhuận được đo sau 1, 3, 5 hoặc 10 phiên để phân biệt khả năng dự báo ngắn và dài hạn.</td></tr>
+              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">3d / 5d / 10d</td><td className="px-3 py-2 text-[var(--color-muted)]">Lợi nhuận được đo sau 3, 5 hoặc 10 phiên để phân biệt khả năng dự báo ngắn và dài hạn. Khung 1 phiên không dùng trong phần so sánh chất lượng vì dễ nhiễu.</td></tr>
               <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Cỡ mẫu n</td><td className="px-3 py-2 text-[var(--color-muted)]">n nhỏ làm IC dễ nhiễu. Ưu tiên kết quả có n lớn và ổn định qua nhiều khung phiên.</td></tr>
               <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Scoring version</td><td className="px-3 py-2 text-[var(--color-muted)]">Mỗi version được forward-validation riêng. Khi đổi version, cần tích lũy outcomes mới trước khi kết luận.</td></tr>
               <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Nguồn số liệu</td><td className="px-3 py-2 text-[var(--color-muted)]">IC chính thức do evaluator Python tính trên dữ liệu tương lai thực, không phải backtest.</td></tr>

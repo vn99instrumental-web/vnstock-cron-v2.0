@@ -471,17 +471,30 @@ export function BuyBoard({
   const exp = sel ? expLookup(sel.decision, (sel.breakdown ?? {}).confidence) : null;
 
 
+  const insightPanel = (
+    <details className="card group overflow-hidden">
+      <summary className="touch-target flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+        <span aria-hidden="true" className="text-[10px] text-[var(--color-muted)] transition-transform group-open:rotate-90">▶</span>
+        <span>Thống kê BUY và insight chất lượng</span>
+        <span className="ml-auto text-[11px] font-normal text-[var(--color-muted)]">{signals.length} mã · mở / đóng</span>
+      </summary>
+      <div className="border-t border-[var(--color-border)] p-2.5">
+        <InsightStrip className="mb-0" metrics={[
+          { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
+          { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },
+          { value: summary.durable, label: "Bền ≥80%", detail: "tối thiểu 5 phiên", tone: "positive" },
+          { value: summary.positiveIndustry, label: "Ngành IC thuận", detail: "IC 5d > 0,05 · n≥30", tone: "positive" },
+          { value: summary.thin, label: "Thanh khoản mỏng", detail: "dưới 10 tỷ/phiên", tone: summary.thin ? "warning" : "default" },
+          { value: summary.shortSample, label: "Mẫu độ bền ngắn", detail: "dưới 5 phiên", tone: summary.shortSample ? "warning" : "default" },
+        ]} />
+      </div>
+    </details>
+  );
+
   if (!signals.length) {
     return (
       <div className="flex flex-col gap-1.5">
-      <InsightStrip metrics={[
-        { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
-        { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },
-        { value: summary.durable, label: "Bền ≥80%", detail: "tối thiểu 5 phiên", tone: "positive" },
-        { value: summary.positiveIndustry, label: "Ngành IC thuận", detail: "IC 5d > 0,05 · n≥30", tone: "positive" },
-        { value: summary.thin, label: "Thanh khoản mỏng", detail: "dưới 10 tỷ/phiên", tone: summary.thin ? "warning" : "default" },
-        { value: summary.shortSample, label: "Mẫu độ bền ngắn", detail: "dưới 5 phiên", tone: summary.shortSample ? "warning" : "default" },
-      ]} />
+        {insightPanel}
         <div className="rounded-lg border border-dashed border-[var(--color-border)] px-6 py-12 text-center text-sm text-[var(--color-muted)]">
           Run gần nhất của {currentVersion} chưa có mã BUY/STRONG BUY.
         </div>
@@ -491,14 +504,7 @@ export function BuyBoard({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <InsightStrip metrics={[
-        { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
-        { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },
-        { value: summary.durable, label: "Bền ≥80%", detail: "tối thiểu 5 phiên", tone: "positive" },
-        { value: summary.positiveIndustry, label: "Ngành IC thuận", detail: "IC 5d > 0,05 · n≥30", tone: "positive" },
-        { value: summary.thin, label: "Thanh khoản mỏng", detail: "dưới 10 tỷ/phiên", tone: summary.thin ? "warning" : "default" },
-        { value: summary.shortSample, label: "Mẫu độ bền ngắn", detail: "dưới 5 phiên", tone: summary.shortSample ? "warning" : "default" },
-      ]} />
+      {insightPanel}
       {/* C — chỉ hiện dòng cảnh báo khi data trễ / có run mới hơn (bình thường ẩn để tiết kiệm chiều cao) */}
       {(fresh?.stale || runStale) ? (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md border border-[var(--color-sell)]/40 bg-[var(--color-surface)] px-2.5 py-1 text-[11px] text-[var(--color-sell)]">
