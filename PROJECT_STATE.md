@@ -99,7 +99,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 - Tab Mua gom toàn bộ thống kê BUY và insight chất lượng vào một khối mở/đóng dùng chung cho cả trạng thái có và không có tín hiệu; khối mặc định đóng khi tải trang.
 - Tab IC bỏ horizon 1 phiên khỏi giao diện đánh giá và so sánh; các bảng IC, cỡ mẫu và ma trận factor × version tập trung vào 3, 5 và 10 phiên. Dữ liệu 1 phiên trong nguồn không bị xóa.
-- Phần chất lượng IC đầu trang được thay bằng bảng đối chiếu 3/5/10 phiên gồm factor tốt nhất, factor yếu nhất, số factor IC dương và cỡ mẫu của scoring hiện tại.
+- Khối tóm tắt “Chất lượng IC theo thời gian nắm giữ” đã được gỡ theo yêu cầu; tab IC bắt đầu bằng bảng so sánh factor × scoring version, còn các bảng IC và cỡ mẫu 3/5/10 phiên bên dưới được giữ nguyên.
 - Xác minh local: ESLint, TypeScript và Next.js production build PASS. Visual QA sau đăng nhập vẫn cần session owner; code đã được rà cho trạng thái rỗng, desktop/mobile và bảng cuộn ngang.
 
 ## Điều khiển lớp chart Mua 2026-10-14

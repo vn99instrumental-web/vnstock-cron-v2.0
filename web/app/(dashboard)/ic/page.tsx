@@ -246,21 +246,6 @@ export default async function ICPage() {
     return { version, byHorizon };
   });
 
-  const currentOfficial = rows.filter((row) => row.config_version === curVer);
-  const currentSamples = sampleByVersion.find((item) => item.version === curVer)?.byHorizon;
-  const qualityByHorizon = HORIZONS.map((horizon) => {
-    const ranked = currentOfficial
-      .filter((row) => row.horizon === horizon && row.ic != null)
-      .sort((a, b) => Number(b.ic) - Number(a.ic));
-    return {
-      horizon,
-      best: ranked[0] ?? null,
-      worst: ranked[ranked.length - 1] ?? null,
-      positive: ranked.filter((row) => Number(row.ic) > 0).length,
-      available: ranked.length,
-      sample: currentSamples?.get(horizon) ?? 0,
-    };
-  });
 
   return (
     <>
@@ -268,52 +253,6 @@ export default async function ICPage() {
         title="Chất lượng nhân tố (IC)"
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
-
-      <section className="card mb-4 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-3 py-2">
-          <h2 className="text-sm font-semibold">Chất lượng IC theo thời gian nắm giữ</h2>
-          <span className="text-[10px] text-[var(--color-muted)]">3 / 5 / 10 phiên · scoring {curVer}</span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[680px] text-xs">
-            <thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]">
-              <tr>
-                <th className="px-3 py-2 text-left">Horizon</th>
-                <th className="px-3 py-2 text-left">Factor tốt nhất</th>
-                <th className="px-3 py-2 text-left">Factor yếu nhất</th>
-                <th className="px-3 py-2 text-right">Factor IC dương</th>
-                <th className="px-3 py-2 text-right">Cỡ mẫu</th>
-              </tr>
-            </thead>
-            <tbody>
-              {qualityByHorizon.map(({ horizon, best, worst, positive, available, sample }) => {
-                const bestIc = best?.ic == null ? null : Number(best.ic);
-                const worstIc = worst?.ic == null ? null : Number(worst.ic);
-                const bestColor = icCell(bestIc);
-                const worstColor = icCell(worstIc);
-                return (
-                  <tr key={horizon} className="border-t border-[var(--color-border)]">
-                    <td className="px-3 py-2 font-mono font-semibold">{horizon}d</td>
-                    <td className="px-3 py-2" style={{ backgroundColor: bestColor.bg, color: bestColor.fg }}>
-                      <span className="font-medium">{best ? FACTOR_INFO[best.factor]?.label ?? best.factor : "—"}</span>
-                      <span className="tabular ml-2 text-[11px]">{bestIc == null ? "—" : `${bestIc >= 0 ? "+" : ""}${bestIc.toFixed(3)}`}</span>
-                    </td>
-                    <td className="px-3 py-2" style={{ backgroundColor: worstColor.bg, color: worstColor.fg }}>
-                      <span className="font-medium">{worst ? FACTOR_INFO[worst.factor]?.label ?? worst.factor : "—"}</span>
-                      <span className="tabular ml-2 text-[11px]">{worstIc == null ? "—" : `${worstIc >= 0 ? "+" : ""}${worstIc.toFixed(3)}`}</span>
-                    </td>
-                    <td className="tabular px-3 py-2 text-right">{positive}/{available || "—"}</td>
-                    <td className="tabular px-3 py-2 text-right">{sample ? sample.toLocaleString("vi-VN") : "—"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <p className="border-t border-[var(--color-border)] px-3 py-2 text-[10px] text-[var(--color-muted)]">
-          Khung 1 phiên được ẩn khỏi phần đánh giá chất lượng để giảm nhiễu rất ngắn hạn; dữ liệu gốc không bị xóa.
-        </p>
-      </section>
 
       <section className="card mb-4 p-3">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
