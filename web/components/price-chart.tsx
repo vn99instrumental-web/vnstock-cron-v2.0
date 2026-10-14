@@ -48,11 +48,24 @@ export function PriceChart({
   const [view, setView] = useState({ start: 0, count: n });
   const simpleLayers = { ema20: false, ema50: true, ema200: true, stLine: false, stBg: false, bb: false, pct: true, entry: true, zones: false };
   const advancedLayers = { ema20: true, ema50: true, ema200: true, stLine: true, stBg: true, bb: true, pct: true, entry: true, zones: false };
-  const [mode, setMode] = useState<"simple" | "advanced">("simple");
+  const [mode, setMode] = useState<"simple" | "advanced" | "custom">("simple");
   const [show, setShow] = useState(simpleLayers);
+  const layerOptions = [
+    { k: "ema20", lb: "EMA20" }, { k: "ema50", lb: "EMA50" }, { k: "ema200", lb: "EMA200" },
+    { k: "stLine", lb: "Supertrend" }, { k: "stBg", lb: "Nền Supertrend" },
+    { k: "bb", lb: "Bollinger" }, { k: "pct", lb: "±3/6%" }, { k: "entry", lb: "Entry" },
+    { k: "zones", lb: "Vùng lệch Bollinger" },
+  ] as const;
+  const allLayersSelected = layerOptions.every(({ k }) => show[k]);
   const setChartMode = (next: "simple" | "advanced") => {
     setMode(next);
     setShow(next === "simple" ? simpleLayers : advancedLayers);
+  };
+  const setAllLayers = (checked: boolean) => {
+    setMode("custom");
+    setShow((current) => Object.fromEntries(
+      Object.keys(current).map((key) => [key, checked]),
+    ) as typeof current);
   };
   const [hover, setHover] = useState<number | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number; w: number; h: number } | null>(null); // vị trí con trỏ (px trong svg)
@@ -514,9 +527,20 @@ export function PriceChart({
         );
       })()}
 
-      <div className="mt-2 inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[11px]">
-        <button onClick={() => setChartMode("simple")} aria-pressed={mode === "simple"} className={`touch-target rounded px-3 py-1.5 font-medium ${mode === "simple" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Đơn giản</button>
-        <button onClick={() => setChartMode("advanced")} aria-pressed={mode === "advanced"} className={`touch-target rounded px-3 py-1.5 font-medium ${mode === "advanced" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Nâng cao</button>
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+        <div className="inline-flex rounded-md border border-[var(--color-border)] p-0.5">
+          <button onClick={() => setChartMode("simple")} aria-pressed={mode === "simple"} className={`touch-target rounded px-3 py-1.5 font-medium ${mode === "simple" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Đơn giản</button>
+          <button onClick={() => setChartMode("advanced")} aria-pressed={mode === "advanced"} className={`touch-target rounded px-3 py-1.5 font-medium ${mode === "advanced" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Nâng cao</button>
+        </div>
+        <label className="touch-target flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1 font-semibold text-[var(--color-ink)]">
+          <input
+            type="checkbox"
+            checked={allLayersSelected}
+            onChange={(event) => setAllLayers(event.target.checked)}
+            className="h-3.5 w-3.5"
+          />
+          Chọn tất cả
+        </label>
       </div>
       {/* Bật/tắt chỉ báo — multi-select checkbox (collapse cho gọn) */}
       <details className="mt-1.5 text-[11px]">
@@ -524,15 +548,19 @@ export function PriceChart({
           ⚙ Hiện/ẩn chỉ báo
         </summary>
         <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
-          {([
-            { k: "ema20", lb: "EMA20" }, { k: "ema50", lb: "EMA50" }, { k: "ema200", lb: "EMA200" },
-            { k: "stLine", lb: "Supertrend" }, { k: "stBg", lb: "Nền Supertrend" },
-            { k: "bb", lb: "Bollinger" }, { k: "pct", lb: "±3/6%" }, { k: "entry", lb: "Entry" },
-            { k: "zones", lb: "Vùng lệch Bollinger" },
-          ] as { k: keyof typeof show; lb: string }[]).map((o) => (
-            <label key={o.k} className="flex cursor-pointer items-center gap-1">
-              <input type="checkbox" checked={show[o.k]} onChange={(e) => setShow((s) => ({ ...s, [o.k]: e.target.checked }))} className="h-3.5 w-3.5" />
-              {o.lb}
+
+          {layerOptions.map((option) => (
+            <label key={option.k} className="flex cursor-pointer items-center gap-1">
+              <input
+                type="checkbox"
+                checked={show[option.k]}
+                onChange={(event) => {
+                  setMode("custom");
+                  setShow((current) => ({ ...current, [option.k]: event.target.checked }));
+                }}
+                className="h-3.5 w-3.5"
+              />
+              {option.lb}
             </label>
           ))}
         </div>

@@ -101,3 +101,8 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Tab IC bỏ horizon 1 phiên khỏi giao diện đánh giá và so sánh; các bảng IC, cỡ mẫu và ma trận factor × version tập trung vào 3, 5 và 10 phiên. Dữ liệu 1 phiên trong nguồn không bị xóa.
 - Phần chất lượng IC đầu trang được thay bằng bảng đối chiếu 3/5/10 phiên gồm factor tốt nhất, factor yếu nhất, số factor IC dương và cỡ mẫu của scoring hiện tại.
 - Xác minh local: ESLint, TypeScript và Next.js production build PASS. Visual QA sau đăng nhập vẫn cần session owner; code đã được rà cho trạng thái rỗng, desktop/mobile và bảng cuộn ngang.
+
+## Điều khiển lớp chart Mua 2026-10-14
+
+- Chart tab Mua có checkbox Chọn tất cả hiển thị trực tiếp dưới chart: bật toàn bộ 9 lớp chỉ báo hoặc tắt toàn bộ; thay đổi từng lớp đưa preset về trạng thái tùy chỉnh.
+- Xác minh local: ESLint, TypeScript và Next.js production build PASS. Visual QA tương tác sau đăng nhập chưa chạy vì không có session owner.
