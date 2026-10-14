@@ -254,24 +254,31 @@ export default async function ICPage() {
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
 
-      <section className="card mb-4 p-3">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold">So sánh factor × scoring version</h2>
-          <span className="text-[10px] text-[var(--color-muted)]">Chỉ hiển thị ô đủ n≥30 · màu đậm hơn = |IC| lớn hơn</span>
+      <details className="card group mb-4 overflow-hidden">
+        <summary className="touch-target flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
+          <span aria-hidden="true" className="text-[10px] text-[var(--color-muted)] transition-transform group-open:rotate-90">▶</span>
+          <span className="text-sm font-semibold">So sánh factor × scoring version</span>
+          <span className="ml-auto hidden text-[10px] text-[var(--color-muted)] sm:inline">n≥30 · màu đậm hơn = |IC| lớn hơn</span>
+        </summary>
+        <div className="border-t border-[var(--color-border)] p-3">
+          <FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} />
         </div>
-        <FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} />
-      </section>
+      </details>
       {coverageRows.length ? (
-        <div className="card mb-4 overflow-x-auto">
-          <div className="border-b border-[var(--color-border)] px-3 py-2">
-            <h2 className="text-xs font-semibold">Phạm vi dữ liệu dùng khi đối chiếu version</h2>
-            <p className="text-[10px] text-[var(--color-muted)]">Không đọc IC của hai version như tương đương nếu khoảng thời gian hoặc số outcome khác nhau.</p>
+        <details className="card group mb-4 overflow-hidden">
+          <summary className="touch-target flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
+            <span aria-hidden="true" className="text-[10px] text-[var(--color-muted)] transition-transform group-open:rotate-90">▶</span>
+            <span className="text-xs font-semibold sm:text-sm">Phạm vi dữ liệu dùng khi đối chiếu version</span>
+            <span className="ml-auto hidden text-[10px] text-[var(--color-muted)] md:inline">So sánh khoảng tín hiệu và outcome</span>
+          </summary>
+          <div className="overflow-x-auto border-t border-[var(--color-border)]">
+            <p className="px-3 py-2 text-[10px] text-[var(--color-muted)]">Không đọc IC của hai version như tương đương nếu khoảng thời gian hoặc số outcome khác nhau.</p>
+            <table className="w-full min-w-[680px] text-[11px]">
+              <thead className="text-[var(--color-muted)]"><tr><th className="px-3 py-2 text-left">Version</th><th className="px-3 py-2 text-left">Khoảng tín hiệu</th><th className="px-3 py-2 text-right">Ngày</th><th className="px-3 py-2 text-right">Dòng tín hiệu</th><th className="px-3 py-2 text-left">Khoảng outcome</th><th className="px-3 py-2 text-right">Outcome</th></tr></thead>
+              <tbody>{REVIEW_VERSIONS.map((version) => coverageRows.find((row) => row.scoring_version === version)).filter((row): row is NonNullable<typeof row> => !!row).map((row) => <tr key={row.scoring_version} className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-mono font-semibold">{row.scoring_version}</td><td className="px-3 py-2 tabular">{row.signal_date_min ?? "—"} → {row.signal_date_max ?? "—"}</td><td className="px-3 py-2 text-right tabular">{row.signal_days.toLocaleString("vi-VN")}</td><td className="px-3 py-2 text-right tabular">{Number(row.signal_rows).toLocaleString("vi-VN")}</td><td className="px-3 py-2 tabular">{row.outcome_date_min ?? "—"} → {row.outcome_date_max ?? "—"}</td><td className="px-3 py-2 text-right tabular">{Number(row.outcome_rows).toLocaleString("vi-VN")}</td></tr>)}</tbody>
+            </table>
           </div>
-          <table className="w-full min-w-[680px] text-[11px]">
-            <thead className="text-[var(--color-muted)]"><tr><th className="px-3 py-2 text-left">Version</th><th className="px-3 py-2 text-left">Khoảng tín hiệu</th><th className="px-3 py-2 text-right">Ngày</th><th className="px-3 py-2 text-right">Dòng tín hiệu</th><th className="px-3 py-2 text-left">Khoảng outcome</th><th className="px-3 py-2 text-right">Outcome</th></tr></thead>
-            <tbody>{REVIEW_VERSIONS.map((version) => coverageRows.find((row) => row.scoring_version === version)).filter((row): row is NonNullable<typeof row> => !!row).map((row) => <tr key={row.scoring_version} className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-mono font-semibold">{row.scoring_version}</td><td className="px-3 py-2 tabular">{row.signal_date_min ?? "—"} → {row.signal_date_max ?? "—"}</td><td className="px-3 py-2 text-right tabular">{row.signal_days.toLocaleString("vi-VN")}</td><td className="px-3 py-2 text-right tabular">{Number(row.signal_rows).toLocaleString("vi-VN")}</td><td className="px-3 py-2 tabular">{row.outcome_date_min ?? "—"} → {row.outcome_date_max ?? "—"}</td><td className="px-3 py-2 text-right tabular">{Number(row.outcome_rows).toLocaleString("vi-VN")}</td></tr>)}</tbody>
-          </table>
-        </div>
+        </details>
       ) : null}
       {curVer ? (
         <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
