@@ -86,3 +86,5 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Migration `0031_dashboard_insight_snapshots.sql` đã áp dụng production. Lần refresh kiểm chứng: 5.936 diagnostics, 136 IC-history rows và 6 version summaries.
 - Quyền đã kiểm: anon/authenticated chỉ SELECT snapshot; chỉ service role được EXECUTE hàm refresh.
 - Kiểm tra local: ESLint, TypeScript, Python compile, 12 workflow YAML và Next.js production build đều PASS.
+
+- PASS — commit ứng dụng `dafc5cc9` đã push lên `main`; GitHub commit status xác nhận Vercel deployment `3YMyt4GiRX6roVRCpiDLQSj43X7U` thành công.

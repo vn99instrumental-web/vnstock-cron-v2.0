@@ -127,6 +127,6 @@
 | E8.3 | So sánh công bằng version | — | Phân tích có common window; IC có coverage và ma trận version | **DONE** | E8.1 |
 | E8.4 | Snapshot phép tính nặng | security-review | Migration 0031 + RPC service-role-only + daily refresh trước revalidate | **DONE** | E8.3 |
 | E8.5 | Kiểm tra chất lượng | app-test, visual-qa, security-review | ESLint, TypeScript, build, workflow parse và review quyền đạt | **DONE** | E8.1-4 |
-| E8.6 | Deploy production | deployments-cicd | Commit main, Git push và Vercel READY | **DOING** | E8.5 |
+| E8.6 | Deploy production | deployments-cicd | Commit main, Git push và Vercel READY | **DONE** | E8.5 |
 
 Mốc 2026-10-14: migration production đã refresh 5.936 dòng diagnostics, 136 dòng IC history và 6 version coverage.
