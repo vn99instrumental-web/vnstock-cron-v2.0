@@ -96,3 +96,11 @@ E0 Foundation (docs)
 | M4 Config loop | Promote server-only an toàn | **Hỏi duyệt** mở E5 |
 | M5 Scorer dynamic | scoring_v4 fallback-safe, shadow chạy | Đủ 30 phiên → promote thật |
 | M6 IC | v4_ic_metrics + trang IC | v2.0 GA |
+
+## 6. Phase 6 — Dashboard insight & serving performance *(hoàn tất 2026-10-14)*
+
+- **Epic:** E8.
+- **Ra được:** dải insight theo trang, ma trận trạng thái Hôm nay, outcome trong Lịch sử, calibration/coverage ở Phân tích và IC.
+- **Serving:** workflow daily precompute diagnostics, lịch sử IC và coverage version trước khi invalidate cache.
+- **UX:** giữ header hiện tại; chart Mua mặc định đơn giản và có chế độ nâng cao; target tương tác mobile tối thiểu 44px.
+- **Cổng ra:** lint + typecheck + production build + security review + visual QA.

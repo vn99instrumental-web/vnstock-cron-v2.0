@@ -46,10 +46,14 @@ export function PriceChart({
   const n = candles.length;
   const wrapRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ start: 0, count: n });
-  const [show, setShow] = useState({
-    ema20: true, ema50: true, ema200: true, stLine: true, stBg: true,
-    bb: true, pct: true, entry: true, zones: false,
-  });
+  const simpleLayers = { ema20: false, ema50: true, ema200: true, stLine: false, stBg: false, bb: false, pct: true, entry: true, zones: false };
+  const advancedLayers = { ema20: true, ema50: true, ema200: true, stLine: true, stBg: true, bb: true, pct: true, entry: true, zones: false };
+  const [mode, setMode] = useState<"simple" | "advanced">("simple");
+  const [show, setShow] = useState(simpleLayers);
+  const setChartMode = (next: "simple" | "advanced") => {
+    setMode(next);
+    setShow(next === "simple" ? simpleLayers : advancedLayers);
+  };
   const [hover, setHover] = useState<number | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number; w: number; h: number } | null>(null); // vị trí con trỏ (px trong svg)
   const drag = useRef<{ active: boolean } | null>(null);
@@ -297,11 +301,11 @@ export function PriceChart({
   return (
     <div ref={wrapRef} className="relative w-full overflow-hidden">
       <svg
-        viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá"
+        viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chart giá" className="h-[240px] w-full sm:h-auto"
         style={{ cursor: "crosshair", touchAction: "pan-y" }}
         onPointerMove={onMove}
         onPointerLeave={() => { setHover(null); setPos(null); drag.current = null; }}
-        onPointerDown={(e) => { if (e.pointerType !== "touch") drag.current = { active: true }; }}
+        onPointerDown={(e) => { onMove(e); if (e.pointerType !== "touch") drag.current = { active: true }; }}
         onPointerUp={() => { drag.current = null; }}
       >
         {yTicks.map((t, k) => (
@@ -468,9 +472,9 @@ export function PriceChart({
       {/* Zoom −/+ (chạm được) — góc trên trái */}
       <div className="absolute left-1.5 top-1.5 flex gap-1">
         <button onClick={() => zoomBy(1.3)} aria-label="Thu nhỏ"
-          className="h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">−</button>
+          className="touch-target h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">−</button>
         <button onClick={() => zoomBy(0.75)} aria-label="Phóng to"
-          className="h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">+</button>
+          className="touch-target h-7 w-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]/95 text-sm font-semibold text-[var(--color-muted)] active:bg-black/10 dark:active:bg-white/10">+</button>
       </div>
 
       {/* Vị trí giá so với EMA/Supertrend — nhận diện xu hướng nhanh */}
@@ -510,6 +514,10 @@ export function PriceChart({
         );
       })()}
 
+      <div className="mt-2 inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[11px]">
+        <button onClick={() => setChartMode("simple")} aria-pressed={mode === "simple"} className={`touch-target rounded px-3 py-1.5 font-medium ${mode === "simple" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Đơn giản</button>
+        <button onClick={() => setChartMode("advanced")} aria-pressed={mode === "advanced"} className={`touch-target rounded px-3 py-1.5 font-medium ${mode === "advanced" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Nâng cao</button>
+      </div>
       {/* Bật/tắt chỉ báo — multi-select checkbox (collapse cho gọn) */}
       <details className="mt-1.5 text-[11px]">
         <summary className="inline-flex min-h-[26px] cursor-pointer select-none items-center rounded-md border border-[var(--color-border)] px-2 py-0.5 text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5">
@@ -520,7 +528,7 @@ export function PriceChart({
             { k: "ema20", lb: "EMA20" }, { k: "ema50", lb: "EMA50" }, { k: "ema200", lb: "EMA200" },
             { k: "stLine", lb: "Supertrend" }, { k: "stBg", lb: "Nền Supertrend" },
             { k: "bb", lb: "Bollinger" }, { k: "pct", lb: "±3/6%" }, { k: "entry", lb: "Entry" },
-            { k: "zones", lb: "Zone mua/bán" },
+            { k: "zones", lb: "Vùng lệch Bollinger" },
           ] as { k: keyof typeof show; lb: string }[]).map((o) => (
             <label key={o.k} className="flex cursor-pointer items-center gap-1">
               <input type="checkbox" checked={show[o.k]} onChange={(e) => setShow((s) => ({ ...s, [o.k]: e.target.checked }))} className="h-3.5 w-3.5" />
@@ -546,7 +554,7 @@ export function PriceChart({
           const active = o.k >= n ? count >= n : count === Math.min(o.k, n) && start === Math.max(0, n - o.k);
           return (
             <button key={o.lb} onClick={() => (o.k >= n ? showAll() : showRecent(o.k))}
-              className={`min-h-[28px] rounded-md border px-2.5 py-0.5 text-[11px] font-medium ${active ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"}`}>
+              className={`touch-target min-h-[28px] rounded-md border px-2.5 py-0.5 text-[11px] font-medium ${active ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)] active:bg-black/5 dark:active:bg-white/5"}`}>
               {o.lb}
             </button>
           );

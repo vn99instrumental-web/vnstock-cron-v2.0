@@ -166,3 +166,16 @@ Sau đó vào repo GitHub → file `config/scoring/active.json` sẽ có nội d
 - **Vào /config bị đá về trang đăng nhập** → chưa tạo user owner (B.4), hoặc email đăng nhập khác `NEXT_PUBLIC_OWNER_EMAIL`.
 - **Promote báo "Server chưa cấu hình…"** → thiếu `GITHUB_TOKEN` hoặc `SUPABASE_SERVICE_ROLE_KEY` trong Vercel (B.2) → thêm rồi **Redeploy**.
 - **Bảng vẫn 0 rows sau khi merge** → chưa tới giờ pipeline chạy; bấm chạy tay ở tab **Actions** (A.3), hoặc kiểm secret `SUPABASE_SERVICE_ROLE_KEY` gõ có đúng tên không.
+
+## Thứ tự flow daily hiện tại (n8n trigger)
+
+Chỉ cần trigger workflow **Sync Daily Data to Supabase** (`sync_data_daily.yml`) sau khi dữ liệu ngày đã chốt. Workflow chạy tuần tự:
+
+1. cập nhật OHLC 45 ngày;
+2. sync ledger gần đây vào Supabase;
+3. export IC tổng;
+4. export IC theo ngành;
+5. refresh dashboard snapshots (`refresh_dashboard_snapshots.py`);
+6. invalidate cache Vercel.
+
+Không cần đặt `schedule:` trong YAML vì n8n là bộ điều phối. `sync_supabase.yml` chỉ dùng cho backfill/full resync, không cần chạy hằng ngày cùng `sync_data_daily.yml`.

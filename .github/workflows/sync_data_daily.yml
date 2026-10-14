@@ -75,6 +75,9 @@ jobs:
       - name: Refresh IC industry snapshot
         run: ${{ steps.python.outputs.python }} scripts/export_ic_industry_to_supabase.py
 
+      - name: Refresh dashboard serving snapshots
+        run: ${{ steps.python.outputs.python }} scripts/refresh_dashboard_snapshots.py
+
       - name: Invalidate Vercel dashboard cache
         continue-on-error: true
         env:

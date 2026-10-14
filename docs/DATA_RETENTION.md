@@ -54,3 +54,11 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 - Dashboard dùng cache server 5 phút cho các scoring version đang review.
 - Sau khi workflow sync hoàn tất, workflow gọi endpoint revalidation để xóa cache ngay.
 - Revalidation cần cùng một giá trị secret ở Vercel (`REVALIDATE_SECRET`) và GitHub Actions (`DASHBOARD_REVALIDATE_SECRET`). Nếu chưa cấu hình, TTL 5 phút là cơ chế dự phòng.
+
+## Snapshot phục vụ dashboard
+
+- `v4_analysis_diagnostics_snapshot`: ghi đè toàn bộ sau daily sync; không tích lũy lịch sử.
+- `v4_dashboard_version_summary`: ghi đè theo version; không tích lũy lịch sử.
+- `v4_ic_daily_snapshot`: một dòng cho mỗi ngày × version × factor × horizon, giữ tối đa 400 ngày.
+- Snapshot không thay ledger hoặc các bảng nguồn. Nếu refresh lỗi, dashboard vẫn có dữ liệu nguồn/cached trước đó nhưng phần chẩn đoán có thể cũ.
+- Chỉ service role được gọi `refresh_v4_dashboard_snapshots()`; anon/authenticated chỉ có quyền đọc các bảng snapshot.

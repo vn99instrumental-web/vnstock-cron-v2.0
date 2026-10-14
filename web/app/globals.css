@@ -84,6 +84,20 @@ a, button, [role="button"] { transition: background-color .15s ease, color .15s 
   font-feature-settings: "tnum";
 }
 
+.insight-strip {
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+}
+
+/* Control quan trọng phải đủ lớn để dùng bằng ngón tay; desktop vẫn giữ mật độ cao. */
+@media (max-width: 767px) and (hover: none) {
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .insight-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 /* Chuyển trang mượt: fade + trượt nhẹ (template.tsx re-mount mỗi lần điều hướng) */
 @keyframes page-fade-in {
   from { opacity: 0; transform: translateY(4px); }

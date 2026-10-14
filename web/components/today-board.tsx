@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import { DecisionBadge } from "@/components/ui";
+import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
 import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
@@ -192,6 +192,21 @@ export function TodayBoard({ signals, currentVersion, versionDates }: { signals:
   const primary = displayed.filter((g) => isBuy(g.latest.decision));
   const dayBuy = displayed.filter((g) => !isBuy(g.latest.decision) && g.nBuy > 0);
   const rest = displayed.filter((g) => g.nBuy === 0);
+  const transitions = useMemo(() => {
+    let newBuy = 0, heldBuy = 0, lostBuy = 0;
+    for (const group of groups) {
+      const previous = group.snaps.length > 1 ? group.snaps[group.snaps.length - 2] : null;
+      if (isBuy(group.latest.decision)) {
+        if (previous && isBuy(previous.decision)) heldBuy++;
+        else newBuy++;
+      } else if (group.snaps.slice(0, -1).some((snap) => isBuy(snap.decision))) lostBuy++;
+    }
+    return { current: groups.filter((group) => isBuy(group.latest.decision)).length, newBuy, heldBuy, lostBuy };
+  }, [groups]);
+  const heatmapGroups = useMemo(
+    () => [...groups].sort((a, b) => (b.scoreLast ?? -999) - (a.scoreLast ?? -999)).slice(0, 30),
+    [groups],
+  );
 
   const SORT_OPTS: { key: SortKey; label: string }[] = [
     { key: "score", label: "Score ↓" },
@@ -301,24 +316,52 @@ const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
 
   return (
     <div className="flex flex-col gap-2">
+      <InsightStrip metrics={[
+        { value: `${transitions.current}/${groups.length}`, label: "BUY hiện tại", detail: "độ rộng tập theo dõi", tone: transitions.current ? "positive" : "default" },
+        { value: transitions.newBuy, label: "Mới chuyển BUY", tone: transitions.newBuy ? "positive" : "default" },
+        { value: transitions.heldBuy, label: "Tiếp tục giữ BUY", tone: "positive" },
+        { value: transitions.lostBuy, label: "Vừa mất BUY", tone: transitions.lostBuy ? "warning" : "default" },
+        { value: totalSnaps, label: "Snapshot trong ngày", detail: versionDates[version] },
+      ]} />
+
+      <div className="card overflow-hidden p-2.5">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h3 className="text-xs font-semibold">Diễn biến mã × snapshot</h3>
+          <span className="text-[10px] text-[var(--color-muted)]">B = BUY · S = STRONG BUY · · = trạng thái khác</span>
+        </div>
+        <div className="max-h-44 space-y-1 overflow-auto pr-1">
+          {heatmapGroups.map((group) => (
+            <div key={group.symbol} className="flex min-h-6 items-center gap-1 text-[10px]">
+              <span className="w-11 shrink-0 font-semibold">{group.symbol}</span>
+              <div className="flex min-w-0 flex-1 gap-1">
+                {group.snaps.map((snap, index) => {
+                  const strong = snap.decision === "STRONG BUY";
+                  const buy = snap.decision === "BUY";
+                  return <span key={`${group.symbol}-${snap.snap_time ?? index}`} title={`${hmVN(snap.snap_time)} · ${snap.decision ?? "—"} · score ${fmtNum(snap.score)}`} aria-label={`${group.symbol} ${hmVN(snap.snap_time)} ${snap.decision ?? "khác"}`} className={`grid h-6 min-w-6 flex-1 place-items-center rounded border font-semibold ${strong ? "border-[var(--color-strong-buy)] bg-[var(--color-strong-buy)] text-white" : buy ? "border-[var(--color-buy)] bg-[var(--color-buy)]/15 text-[var(--color-buy)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{strong ? "S" : buy ? "B" : "·"}</span>;
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="card flex flex-wrap items-center gap-2 p-2">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Tìm mã…"
-          className="min-h-[30px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase sm:max-w-[200px]"
+          className="touch-target min-h-[30px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase sm:max-w-[200px]"
         />
 <label className="flex min-h-[30px] items-center gap-1.5 text-[11px] text-[var(--color-muted)]">
           Scoring
           <select
             value={version}
             onChange={(e) => router.push(`/today?version=${encodeURIComponent(e.target.value)}`)}
-            className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
+            className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
           >
             {availableVersions.map((v) => <option key={v} value={v}>{v} · {versionDates[v]}</option>)}
           </select>
         </label>
-        <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]">
+        <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]">
           {SORT_OPTS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
         </select>
         <label className="flex min-h-[30px] cursor-pointer items-center gap-1.5 text-[12px] text-[var(--color-muted)]">

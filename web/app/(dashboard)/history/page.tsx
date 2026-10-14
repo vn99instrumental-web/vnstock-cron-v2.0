@@ -4,6 +4,7 @@ import { SignalsTable, type SignalRow } from "@/components/signals-table";
 import { HistoryFilters } from "@/components/history-filters";
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyName } from "@/lib/company-names";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 50;
@@ -31,7 +32,18 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
   if (sp.decision) query = query.eq("decision", sp.decision);
 
   const { data, count, error } = await query;
-  const rows = (data ?? []) as SignalRow[];
+  const baseRows = (data ?? []) as SignalRow[];
+  const predIds = baseRows.map((row) => String((row.breakdown ?? {}).pred_id ?? "")).filter(Boolean);
+  const outcomesResponse = predIds.length
+    ? await supabase.from("v4_outcomes").select("pred_id, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct")
+        .eq("scoring_version", currentVersion).eq("lens", "trade").in("pred_id", predIds)
+    : { data: [], error: null };
+  const outcomeMap = new Map((outcomesResponse.data ?? []).map((outcome) => [String(outcome.pred_id), outcome]));
+  const rows = baseRows.map((row) => ({
+    ...row,
+    companyName: getCompanyName(row.symbol),
+    outcome: outcomeMap.get(String((row.breakdown ?? {}).pred_id ?? "")) ?? null,
+  }));
   const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const qs = (nextPage: number) => {
@@ -46,7 +58,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
     <>
       <PageHeader title="Lịch sử" desc="Tra cứu tín hiệu theo scoring version / ngày / mã / decision." />
       <HistoryFilters currentVersion={currentVersion} versions={Object.keys(versionDates)} dates={versionDates} />
-      {metadata.error || error ? <QueryErrorState hint="Không thể tải lịch sử tín hiệu từ Supabase. Bộ lọc hiện tại chưa được áp dụng." /> : rows.length ? (
+      {metadata.error || error || outcomesResponse.error ? <QueryErrorState hint="Không thể tải lịch sử tín hiệu từ Supabase. Bộ lọc hiện tại chưa được áp dụng." /> : rows.length ? (
         <>
           <SignalsTable rows={rows} showDate />
           <div className="mt-4 flex items-center justify-between text-sm text-[var(--color-muted)]">

@@ -21,6 +21,34 @@ export function Card({ children }: { children: React.ReactNode }) {
   return <div className="card p-4 sm:p-5">{children}</div>;
 }
 
+export interface InsightMetric {
+  label: string;
+  value: React.ReactNode;
+  detail?: React.ReactNode;
+  tone?: "default" | "positive" | "negative" | "warning";
+}
+
+/** Dải KPI đặt dưới header: ưu tiên khả năng quét nhanh, không biến header thành dashboard. */
+export function InsightStrip({ metrics, className = "" }: { metrics: InsightMetric[]; className?: string }) {
+  const toneClass = (tone: InsightMetric["tone"]) => {
+    if (tone === "positive") return "text-[var(--color-buy)]";
+    if (tone === "negative") return "text-[var(--color-sell)]";
+    if (tone === "warning") return "text-amber-600 dark:text-amber-400";
+    return "text-[var(--color-ink)]";
+  };
+  return (
+    <div className={`insight-strip mb-3 grid gap-1.5 ${className}`}>
+      {metrics.map((metric) => (
+        <div key={metric.label} className="card min-w-0 px-3 py-2">
+          <div className={`tabular truncate text-base font-semibold leading-tight ${toneClass(metric.tone)}`}>{metric.value}</div>
+          <div className="mt-0.5 text-[11px] font-medium text-[var(--color-muted)]">{metric.label}</div>
+          {metric.detail != null ? <div className="mt-0.5 truncate text-[10px] text-[var(--color-muted)]">{metric.detail}</div> : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Empty state — dùng khi bảng chưa có data (chờ sync). */
 export function EmptyState({
   title = "Chưa có dữ liệu",

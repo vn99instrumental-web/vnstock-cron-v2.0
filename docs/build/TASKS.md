@@ -117,3 +117,16 @@
 ## Cột mốc cập nhật
 - 2026-09-12: Khởi tạo backlog. E0.1-E0.7 DONE (push `adb5d4f`).
 - 2026-09-12 (grill vòng 2): chốt ADR-007 (auth 1 owner), ADR-008 (sync non-blocking vào workflow cũ), ADR-009 (config surface đầy đủ); sửa decision buckets đúng data. Thêm E1.8. PRD → v2.0 GRILLED.
+
+## E8 — Dashboard insight & serving layer
+
+| ID | Task | Skill | Definition of Done | Status | Dep |
+|---|---|---|---|---|---|
+| E8.1 | Summary-first cho Buy/Today/IC/Phân tích | frontend-design | Header giữ nguyên; insight ưu tiên xuất hiện ngay bên dưới | **DONE** | E3,E6,E7 |
+| E8.2 | Visual giao dịch và outcome | frontend-design | Today có transition + heatmap; History có tên công ty + ret3/ret5; Buy có độ bền/mẫu | **DONE** | E8.1 |
+| E8.3 | So sánh công bằng version | — | Phân tích có common window; IC có coverage và ma trận version | **DONE** | E8.1 |
+| E8.4 | Snapshot phép tính nặng | security-review | Migration 0031 + RPC service-role-only + daily refresh trước revalidate | **DONE** | E8.3 |
+| E8.5 | Kiểm tra chất lượng | app-test, visual-qa, security-review | ESLint, TypeScript, build, workflow parse và review quyền đạt | **DONE** | E8.1-4 |
+| E8.6 | Deploy production | deployments-cicd | Commit main, Git push và Vercel READY | **DOING** | E8.5 |
+
+Mốc 2026-10-14: migration production đã refresh 5.936 dòng diagnostics, 136 dòng IC history và 6 version coverage.

@@ -75,3 +75,14 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 - Theo dõi dung lượng Supabase hằng tháng theo `docs/DATA_RETENTION.md`; snapshot 2026-10-14 là 339 MB (~68% mốc 500 MB).
 - Tách Supabase project khi cần độc lập quota hoặc isolation với các ứng dụng khác.
+
+## Mốc dashboard insight & serving 2026-10-14
+
+- Giữ nguyên header; thêm dải insight ưu tiên cho Buy, Hôm nay, IC và Phân tích.
+- Hôm nay có thống kê chuyển trạng thái và heatmap mã × snapshot; Lịch sử có tên công ty và outcome 3/5 phiên.
+- Buy hiển thị guardrail mẫu/độ bền; chart mặc định gọn và có chế độ nâng cao.
+- Phân tích hỗ trợ cùng cửa sổ thời gian, calibration theo quintile và đọc chẩn đoán từ snapshot thay vì chạy ba view tương quan nặng trên request.
+- IC hiển thị ma trận factor × version, coverage theo version và chỉ xếp hạng ngành khi n≥30.
+- Migration `0031_dashboard_insight_snapshots.sql` đã áp dụng production. Lần refresh kiểm chứng: 5.936 diagnostics, 136 IC-history rows và 6 version summaries.
+- Quyền đã kiểm: anon/authenticated chỉ SELECT snapshot; chỉ service role được EXECUTE hàm refresh.
+- Kiểm tra local: ESLint, TypeScript, Python compile, 12 workflow YAML và Next.js production build đều PASS.

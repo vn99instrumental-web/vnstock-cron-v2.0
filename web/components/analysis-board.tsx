@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { DecisionBadge } from "@/components/ui";
+import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import { varName, GROUP_LABEL, GROUP_ORDER, CONFIDENCE_LABEL } from "@/lib/interpret";
 import { CorrHeatmap, type FactorPair } from "@/components/corr-heatmap";
@@ -15,6 +15,7 @@ export interface SignalResult {
   signal_date: string;
   snap_time: string | null;
   decision: string | null;
+  score_trade: number | string | null;
   confidence: string | null;
   t0_close: number | string | null;
   ret_1d: number | string | null;
@@ -95,8 +96,8 @@ const TARGETS: { key: TargetKey; label: string; days: keyof SignalResult }[] = [
 ];
 
 /** Thanh xếp chồng tỷ lệ TP / chưa chạm / SL. */
-function HitBar({ tp, open, sl }: { tp: number; open: number; sl: number }) {
-  const total = tp + open + sl || 1;
+function HitBar({ tp, open, sl, pending }: { tp: number; open: number; sl: number; pending: number }) {
+  const total = tp + open + sl + pending || 1;
   const seg = (n: number, color: string, label: string) =>
     n > 0 ? (
       <div style={{ width: `${(100 * n) / total}%`, background: color }} className="h-full" title={`${label}: ${n} (${((100 * n) / total).toFixed(0)}%)`} />
@@ -106,6 +107,7 @@ function HitBar({ tp, open, sl }: { tp: number; open: number; sl: number }) {
       {seg(tp, BUY, "chạm TP")}
       {seg(open, "var(--color-border)", "chưa chạm")}
       {seg(sl, SELL, "chạm SL")}
+      {seg(pending, "var(--color-muted)", "chờ đủ phiên")}
     </div>
   );
 }
@@ -178,6 +180,31 @@ export function AnalysisBoard({
     };
   }, [dailyResults, symbols]);
 
+  const performance = useMemo(() => {
+    const values = dailyResults.map((r) => num(r.ret_5d)).filter((v): v is number => v != null).sort((a, b) => a - b);
+    const mean = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+    const median = values.length ? (values[Math.floor((values.length - 1) / 2)] + values[Math.ceil((values.length - 1) / 2)]) / 2 : null;
+    const winRate = values.length ? values.filter((value) => value > 0).length / values.length * 100 : null;
+    const mfe = dailyResults.map((r) => num(r.mfe_pct)).filter((v): v is number => v != null);
+    const mae = dailyResults.map((r) => num(r.mae_pct)).filter((v): v is number => v != null);
+    const avg = (xs: number[]) => xs.length ? xs.reduce((sum, value) => sum + value, 0) / xs.length : null;
+    return { n: values.length, mean, median, winRate, mfe: avg(mfe), mae: avg(mae) };
+  }, [dailyResults]);
+
+  const calibration = useMemo(() => {
+    const source = dailyResults
+      .map((row) => ({ score: num(row.score_trade), ret: num(row.ret_5d) }))
+      .filter((row): row is { score: number; ret: number } => row.score != null && row.ret != null)
+      .sort((a, b) => a.score - b.score);
+    return Array.from({ length: 5 }, (_, index) => {
+      const from = Math.floor(index * source.length / 5);
+      const to = Math.floor((index + 1) * source.length / 5);
+      const bucketRows = source.slice(from, to);
+      const avgRet = bucketRows.length ? bucketRows.reduce((sum, row) => sum + row.ret, 0) / bucketRows.length : null;
+      const winRate = bucketRows.length ? bucketRows.filter((row) => row.ret > 0).length / bucketRows.length * 100 : null;
+      return { label: `Q${index + 1}`, n: bucketRows.length, avgRet, winRate };
+    }).filter((bucket) => bucket.n);
+  }, [dailyResults]);
   // Đếm kết quả cho target đang chọn (tổng + theo quyết định) — theo NGÀY.
   const agg = useMemo(() => {
     const tally = (rows: SignalResult[]) => {
@@ -274,21 +301,16 @@ export function AnalysisBoard({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Phạm vi dữ liệu — KPI tiles gọn, dễ quét */}
-      <div className="flex flex-wrap items-stretch gap-2">
-        {[
-          { v: meta.n, lb: "tín hiệu-ngày" },
-          { v: meta.mature, lb: "đã đủ 10 phiên" },
-          { v: meta.pending, lb: "đang chờ chín" },
-          { v: meta.nSym, lb: "mã" },
-          { v: `${meta.d0?.slice(5) ?? "?"} → ${meta.d1?.slice(5) ?? "?"}`, lb: "khoảng thời gian" },
-        ].map((t) => (
-          <div key={t.lb} className="flex min-w-[92px] flex-1 flex-col card px-3 py-1.5">
-            <span className="text-base font-semibold tabular">{t.v}</span>
-            <span className="text-[10px] text-[var(--color-muted)]">{t.lb}</span>
-          </div>
-        ))}
-      </div>
+      <InsightStrip metrics={[
+        { value: meta.n.toLocaleString("vi-VN"), label: "Tín hiệu-ngày", detail: `${meta.nSym} mã` },
+        { value: meta.mature.toLocaleString("vi-VN"), label: "Đã đủ outcome", tone: "positive" },
+        { value: meta.pending.toLocaleString("vi-VN"), label: "Đang chờ đủ phiên", tone: meta.pending ? "warning" : "default" },
+        { value: performance.winRate == null ? "—" : `${performance.winRate.toFixed(1)}%`, label: "Win 5 phiên", detail: `n=${performance.n}` },
+        { value: performance.median == null ? "—" : fmtPct(performance.median), label: "Median 5 phiên", tone: performance.median != null && performance.median >= 0 ? "positive" : "negative" },
+        { value: performance.mean == null ? "—" : fmtPct(performance.mean), label: "Trung bình 5 phiên", tone: performance.mean != null && performance.mean >= 0 ? "positive" : "negative" },
+        { value: performance.mfe == null ? "—" : fmtPct(performance.mfe), label: "MFE trung bình", tone: "positive" },
+        { value: performance.mae == null ? "—" : fmtPct(performance.mae), label: "MAE trung bình", tone: "negative", detail: `${meta.d0 ?? "?"} → ${meta.d1 ?? "?"}` },
+      ]} />
 
       {/* Cách đọc & giới hạn — thu gọn, không lấn nội dung */}
       <details className="rounded-md border border-[var(--color-border)] bg-black/[0.015] px-3 py-1.5 text-[11px] text-[var(--color-muted)] dark:bg-white/[0.03]">
@@ -343,13 +365,14 @@ export function AnalysisBoard({
                 { label: "BUY", a: agg.buy },
                 { label: "STRONG BUY", a: agg.sbuy },
               ].filter((r) => r.a.n > 0 || r.a.pending > 0).map((r) => {
-                const pct = (x: number) => (r.a.n ? Math.round((100 * x) / r.a.n) : 0);
+                const denominator = r.a.n + r.a.pending;
+                const pct = (x: number) => (denominator ? Math.round((100 * x) / denominator) : 0);
                 return (
                   <div key={r.label} className="flex items-center gap-3">
                     <span className="w-24 shrink-0 text-xs font-medium">{r.label} <span className="text-[10px] text-[var(--color-muted)]">n={r.a.n}{r.a.pending ? ` · chờ ${r.a.pending}` : ""}</span></span>
-                    <div className="flex-1"><HitBar tp={r.a.tp} open={r.a.open} sl={r.a.sl} /></div>
+                    <div className="flex-1"><HitBar tp={r.a.tp} open={r.a.open} sl={r.a.sl} pending={r.a.pending} /></div>
                     <span className="tabular w-40 shrink-0 text-right text-[11px]">
-                      <b style={{ color: BUY }}>TP {pct(r.a.tp)}%</b> · <span style={{ color: MUTED }}>chưa chạm {pct(r.a.open)}%</span> · <b style={{ color: SELL }}>SL {pct(r.a.sl)}%</b>
+                      <b style={{ color: BUY }}>TP {pct(r.a.tp)}%</b> · <span style={{ color: MUTED }}>chưa chạm {pct(r.a.open)}%</span> · <b style={{ color: SELL }}>SL {pct(r.a.sl)}%</b> · <span className="text-[var(--color-muted)]">chờ {pct(r.a.pending)}%</span>
                     </span>
                   </div>
                 );
@@ -360,6 +383,22 @@ export function AnalysisBoard({
             </p>
           </div>
 
+          <div className="card p-3">
+            <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+              <h3 className="text-sm font-semibold">Calibration điểm số → kết quả 5 phiên</h3>
+              <span className="text-[10px] text-[var(--color-muted)]">Q1 = nhóm điểm thấp · Q5 = nhóm điểm cao</span>
+            </div>
+            <div className="grid grid-cols-5 gap-1.5">
+              {calibration.map((bucket) => (
+                <div key={bucket.label} className="rounded-md border border-[var(--color-border)] px-2 py-2 text-center">
+                  <div className="text-[11px] font-semibold">{bucket.label}</div>
+                  <div className={`tabular text-sm font-semibold ${signClass(bucket.avgRet)}`}>{bucket.avgRet == null ? "—" : fmtPct(bucket.avgRet)}</div>
+                  <div className="text-[10px] text-[var(--color-muted)]">win {bucket.winRate?.toFixed(0) ?? "—"}% · n={bucket.n}</div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-[10px] text-[var(--color-muted)]">Đọc từ trái sang phải: nếu điểm có khả năng phân loại tốt, lợi nhuận/win rate thường cải thiện dần về Q5. Đây là thống kê mô tả, không thay đổi scoring.</p>
+          </div>
           {/* Tương quan chỉ báo ↔ chạm TP/SL */}
           <div className="card p-3">
             <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">

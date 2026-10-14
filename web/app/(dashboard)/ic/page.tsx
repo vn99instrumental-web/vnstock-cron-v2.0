@@ -1,4 +1,4 @@
-import { PageHeader, EmptyState } from "@/components/ui";
+import { PageHeader, EmptyState, InsightStrip } from "@/components/ui";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
@@ -139,14 +139,19 @@ function BreakdownTable({
 
 export default async function ICPage() {
   const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
-  const { data } = await supabase
-    .from("v4_ic_metrics")
-    .select("config_version, factor, horizon, ic, n, computed_at")
-    .order("config_version", { ascending: false })
-    .order("factor", { ascending: true })
-    .order("horizon", { ascending: true });
+  const [icResponse, coverageResponse] = await Promise.all([
+    supabase.from("v4_ic_metrics")
+      .select("config_version, factor, horizon, ic, n, computed_at")
+      .order("config_version", { ascending: false })
+      .order("factor", { ascending: true })
+      .order("horizon", { ascending: true }),
+    supabase.from("v4_dashboard_version_summary")
+      .select("scoring_version, signal_date_min, signal_date_max, signal_days, signal_rows, outcome_date_min, outcome_date_max, outcome_rows, latest_update")
+      .order("scoring_version", { ascending: false }),
+  ]);
 
-  const rows = (data ?? []) as ICRow[];
+  const rows = (icResponse.data ?? []) as ICRow[];
+  const coverageRows = (coverageResponse.data ?? []) as Array<{ scoring_version: string; signal_date_min: string | null; signal_date_max: string | null; signal_days: number; signal_rows: number; outcome_date_min: string | null; outcome_date_max: string | null; outcome_rows: number; latest_update: string | null }>;
   const curVer = DEFAULT_SCORING_VERSION;
   const officialVersions = REVIEW_VERSIONS.filter((version) => rows.some((row) => row.config_version === version));
   const curHasIC = rows.some((row) => row.config_version === curVer);
@@ -241,6 +246,20 @@ export default async function ICPage() {
     return { version, byHorizon };
   });
 
+  const currentOfficial = rows.filter((row) => row.config_version === curVer);
+  const horizon5 = currentOfficial.filter((row) => row.horizon === 5 && row.ic != null).sort((a, b) => Number(b.ic) - Number(a.ic));
+  const bestFactor = horizon5[0];
+  const worstFactor = horizon5[horizon5.length - 1];
+  const stablePositive = FACTOR_ORDER.filter((factor) => {
+    const values = currentOfficial.filter((row) => row.factor === factor && row.ic != null);
+    return values.length === HORIZONS.length && values.every((row) => Number(row.ic) > 0);
+  }).length;
+  const currentIndustry = industryByVersion.find((item) => item.version === curVer)?.factors
+    .find((item) => item.factor === "score_trade")?.groups.filter((group) => (group.h.get(5)?.n ?? 0) >= 30) ?? [];
+  const bestIndustry = currentIndustry[0];
+  const worstIndustry = currentIndustry[currentIndustry.length - 1];
+  const currentSample5 = sampleByVersion.find((item) => item.version === curVer)?.byHorizon.get(5) ?? 0;
+
   return (
     <>
       <PageHeader
@@ -248,6 +267,34 @@ export default async function ICPage() {
         desc="Forward rank-IC (Spearman theo ngày → trung bình). Tính bằng Python — nguồn chân lý. Xanh = dự báo thuận, đỏ = nghịch."
       />
 
+      <InsightStrip metrics={[
+        { value: bestFactor ? `${Number(bestFactor.ic) >= 0 ? "+" : ""}${Number(bestFactor.ic).toFixed(3)}` : "—", label: "Factor tốt nhất @5d", detail: bestFactor ? FACTOR_INFO[bestFactor.factor]?.label ?? bestFactor.factor : "chưa đủ dữ liệu", tone: Number(bestFactor?.ic ?? 0) >= 0 ? "positive" : "negative" },
+        { value: worstFactor ? `${Number(worstFactor.ic) >= 0 ? "+" : ""}${Number(worstFactor.ic).toFixed(3)}` : "—", label: "Factor yếu nhất @5d", detail: worstFactor ? FACTOR_INFO[worstFactor.factor]?.label ?? worstFactor.factor : "chưa đủ dữ liệu", tone: Number(worstFactor?.ic ?? 0) >= 0 ? "positive" : "negative" },
+        { value: stablePositive, label: "Factor dương ổn định", detail: "cùng dấu ở 1/3/5/10d", tone: "positive" },
+        { value: currentSample5.toLocaleString("vi-VN"), label: "Mẫu IC 5d", detail: `scoring ${curVer}` },
+        { value: bestIndustry?.name ?? "—", label: "Ngành dẫn đầu @5d", detail: bestIndustry ? `n=${bestIndustry.h.get(5)?.n ?? 0}` : "yêu cầu n≥30", tone: "positive" },
+        { value: worstIndustry?.name ?? "—", label: "Ngành yếu nhất @5d", detail: worstIndustry ? `n=${worstIndustry.h.get(5)?.n ?? 0}` : "yêu cầu n≥30", tone: worstIndustry ? "negative" : "default" },
+      ]} />
+
+      <section className="card mb-4 p-3">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold">So sánh factor × scoring version</h2>
+          <span className="text-[10px] text-[var(--color-muted)]">Chỉ hiển thị ô đủ n≥30 · màu đậm hơn = |IC| lớn hơn</span>
+        </div>
+        <FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} />
+      </section>
+      {coverageRows.length ? (
+        <div className="card mb-4 overflow-x-auto">
+          <div className="border-b border-[var(--color-border)] px-3 py-2">
+            <h2 className="text-xs font-semibold">Phạm vi dữ liệu dùng khi đối chiếu version</h2>
+            <p className="text-[10px] text-[var(--color-muted)]">Không đọc IC của hai version như tương đương nếu khoảng thời gian hoặc số outcome khác nhau.</p>
+          </div>
+          <table className="w-full min-w-[680px] text-[11px]">
+            <thead className="text-[var(--color-muted)]"><tr><th className="px-3 py-2 text-left">Version</th><th className="px-3 py-2 text-left">Khoảng tín hiệu</th><th className="px-3 py-2 text-right">Ngày</th><th className="px-3 py-2 text-right">Dòng tín hiệu</th><th className="px-3 py-2 text-left">Khoảng outcome</th><th className="px-3 py-2 text-right">Outcome</th></tr></thead>
+            <tbody>{REVIEW_VERSIONS.map((version) => coverageRows.find((row) => row.scoring_version === version)).filter((row): row is NonNullable<typeof row> => !!row).map((row) => <tr key={row.scoring_version} className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-mono font-semibold">{row.scoring_version}</td><td className="px-3 py-2 tabular">{row.signal_date_min ?? "—"} → {row.signal_date_max ?? "—"}</td><td className="px-3 py-2 text-right tabular">{row.signal_days.toLocaleString("vi-VN")}</td><td className="px-3 py-2 text-right tabular">{Number(row.signal_rows).toLocaleString("vi-VN")}</td><td className="px-3 py-2 tabular">{row.outcome_date_min ?? "—"} → {row.outcome_date_max ?? "—"}</td><td className="px-3 py-2 text-right tabular">{Number(row.outcome_rows).toLocaleString("vi-VN")}</td></tr>)}</tbody>
+          </table>
+        </div>
+      ) : null}
       {curVer ? (
         <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
           <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HIỆN TẠI</span>
@@ -316,7 +363,7 @@ export default async function ICPage() {
                           <span className="font-normal text-[var(--color-muted)]">{factorData.groups.length} ngành</span>
                         </summary>
                         <div className="mt-2">
-                          <BreakdownTable groups={factorData.groups} colLabel="Ngành" nameOf={(key) => key} minN={1} showSample />
+                          <BreakdownTable groups={factorData.groups} colLabel="Ngành" nameOf={(key) => key} minN={30} showSample />
                         </div>
                       </details>
                     );
@@ -370,7 +417,6 @@ export default async function ICPage() {
           <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Mục đích</td><td className="px-3 py-2 text-[var(--color-muted)]">Tìm nhân tố dương ổn định qua nhiều version để cân nhắc tăng trọng số; nhân tố âm dai dẳng để cân nhắc giảm hoặc đảo trọng số.</td></tr>
           <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Phạm vi</td><td className="px-3 py-2 text-[var(--color-muted)]">Ước lượng pooled trên các version có đủ mẫu; dùng để tham chiếu. Số chính thức nằm ở bảng scoring phía trên.</td></tr>
         </tbody></table></div>
-        <div className="mt-3"><FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} /></div>
       </details>
 
       <details className="card mb-4 p-3">

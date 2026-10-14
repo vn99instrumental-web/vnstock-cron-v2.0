@@ -239,3 +239,12 @@ Chi tiết field ledger thật (evidence, đọc `2026-09.jsonl`):
 - Hiến pháp: `CLAUDE.md` (golden rules, never-do, skill workflow).
 - Lộ trình: `docs/build/PLAN.md`. Backlog: `docs/build/TASKS.md`. Quyết định: `docs/build/DECISIONS.md`.
 - Migration hiện tại: `supabase/migrations/0001_init.sql` (đã apply).
+
+## 10. Bổ sung E8 — Dashboard insight & serving layer (2026-10-14)
+
+- Header hiện tại không thay đổi; mỗi tab đặt insight hành động ngay bên dưới PageHeader.
+- Today: chuyển trạng thái BUY và heatmap mã × snapshot. History: tên công ty và outcome 3/5 phiên.
+- Buy: guardrail thanh khoản/độ bền/số mẫu; chart có chế độ đơn giản và nâng cao.
+- Phân tích: tìm mã, common-window comparison, calibration quintile, diagnostics đọc từ snapshot.
+- IC: không có bộ chọn version; hiển thị toàn bộ version, số mẫu, coverage và IC ngành chỉ khi n≥30.
+- Các phép tính chẩn đoán nặng được refresh sau daily sync; Vercel chỉ đọc serving tables nhỏ. Không thay đổi công thức scoring.

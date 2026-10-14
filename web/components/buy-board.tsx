@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
 import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
-import { DecisionBadge } from "@/components/ui";
+import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import {
   factorGroupViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
@@ -43,6 +43,7 @@ export interface RobustnessRow {
   total_snaps_today: number | string | null;
   buy_snaps_today: number | string | null;
   first_buy_snap_vn: string | null;
+  consecutive_buy_days?: number | string | null;
 }
 
 type SortKey = "score" | "chg_desc" | "chg_asc" | "ff_desc" | "ff_asc" | "adtv_desc" | "persist_desc";
@@ -104,7 +105,7 @@ function PersistChip({ r }: { r: RobustnessRow | undefined }) {
       style={{ color: robColor(bd / td) }}
       title={`Giữ tín hiệu BUY ${bd}/${td} phiên gần đây. Càng nhiều phiên liên tục càng bền, ít "nháy 1 lần".`}
     >
-      bền {bd}/{td}
+      bền {bd}/{td}{td < 5 ? " · mẫu ngắn" : td >= 10 ? " · đủ mẫu" : ""}
     </span>
   );
 }
@@ -380,6 +381,22 @@ export function BuyBoard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signals, q, sortKey, hideThin, indFilter, robMap]);
 
+  const summary = useMemo(() => {
+    let strong = 0, durable = 0, shortSample = 0, thin = 0, positiveIndustry = 0;
+    for (const signal of signals) {
+      if (signal.decision === "STRONG BUY") strong++;
+      if ((adtvOf(signal) ?? 999) < 10) thin++;
+      const robustnessRow = robMap.get(signal.symbol);
+      const buyDays = Number(robustnessRow?.buy_days_15d) || 0;
+      const totalDays = Number(robustnessRow?.total_days_15d) || 0;
+      if (totalDays < 5) shortSample++;
+      if (totalDays >= 5 && buyDays / totalDays >= 0.8) durable++;
+      const industry = String((signal.breakdown ?? {}).industry ?? "— Khác");
+      const industryRow = industryIC[industry];
+      if (industryRow?.ic != null && industryRow.n >= 30 && industryRow.ic > 0.05) positiveIndustry++;
+    }
+    return { strong, durable, shortSample, thin, positiveIndustry };
+  }, [signals, robMap, industryIC]);
   // Nhóm danh sách theo ngành (giữ thứ tự sort trong mỗi ngành; ngành nhiều mã trước).
   const industryGroups = useMemo(() => {
     const m = new Map<string, BuySignal[]>();
@@ -466,7 +483,7 @@ export function BuyBoard({
         <select
           value={currentVersion}
           onChange={(e) => router.push("/buy?version=" + encodeURIComponent(e.target.value))}
-          className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
+          className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
         >
           {availableVersions.map((version) => (
             <option key={version} value={version}>{version} · {versionDates[version]}</option>
@@ -483,6 +500,14 @@ export function BuyBoard({
     return (
       <div className="flex flex-col gap-1.5">
         {versionSelector}
+      <InsightStrip metrics={[
+        { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
+        { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },
+        { value: summary.durable, label: "Bền ≥80%", detail: "tối thiểu 5 phiên", tone: "positive" },
+        { value: summary.positiveIndustry, label: "Ngành IC thuận", detail: "IC 5d > 0,05 · n≥30", tone: "positive" },
+        { value: summary.thin, label: "Thanh khoản mỏng", detail: "dưới 10 tỷ/phiên", tone: summary.thin ? "warning" : "default" },
+        { value: summary.shortSample, label: "Mẫu độ bền ngắn", detail: "dưới 5 phiên", tone: summary.shortSample ? "warning" : "default" },
+      ]} />
         <div className="rounded-lg border border-dashed border-[var(--color-border)] px-6 py-12 text-center text-sm text-[var(--color-muted)]">
           Run gần nhất của {currentVersion} chưa có mã BUY/STRONG BUY.
         </div>
@@ -493,6 +518,14 @@ export function BuyBoard({
   return (
     <div className="flex flex-col gap-1.5">
       {versionSelector}
+      <InsightStrip metrics={[
+        { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
+        { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },
+        { value: summary.durable, label: "Bền ≥80%", detail: "tối thiểu 5 phiên", tone: "positive" },
+        { value: summary.positiveIndustry, label: "Ngành IC thuận", detail: "IC 5d > 0,05 · n≥30", tone: "positive" },
+        { value: summary.thin, label: "Thanh khoản mỏng", detail: "dưới 10 tỷ/phiên", tone: summary.thin ? "warning" : "default" },
+        { value: summary.shortSample, label: "Mẫu độ bền ngắn", detail: "dưới 5 phiên", tone: summary.shortSample ? "warning" : "default" },
+      ]} />
       {/* C — chỉ hiện dòng cảnh báo khi data trễ / có run mới hơn (bình thường ẩn để tiết kiệm chiều cao) */}
       {(fresh?.stale || runStale) ? (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md border border-[var(--color-sell)]/40 bg-[var(--color-surface)] px-2.5 py-1 text-[11px] text-[var(--color-sell)]">
@@ -509,12 +542,12 @@ export function BuyBoard({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Tìm mã…"
-            className="min-h-[30px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase"
+            className="touch-target min-h-[30px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase"
           />
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]"
+            className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]"
             title="Sắp xếp"
           >
             {SORT_OPTIONS.map((o) => (
@@ -528,7 +561,7 @@ export function BuyBoard({
             <select
               value={indFilter}
               onChange={(e) => setIndFilter(e.target.value)}
-              className="min-h-[30px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]"
+              className="touch-target min-h-[30px] w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]"
               title="Lọc theo ngành"
             >
               <option value="all">Tất cả ngành ({signals.length})</option>

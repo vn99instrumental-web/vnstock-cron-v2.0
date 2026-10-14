@@ -32,3 +32,9 @@ npm run check
 ## Deploy
 
 Project được deploy từ nhánh `main` lên Vercel. `vercel.json` đặt Functions tại region Tokyo (`hnd1`) để gần Supabase hơn.
+
+## Lớp dữ liệu phục vụ
+
+- `v4_analysis_diagnostics_snapshot` thay các phép tương quan nặng trên request bằng snapshot nhỏ được tạo sau daily sync.
+- `v4_dashboard_version_summary` cung cấp coverage ngày/số dòng theo version để tránh so sánh sai cửa sổ.
+- Tab Phân tích có chế độ `Cùng cửa sổ`; tab IC hiển thị toàn bộ version và phạm vi dữ liệu, không dùng hộp chọn version.

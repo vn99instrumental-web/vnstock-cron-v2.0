@@ -142,3 +142,13 @@
 - **Nơi sửa (nguồn chân lý scoring):** `steps/v2f_step_scoring_v4.py::_W_TRADE_V4` (lever thật) + bump `SCORING_VERSION` v4.17→v4.18 (RESET forward-validation bucket). Đồng bộ `utils/v2f_registry.py::FACTOR_WEIGHTS['trade']` + `config/scoring/active.json` (hiển thị).
 - **Rủi ro (trung thực):** KHÔNG shadow → thay đổi chưa được kiểm chứng forward đi thẳng production. IC dùng để quyết là của v4.1/v4.8/v4.9, KHÔNG phải v4.17 (v4.17 chưa đủ outcome). n=400–896 (~1–2 tháng). breakout âm là do regime hồi phục hiện tại, có thể lật khi trending → chỉ hạ trọng số, KHÔNG invert. Giữ shadow đối chứng "MR-off" (score_trade_nomr).
 - **Theo dõi:** sau ~30 phiên v4.18, đọc IC score_trade — kỳ vọng về dương như v4.1 (+0.05). Nếu xấu hơn → revert (git history giữ v4.17).
+
+---
+
+## ADR-013 — Precompute diagnostics sau daily sync; Vercel chỉ đọc serving snapshot
+- **Trạng thái:** ACCEPTED (2026-10-14)
+- **Bối cảnh:** Tab Phân tích trước đây gọi trực tiếp ba view tương quan nặng, làm thời gian phản hồi không ổn định và có thể khiến trang trống khi một query timeout. Việc so sánh version cũng thiếu coverage/cùng cửa sổ.
+- **Quyết định:** Daily workflow chạy `refresh_v4_dashboard_snapshots()` sau sync ledger + IC tổng + IC ngành và trước cache invalidation. RPC dùng `security definer`, cố định `search_path`, chỉ service role được execute. Anon/authenticated chỉ đọc ba bảng snapshot qua RLS.
+- **Lý do:** Tách chi phí tính toán khỏi request Vercel, giữ kết quả nhất quán giữa các lần reload và không đưa secret vào client.
+- **Hệ quả:** Diagnostics phản ánh lần daily refresh gần nhất, không phải realtime mỗi request. Nếu refresh thất bại, dashboard có thể hiển thị snapshot cũ; TTL/revalidation không tạo lại snapshot. IC daily history giữ 400 ngày; diagnostics và version summary ghi đè.
+- **Phạm vi:** Không thay đổi công thức scoring hoặc IC chính thức; header dashboard được giữ nguyên.

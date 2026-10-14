@@ -23,3 +23,7 @@ npm run check
 ```
 
 Xem `web/README.md` để chạy local và `docs/DATA_RETENTION.md` để hiểu chính sách lưu dữ liệu/cache.
+
+## Cập nhật dashboard insight 2026-10-14
+
+Dashboard dùng lớp snapshot phục vụ riêng cho các phép chẩn đoán nặng; workflow daily refresh snapshot sau khi đồng bộ ledger/IC và trước khi xóa cache Vercel. Header hiện tại được giữ nguyên, còn insight ưu tiên được đặt ngay dưới tiêu đề từng trang.
