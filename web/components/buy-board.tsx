@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
 import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
@@ -10,7 +9,6 @@ import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import {
   factorGroupViews, CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL,
 } from "@/lib/interpret";
-import { availableReviewVersions } from "@/lib/scoring-versions";
 
 export interface BuySignal {
   id: number;
@@ -223,7 +221,6 @@ export function BuyBoard({
   newestRunId = null,
   industryIC = {},
   currentVersion = "v4.18",
-  versionDates = {},
 }: {
   signals: BuySignal[];
   expectancy?: ExpectancyRow[];
@@ -234,10 +231,7 @@ export function BuyBoard({
   /** IC score↔lợi nhuận 5 phiên theo ngành (Spearman gộp) — badge chất lượng ngành. */
   industryIC?: Record<string, { ic: number | null; n: number }>;
   currentVersion?: string;
-  versionDates?: Record<string, string>;
 }) {
-  const router = useRouter();
-  const availableVersions = useMemo(() => availableReviewVersions(Object.keys(versionDates)), [versionDates]);
   const robMap = useMemo(
     () => new Map(robustness.map((r) => [r.symbol, r])),
     [robustness],
@@ -476,30 +470,10 @@ export function BuyBoard({
   };
   const exp = sel ? expLookup(sel.decision, (sel.breakdown ?? {}).confidence) : null;
 
-  const versionSelector = (
-    <div className="card flex flex-wrap items-center gap-2 p-2">
-      <label className="flex min-h-[30px] items-center gap-1.5 text-[11px] text-[var(--color-muted)]">
-        Scoring
-        <select
-          value={currentVersion}
-          onChange={(e) => router.push("/buy?version=" + encodeURIComponent(e.target.value))}
-          className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
-        >
-          {availableVersions.map((version) => (
-            <option key={version} value={version}>{version} · {versionDates[version]}</option>
-          ))}
-        </select>
-      </label>
-      <span className="text-[11px] text-[var(--color-muted)]">
-        Danh sách, biểu đồ và thống kê đang dùng {currentVersion}
-      </span>
-    </div>
-  );
 
   if (!signals.length) {
     return (
       <div className="flex flex-col gap-1.5">
-        {versionSelector}
       <InsightStrip metrics={[
         { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
         { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },
@@ -517,7 +491,6 @@ export function BuyBoard({
 
   return (
     <div className="flex flex-col gap-1.5">
-      {versionSelector}
       <InsightStrip metrics={[
         { value: signals.length, label: "BUY hiện tại", detail: currentVersion, tone: signals.length ? "positive" : "default" },
         { value: summary.strong, label: "STRONG BUY", tone: summary.strong ? "positive" : "default" },

@@ -3,13 +3,16 @@
 export function PageHeader({
   title,
   desc,
+  actions,
 }: {
   title: string;
   desc?: string;
+  actions?: React.ReactNode;
 }) {
   return (
-    <div className="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-0">
+    <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
       <h1 className="shrink-0 text-base font-bold leading-tight tracking-tight sm:text-lg">{title}</h1>
+      {actions}
       {desc ? (
         <p className="text-[12px] leading-tight text-[var(--color-muted)]">{desc}</p>
       ) : null}

@@ -88,3 +88,10 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Kiểm tra local: ESLint, TypeScript, Python compile, 12 workflow YAML và Next.js production build đều PASS.
 
 - PASS — commit ứng dụng `dafc5cc9` đã push lên `main`; GitHub commit status xác nhận Vercel deployment `3YMyt4GiRX6roVRCpiDLQSj43X7U` thành công.
+
+## Tinh chỉnh không gian hiển thị 2026-10-14
+
+- Tab Hôm nay gộp thống kê chuyển trạng thái BUY và heatmap mã × snapshot vào một bảng `details`, mặc định đóng sau mỗi lần tải trang.
+- Tab Mua đặt bộ chọn scoring version dạng compact cùng hàng với tiêu đề; dòng mô tả chỉ còn thời gian cập nhật để bỏ nội dung trùng.
+- Xác minh: ESLint, TypeScript và Next.js production build PASS; `/buy` và `/today` vẫn được auth gate redirect đúng khi chưa đăng nhập.
+- Hạn chế visual QA: chưa kiểm tương tác sau đăng nhập trên browser vì không có session owner; đã review code cho desktop/mobile, wrapping và touch target.

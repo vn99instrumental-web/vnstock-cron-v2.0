@@ -316,34 +316,37 @@ const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
 
   return (
     <div className="flex flex-col gap-2">
-      <InsightStrip metrics={[
-        { value: `${transitions.current}/${groups.length}`, label: "BUY hiện tại", detail: "độ rộng tập theo dõi", tone: transitions.current ? "positive" : "default" },
-        { value: transitions.newBuy, label: "Mới chuyển BUY", tone: transitions.newBuy ? "positive" : "default" },
-        { value: transitions.heldBuy, label: "Tiếp tục giữ BUY", tone: "positive" },
-        { value: transitions.lostBuy, label: "Vừa mất BUY", tone: transitions.lostBuy ? "warning" : "default" },
-        { value: totalSnaps, label: "Snapshot trong ngày", detail: versionDates[version] },
-      ]} />
-
-      <div className="card overflow-hidden p-2.5">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <h3 className="text-xs font-semibold">Diễn biến mã × snapshot</h3>
+      <details className="card group overflow-hidden">
+        <summary className="touch-target flex cursor-pointer list-none flex-wrap items-center gap-x-2 gap-y-1 px-3 py-2 text-xs [&::-webkit-details-marker]:hidden">
+          <span aria-hidden className="text-[var(--color-muted)] transition-transform group-open:rotate-90">▸</span>
+          <span className="font-semibold">Thống kê chuyển trạng thái BUY & heatmap snapshot</span>
           <span className="text-[10px] text-[var(--color-muted)]">B = BUY · S = STRONG BUY · · = trạng thái khác</span>
-        </div>
-        <div className="max-h-44 space-y-1 overflow-auto pr-1">
-          {heatmapGroups.map((group) => (
-            <div key={group.symbol} className="flex min-h-6 items-center gap-1 text-[10px]">
-              <span className="w-11 shrink-0 font-semibold">{group.symbol}</span>
-              <div className="flex min-w-0 flex-1 gap-1">
-                {group.snaps.map((snap, index) => {
-                  const strong = snap.decision === "STRONG BUY";
-                  const buy = snap.decision === "BUY";
-                  return <span key={`${group.symbol}-${snap.snap_time ?? index}`} title={`${hmVN(snap.snap_time)} · ${snap.decision ?? "—"} · score ${fmtNum(snap.score)}`} aria-label={`${group.symbol} ${hmVN(snap.snap_time)} ${snap.decision ?? "khác"}`} className={`grid h-6 min-w-6 flex-1 place-items-center rounded border font-semibold ${strong ? "border-[var(--color-strong-buy)] bg-[var(--color-strong-buy)] text-white" : buy ? "border-[var(--color-buy)] bg-[var(--color-buy)]/15 text-[var(--color-buy)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{strong ? "S" : buy ? "B" : "·"}</span>;
-                })}
+          <span className="ml-auto text-[10px] text-[var(--color-muted)]">mở / đóng</span>
+        </summary>
+        <div className="border-t border-[var(--color-border)] p-2.5">
+          <InsightStrip className="mb-2" metrics={[
+            { value: `${transitions.current}/${groups.length}`, label: "BUY hiện tại", detail: "độ rộng tập theo dõi", tone: transitions.current ? "positive" : "default" },
+            { value: transitions.newBuy, label: "Mới chuyển BUY", tone: transitions.newBuy ? "positive" : "default" },
+            { value: transitions.heldBuy, label: "Tiếp tục giữ BUY", tone: "positive" },
+            { value: transitions.lostBuy, label: "Vừa mất BUY", tone: transitions.lostBuy ? "warning" : "default" },
+            { value: totalSnaps, label: "Snapshot trong ngày", detail: versionDates[version] },
+          ]} />
+          <div className="max-h-44 space-y-1 overflow-auto pr-1">
+            {heatmapGroups.map((group) => (
+              <div key={group.symbol} className="flex min-h-6 items-center gap-1 text-[10px]">
+                <span className="w-11 shrink-0 font-semibold">{group.symbol}</span>
+                <div className="flex min-w-0 flex-1 gap-1">
+                  {group.snaps.map((snap, index) => {
+                    const strong = snap.decision === "STRONG BUY";
+                    const buy = snap.decision === "BUY";
+                    return <span key={`${group.symbol}-${snap.snap_time ?? index}`} title={`${hmVN(snap.snap_time)} · ${snap.decision ?? "—"} · score ${fmtNum(snap.score)}`} aria-label={`${group.symbol} ${hmVN(snap.snap_time)} ${snap.decision ?? "khác"}`} className={`grid h-6 min-w-6 flex-1 place-items-center rounded border font-semibold ${strong ? "border-[var(--color-strong-buy)] bg-[var(--color-strong-buy)] text-white" : buy ? "border-[var(--color-buy)] bg-[var(--color-buy)]/15 text-[var(--color-buy)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{strong ? "S" : buy ? "B" : "·"}</span>;
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </details>
       <div className="card flex flex-wrap items-center gap-2 p-2">
         <input
           value={q}

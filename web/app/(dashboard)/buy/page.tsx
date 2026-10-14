@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/ui";
 import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
+import { ScoringVersionSelect } from "@/components/scoring-version-select";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { getCompanyName } from "@/lib/company-names";
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
@@ -68,17 +69,13 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   const runRow = runResponse.data as { started_at?: string } | null;
   const startedAt = runRow?.started_at ?? null;
   let freshText = "";
-  if (startedAt && latestBuy) {
+  if (startedAt) {
     const minutes = Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 60000));
     const ago = minutes < 1 ? "vừa xong" : minutes < 60 ? `${minutes} phút trước` : (() => {
       const hours = Math.floor(minutes / 60);
       return hours < 24 ? `${hours} giờ trước` : `${Math.floor(hours / 24)} ngày trước`;
     })();
-    const vietnamNow = new Date(Date.now() + 7 * 3600e3);
-    const day = vietnamNow.getUTCDay();
-    const hour = vietnamNow.getUTCHours() + vietnamNow.getUTCMinutes() / 60;
-    const marketOpen = day >= 1 && day <= 5 && hour >= 9 && hour <= 15;
-    freshText = ` · Run ${latestBuy.run_id} · cập nhật ${ago} · ${marketOpen ? "phiên ĐANG MỞ" : "ngoài phiên"}`;
+    freshText = `cập nhật ${ago}`;
   }
 
   const industryIC: Record<string, { ic: number | null; n: number }> = {};
@@ -88,7 +85,11 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
 
   return (
     <>
-      <PageHeader title="Mua" desc={`${currentVersion} · ${signals.length} mã BUY / STRONG BUY${freshText}`} />
+      <PageHeader
+        title="Mua"
+        desc={freshText || undefined}
+        actions={<ScoringVersionSelect currentVersion={currentVersion} versions={Object.keys(versionDates)} route="/buy" dates={versionDates} compact />}
+      />
       <BuyBoard
         signals={signals}
         expectancy={(expectancyResponse.data ?? []) as ExpectancyRow[]}
@@ -98,7 +99,6 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
         newestRunId={(newestRun?.run_id as string | undefined) ?? null}
         industryIC={industryIC}
         currentVersion={currentVersion}
-        versionDates={versionDates}
       />
     </>
   );
