@@ -31,6 +31,7 @@ from sync_supabase import Supabase  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 PRED_GLOB = str(ROOT / "output/history/v2f_predictions_v4/*.jsonl")
 THROTTLE = 0.4  # giây giữa các mã (tránh rate limit VCI)
+RETENTION_DAYS = 900  # đủ lịch sử EMA200 và chart; dữ liệu cũ hơn không có signal để đối chiếu
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("export_ohlc")
@@ -139,6 +140,9 @@ def main() -> int:
             ok += 1
         log.info("[%d/%d] %s: %d bars", i, len(symbols), sym, len(bars))
         time.sleep(THROTTLE)
+
+    cutoff = (date.today() - timedelta(days=RETENTION_DAYS)).isoformat()
+    sb.delete("v4_ohlc", {"date": f"lt.{cutoff}"})
 
     log.info("=== OHLC DONE === %d/%d mã có data, %d bars", ok, len(symbols), total_rows)
     return 0

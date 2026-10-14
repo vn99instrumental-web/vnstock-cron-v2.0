@@ -43,12 +43,14 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Chuẩn hóa lint cho Next.js 15 và bổ sung `npm run check`.
 - Thu gọn `v4_signals.breakdown` thành serving projection: giữ field UI/drill-down và toàn bộ biến numeric cho Phân tích/IC; ledger Git vẫn là nguồn lossless. Kiểm thử trên 80.630 signal thuộc 6 version review cho thấy JSON payload giảm 31%.
 - Migration `0029_compact_signal_serving_payload.sql` tăng tần suất autovacuum/analyze cho `v4_signals`; cấu hình đã áp dụng production.
+- Migration `0030_prune_unserved_dashboard_data.sql` đã áp dụng production: bỏ version không phục vụ, batch IC ngành cũ và OHLC quá 900 ngày; các exporter tiếp tục tự giữ đúng retention.
+- Tab Phân tích coi timeline là dữ liệu bắt buộc; timeout của view tương quan phụ không còn làm trắng toàn bộ trang. Production vẫn có 949 signal-ngày BUY của v4.18 đến 2026-10-13.
 
 ## Bảo mật và dữ liệu
 
 - Client chỉ dùng Supabase anon/publishable key; service-role key chỉ nằm trong workflow/server-side scripts.
 - Endpoint revalidation dùng secret server-only và so sánh constant-time.
-- Không có tác vụ tự động xóa production data. Chính sách chi tiết: `docs/DATA_RETENTION.md`.
+- Cleanup production được giới hạn rõ: OHLC giữ 900 ngày, IC ngành giữ batch `ready` mới nhất, và chỉ 6 scoring version review được lưu. Ledger Git không bị xóa. Chi tiết: `docs/DATA_RETENTION.md`.
 - Không tự sửa/xóa bảng của ứng dụng khác trong Supabase project dùng chung.
 
 ## Cấu hình cần xác nhận ngoài repo

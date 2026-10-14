@@ -8,7 +8,7 @@ Giữ dữ liệu đủ dài để so sánh các scoring version đang được 
 
 - Scoring version được giữ trên dashboard: `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`.
 - Đồng bộ hằng ngày chỉ nên ghi các version trên; version thử nghiệm khác không được tiếp tục nhân bản vào Supabase.
-- OHLC phục vụ tab Phân tích được làm mới theo cửa sổ 45 ngày.
+- OHLC phục vụ tab Phân tích được làm mới theo cửa sổ 45 ngày và giữ tối đa 900 ngày để đủ EMA200/biểu đồ.
 - Ledger trong Git vẫn là nguồn dữ liệu gốc để có thể khôi phục hoặc backfill.
 
 ## Snapshot dung lượng
@@ -20,6 +20,13 @@ Ngày 2026-10-14, database dùng 339 MB (~68% mốc 500 MB). Ba bảng dashboard
 - `v4_ohlc`: 28 MB
 
 Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi vượt 80%; không tự động xóa lịch sử.
+
+### Dọn dữ liệu production 2026-10-14
+
+- Chỉ giữ 6 version review trong `v4_signals`, `v4_outcomes`, `v4_runs`, `v4_ic_metrics` và `v4_marginal_ic`.
+- Xóa 13.160 signal, 5.400 outcome và 64 dòng marginal IC thuộc version không còn phục vụ UI.
+- IC ngành chỉ giữ batch `ready` mới nhất; 8 batch cũ (13.376 metric) đã được xóa theo cascade.
+- OHLC chỉ giữ 900 ngày: giảm từ 162.448 xuống 81.083 dòng. Khoảng trống sau DELETE được PostgreSQL tái sử dụng; kích thước file vật lý không nhất thiết giảm ngay.
 
 ### Tối ưu serving payload
 
@@ -37,8 +44,8 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 
 ## Nguyên tắc an toàn
 
-- Không có cron tự động xóa dữ liệu production.
-- Không xóa ledger lịch sử trong Git.
+- Mỗi lần xuất OHLC chỉ xóa nến cũ hơn 900 ngày; mỗi lần xuất IC ngành chỉ giữ snapshot `ready` mới nhất. Mọi lệnh xóa đều có filter bắt buộc.
+- Không xóa ledger lịch sử trong Git; đây vẫn là nguồn khôi phục lossless.
 - Không đụng tới bảng của ứng dụng khác trong Supabase project dùng chung.
 - Nếu database tiến gần giới hạn gói Free, ưu tiên tách dashboard sang Supabase project riêng trước khi xóa lịch sử có giá trị.
 

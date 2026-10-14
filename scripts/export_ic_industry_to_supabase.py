@@ -98,6 +98,9 @@ def main():
         sb.upsert("v4_ic_industry_metrics", rows[i:i+BATCH], on_conflict="batch_id,version,factor,industry,horizon")
     sb.upsert("v4_ic_industry_batch", [{"batch_id": batch_id, "data_asof": asof,
                                         "row_count": len(rows), "status": "ready"}], on_conflict="batch_id")
+    # The dashboard only reads the newest ready snapshot. Publish first, then remove
+    # every older/pending batch; child metrics are deleted by ON DELETE CASCADE.
+    sb.delete("v4_ic_industry_batch", {"batch_id": f"neq.{batch_id}"})
     log.info("Published ready batch %s", batch_id)
     return 0
 

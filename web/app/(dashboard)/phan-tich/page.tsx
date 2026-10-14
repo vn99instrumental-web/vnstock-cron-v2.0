@@ -34,7 +34,10 @@ export default async function PhanTichPage({ searchParams }: Props) {
     dataClient.from("v4_factor_pair_corr").select("*").eq("scoring_version", currentVersion),
     dataClient.from("v4_hit_factor_corr_split").select("*").eq("scoring_version", currentVersion),
   ]);
-  const hasError = metadata.error || resultsResponse.error || corrResponse.error || pairsResponse.error || splitResponse.error;
+  // Timeline is the primary dataset. Correlation views are optional diagnostics and
+  // must not blank the whole page when one expensive aggregate times out.
+  const hasError = metadata.error || resultsResponse.error;
+  const hasOptionalError = corrResponse.error || pairsResponse.error || splitResponse.error;
   const rows = (resultsResponse.data ?? []) as SignalResult[];
 
   return (
@@ -53,6 +56,11 @@ export default async function PhanTichPage({ searchParams }: Props) {
         <EmptyState title={symbol ? `Chưa có tín hiệu cho ${symbol}` : "Chưa có tín hiệu BUY/STRONG BUY để phân tích"} hint={`Scoring ${currentVersion} chưa có dữ liệu phù hợp.`} />
       ) : (
         <>
+          {hasOptionalError ? (
+            <p className="mb-2 rounded-lg border border-amber-500/40 bg-amber-500/5 px-3 py-2 text-xs text-[var(--color-muted)]">
+              Dữ liệu tín hiệu đã tải đầy đủ. Một phần thống kê tương quan đang tạm thời không khả dụng nên được ẩn thay vì làm trống toàn bộ tab.
+            </p>
+          ) : null}
           {!symbol && rows.length === INITIAL_LIMIT ? <p className="mb-2 text-xs text-[var(--color-muted)]">Đang hiển thị {INITIAL_LIMIT.toLocaleString("vi-VN")} dòng gần nhất. Dùng ô tìm toàn bộ lịch sử để tra một mã cũ.</p> : null}
           <AnalysisBoard results={rows} corr={(corrResponse.data ?? []) as FactorCorr[]} pairs={(pairsResponse.data ?? []) as FactorPair[]} split={(splitResponse.data ?? []) as FactorCorrSplit[]} />
         </>

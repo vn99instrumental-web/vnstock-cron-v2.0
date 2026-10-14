@@ -291,6 +291,38 @@ class Supabase:
             log.info("  upsert %s: %d/%d", table, total, len(rows))
         return total
 
+    def delete(self, table: str, filters: dict[str, str]) -> None:
+        """Delete a narrowly filtered serving dataset with the same retry policy."""
+        if requests is None:
+            raise RuntimeError("Missing requests dependency for Supabase writes")
+        if not filters:
+            raise ValueError("Refusing an unfiltered Supabase delete")
+        last_err = ""
+        for attempt in range(1, MAX_RETRY + 1):
+            try:
+                r = requests.delete(
+                    f"{self.rest}/{table}",
+                    params=filters,
+                    headers=self._h,
+                    timeout=120,
+                )
+            except requests.RequestException as e:
+                last_err = f"network:{type(e).__name__}"
+                r = None
+            if r is not None and r.status_code < 300:
+                log.info("  delete %s: filtered cleanup complete", table)
+                return
+            if r is not None:
+                last_err = f"HTTP {r.status_code}: {r.text[:200]}"
+                if 400 <= r.status_code < 500 and r.status_code != 429:
+                    raise RuntimeError(f"delete {table} {last_err}")
+            if attempt < MAX_RETRY:
+                wait = 2 ** attempt
+                log.warning("  delete %s lỗi (%s) — thử lại sau %ds (lần %d/%d)",
+                            table, last_err, wait, attempt, MAX_RETRY)
+                time.sleep(wait)
+        raise RuntimeError(f"delete {table} thất bại sau {MAX_RETRY} lần: {last_err}")
+
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main() -> int:
