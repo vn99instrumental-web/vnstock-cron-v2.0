@@ -1,9 +1,10 @@
 import { DataStatusPanel, type DataStatusItem, type DataStatusTone } from "@/components/data-status-panel";
 import { PageHeader, EmptyState, QueryErrorState } from "@/components/ui";
-import { TODAY_COMPARE_VERSIONS, TodayBoard, type TodaySignal } from "@/components/today-board";
+import { TodayBoard, type TodaySignal } from "@/components/today-board";
 import { getLatestVersionRuns } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { dateTimeVN, hmVN } from "@/lib/format";
+import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
 
 export const dynamic = "force-dynamic";
 

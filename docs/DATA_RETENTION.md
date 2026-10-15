@@ -69,7 +69,7 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 - v4.19-shadow, v4.9, v4.8, v4.1, v2.3: mỗi ngày giữ run cuối cùng và thêm run cuối cùng có BUY/STRONG BUY. Cách này giữ đủ breakdown cho tab Mua kể cả khi run đóng cửa không còn tín hiệu BUY, đồng thời không nhân dung lượng intraday cho candidate thử nghiệm.
 - Outcomes và runs của các version daily-retention chỉ giữ khi còn liên kết với signal được giữ. Ledger Git vẫn là bản lossless để backfill.
 - IC tổng, IC theo ngành và marginal IC được tính từ ledger/daily-last trước khi retention chạy; Vercel đọc các bảng precompute thay vì tính lại từ toàn bộ intraday.
-- Hàm prune_v4_legacy_intraday() chỉ cấp quyền thực thi cho service_role; workflow gọi sau các bước export IC và trước khi refresh dashboard snapshot.
+- Hàm prune_v4_legacy_intraday() chỉ cấp quyền thực thi cho service_role; workflow refresh dashboard snapshot và xóa cache trước, sau đó mới chạy retention ở bước maintenance cuối.
 - DELETE tạo khoảng trống để PostgreSQL tái sử dụng. Không tự chạy VACUUM FULL vì thao tác đó khóa bảng; autovacuum xử lý reclaim thông thường.
 ### Kết quả áp dụng production 2026-10-15
 
@@ -82,3 +82,11 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 - Không xóa thêm signal, outcome, OHLC hay IC vì toàn bộ phần còn lại có consumer hoặc nằm trong retention đã phê duyệt.
 - VACUUM ANALYZE đã chạy cho v4_signals, v4_outcomes và v4_runs; dead tuple = 0. Kích thước vật lý database vẫn khoảng 350 MB và các page trống sẽ được tái sử dụng.
 - VACUUM FULL chưa chạy vì cần khóa độc quyền bảng production; chỉ thực hiện trong maintenance window có phê duyệt riêng.
+
+### Ổn định maintenance và snapshot 2026-10-16
+
+- Retention RPC có `statement_timeout=60s` ở cấp function thay vì kế thừa 8 giây của PostgREST; script có timeout kết nối/đọc riêng và log thời gian từng RPC.
+- Anti-join dọn outcome dùng bảng tạm có khóa chính theo `(scoring_version, pred_id)` và bỏ ba phép đếm toàn bảng trước DELETE. Lần chạy production xác minh hoàn tất trong khoảng 13,1 giây.
+- Cả weekly, daily và manual sync đều refresh snapshot + revalidate cache trước khi chạy retention. Vì vậy lỗi maintenance không còn chặn dữ liệu dashboard mới.
+- `refresh_v4_dashboard_snapshots()` có timeout 60 giây và chỉ refresh phần bắt buộc hằng ngày: factor, split, IC history và version summary. Ma trận factor-pair là thống kê khám phá rất nặng; daily refresh giữ snapshot pair thành công gần nhất thay vì làm fail toàn bộ luồng.
+- Lần refresh production sau sửa hoàn tất trong khoảng 5,9 giây: 243 factor rows, 464 split rows, 272 IC-history rows, 7 version summaries; 5.150 pair rows cũ được giữ nguyên.

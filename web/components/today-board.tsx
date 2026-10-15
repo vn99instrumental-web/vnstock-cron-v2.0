@@ -3,7 +3,8 @@
 import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
-import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
+import { DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
+import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
 
 export interface TodaySignal {
   symbol: string;
@@ -23,13 +24,6 @@ export interface TodaySignal {
   stop: string | number | null;
   tp1: string | number | null;
   breakdown: Record<string, unknown> | null;
-}
-
-/** Nhãn Quality v2.3 (dashboard html v4): khối ngoại mạnh & cơ bản tốt. */
-const QUAL_FF = 5;
-const QUAL_FUND = 5;
-function isQuality(ff: number | null, fund: number | null): boolean {
-  return ff != null && fund != null && ff >= QUAL_FF && fund >= QUAL_FUND;
 }
 
 function num(v: unknown): number | null {
@@ -54,50 +48,6 @@ interface Group {
 }
 
 type SortKey = "score" | "buy" | "delta";
-
-/** Màu theo số nhóm siêu yếu tố đồng thuận (0..3): càng cao tín hiệu càng chất lượng. */
-function alignColor(n: number | null): string {
-  if (n == null) return "var(--color-muted)";
-  if (n >= 3) return "var(--color-buy)";
-  if (n >= 2) return "#ca8a04";
-  return "var(--color-muted)";
-}
-
-/** Chip khối ngoại ròng luỹ kế cả phiên (chốt ở lần chạy gần nhất). */
-function ForeignChip({ net, ratio }: { net: number | null; ratio: number | null }) {
-  if (net == null) return null;
-  const cls = net > 0 ? "text-[var(--color-buy)]" : net < 0 ? "text-[var(--color-sell)]" : "text-[var(--color-muted)]";
-  const ratioTxt = ratio != null ? ` (${(ratio * 100).toFixed(0)}% GTGD)` : "";
-  return (
-    <span className={`tabular ${cls}`} title={`Khối ngoại ròng luỹ kế cả phiên${ratioTxt} — chốt ở lần chạy gần nhất; tham chiếu, chưa vào điểm`}>
-      NN {fmtBil(net)}
-    </span>
-  );
-}
-
-/** Nhãn ⭐ Quality (v2.3): khối ngoại mạnh (ff≥5) & cơ bản tốt (fund≥5). */
-function QualityChip({ ff, fund }: { ff: number | null; fund: number | null }) {
-  if (!isQuality(ff, fund)) return null;
-  return (
-    <span
-      className="tabular shrink-0 rounded border border-[var(--color-buy)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-buy)]"
-      title={`Quality: khối ngoại mạnh (điểm FF ${ff}≥${QUAL_FF}) & cơ bản tốt (điểm cơ bản ${fund}≥${QUAL_FUND}) — thước đo v2.3`}
-    >
-      ⭐ Quality
-    </span>
-  );
-}
-
-/** Chip chất lượng: số nhóm siêu yếu tố đồng thuận. */
-function AlignChip({ n }: { n: number | null }) {
-  if (n == null) return null;
-  const color = alignColor(n);
-  return (
-    <span className="tabular" style={{ color }} title="Số nhóm siêu yếu tố (xu hướng, dòng tiền, cơ bản…) cùng ủng hộ — càng cao tín hiệu càng chất lượng">
-      ◆ {n}/3 nhóm
-    </span>
-  );
-}
 
 function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) {
   const groups = factorGroupViews(breakdown);
@@ -129,7 +79,6 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
     </div>
   );
 }
-export const TODAY_COMPARE_VERSIONS = ["v4.17", "v4.18", "v4.19-shadow"] as const;
 type TodayCompareVersion = (typeof TODAY_COMPARE_VERSIONS)[number];
 const VERSION_LABELS: Record<TodayCompareVersion, string> = {
   "v4.17": "v4.17",

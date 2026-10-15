@@ -162,12 +162,6 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/export_ic_industry_to_supabase.py
 
-      - name: Apply bounded Supabase retention
-        env:
-          SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: /opt/vnstock/.venv/bin/python scripts/prune_supabase_retention.py
-
       - name: Refresh dashboard serving snapshots
         env:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
@@ -186,3 +180,9 @@ jobs:
           curl --fail --silent --show-error \
             -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
             -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+
+      - name: Apply bounded Supabase retention
+        env:
+          SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/prune_supabase_retention.py

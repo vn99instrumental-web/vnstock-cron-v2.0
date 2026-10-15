@@ -75,9 +75,6 @@ jobs:
       - name: Refresh IC industry snapshot
         run: ${{ steps.python.outputs.python }} scripts/export_ic_industry_to_supabase.py
 
-      - name: Apply bounded Supabase retention
-        run: ${{ steps.python.outputs.python }} scripts/prune_supabase_retention.py
-
       - name: Refresh dashboard serving snapshots
         run: ${{ steps.python.outputs.python }} scripts/refresh_dashboard_snapshots.py
 
@@ -93,3 +90,6 @@ jobs:
           curl --fail --silent --show-error \
             -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
             -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+
+      - name: Apply bounded Supabase retention
+        run: ${{ steps.python.outputs.python }} scripts/prune_supabase_retention.py

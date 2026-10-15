@@ -113,7 +113,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 - v4.18 và v4.17 giữ full intraday trên Supabase; v4.19-shadow, v4.9, v4.8, v4.1, v2.3 chỉ giữ run cuối ngày và run BUY cuối ngày.
 - Tab IC lấy factor × version từ v4_ic_metrics, indicator từ v4_marginal_ic, IC ngành từ batch v4_ic_industry_metrics; tab Mua cũng đọc IC ngành từ batch precompute.
-- Migration 0032_retain_legacy_daily_signals.sql tạo RPC service-role-only; cả daily sync, manual full sync và weekly flow đều prune trước khi refresh snapshot/revalidate.
+- Migration 0032_retain_legacy_daily_signals.sql tạo RPC service-role-only; daily sync, manual full sync và weekly flow refresh snapshot/revalidate trước rồi mới prune ở maintenance cuối.
 - Git ledger tiếp tục là nguồn lossless. Supabase là serving layer có retention; không chạy VACUUM FULL tự động.
 - Production prune 2026-10-15 đã xác minh: legacy signal 66.330 → 11.380, outcome 52.618 → 8.730, run 655 → 97. Kích thước vật lý vẫn khoảng 350 MB sau DELETE và sẽ tái sử dụng khoảng trống.
 ## Supabase cleanup 2026-10-15
@@ -150,3 +150,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Xác minh local: 6 unit test PASS, Python compile PASS, ESLint/TypeScript không có error và Next.js production build PASS. Visual QA sau đăng nhập còn phụ thuộc session owner.
 - PASS — commit `97dcd9ce` đã push lên `main`; production deployment `dpl_HwwBcfieYCdnLnkot8e8Sj9Y33Tk` READY và alias `trading-snapshot-dl.vercel.app` trỏ đúng commit này.
 - PASS — Supabase có 2.000 row backfill từ 2026-09-17 đến 2026-10-14, không row nào có entry/SL/TP; có 100 row forward IC-weighted ngày 2026-10-15 và 0 row equal-weight sau cleanup.
+
+## Ổn định workflow và tab Hôm nay 2026-10-16
+
+- Digest tab Hôm nay được tái hiện là `TODAY_COMPARE_VERSIONS.flatMap is not a function`: Server Component đã import runtime value từ module `use client`. Hằng số ba version đã chuyển sang `web/lib/today-compare.ts`; module production render lại thành công với dữ liệu Supabase thật.
+- Retention RPC có timeout function 60 giây và anti-join outcome qua temp table có index. Production chạy 13,1 giây, xóa 17.800 legacy intraday signal, 8.700 orphan outcome và 178 run không còn liên kết; v4.17/v4.18 full intraday không thuộc phạm vi xóa.
+- Workflow weekly/daily/manual refresh snapshot và revalidate cache trước khi chạy retention cuối luồng; lịch và concurrency n8n không thay đổi theo quyết định của owner.
+- Snapshot refresh hằng ngày bỏ phép tính factor-pair vượt 60 giây khỏi critical path nhưng giữ snapshot pair gần nhất. Factor/split, IC history và version summary refresh production thành công trong 5,9 giây.
+- Bảo mật RPC đã kiểm tra: anon/authenticated không có EXECUTE; service_role có EXECUTE. Security advisor không phát hiện advisory mới thuộc dashboard; các cảnh báo còn lại thuộc bảng/hàm khác trong Supabase project dùng chung.
+- Kiểm tra local: Python compile PASS, 12 workflow YAML parse PASS, ESLint/TypeScript không có error và Next.js production build PASS. Server module `/today` chạy thành công với dữ liệu thật sau sửa.

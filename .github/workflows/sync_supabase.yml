@@ -57,9 +57,6 @@ jobs:
       - name: Phân tích đóng góp biên (hồi quy đa biến) → Supabase
         run: python3 scripts/analyze_marginal_ic.py
 
-      - name: Apply bounded Supabase retention
-        run: python3 scripts/prune_supabase_retention.py
-
       - name: Refresh dashboard serving snapshots
         run: python3 scripts/refresh_dashboard_snapshots.py
 
@@ -75,3 +72,6 @@ jobs:
           curl --fail --silent --show-error \
             -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
             -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+
+      - name: Apply bounded Supabase retention
+        run: python3 scripts/prune_supabase_retention.py
