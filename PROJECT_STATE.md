@@ -133,7 +133,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 ## Forward shadow v4.19 2026-10-15
 
 - `v4.19-shadow` materialize từ cùng snapshot v4.18; trọng số IC cố định MeanRev/Breakout/Flow/Fund/Growth = 5/15/20/25/35, context 0 và không cộng confluence/flow extras. Không gọi thêm market API.
-- Batch equal-weight đầu tiên (1 run/100 signal, chưa có outcome) đã được xóa khỏi Supabase trước khi deploy IC-weighted, nên không còn lịch sử trộn phương pháp. Mỗi prediction mới có trace `ic_shrunk_fixed_core` và profile `mr5_bo15_flow20_fund25_growth35` để audit.
+- Batch equal-weight đầu tiên (1 run/100 signal, chưa có outcome) đã được xóa khỏi Supabase và ledger trên `main` trước khi ghi dữ liệu IC-weighted, nên không còn lịch sử trộn phương pháp. Mỗi prediction mới có trace `ic_shrunk_fixed_core` và profile `mr5_bo15_flow20_fund25_growth35` để audit.
 - Production mặc định, decision v4.18 và feed thông báo/Zalo không đổi. Shadow có ledger/outcome/version selector riêng; Supabase chỉ giữ daily-close và daily-BUY.
 - Trên mẫu thiết kế 21 ngày/2.100 mã-ngày, trọng số làm tròn đạt IC 5d +0,222 và top-20% excess +1,44%, nhưng vẫn là kết quả trong mẫu. Chỉ review promote sau tối thiểu 30 ngày outcome chín độc lập.
 - Supabase migration `0034_add_v419_shadow.sql` đã áp dụng: view phân tích nhận shadow; retention giữ daily-close và daily-BUY. View dùng `security_invoker`; RPC prune chỉ `service_role` được execute.

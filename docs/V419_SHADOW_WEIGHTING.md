@@ -40,4 +40,4 @@ Trong backtest cùng mẫu, cấu hình làm tròn đạt daily IC 5d +0,222 và
 - Khi outcome 3/5/10 phiên chín, evaluator IC hiện hữu tự tính metric theo version; dashboard IC hiển thị v4.19 cùng các version khác.
 - Chỉ review quyết định promote sau tối thiểu 30 ngày outcome chín độc lập. Theo dõi số ngày có outcome, cỡ mẫu, IC 3/5/10d, hit rate và mức ổn định theo thời gian; không kết luận từ một vài phiên.
 
-Batch equal-weight đầu tiên (run `2026-10-15_13:53_v4.19-shadow`, 100 signal, chưa có outcome) đã được xóa khỏi Supabase trước khi deploy cấu hình IC-weighted. Vì vậy chuỗi monitor giữ một phương pháp duy nhất.
+Batch equal-weight đầu tiên (run `2026-10-15_13:53_v4.19-shadow`, 100 signal, chưa có outcome) đã được xóa khỏi Supabase và ledger trên `main` trước khi ghi cấu hình IC-weighted. Vì vậy chuỗi monitor giữ một phương pháp duy nhất.
