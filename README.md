@@ -12,7 +12,7 @@ Pipeline thu thập/chấm điểm cổ phiếu Việt Nam và dashboard Next.js
 
 Dashboard production: <https://trading-snapshot-dl.vercel.app>
 
-Các scoring version dùng để đối chiếu: `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`.
+Các scoring version dùng để đối chiếu: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`. `v4.18` vẫn là production mặc định; `v4.19-shadow` chỉ forward-test và không phát thông báo.
 
 ## Kiểm tra dashboard
 

@@ -6,7 +6,7 @@ Giữ dữ liệu đủ dài để so sánh các scoring version đang được 
 
 ## Phạm vi dữ liệu nóng
 
-- Scoring version được giữ trên dashboard: `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`.
+- Scoring version được giữ trên dashboard: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`.
 - Đồng bộ hằng ngày chỉ nên ghi các version trên; version thử nghiệm khác không được tiếp tục nhân bản vào Supabase.
 - OHLC phục vụ tab Phân tích được làm mới theo cửa sổ 45 ngày và giữ tối đa 900 ngày để đủ EMA200/biểu đồ.
 - Ledger trong Git vẫn là nguồn dữ liệu gốc để có thể khôi phục hoặc backfill.
@@ -23,7 +23,7 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 
 ### Dọn dữ liệu production 2026-10-14
 
-- Chỉ giữ 6 version review trong `v4_signals`, `v4_outcomes`, `v4_runs`, `v4_ic_metrics` và `v4_marginal_ic`.
+- Chỉ giữ 7 version review trong `v4_signals`, `v4_outcomes`, `v4_runs`, `v4_ic_metrics` và `v4_marginal_ic`.
 - Xóa 13.160 signal, 5.400 outcome và 64 dòng marginal IC thuộc version không còn phục vụ UI.
 - IC ngành chỉ giữ batch `ready` mới nhất; 8 batch cũ (13.376 metric) đã được xóa theo cascade.
 - OHLC chỉ giữ 900 ngày: giảm từ 162.448 xuống 81.083 dòng. Khoảng trống sau DELETE được PostgreSQL tái sử dụng; kích thước file vật lý không nhất thiết giảm ngay.
@@ -66,8 +66,8 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 ## Retention intraday theo scoring version
 
 - v4.18 và v4.17: giữ toàn bộ snapshot intraday để đối chiếu trạng thái trong ngày.
-- v4.9, v4.8, v4.1, v2.3: mỗi ngày giữ run cuối cùng và thêm run cuối cùng có BUY/STRONG BUY. Cách này giữ đủ breakdown cho tab Mua kể cả khi run đóng cửa không còn tín hiệu BUY.
-- Outcomes và runs của bốn version cũ chỉ giữ khi còn liên kết với signal được giữ. Ledger Git vẫn là bản lossless để backfill.
+- v4.19-shadow, v4.9, v4.8, v4.1, v2.3: mỗi ngày giữ run cuối cùng và thêm run cuối cùng có BUY/STRONG BUY. Cách này giữ đủ breakdown cho tab Mua kể cả khi run đóng cửa không còn tín hiệu BUY, đồng thời không nhân dung lượng intraday cho candidate thử nghiệm.
+- Outcomes và runs của các version daily-retention chỉ giữ khi còn liên kết với signal được giữ. Ledger Git vẫn là bản lossless để backfill.
 - IC tổng, IC theo ngành và marginal IC được tính từ ledger/daily-last trước khi retention chạy; Vercel đọc các bảng precompute thay vì tính lại từ toàn bộ intraday.
 - Hàm prune_v4_legacy_intraday() chỉ cấp quyền thực thi cho service_role; workflow gọi sau các bước export IC và trước khi refresh dashboard snapshot.
 - DELETE tạo khoảng trống để PostgreSQL tái sử dụng. Không tự chạy VACUUM FULL vì thao tác đó khóa bảng; autovacuum xử lý reclaim thông thường.

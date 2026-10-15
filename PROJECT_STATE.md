@@ -1,6 +1,6 @@
 # PROJECT_STATE.md
 
-**Cập nhật:** 2026-10-14
+**Cập nhật:** 2026-10-15
 **Branch production:** `main`
 **Dashboard:** <https://trading-snapshot-dl.vercel.app>
 
@@ -18,7 +18,7 @@
 
 ## Scoring version được review
 
-Theo thứ tự mới nhất: `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`.
+Theo thứ tự mới nhất: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`. Production mặc định vẫn là `v4.18`.
 
 Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợp. Tab IC hiển thị toàn bộ version có dữ liệu, số mẫu và thời gian cập nhật đã quy đổi sang giờ Việt Nam.
 
@@ -50,7 +50,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 - Client chỉ dùng Supabase anon/publishable key; service-role key chỉ nằm trong workflow/server-side scripts.
 - Endpoint revalidation dùng secret server-only và so sánh constant-time.
-- Cleanup production được giới hạn rõ: OHLC giữ 900 ngày, IC ngành giữ batch `ready` mới nhất, và chỉ 6 scoring version review được lưu. Ledger Git không bị xóa. Chi tiết: `docs/DATA_RETENTION.md`.
+- Cleanup production được giới hạn rõ: OHLC giữ 900 ngày, IC ngành giữ batch `ready` mới nhất, và chỉ 7 scoring version review được lưu. Ledger Git không bị xóa. Chi tiết: `docs/DATA_RETENTION.md`.
 - Không tự sửa/xóa bảng của ứng dụng khác trong Supabase project dùng chung.
 
 ## Cấu hình cần xác nhận ngoài repo
@@ -111,10 +111,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Hai khối “So sánh factor × scoring version” và “Phạm vi dữ liệu dùng khi đối chiếu version” dùng `details`, mặc định đóng sau mỗi lần tải trang và chỉ hiện nội dung khi người dùng mở.
 ## Retention theo version 2026-10-15
 
-- v4.18 và v4.17 giữ full intraday trên Supabase; v4.9, v4.8, v4.1, v2.3 chỉ giữ run cuối ngày và run BUY cuối ngày.
+- v4.18 và v4.17 giữ full intraday trên Supabase; v4.19-shadow, v4.9, v4.8, v4.1, v2.3 chỉ giữ run cuối ngày và run BUY cuối ngày.
 - Tab IC lấy factor × version từ v4_ic_metrics, indicator từ v4_marginal_ic, IC ngành từ batch v4_ic_industry_metrics; tab Mua cũng đọc IC ngành từ batch precompute.
 - Migration 0032_retain_legacy_daily_signals.sql tạo RPC service-role-only; cả daily sync, manual full sync và weekly flow đều prune trước khi refresh snapshot/revalidate.
-- Git ledger tiếp tục là nguồn lossless. Supabase là serving layer có retention; không chạy VACUUM FULL tự động.- Production prune 2026-10-15 đã xác minh: legacy signal 66.330 → 11.380, outcome 52.618 → 8.730, run 655 → 97. Kích thước vật lý vẫn khoảng 350 MB sau DELETE và sẽ tái sử dụng khoảng trống.
+- Git ledger tiếp tục là nguồn lossless. Supabase là serving layer có retention; không chạy VACUUM FULL tự động.
+- Production prune 2026-10-15 đã xác minh: legacy signal 66.330 → 11.380, outcome 52.618 → 8.730, run 655 → 97. Kích thước vật lý vẫn khoảng 350 MB sau DELETE và sẽ tái sử dụng khoảng trống.
 ## Supabase cleanup 2026-10-15
 
 - Production hiện có 28.080 signal, 19.230 outcome và 264 run; đã xóa 139 orphan run, không còn orphan/dead tuple.
@@ -128,3 +129,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Candidate đăng ký trước `hybrid_equal` (20% mỗi factor) tại 5d đạt daily IC +0,190 và top-20% excess +1,07%; 7 ngày mới nhất đạt IC +0,157 và excess +0,58%. Rank correlation score tái dựng so với ledger production là 0,974 cho v4.17 và 0,983 cho v4.18.
 - Sensitivity `hybrid_no_mr` tốt hơn nhưng được hình thành sau khi xem dữ liệu nên có selection bias; chưa dùng làm production recommendation.
 - Production scoring chưa đổi. Khuyến nghị chạy `hybrid_equal` dạng shadow tới khi có ít nhất 30 ngày outcome chín độc lập. Script: `backtest/backtest_hybrid_v417_v418.py`; báo cáo: `docs/HYBRID_BACKTEST_V417_V418.md`.
+
+## Forward shadow v4.19 2026-10-15
+
+- `v4.19-shadow` materialize từ cùng snapshot v4.18, dùng 20% cho mỗi factor MeanRev/Breakout/Flow/Fund/Growth, context 0 và không cộng confluence/flow extras. Không gọi thêm market API.
+- Production mặc định, quyết định v4.18 và các feed thông báo/Zalo không đổi. Shadow có ledger/outcome/version selector riêng và chỉ xuất hiện trên dashboard sau lần intraday + sync đầu tiên có dữ liệu.
+- IC shadow được evaluator hiện hữu tự tính khi có tối thiểu 3 ngày outcome chín; mục tiêu review forward ít nhất 30 ngày trước mọi quyết định promote.
+- Supabase migration `0034_add_v419_shadow.sql` đã áp dụng: view phân tích nhận shadow; retention chỉ giữ daily-close và daily-BUY cho shadow. View dùng `security_invoker`; RPC prune chỉ `service_role` được execute.
+- Xác minh local: 5 unit test PASS; 100/100 mã snapshot hiện tại được materialize; payload sync giữ đủ trace fields; Python compile, ESLint, TypeScript và Next.js production build PASS.

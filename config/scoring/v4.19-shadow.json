@@ -1,0 +1,45 @@
+{
+  "version_label": "v4.19-shadow",
+  "status": "shadow",
+  "based_on": "v4.18 factor values, regime gates and hold score",
+  "note": "Forward-only shadow candidate from HYBRID_BACKTEST_V417_V418: five trade factors weighted equally at 20%; context and score extras are excluded. This version never changes the production v4.18 decision or notification feeds.",
+  "factor_weights": {
+    "trade": {
+      "mean_reversion": 0.20,
+      "breakout": 0.20,
+      "flow": 0.20,
+      "fundamental": 0.20,
+      "growth": 0.20,
+      "context": 0.00
+    },
+    "hold": {
+      "mean_reversion": 0.15,
+      "breakout": 0.28,
+      "flow": 0.12,
+      "fundamental": 0.25,
+      "growth": 0.15,
+      "context": 0.05
+    }
+  },
+  "gate_matrix": {
+    "regimes": ["UPTREND", "SIDEWAYS", "RECOVERY", "DOWNTREND", "DEEP_DOWN", "UNKNOWN"],
+    "mean_reversion": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "breakout": [0.5, 0.7, 0.5, 1.0, 1.0, 0.5],
+    "flow": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "fundamental": [1.0, 1.0, 0.8, 0.8, 0.6, 1.0],
+    "growth": [1.0, 1.0, 0.8, 0.8, 0.6, 1.0],
+    "context": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  },
+  "thresholds": [
+    { "min": 50, "decision": "STRONG BUY" },
+    { "min": 25, "decision": "BUY" },
+    { "min": -10, "decision": "NEUTRAL" },
+    { "min": -25, "decision": "SELL" },
+    { "min": null, "decision": "STRONG SELL" }
+  ],
+  "extras": {
+    "enabled": false,
+    "confluence_bonus": 0,
+    "confluence_min_norm": 0.30
+  }
+}

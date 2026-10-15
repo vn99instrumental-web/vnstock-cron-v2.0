@@ -213,6 +213,10 @@ def run():
             "confidence"      : sig.get("confidence"),
             "confluence_bonus": sig.get("confluence_bonus"),
             "n_supergroups_aligned": sig.get("n_supergroups_aligned"),
+            # Candidate forward-only: truy xuất nguồn mà không ảnh hưởng production/Zalo.
+            "shadow_parent_version": sig.get("shadow_parent_version"),
+            "shadow_method"        : sig.get("shadow_method"),
+            "shadow_core_only"     : sig.get("shadow_core_only"),
 
             # ── RCEG metadata: để đo hiệu quả V4 THEO regime từ ledger ──
             "regime"          : sig.get("_regime"),        # regime hiệu lực (sau hysteresis)

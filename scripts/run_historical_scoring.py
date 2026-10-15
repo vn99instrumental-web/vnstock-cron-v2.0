@@ -18,6 +18,11 @@ import tarfile
 import tempfile
 from pathlib import Path
 
+try:
+    from materialize_shadow_scoring import SHADOW_VERSION, materialize_shadow_rows
+except ModuleNotFoundError:  # Imported as scripts.run_historical_scoring in tests/tools.
+    from scripts.materialize_shadow_scoring import SHADOW_VERSION, materialize_shadow_rows
+
 
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW_PATH = ROOT / "config" / "scoring" / "review_versions.json"
@@ -137,7 +142,14 @@ def main() -> None:
     if not archive_path.exists():
         raise SystemExit(f"Missing pinned scoring archive: {archive_path}")
 
-    combined = list(production_rows)
+    shadow_rows = materialize_shadow_rows(production_rows)
+    production_symbols = {row["symbol"] for row in production_rows}
+    shadow_symbols = {row["symbol"] for row in shadow_rows}
+    if len(shadow_symbols) != len(shadow_rows) or shadow_symbols != production_symbols:
+        raise SystemExit(f"{SHADOW_VERSION}: symbol coverage differs from production snapshot")
+    print(f"{SHADOW_VERSION}: {len(shadow_rows)} rows (derived from {production_version}; no market API)")
+
+    combined = [*production_rows, *shadow_rows]
     failures: list[str] = []
     TEMP_ROOT.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="historical-scoring-", dir=TEMP_ROOT) as tmp_name:
@@ -148,7 +160,6 @@ def main() -> None:
             try:
                 rows = _run_version(version, extracted / version, args.timeout)
                 if version == "v4.17":
-                    production_symbols = {r["symbol"] for r in production_rows}
                     selected_symbols = {r["symbol"] for r in rows}
                     if len(selected_symbols) != len(rows) or selected_symbols != production_symbols:
                         raise RuntimeError("v4.17: symbol coverage differs from production snapshot")
@@ -162,7 +173,7 @@ def main() -> None:
         COMBINED_PATH.unlink(missing_ok=True)
         raise SystemExit("Historical scoring incomplete:\n- " + "\n- ".join(failures))
 
-    expected_versions = {production_version, *selected}
+    expected_versions = {production_version, SHADOW_VERSION, *selected}
     actual_versions = {row["scoring_version"] for row in combined}
     if actual_versions != expected_versions:
         raise SystemExit(f"Version coverage mismatch: expected {sorted(expected_versions)}, got {sorted(actual_versions)}")
