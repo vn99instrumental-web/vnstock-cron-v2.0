@@ -2,10 +2,8 @@
 
 import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
-import { useRouter } from "next/navigation";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
 import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
-import { availableReviewVersions } from "@/lib/scoring-versions";
 
 export interface TodaySignal {
   symbol: string;
@@ -131,277 +129,243 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
     </div>
   );
 }
-export function TodayBoard({ signals, currentVersion, versionDates }: { signals: TodaySignal[]; currentVersion: string; versionDates: Record<string, string> }) {
+export const TODAY_COMPARE_VERSIONS = ["v4.17", "v4.18", "v4.19-shadow"] as const;
+type TodayCompareVersion = (typeof TODAY_COMPARE_VERSIONS)[number];
+const VERSION_LABELS: Record<TodayCompareVersion, string> = {
+  "v4.17": "v4.17",
+  "v4.18": "v4.18",
+  "v4.19-shadow": "v4.19",
+};
+
+type VersionGroup = Group & { version: TodayCompareVersion };
+type CompareRow = { symbol: string; byVersion: Partial<Record<TodayCompareVersion, VersionGroup>> };
+
+function latestScore(group: VersionGroup | undefined): number {
+  return group?.scoreLast ?? -999;
+}
+
+function cellTone(decision: string | null | undefined): string {
+  if (decision === "STRONG BUY") return "border-[var(--color-strong-buy)]/50 bg-[var(--color-strong-buy)]/[0.08]";
+  if (decision === "BUY") return "border-[var(--color-buy)]/40 bg-[var(--color-buy)]/[0.06]";
+  if (decision === "SELL" || decision === "STRONG SELL") return "border-[var(--color-sell)]/30 bg-[var(--color-sell)]/[0.04]";
+  return "border-[var(--color-border)] bg-[var(--color-bg)]";
+}
+
+export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; versionDates: Record<string, string> }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
-  const router = useRouter();
-  const version = currentVersion;
-  const [buyOnly, setBuyOnly] = useState(true); // mặc định chỉ hiện mã có tín hiệu BUY hôm nay
-  const [open, setOpen] = useState<string | null>(null);
+  const [buyOnly, setBuyOnly] = useState(true);
+  const [commonOnly, setCommonOnly] = useState(false);
+  const [openKey, setOpenKey] = useState<string | null>(null);
   const [openSnap, setOpenSnap] = useState<string | null>(null);
   const [q, setQ] = useState("");
 
-  const versionSignals = useMemo(() => signals.filter((s) => s.scoring_version === version), [signals, version]);
-  const totalSnaps = useMemo(() => new Set(versionSignals.map((s) => String(s.snap_time))).size, [versionSignals]);
-  const availableVersions = availableReviewVersions(Object.keys(versionDates));
-
-  const groups = useMemo<Group[]>(() => {
+  const groups = useMemo<VersionGroup[]>(() => {
     const by = new Map<string, Snap[]>();
-    for (const s of versionSignals) {
-      const arr = by.get(s.symbol) ?? [];
-      arr.push({
-        snap_time: s.snap_time, decision: s.decision, score: num(s.score_trade),
-        price: num(s.price), confidence: s.confidence,
-        ffNet: num(s.ff_intra_net), ffRatio: num(s.ff_intra_ratio), nAlign: num(s.n_aligned),
-        ffScore: num(s.ff_score), fundScore: num(s.fundamental_score),
-        entry: num(s.entry), stop: num(s.stop), tp1: num(s.tp1),
-        breakdown: s.breakdown ?? {},
+    for (const signal of signals) {
+      if (!TODAY_COMPARE_VERSIONS.includes(signal.scoring_version as TodayCompareVersion)) continue;
+      const key = `${signal.scoring_version}:${signal.symbol}`;
+      const snaps = by.get(key) ?? [];
+      snaps.push({
+        snap_time: signal.snap_time,
+        decision: signal.decision,
+        score: num(signal.score_trade),
+        price: num(signal.price),
+        confidence: signal.confidence,
+        ffNet: num(signal.ff_intra_net),
+        ffRatio: num(signal.ff_intra_ratio),
+        nAlign: num(signal.n_aligned),
+        ffScore: num(signal.ff_score),
+        fundScore: num(signal.fundamental_score),
+        entry: num(signal.entry),
+        stop: num(signal.stop),
+        tp1: num(signal.tp1),
+        breakdown: signal.breakdown ?? {},
       });
-      by.set(s.symbol, arr);
+      by.set(key, snaps);
     }
-    const out: Group[] = [];
-    for (const [symbol, snaps] of by) {
+
+    const result: VersionGroup[] = [];
+    for (const [key, snaps] of by) {
+      const split = key.indexOf(":");
+      const version = key.slice(0, split) as TodayCompareVersion;
+      const symbol = key.slice(split + 1);
       snaps.sort((a, b) => String(a.snap_time).localeCompare(String(b.snap_time)));
       const latest = snaps[snaps.length - 1];
-      const nBuy = snaps.filter((x) => isBuy(x.decision)).length;
-      const prices = snaps.map((x) => x.price).filter((p): p is number => p != null);
-      out.push({
-        symbol, snaps, latest, nSnap: snaps.length, nBuy,
-        scoreFirst: snaps[0].score, scoreLast: latest.score,
+      const prices = snaps.map((snap) => snap.price).filter((price): price is number => price != null);
+      result.push({
+        version,
+        symbol,
+        snaps,
+        latest,
+        nSnap: snaps.length,
+        nBuy: snaps.filter((snap) => isBuy(snap.decision)).length,
+        scoreFirst: snaps[0].score,
+        scoreLast: latest.score,
         priceLow: prices.length ? Math.min(...prices) : null,
         priceHigh: prices.length ? Math.max(...prices) : null,
       });
     }
-    return out;
-  }, [versionSignals]);
+    return result;
+  }, [signals]);
 
-  const displayed = useMemo(() => {
-    const qq = q.trim().toUpperCase();
-    // "Chỉ BUY" = mã có ≥1 tín hiệu BUY hôm nay (kể cả lần gần nhất đã đổi).
-    let arr = groups.filter((g) => (!buyOnly || g.nBuy > 0) && (!qq || g.symbol.includes(qq)));
-    const delta = (g: Group) => (g.scoreLast ?? 0) - (g.scoreFirst ?? 0);
-    arr = [...arr].sort((a, b) => {
-      if (sortKey === "buy") return b.nBuy - a.nBuy || (b.scoreLast ?? 0) - (a.scoreLast ?? 0);
-      if (sortKey === "delta") return delta(b) - delta(a);
-      return (b.scoreLast ?? 0) - (a.scoreLast ?? 0);
-    });
-    return arr;
-  }, [groups, buyOnly, q, sortKey]);
-
-  // 3 nhóm: (1) lần chạy gần nhất là BUY/STRONG BUY, (2) BUY khác trong ngày
-  // (gần nhất không còn BUY), (3) còn lại (chỉ hiện khi tắt "Chỉ BUY").
-  const primary = displayed.filter((g) => isBuy(g.latest.decision));
-  const dayBuy = displayed.filter((g) => !isBuy(g.latest.decision) && g.nBuy > 0);
-  const rest = displayed.filter((g) => g.nBuy === 0);
-  const transitions = useMemo(() => {
-    let newBuy = 0, heldBuy = 0, lostBuy = 0;
+  const rows = useMemo<CompareRow[]>(() => {
+    const bySymbol = new Map<string, CompareRow>();
     for (const group of groups) {
-      const previous = group.snaps.length > 1 ? group.snaps[group.snaps.length - 2] : null;
-      if (isBuy(group.latest.decision)) {
-        if (previous && isBuy(previous.decision)) heldBuy++;
-        else newBuy++;
-      } else if (group.snaps.slice(0, -1).some((snap) => isBuy(snap.decision))) lostBuy++;
+      const row = bySymbol.get(group.symbol) ?? { symbol: group.symbol, byVersion: {} };
+      row.byVersion[group.version] = group;
+      bySymbol.set(group.symbol, row);
     }
-    return { current: groups.filter((group) => isBuy(group.latest.decision)).length, newBuy, heldBuy, lostBuy };
+    const query = q.trim().toUpperCase();
+    const result = [...bySymbol.values()].filter((row) => {
+      if (query && !row.symbol.includes(query)) return false;
+      if (commonOnly && !TODAY_COMPARE_VERSIONS.every((version) => row.byVersion[version])) return false;
+      if (buyOnly && !TODAY_COMPARE_VERSIONS.some((version) => (row.byVersion[version]?.nBuy ?? 0) > 0)) return false;
+      return true;
+    });
+    const scoreDelta = (group: VersionGroup | undefined) => group ? (group.scoreLast ?? 0) - (group.scoreFirst ?? 0) : -999;
+    result.sort((a, b) => {
+      if (sortKey === "buy") {
+        const aBuy = TODAY_COMPARE_VERSIONS.reduce((sum, version) => sum + (a.byVersion[version]?.nBuy ?? 0), 0);
+        const bBuy = TODAY_COMPARE_VERSIONS.reduce((sum, version) => sum + (b.byVersion[version]?.nBuy ?? 0), 0);
+        return bBuy - aBuy || Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(a.byVersion[version])));
+      }
+      if (sortKey === "delta") {
+        return Math.max(...TODAY_COMPARE_VERSIONS.map((version) => scoreDelta(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => scoreDelta(a.byVersion[version])));
+      }
+      return Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(a.byVersion[version])));
+    });
+    return result;
+  }, [groups, q, commonOnly, buyOnly, sortKey]);
+
+  const totalSymbols = new Set(groups.map((group) => group.symbol)).size;
+  const commonSymbols = useMemo(() => {
+    const versionsBySymbol = new Map<string, Set<string>>();
+    for (const group of groups) {
+      const versions = versionsBySymbol.get(group.symbol) ?? new Set<string>();
+      versions.add(group.version);
+      versionsBySymbol.set(group.symbol, versions);
+    }
+    return [...versionsBySymbol.values()].filter((versions) => versions.size === TODAY_COMPARE_VERSIONS.length).length;
   }, [groups]);
-  const heatmapGroups = useMemo(
-    () => [...groups].sort((a, b) => (b.scoreLast ?? -999) - (a.scoreLast ?? -999)).slice(0, 30),
-    [groups],
-  );
+  const sameDecision = useMemo(() => rows.filter((row) => {
+    const decisions = TODAY_COMPARE_VERSIONS.map((version) => row.byVersion[version]?.latest.decision);
+    return decisions.every(Boolean) && new Set(decisions).size === 1;
+  }).length, [rows]);
+  const versionStats = TODAY_COMPARE_VERSIONS.map((version) => {
+    const versionGroups = groups.filter((group) => group.version === version);
+    return {
+      version,
+      symbols: versionGroups.length,
+      currentBuy: versionGroups.filter((group) => isBuy(group.latest.decision)).length,
+      snapshots: Math.max(0, ...versionGroups.map((group) => group.nSnap)),
+    };
+  });
 
-  const SORT_OPTS: { key: SortKey; label: string }[] = [
-    { key: "score", label: "Score ↓" },
-    { key: "buy", label: "Giữ BUY nhiều ↓" },
-    { key: "delta", label: "Score tăng trong ngày ↓" },
-  ];
+  const expanded = openKey ? (() => {
+    const separator = openKey.indexOf(":");
+    const symbol = openKey.slice(0, separator);
+    const version = openKey.slice(separator + 1) as TodayCompareVersion;
+    return rows.find((row) => row.symbol === symbol)?.byVersion[version] ?? null;
+  })() : null;
 
-  // Render-function (KHÔNG phải component lồng) để tránh remount mỗi render.
-  const renderCard = (g: Group) => {
-    const isOpen = open === g.symbol;
-    const delta = (g.scoreLast ?? 0) - (g.scoreFirst ?? 0);
-    const c = CONFIDENCE_LABEL[String(g.latest.confidence ?? "").toUpperCase()];
-    const buyFrac = g.nSnap ? g.nBuy / g.nSnap : 0;
-    const buyColor = buyFrac >= 0.8 ? "var(--color-buy)" : buyFrac >= 0.5 ? "#ca8a04" : "var(--color-muted)";
-    const hasRange = g.priceLow != null && g.priceHigh != null && g.priceHigh - g.priceLow >= 0.01;
+  const renderVersionCell = (row: CompareRow, version: TodayCompareVersion) => {
+    const group = row.byVersion[version];
+    if (!group) return <div className="grid min-h-20 place-items-center rounded-md border border-dashed border-[var(--color-border)] px-2 text-xs text-[var(--color-muted)]">Chưa có dữ liệu</div>;
+    const key = `${row.symbol}:${version}`;
+    const delta = (group.scoreLast ?? 0) - (group.scoreFirst ?? 0);
     return (
-      <li key={g.symbol} className="card overflow-hidden">
-        <button
-          onClick={() => setOpen(isOpen ? null : g.symbol)}
-          className="flex w-full flex-wrap items-center gap-x-2 gap-y-1 px-3 py-2.5 text-left text-[13px] active:bg-black/[0.03] dark:active:bg-white/[0.03]"
-        >
-          <span className="w-12 shrink-0 text-[15px] font-semibold">{g.symbol}</span>
-          <DecisionBadge decision={g.latest.decision} />
-          <QualityChip ff={g.latest.ffScore} fund={g.latest.fundScore} />
-          {g.nSnap > 1 && g.nBuy > 0 ? (
-            <span className="tabular shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium" style={{ color: buyColor, borderColor: buyColor }} title="Số lần chạy hôm nay mã là BUY / tổng số lần chạy">
-              BUY {g.nBuy}/{g.nSnap}
-            </span>
-          ) : null}
-          {/* Thông tin phụ — cùng row với mã, ngay sau BUY n/N */}
-          <AlignChip n={g.latest.nAlign} />
-          <ForeignChip net={g.latest.ffNet} ratio={g.latest.ffRatio} />
-          {c ? <span className="text-[11px]" style={{ color: c.color }}>{c.text}</span> : null}
-          <span className="tabular text-[11px] text-[var(--color-muted)]">giá {fmtNum(g.latest.price)}</span>
-          {hasRange ? (
-            <span className="tabular text-[11px] text-[var(--color-muted)]" title="Giá thấp nhất – cao nhất trong các lần chạy hôm nay">
-              {fmtNum(g.priceLow)}–{fmtNum(g.priceHigh)}
-            </span>
-          ) : null}
-          <span className="tabular ml-auto shrink-0 text-right">
-            <span className="text-[15px] font-semibold">{fmtNum(g.scoreLast)}</span>
-            {g.nSnap > 1 && Math.abs(delta) >= 0.01 ? (
-              <span className={`ml-1 text-[11px] ${signClass(delta)}`}>{delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}</span>
-            ) : null}
-          </span>
-          <span aria-hidden className="shrink-0 text-[var(--color-muted)]">{isOpen ? "▴" : "▾"}</span>
-        </button>
-
-        {isOpen ? (
-          <div className="border-t border-[var(--color-border)] bg-black/[0.015] px-3 py-2 dark:bg-white/[0.03]">
-            <div className="mb-1 text-[11px] font-medium text-[var(--color-muted)]">Diễn biến {g.nSnap} lần chạy hôm nay (giờ VN):</div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-[12px]">
-                <thead>
-                  <tr className="text-left text-[11px] text-[var(--color-muted)]">
-                    <th className="py-1 font-medium">Giờ</th>
-                    <th className="py-1 font-medium">Quyết định</th>
-                    <th className="py-1 text-right font-medium">Score</th>
-                    <th className="py-1 text-right font-medium">Giá</th>
-                    <th className="py-1 text-right font-medium" title="Điểm vào / cắt lỗ / chốt lời (TP1) — theo từng lần chạy, chỉ với tín hiệu BUY">Entry/SL/TP</th>
-                    <th className="py-1 text-right font-medium" title="Khối ngoại ròng luỹ kế trong phiên tính đến giờ đó — dòng cuối = tổng cả phiên (KHÔNG cộng dồn giữa các dòng)">NN luỹ kế</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {g.snaps.map((s, i) => {
-                    const prev = i > 0 ? g.snaps[i - 1].decision : null;
-                    const changed = prev != null && prev !== s.decision;
-                    const ffCls = s.ffNet == null ? "text-[var(--color-muted)]" : s.ffNet > 0 ? "text-[var(--color-buy)]" : s.ffNet < 0 ? "text-[var(--color-sell)]" : "text-[var(--color-muted)]";
-const snapKey = `${g.symbol}:${s.snap_time ?? i}`;
-                    const snapOpen = openSnap === snapKey;
-                    return (
-                      <Fragment key={snapKey}>
-                        <tr
-                          className={`cursor-pointer border-t border-[var(--color-border)]/60 ${snapOpen ? "bg-[var(--color-accent)]/[0.04]" : "hover:bg-black/[0.025] dark:hover:bg-white/[0.025]"}`}
-                          onClick={() => setOpenSnap(snapOpen ? null : snapKey)}
-                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setOpenSnap(snapOpen ? null : snapKey); }}
-                          role="button"
-                          tabIndex={0}
-                          aria-expanded={snapOpen}
-                          title="Click để xem 6 nhóm yếu tố tại thời điểm này"
-                        >
-                          <td className="py-1 tabular whitespace-nowrap"><span className="mr-1 text-[var(--color-muted)]">{snapOpen ? "▴" : "▾"}</span>{hmVN(s.snap_time)}</td>
-                          <td className="py-1"><span className="inline-flex items-center gap-1"><DecisionBadge decision={s.decision} />{changed ? <span className="text-[10px] text-[var(--color-accent)]">↳ đổi</span> : null}</span></td>
-                          <td className="py-1 text-right tabular">{fmtNum(s.score)}</td>
-                          <td className="py-1 text-right tabular text-[var(--color-muted)]">{fmtNum(s.price)}</td>
-                          <td className="py-1 text-right tabular whitespace-nowrap text-[11px]">
-                            {isBuy(s.decision) && s.entry != null ? <span><span className="text-[var(--color-accent)]">{fmtNum(s.entry)}</span><span className="text-[var(--color-muted)]">/</span><span className="text-[var(--color-sell)]">{fmtNum(s.stop)}</span><span className="text-[var(--color-muted)]">/</span><span className="text-[var(--color-buy)]">{fmtNum(s.tp1)}</span></span> : <span className="text-[var(--color-muted)]">—</span>}
-                          </td>
-                          <td className={`py-1 text-right tabular whitespace-nowrap ${ffCls}`}>{fmtBil(s.ffNet)}</td>
-                        </tr>
-                        {snapOpen ? <tr><td colSpan={6} className="border-t border-[var(--color-border)]/40 px-1"><SnapshotFactors breakdown={s.breakdown} /></td></tr> : null}
-                      </Fragment>
-                    );                  })}
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-1.5 text-[10px] text-[var(--color-muted)]">
-              NN luỹ kế = khối ngoại ròng cộng dồn trong phiên đến giờ đó; dòng cuối = tổng cả phiên (các dòng KHÔNG cộng lại với nhau) · tham chiếu, chưa vào điểm.
-            </p>
-          </div>
-        ) : null}
-      </li>
+      <button
+        type="button"
+        onClick={() => { setOpenKey(openKey === key ? null : key); setOpenSnap(null); }}
+        aria-expanded={openKey === key}
+        className={`min-h-20 w-full rounded-md border p-2 text-left transition-colors hover:border-[var(--color-accent)] ${cellTone(group.latest.decision)}`}
+      >
+        <div className="flex items-center gap-1.5">
+          <DecisionBadge decision={group.latest.decision} />
+          <span className="ml-auto tabular text-base font-semibold">{fmtNum(group.scoreLast)}</span>
+          {group.nSnap > 1 && Math.abs(delta) >= 0.01 ? <span className={`tabular text-[10px] ${signClass(delta)}`}>{delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}</span> : null}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-[var(--color-muted)]">
+          <span className="tabular">BUY {group.nBuy}/{group.nSnap}</span>
+          <span className="tabular">{hmVN(group.latest.snap_time)}</span>
+          <span className="tabular">giá {fmtNum(group.latest.price)}</span>
+        </div>
+      </button>
     );
   };
-
-  const total = primary.length + dayBuy.length + (buyOnly ? 0 : rest.length);
 
   return (
     <div className="flex flex-col gap-2">
       <details className="card group overflow-hidden">
-        <summary className="touch-target flex cursor-pointer list-none flex-wrap items-center gap-x-2 gap-y-1 px-3 py-2 text-xs [&::-webkit-details-marker]:hidden">
+        <summary className="touch-target flex cursor-pointer list-none flex-wrap items-center gap-2 px-3 py-2 text-xs [&::-webkit-details-marker]:hidden">
           <span aria-hidden className="text-[var(--color-muted)] transition-transform group-open:rotate-90">▸</span>
-          <span className="font-semibold">Thống kê chuyển trạng thái BUY & heatmap snapshot</span>
-          <span className="text-[10px] text-[var(--color-muted)]">B = BUY · S = STRONG BUY · · = trạng thái khác</span>
+          <span className="font-semibold">Thống kê so sánh 3 scoring version</span>
+          <span className="text-[10px] text-[var(--color-muted)]">mặc định đóng</span>
           <span className="ml-auto text-[10px] text-[var(--color-muted)]">mở / đóng</span>
         </summary>
         <div className="border-t border-[var(--color-border)] p-2.5">
-          <InsightStrip className="mb-2" metrics={[
-            { value: `${transitions.current}/${groups.length}`, label: "BUY hiện tại", detail: "độ rộng tập theo dõi", tone: transitions.current ? "positive" : "default" },
-            { value: transitions.newBuy, label: "Mới chuyển BUY", tone: transitions.newBuy ? "positive" : "default" },
-            { value: transitions.heldBuy, label: "Tiếp tục giữ BUY", tone: "positive" },
-            { value: transitions.lostBuy, label: "Vừa mất BUY", tone: transitions.lostBuy ? "warning" : "default" },
-            { value: totalSnaps, label: "Snapshot trong ngày", detail: versionDates[version] },
+          <InsightStrip metrics={[
+            ...versionStats.map((stat) => ({ value: `${stat.currentBuy}/${stat.symbols}`, label: `${VERSION_LABELS[stat.version]} BUY`, detail: `${stat.snapshots} snapshot`, tone: stat.currentBuy ? "positive" as const : "default" as const })),
+            { value: commonSymbols, label: "Có ở cả 3", detail: `${totalSymbols} mã hợp nhất` },
+            { value: sameDecision, label: "Đồng thuận 3 version", detail: "trên tập đang lọc" },
           ]} />
-          <div className="max-h-44 space-y-1 overflow-auto pr-1">
-            {heatmapGroups.map((group) => (
-              <div key={group.symbol} className="flex min-h-6 items-center gap-1 text-[10px]">
-                <span className="w-11 shrink-0 font-semibold">{group.symbol}</span>
-                <div className="flex min-w-0 flex-1 gap-1">
-                  {group.snaps.map((snap, index) => {
-                    const strong = snap.decision === "STRONG BUY";
-                    const buy = snap.decision === "BUY";
-                    return <span key={`${group.symbol}-${snap.snap_time ?? index}`} title={`${hmVN(snap.snap_time)} · ${snap.decision ?? "—"} · score ${fmtNum(snap.score)}`} aria-label={`${group.symbol} ${hmVN(snap.snap_time)} ${snap.decision ?? "khác"}`} className={`grid h-6 min-w-6 flex-1 place-items-center rounded border font-semibold ${strong ? "border-[var(--color-strong-buy)] bg-[var(--color-strong-buy)] text-white" : buy ? "border-[var(--color-buy)] bg-[var(--color-buy)]/15 text-[var(--color-buy)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>{strong ? "S" : buy ? "B" : "·"}</span>;
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </details>
+
       <div className="card flex flex-wrap items-center gap-2 p-2">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Tìm mã…"
-          className="touch-target min-h-[30px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase sm:max-w-[200px]"
-        />
-<label className="flex min-h-[30px] items-center gap-1.5 text-[11px] text-[var(--color-muted)]">
-          Scoring
-          <select
-            value={version}
-            onChange={(e) => router.push(`/today?version=${encodeURIComponent(e.target.value)}`)}
-            className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px] text-[var(--color-ink)]"
-          >
-            {availableVersions.map((v) => <option key={v} value={v}>{v} · {versionDates[v]}</option>)}
-          </select>
-        </label>
-        <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} className="touch-target min-h-[30px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-[12px]">
-          {SORT_OPTS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
+        <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Tìm mã…" className="touch-target min-h-[32px] w-32 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[13px] uppercase sm:max-w-[200px]" />
+        <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)} className="touch-target min-h-[32px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs">
+          <option value="score">Score cao nhất ↓</option>
+          <option value="buy">Số lần BUY ↓</option>
+          <option value="delta">Score tăng mạnh ↓</option>
         </select>
-        <label className="flex min-h-[30px] cursor-pointer items-center gap-1.5 text-[12px] text-[var(--color-muted)]">
-          <input type="checkbox" checked={buyOnly} onChange={(e) => setBuyOnly(e.target.checked)} className="h-4 w-4" />
-          Chỉ BUY
-        </label>
-        <span className="ml-auto text-[11px] text-[var(--color-muted)]">{total} mã · {totalSnaps} lần chạy · {versionDates[version]}</span>
+        <label className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs text-[var(--color-muted)]"><input type="checkbox" checked={buyOnly} onChange={(event) => setBuyOnly(event.target.checked)} className="h-4 w-4" />Có BUY</label>
+        <label className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs font-medium text-[var(--color-ink)]"><input type="checkbox" checked={commonOnly} onChange={(event) => setCommonOnly(event.target.checked)} className="h-4 w-4" />Có ở cả 3</label>
+        <span className="ml-auto text-[11px] text-[var(--color-muted)]">{rows.length} mã</span>
       </div>
 
-      {total === 0 ? (
-        <div className="card px-3 py-6 text-center text-sm text-[var(--color-muted)]">Không có mã khớp.</div>
-      ) : (
-        <>
-          {primary.length ? (
-            <ul className="flex flex-col gap-1.5">{primary.map(renderCard)}</ul>
-          ) : (
-            <div className="card px-3 py-4 text-center text-sm text-[var(--color-muted)]">Lần chạy gần nhất không có mã BUY.</div>
-          )}
-
-          {dayBuy.length ? (
-            <>
-              <div className="mt-1 px-1 text-[11px] font-medium text-[var(--color-muted)]">
-                Tín hiệu BUY khác trong ngày (lần chạy gần nhất không còn BUY) · {dayBuy.length} mã
-              </div>
-              <ul className="flex flex-col gap-1.5">{dayBuy.map(renderCard)}</ul>
-            </>
-          ) : null}
-
-          {!buyOnly && rest.length ? (
-            <>
-              <div className="mt-1 px-1 text-[11px] font-medium text-[var(--color-muted)]">
-                Không có tín hiệu BUY hôm nay · {rest.length} mã
-              </div>
-              <ul className="flex flex-col gap-1.5">{rest.map(renderCard)}</ul>
-            </>
-          ) : null}
-        </>
+      {rows.length === 0 ? <div className="card px-3 py-8 text-center text-sm text-[var(--color-muted)]">Không có mã khớp bộ lọc hiện tại.</div> : (
+        <div className="card overflow-x-auto">
+          <table className="w-full min-w-[860px] table-fixed text-xs">
+            <thead className="sticky top-0 z-10 bg-[var(--color-surface)] text-left">
+              <tr className="border-b border-[var(--color-border)] text-[var(--color-muted)]">
+                <th className="w-20 px-3 py-2 font-medium">Mã</th>
+                {TODAY_COMPARE_VERSIONS.map((version) => <th key={version} className="px-2 py-2 font-medium"><span className="font-mono font-semibold text-[var(--color-ink)]">{VERSION_LABELS[version]}</span><span className="ml-2 text-[10px]">{versionDates[version] ?? "chưa có run"}</span></th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const isExpanded = expanded?.symbol === row.symbol;
+                return (
+                  <Fragment key={row.symbol}>
+                    <tr className="border-b border-[var(--color-border)]/70 align-top">
+                      <td className="px-3 py-3"><span className="sticky left-0 text-sm font-semibold">{row.symbol}</span></td>
+                      {TODAY_COMPARE_VERSIONS.map((version) => <td key={version} className="px-2 py-2">{renderVersionCell(row, version)}</td>)}
+                    </tr>
+                    {isExpanded && expanded ? (
+                      <tr className="border-b border-[var(--color-border)] bg-black/[0.015] dark:bg-white/[0.025]">
+                        <td colSpan={4} className="px-3 py-3">
+                          <div className="mb-2 flex flex-wrap items-center gap-2"><span className="font-semibold">{expanded.symbol} · {VERSION_LABELS[expanded.version]}</span><span className="text-[var(--color-muted)]">{expanded.nSnap} snapshot trong ngày</span><button type="button" onClick={() => setOpenKey(null)} className="ml-auto text-[11px] text-[var(--color-accent)]">Đóng</button></div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full min-w-[720px] text-xs">
+                              <thead className="text-left text-[11px] text-[var(--color-muted)]"><tr><th className="py-1">Giờ</th><th className="py-1">Quyết định</th><th className="py-1 text-right">Score</th><th className="py-1 text-right">Giá</th><th className="py-1 text-right">Entry/SL/TP</th><th className="py-1 text-right">NN lũy kế</th></tr></thead>
+                              <tbody>{expanded.snaps.map((snap, index) => {
+                                const snapKey = `${expanded.symbol}:${expanded.version}:${snap.snap_time ?? index}`;
+                                const snapOpen = openSnap === snapKey;
+                                const ffClass = snap.ffNet == null ? "text-[var(--color-muted)]" : snap.ffNet > 0 ? "text-[var(--color-buy)]" : "text-[var(--color-sell)]";
+                                return <Fragment key={snapKey}><tr tabIndex={0} role="button" aria-expanded={snapOpen} onClick={() => setOpenSnap(snapOpen ? null : snapKey)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setOpenSnap(snapOpen ? null : snapKey); }} className="cursor-pointer border-t border-[var(--color-border)]/60 hover:bg-black/[0.025] dark:hover:bg-white/[0.025]"><td className="py-1.5 tabular">{snapOpen ? "▴" : "▾"} {hmVN(snap.snap_time)}</td><td className="py-1.5"><DecisionBadge decision={snap.decision} /></td><td className="py-1.5 text-right tabular">{fmtNum(snap.score)}</td><td className="py-1.5 text-right tabular">{fmtNum(snap.price)}</td><td className="py-1.5 text-right tabular">{isBuy(snap.decision) && snap.entry != null ? <span><span className="text-[var(--color-accent)]">{fmtNum(snap.entry)}</span>/<span className="text-[var(--color-sell)]">{fmtNum(snap.stop)}</span>/<span className="text-[var(--color-buy)]">{fmtNum(snap.tp1)}</span></span> : "—"}</td><td className={`py-1.5 text-right tabular ${ffClass}`}>{fmtBil(snap.ffNet)}</td></tr>{snapOpen ? <tr><td colSpan={6}><SnapshotFactors breakdown={snap.breakdown} /></td></tr> : null}</Fragment>;
+                              })}</tbody>
+                            </table>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

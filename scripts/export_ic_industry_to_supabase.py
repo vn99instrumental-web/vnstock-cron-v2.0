@@ -42,6 +42,8 @@ def compute_rows(preds, outs, batch_id):
     ret = {o.get("pred_id"): o for o in outs if o.get("pred_id")}
     by_version = defaultdict(list)
     for p in preds:
+        if p.get("shadow_forward_eligible") is False:
+            continue
         by_version[p.get("scoring_version") or "unknown"].append(p)
     rows = []
     asof = None

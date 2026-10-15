@@ -430,7 +430,8 @@ def main():
                         done.add(o["pred_id"])
             pend = [p for p in preds
                     if p.get("pred_id") and p["pred_id"] not in done
-                    and p.get("symbol") and p.get("signal_date")]
+                    and p.get("symbol") and p.get("signal_date")
+                    and p.get("shadow_forward_eligible") is not False]
             # Log theo tên sổ (phân biệt hold vs hold10 cho rõ)
             book = out_sub.split("/")[-1]
             log.info(f"[{label}/{book}] preds={len(preds)} "

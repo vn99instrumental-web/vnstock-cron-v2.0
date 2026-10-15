@@ -80,6 +80,8 @@ def compute_ic_rows(preds: list[dict], outs: list[dict]) -> list[dict]:
     # gom prediction theo version
     by_version: dict[str, list[dict]] = defaultdict(list)
     for p in preds:
+        if p.get("shadow_forward_eligible") is False:
+            continue
         by_version[p.get("scoring_version") or "unknown"].append(p)
 
     rows: list[dict] = []

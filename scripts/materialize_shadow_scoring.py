@@ -152,6 +152,8 @@ def materialize_shadow_row(row: dict, config: dict | None = None) -> dict:
         "shadow_parent_version": PARENT_VERSION,
         "shadow_method": f"{config['weight_method']['name']}_core",
         "shadow_weight_profile": _weight_profile(weights),
+        "shadow_data_origin": "forward",
+        "shadow_forward_eligible": True,
         "shadow_core_only": True,
     })
     confidence_pct, confidence = _confidence(shadow, weights, gates)

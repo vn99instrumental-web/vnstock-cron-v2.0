@@ -139,3 +139,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Supabase migration `0034_add_v419_shadow.sql` đã áp dụng: view phân tích nhận shadow; retention giữ daily-close và daily-BUY. View dùng `security_invoker`; RPC prune chỉ `service_role` được execute.
 - Tài liệu công thức, cơ sở và checklist monitor: `docs/V419_SHADOW_WEIGHTING.md`.
 - Xác minh: 5 unit test PASS; materialize 100/100 mã; payload sync giữ đủ trace; ESLint, TypeScript và Next.js production build PASS. Deployment production cho commit công thức `eeebb4c6` READY; Supabase và ledger hiện có 0 row equal-weight.
+
+## So sánh Hôm nay và backfill v4.19 2026-10-15
+
+- Tab Hôm nay cố định ba cột `v4.17`, `v4.18`, `v4.19`; mỗi ô mở được timeline snapshot và factor của đúng version. Bộ lọc “Có ở cả 3” chỉ giữ mã xuất hiện trong cả ba version.
+- Query tách theo version để không bị giới hạn 1.000 row của Supabase làm mất ngẫu nhiên một version khi tải trang; mobile dùng bảng cuộn ngang.
+- Ledger bổ sung 2.000 row `v4.19-shadow` hồi cứu: 100 mã × 20 ngày trước 2026-10-15, lấy snapshot cuối ngày từ nguồn v4.18.
+- Row hồi cứu không có entry/SL/TP, được gắn `shadow_data_origin=retrospective_backfill` và `shadow_forward_eligible=false`; evaluator và exporter IC loại các row này. Dữ liệu forward mới được gắn `forward/true`.
+- Batch equal-weight cũ 100 row bị loại khi backfill; chỉ giữ cấu hình `ic_shrunk_fixed_core` cho chuỗi v4.19.
+- Xác minh local: 6 unit test PASS, Python compile PASS, ESLint/TypeScript không có error và Next.js production build PASS. Visual QA sau đăng nhập còn phụ thuộc session owner.

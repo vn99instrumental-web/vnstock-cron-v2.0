@@ -217,6 +217,8 @@ def run():
             "shadow_parent_version": sig.get("shadow_parent_version"),
             "shadow_method"        : sig.get("shadow_method"),
             "shadow_weight_profile": sig.get("shadow_weight_profile"),
+            "shadow_data_origin"  : sig.get("shadow_data_origin"),
+            "shadow_forward_eligible": sig.get("shadow_forward_eligible"),
             "shadow_core_only"     : sig.get("shadow_core_only"),
 
             # ── RCEG metadata: để đo hiệu quả V4 THEO regime từ ledger ──

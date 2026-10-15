@@ -14,7 +14,8 @@
     "uncertainty_penalty_se": 0.5,
     "min_weight": 0.05,
     "max_weight": 0.35,
-    "monitor_min_forward_days": 30
+    "monitor_min_forward_days": 30,
+    "forward_start": "2026-10-15"
   },
   "factor_weights": {
     "trade": {

@@ -47,6 +47,8 @@ class ShadowMaterializerTests(unittest.TestCase):
         self.assertEqual(shadow["shadow_parent_version"], "v4.18")
         self.assertEqual(shadow["shadow_method"], "ic_shrunk_fixed_core")
         self.assertEqual(shadow["shadow_weight_profile"], "mr5_bo15_flow20_fund25_growth35")
+        self.assertEqual(shadow["shadow_data_origin"], "forward")
+        self.assertTrue(shadow["shadow_forward_eligible"])
         self.assertTrue(shadow["shadow_core_only"])
 
     def test_extras_are_not_used_and_stale_alternatives_are_removed(self):

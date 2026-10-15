@@ -41,3 +41,15 @@ Trong backtest cùng mẫu, cấu hình làm tròn đạt daily IC 5d +0,222 và
 - Chỉ review quyết định promote sau tối thiểu 30 ngày outcome chín độc lập. Theo dõi số ngày có outcome, cỡ mẫu, IC 3/5/10d, hit rate và mức ổn định theo thời gian; không kết luận từ một vài phiên.
 
 Batch equal-weight đầu tiên (run `2026-10-15_13:53_v4.19-shadow`, 100 signal, chưa có outcome) đã được xóa khỏi Supabase và ledger trên `main` trước khi ghi cấu hình IC-weighted. Vì vậy chuỗi monitor giữ một phương pháp duy nhất.
+
+## Dữ liệu lịch sử dùng cho tab Mua
+
+Để chọn và đối chiếu v4.19 ngay trên dashboard, ledger có một lớp backfill phục vụ hiển thị từ các snapshot v4.18 trước ngày bắt đầu forward `2026-10-15`:
+
+- Mỗi ngày chỉ giữ snapshot cuối ngày; nếu cần, giữ thêm snapshot BUY cuối ngày. Với dữ liệu hiện tại hai mốc trùng nhau, tổng cộng 2.000 row trên 20 ngày.
+- Chỉ tái tính score/decision v4.19 từ factor có sẵn. Không sao chép `entry`, `stop`, `tp1`, risk/reward hoặc các mức giá giao dịch.
+- Mỗi row ghi `shadow_data_origin=retrospective_backfill`, `shadow_forward_eligible=false` và ID prediction nguồn để audit.
+- Evaluator outcome, IC tổng, IC ngành và forward-IC loại rõ các row hồi cứu này. Vì vậy chúng chỉ phục vụ lịch sử/đối chiếu giao diện, không làm đẹp kết quả monitor forward.
+- Row sinh bởi run thật từ ngày bắt đầu forward ghi `shadow_data_origin=forward` và `shadow_forward_eligible=true`.
+
+Script tạo lại có tính idempotent: `python scripts/backfill_v419_shadow.py --write`. Không chạy script này trong intraday; ledger lịch sử chỉ cần backfill một lần hoặc khi chủ động tái dựng.

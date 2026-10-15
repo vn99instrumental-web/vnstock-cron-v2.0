@@ -106,7 +106,7 @@ def main():
         preds = [p for p in preds if p.get("scoring_version") == args.version]
     if args.universe:
         preds = [p for p in preds if p.get("universe_variant") == args.universe]
-    preds = daily_last(preds)
+    preds = daily_last([p for p in preds if p.get("shadow_forward_eligible") is not False])
 
     print("=== EVAL FORWARD IC (daily-last, IC theo ngay + block-bootstrap) ===")
     print("score = %s | version = %s | universe = %s" % (args.score, args.version or "TAT CA", args.universe or "TAT CA"))

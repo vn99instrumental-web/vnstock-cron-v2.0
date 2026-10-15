@@ -1,13 +1,11 @@
 import { DataStatusPanel, type DataStatusItem, type DataStatusTone } from "@/components/data-status-panel";
 import { PageHeader, EmptyState, QueryErrorState } from "@/components/ui";
-import { TodayBoard, type TodaySignal } from "@/components/today-board";
-import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
+import { TODAY_COMPARE_VERSIONS, TodayBoard, type TodaySignal } from "@/components/today-board";
+import { getLatestVersionRuns } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { dateTimeVN, hmVN } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
-
-type TodayPageProps = { searchParams: Promise<{ version?: string }> };
 
 function ageTone(timestamp: string | null | undefined, okHours: number, warnHours: number): DataStatusTone {
   if (!timestamp) return "unknown";
@@ -22,56 +20,61 @@ function dateAgeTone(dateValue: string | null | undefined, okDays: number, warnD
   return ageDays <= okDays ? "ok" : ageDays <= warnDays ? "warn" : "stale";
 }
 
-export default async function TodayPage({ searchParams }: TodayPageProps) {
-  const params = await searchParams;
-  const metadata = await getLatestVersionRuns();
-  const currentVersion = resolveReviewVersion(params.version, metadata.byVersion);
-  const run = metadata.byVersion[currentVersion];
-  const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
+const SIGNAL_COLUMNS = "symbol, signal_date, scoring_version, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score, entry:breakdown->>entry, stop:breakdown->>stop, tp1:breakdown->>tp1, breakdown";
 
+export default async function TodayPage() {
+  const metadata = await getLatestVersionRuns("today-compare-metadata");
   if (metadata.error) {
-    return <><PageHeader title="Hôm nay" desc="Tín hiệu của phiên mới nhất." /><QueryErrorState hint="Không đọc được metadata các scoring version từ Supabase." /></>;
-  }
-  if (!run) {
-    return <><PageHeader title="Hôm nay" desc="Tín hiệu của phiên mới nhất." /><EmptyState title="Chưa có dữ liệu tín hiệu" hint="Chưa có run cho scoring version đã chọn." /></>;
+    return <><PageHeader title="Hôm nay" desc="Đối chiếu tín hiệu v4.17–v4.19." /><QueryErrorState hint="Không đọc được metadata scoring version từ Supabase." /></>;
   }
 
-  const currentDate = versionDates[currentVersion];
-  const dataClient = createCachedPublicClient("today", currentVersion);
-  const [signalsResult, ohlcResult, outcomeResult, icResult] = await Promise.all([
-    dataClient
-      .from("v4_signals")
-      .select("symbol, signal_date, scoring_version, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score, entry:breakdown->>entry, stop:breakdown->>stop, tp1:breakdown->>tp1, breakdown")
-      .eq("scoring_version", currentVersion)
-      .eq("signal_date", currentDate)
-      .order("score_trade", { ascending: false }),
-    dataClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle(),
-    dataClient.from("v4_outcomes").select("signal_date, eval_date, synced_at").eq("scoring_version", currentVersion).order("eval_date", { ascending: false }).limit(1).maybeSingle(),
-    dataClient.from("v4_ic_metrics").select("computed_at").eq("config_version", currentVersion).order("computed_at", { ascending: false }).limit(1).maybeSingle(),
-  ]);
+  const versionDates = Object.fromEntries(TODAY_COMPARE_VERSIONS.flatMap((version) => {
+    const date = metadata.versionDates[version];
+    return date ? [[version, date]] : [];
+  })) as Record<string, string>;
 
-  if (signalsResult.error) {
-    return <><PageHeader title="Hôm nay" desc={`${currentVersion} · ${currentDate}`} /><QueryErrorState hint="Supabase không trả được danh sách tín hiệu của phiên đã chọn." /></>;
+  const signalResponses = await Promise.all(TODAY_COMPARE_VERSIONS.map(async (version) => {
+    const signalDate = versionDates[version];
+    if (!signalDate) return { version, data: [] as TodaySignal[], error: null };
+    const client = createCachedPublicClient(`today-compare-${version}`, version);
+    const response = await client.from("v4_signals").select(SIGNAL_COLUMNS)
+      .eq("scoring_version", version).eq("signal_date", signalDate)
+      .order("snap_time", { ascending: true });
+    return { version, data: (response.data ?? []) as TodaySignal[], error: response.error };
+  }));
+  const failed = signalResponses.find((response) => response.error);
+  if (failed) {
+    return <><PageHeader title="Hôm nay" desc="Đối chiếu tín hiệu v4.17–v4.19." /><QueryErrorState hint={`Không đọc được tín hiệu ${failed.version} từ Supabase.`} /></>;
   }
 
-  const signals = (signalsResult.data ?? []) as TodaySignal[];
-  const totalSnaps = new Set(signals.map((signal) => String(signal.snap_time))).size;
-  const nSymbols = new Set(signals.map((signal) => signal.symbol)).size;
-  const ohlc = ohlcResult.data as { date?: string; synced_at?: string } | null;
-  const outcome = outcomeResult.data as { signal_date?: string; eval_date?: string; synced_at?: string } | null;
-  const ic = icResult.data as { computed_at?: string } | null;
+  const signals = signalResponses.flatMap((response) => response.data);
+  const baseClient = createCachedPublicClient("today-compare-health", "v4.18");
+  const { data: ohlc } = await baseClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle();
+  const ohlcRow = ohlc as { date?: string; synced_at?: string } | null;
   const statusItems: DataStatusItem[] = [
-    { label: `Run ${currentVersion}`, value: dateTimeVN(run.started_at), detail: run.run_id, tone: ageTone(run.started_at, 6, 30) },
-    { label: "Giá OHLC", value: ohlc?.date ?? "—", detail: ohlc?.synced_at ? `sync ${dateTimeVN(ohlc.synced_at)}` : "chưa có thời điểm sync", tone: dateAgeTone(ohlc?.date, 3, 5) },
-    { label: "Outcome đã chín", value: outcome?.eval_date ?? "—", detail: outcome?.signal_date ? `tín hiệu đến ${outcome.signal_date}` : "chưa có outcome", tone: dateAgeTone(outcome?.eval_date, 3, 7) },
-    { label: "IC", value: ic?.computed_at ? dateTimeVN(ic.computed_at) : "—", detail: `scoring ${currentVersion}`, tone: ageTone(ic?.computed_at, 36, 72) },
+    ...TODAY_COMPARE_VERSIONS.map((version) => {
+      const run = metadata.byVersion[version];
+      return {
+        label: `Run ${version === "v4.19-shadow" ? "v4.19" : version}`,
+        value: run ? dateTimeVN(run.started_at) : "—",
+        detail: run?.run_id ?? "chưa có run",
+        tone: ageTone(run?.started_at, 6, 30),
+      } satisfies DataStatusItem;
+    }),
+    { label: "Giá OHLC", value: ohlcRow?.date ?? "—", detail: ohlcRow?.synced_at ? `sync ${dateTimeVN(ohlcRow.synced_at)}` : "chưa có thời điểm sync", tone: dateAgeTone(ohlcRow?.date, 3, 5) },
   ];
+
+  const symbolCount = new Set(signals.map((signal) => signal.symbol)).size;
+  const latestTimes = TODAY_COMPARE_VERSIONS.flatMap((version) => {
+    const run = metadata.byVersion[version];
+    return run ? [`${version === "v4.19-shadow" ? "v4.19" : version} ${hmVN(run.started_at)}`] : [];
+  });
 
   return (
     <>
-      <PageHeader title="Hôm nay" desc={`${currentDate} · ${totalSnaps} lần chạy · ${nSymbols} mã · phiên mới nhất ${hmVN(run.started_at)} (giờ VN)`} />
+      <PageHeader title="Hôm nay" desc={`${symbolCount} mã hợp nhất · ${latestTimes.join(" · ")} (giờ VN)`} />
       <DataStatusPanel items={statusItems} />
-      {signals.length ? <TodayBoard signals={signals} currentVersion={currentVersion} versionDates={versionDates} /> : <EmptyState title="Phiên này chưa có tín hiệu" />}
+      {signals.length ? <TodayBoard signals={signals} versionDates={versionDates} /> : <EmptyState title="Chưa có dữ liệu cho ba version" hint="Cần ít nhất một run v4.17, v4.18 hoặc v4.19." />}
     </>
   );
 }
