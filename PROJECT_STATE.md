@@ -142,7 +142,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 ## So sánh Hôm nay và backfill v4.19 2026-10-15
 
-- Tab Hôm nay cố định ba cột `v4.17`, `v4.18`, `v4.19`; mỗi ô mở được timeline snapshot và factor của đúng version. Bộ lọc “Có ở cả 3” chỉ giữ mã xuất hiện trong cả ba version.
+- Tab Hôm nay cố định ba cột `v4.17`, `v4.18`, `v4.19`; mỗi ô mở được timeline snapshot và factor của đúng version. Khi bật đồng thời “Có ở cả 3” và “Có BUY/STRONG BUY”, mã chỉ được giữ lại nếu quyết định mới nhất của cả ba version đều là `BUY` hoặc `STRONG BUY`.
 - Query tách theo version để không bị giới hạn 1.000 row của Supabase làm mất ngẫu nhiên một version khi tải trang; mobile dùng bảng cuộn ngang.
 - Ledger bổ sung 2.000 row `v4.19-shadow` hồi cứu: 100 mã × 20 ngày trước 2026-10-15, lấy snapshot cuối ngày từ nguồn v4.18.
 - Row hồi cứu không có entry/SL/TP, được gắn `shadow_data_origin=retrospective_backfill` và `shadow_forward_eligible=false`; evaluator và exporter IC loại các row này. Dữ liệu forward mới được gắn `forward/true`.

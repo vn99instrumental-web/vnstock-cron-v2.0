@@ -31,7 +31,10 @@ function num(v: unknown): number | null {
   const n = typeof v === "number" ? v : parseFloat(String(v));
   return Number.isFinite(n) ? n : null;
 }
-const isBuy = (d: string | null) => d === "BUY" || d === "STRONG BUY";
+const isBuy = (d: string | null | undefined) => {
+  const decision = String(d ?? "").trim().toUpperCase().replace(/[_-]+/g, " ");
+  return decision === "BUY" || decision === "STRONG BUY";
+};
 
 interface Snap {
   snap_time: string | null; decision: string | null; score: number | null;
@@ -167,8 +170,12 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
     const query = q.trim().toUpperCase();
     const result = [...bySymbol.values()].filter((row) => {
       if (query && !row.symbol.includes(query)) return false;
-      if (commonOnly && !TODAY_COMPARE_VERSIONS.every((version) => row.byVersion[version])) return false;
-      if (buyOnly && !TODAY_COMPARE_VERSIONS.some((version) => (row.byVersion[version]?.nBuy ?? 0) > 0)) return false;
+      const hasAllVersions = TODAY_COMPARE_VERSIONS.every((version) => row.byVersion[version]);
+      const latestBuyInAllVersions = TODAY_COMPARE_VERSIONS.every((version) => isBuy(row.byVersion[version]?.latest.decision));
+      const latestBuyInAnyVersion = TODAY_COMPARE_VERSIONS.some((version) => isBuy(row.byVersion[version]?.latest.decision));
+      if (commonOnly && !hasAllVersions) return false;
+      if (buyOnly && commonOnly && !latestBuyInAllVersions) return false;
+      if (buyOnly && !commonOnly && !latestBuyInAnyVersion) return false;
       return true;
     });
     const scoreDelta = (group: VersionGroup | undefined) => group ? (group.scoreLast ?? 0) - (group.scoreFirst ?? 0) : -999;
@@ -268,8 +275,8 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
           <option value="buy">Số lần BUY ↓</option>
           <option value="delta">Score tăng mạnh ↓</option>
         </select>
-        <label className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs text-[var(--color-muted)]"><input type="checkbox" checked={buyOnly} onChange={(event) => setBuyOnly(event.target.checked)} className="h-4 w-4" />Có BUY</label>
-        <label className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs font-medium text-[var(--color-ink)]"><input type="checkbox" checked={commonOnly} onChange={(event) => setCommonOnly(event.target.checked)} className="h-4 w-4" />Có ở cả 3</label>
+        <label title="Khi bật cùng 'Có ở cả 3', quyết định mới nhất của cả ba version phải là BUY hoặc STRONG BUY." className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs text-[var(--color-muted)]"><input type="checkbox" checked={buyOnly} onChange={(event) => setBuyOnly(event.target.checked)} className="h-4 w-4" />Có BUY/STRONG BUY</label>
+        <label title="Khi bật cùng filter BUY, cả v4.17, v4.18 và v4.19 đều phải đang là BUY hoặc STRONG BUY." className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs font-medium text-[var(--color-ink)]"><input type="checkbox" checked={commonOnly} onChange={(event) => setCommonOnly(event.target.checked)} className="h-4 w-4" />Có ở cả 3</label>
         <span className="ml-auto text-[11px] text-[var(--color-muted)]">{rows.length} mã</span>
       </div>
 
