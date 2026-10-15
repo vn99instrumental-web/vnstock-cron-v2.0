@@ -25,7 +25,20 @@ def main() -> int:
         log.error("Retention prune failed: HTTP %s %s", response.status_code, response.text[:500])
         return 1
     payload = response.json() if response.content else {}
-    log.info("Supabase retention applied: %s", json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    orphan_response = requests.post(
+        f"{url}/rest/v1/rpc/prune_v4_orphan_runs",
+        headers={"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        data="{}", timeout=300,
+    )
+    if orphan_response.status_code >= 300:
+        log.error("Orphan-run cleanup failed: HTTP %s %s", orphan_response.status_code, orphan_response.text[:500])
+        return 1
+    orphan_runs = orphan_response.json() if orphan_response.content else 0
+    log.info(
+        "Supabase retention applied: %s; orphan runs removed: %s",
+        json.dumps(payload, ensure_ascii=False, sort_keys=True),
+        orphan_runs,
+    )
     return 0
 
 if __name__ == "__main__":

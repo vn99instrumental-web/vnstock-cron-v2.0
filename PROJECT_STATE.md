@@ -115,3 +115,8 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Tab IC lấy factor × version từ v4_ic_metrics, indicator từ v4_marginal_ic, IC ngành từ batch v4_ic_industry_metrics; tab Mua cũng đọc IC ngành từ batch precompute.
 - Migration 0032_retain_legacy_daily_signals.sql tạo RPC service-role-only; cả daily sync, manual full sync và weekly flow đều prune trước khi refresh snapshot/revalidate.
 - Git ledger tiếp tục là nguồn lossless. Supabase là serving layer có retention; không chạy VACUUM FULL tự động.- Production prune 2026-10-15 đã xác minh: legacy signal 66.330 → 11.380, outcome 52.618 → 8.730, run 655 → 97. Kích thước vật lý vẫn khoảng 350 MB sau DELETE và sẽ tái sử dụng khoảng trống.
+## Supabase cleanup 2026-10-15
+
+- Production hiện có 28.080 signal, 19.230 outcome và 264 run; đã xóa 139 orphan run, không còn orphan/dead tuple.
+- Migration 0033_prune_orphan_runs.sql và retention script ngăn orphan run tái tích lũy.
+- Database vẫn khoảng 350 MB vật lý; live signal payload khoảng 43,5 MB. VACUUM FULL chưa chạy vì cần maintenance lock riêng.

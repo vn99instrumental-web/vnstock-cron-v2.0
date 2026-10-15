@@ -76,3 +76,9 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 - Bốn version cũ giảm từ 66.330 xuống 11.380 signal; xóa 54.950 snapshot intraday lặp.
 - Outcomes liên quan giảm từ 52.618 xuống 8.730; runs giảm từ 655 xuống 97.
 - Sau DELETE, kích thước vật lý vẫn khoảng 350 MB vì PostgreSQL giữ page để tái sử dụng. Mục tiêu tức thời là chặn tăng trưởng; autovacuum sẽ thu hồi tuple chết, không chạy VACUUM FULL tự động.
+### Cleanup production 2026-10-15
+
+- Đã xóa 139 dòng v4_runs orphan của v4.17/v4.18; sau cleanup orphan run = 0.
+- Không xóa thêm signal, outcome, OHLC hay IC vì toàn bộ phần còn lại có consumer hoặc nằm trong retention đã phê duyệt.
+- VACUUM ANALYZE đã chạy cho v4_signals, v4_outcomes và v4_runs; dead tuple = 0. Kích thước vật lý database vẫn khoảng 350 MB và các page trống sẽ được tái sử dụng.
+- VACUUM FULL chưa chạy vì cần khóa độc quyền bảng production; chỉ thực hiện trong maintenance window có phê duyệt riêng.
