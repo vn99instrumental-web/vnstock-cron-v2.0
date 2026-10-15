@@ -1,6 +1,6 @@
 # PROJECT_STATE.md
 
-**Cập nhật:** 2026-10-15
+**Cập nhật:** 2026-10-16
 **Branch production:** `main`
 **Dashboard:** <https://trading-snapshot-dl.vercel.app>
 
@@ -148,3 +148,5 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Row hồi cứu không có entry/SL/TP, được gắn `shadow_data_origin=retrospective_backfill` và `shadow_forward_eligible=false`; evaluator và exporter IC loại các row này. Dữ liệu forward mới được gắn `forward/true`.
 - Batch equal-weight cũ 100 row bị loại khi backfill; chỉ giữ cấu hình `ic_shrunk_fixed_core` cho chuỗi v4.19.
 - Xác minh local: 6 unit test PASS, Python compile PASS, ESLint/TypeScript không có error và Next.js production build PASS. Visual QA sau đăng nhập còn phụ thuộc session owner.
+- PASS — commit `97dcd9ce` đã push lên `main`; production deployment `dpl_HwwBcfieYCdnLnkot8e8Sj9Y33Tk` READY và alias `trading-snapshot-dl.vercel.app` trỏ đúng commit này.
+- PASS — Supabase có 2.000 row backfill từ 2026-09-17 đến 2026-10-14, không row nào có entry/SL/TP; có 100 row forward IC-weighted ngày 2026-10-15 và 0 row equal-weight sau cleanup.
