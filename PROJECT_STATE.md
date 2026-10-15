@@ -73,7 +73,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 ## Việc tiếp theo
 
-- Theo dõi dung lượng Supabase hằng tháng theo `docs/DATA_RETENTION.md`; snapshot 2026-10-14 là 339 MB (~68% mốc 500 MB).
+- Theo dõi dung lượng Supabase hằng tháng theo `docs/DATA_RETENTION.md`; snapshot trước retention 2026-10-14/15 khoảng 350 MB (~70% mốc 500 MB).
 - Tách Supabase project khi cần độc lập quota hoặc isolation với các ứng dụng khác.
 
 ## Mốc dashboard insight & serving 2026-10-14
@@ -109,3 +109,9 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 ## Thu gọn bảng đối chiếu IC 2026-10-14
 
 - Hai khối “So sánh factor × scoring version” và “Phạm vi dữ liệu dùng khi đối chiếu version” dùng `details`, mặc định đóng sau mỗi lần tải trang và chỉ hiện nội dung khi người dùng mở.
+## Retention theo version 2026-10-15
+
+- v4.18 và v4.17 giữ full intraday trên Supabase; v4.9, v4.8, v4.1, v2.3 chỉ giữ run cuối ngày và run BUY cuối ngày.
+- Tab IC lấy factor × version từ v4_ic_metrics, indicator từ v4_marginal_ic, IC ngành từ batch v4_ic_industry_metrics; tab Mua cũng đọc IC ngành từ batch precompute.
+- Migration 0032_retain_legacy_daily_signals.sql tạo RPC service-role-only; cả daily sync, manual full sync và weekly flow đều prune trước khi refresh snapshot/revalidate.
+- Git ledger tiếp tục là nguồn lossless. Supabase là serving layer có retention; không chạy VACUUM FULL tự động.- Production prune 2026-10-15 đã xác minh: legacy signal 66.330 → 11.380, outcome 52.618 → 8.730, run 655 → 97. Kích thước vật lý vẫn khoảng 350 MB sau DELETE và sẽ tái sử dụng khoảng trống.

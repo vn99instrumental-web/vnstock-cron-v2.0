@@ -13,7 +13,7 @@ Giữ dữ liệu đủ dài để so sánh các scoring version đang được 
 
 ## Snapshot dung lượng
 
-Ngày 2026-10-14, database dùng 339 MB (~68% mốc 500 MB). Ba bảng dashboard lớn nhất:
+Ngày 2026-10-14, database dùng khoảng 350 MB (~70% mốc 500 MB). Ba bảng dashboard lớn nhất:
 
 - `v4_signals`: 239 MB
 - `v4_outcomes`: 29 MB
@@ -62,3 +62,17 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 - `v4_ic_daily_snapshot`: một dòng cho mỗi ngày × version × factor × horizon, giữ tối đa 400 ngày.
 - Snapshot không thay ledger hoặc các bảng nguồn. Nếu refresh lỗi, dashboard vẫn có dữ liệu nguồn/cached trước đó nhưng phần chẩn đoán có thể cũ.
 - Chỉ service role được gọi `refresh_v4_dashboard_snapshots()`; anon/authenticated chỉ có quyền đọc các bảng snapshot.
+
+## Retention intraday theo scoring version
+
+- v4.18 và v4.17: giữ toàn bộ snapshot intraday để đối chiếu trạng thái trong ngày.
+- v4.9, v4.8, v4.1, v2.3: mỗi ngày giữ run cuối cùng và thêm run cuối cùng có BUY/STRONG BUY. Cách này giữ đủ breakdown cho tab Mua kể cả khi run đóng cửa không còn tín hiệu BUY.
+- Outcomes và runs của bốn version cũ chỉ giữ khi còn liên kết với signal được giữ. Ledger Git vẫn là bản lossless để backfill.
+- IC tổng, IC theo ngành và marginal IC được tính từ ledger/daily-last trước khi retention chạy; Vercel đọc các bảng precompute thay vì tính lại từ toàn bộ intraday.
+- Hàm prune_v4_legacy_intraday() chỉ cấp quyền thực thi cho service_role; workflow gọi sau các bước export IC và trước khi refresh dashboard snapshot.
+- DELETE tạo khoảng trống để PostgreSQL tái sử dụng. Không tự chạy VACUUM FULL vì thao tác đó khóa bảng; autovacuum xử lý reclaim thông thường.
+### Kết quả áp dụng production 2026-10-15
+
+- Bốn version cũ giảm từ 66.330 xuống 11.380 signal; xóa 54.950 snapshot intraday lặp.
+- Outcomes liên quan giảm từ 52.618 xuống 8.730; runs giảm từ 655 xuống 97.
+- Sau DELETE, kích thước vật lý vẫn khoảng 350 MB vì PostgreSQL giữ page để tái sử dụng. Mục tiêu tức thời là chặn tăng trưởng; autovacuum sẽ thu hồi tuple chết, không chạy VACUUM FULL tự động.

@@ -27,6 +27,10 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
   const latestBuy = latestBuyResponse.data;
   const newestRun = newestRunResponse.data;
 
+  const industryBatchResponse = await dataClient.from("v4_ic_industry_batch")
+    .select("batch_id").eq("status", "ready")
+    .order("computed_at", { ascending: false }).limit(1).maybeSingle();
+
   const [signalsResponse, runResponse, expectancyResponse, robustnessResponse, industryResponse] = await Promise.all([
     latestBuy
       ? dataClient.from("v4_signals").select("id, symbol, decision, score_trade, signal_date, breakdown")
@@ -39,8 +43,11 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
       : Promise.resolve({ data: null, error: null }),
     dataClient.from("v4_buy_expectancy").select("*").eq("scoring_version", currentVersion),
     dataClient.from("v4_buy_robustness").select("*").eq("scoring_version", currentVersion),
-    dataClient.from("v4_ic_by_industry_ver").select("industry, ic, n")
-      .eq("version", currentVersion).eq("horizon", 5),
+    industryBatchResponse.data
+      ? dataClient.from("v4_ic_industry_metrics").select("industry, ic, n")
+          .eq("batch_id", industryBatchResponse.data.batch_id)
+          .eq("version", currentVersion).eq("factor", "score_trade").eq("horizon", 5)
+      : Promise.resolve({ data: [], error: industryBatchResponse.error }),
   ]);
 
   if (signalsResponse.error) throw signalsResponse.error;

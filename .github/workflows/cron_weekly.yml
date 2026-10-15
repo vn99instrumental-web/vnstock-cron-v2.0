@@ -162,6 +162,18 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/export_ic_industry_to_supabase.py
 
+      - name: Apply bounded Supabase retention
+        env:
+          SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/prune_supabase_retention.py
+
+      - name: Refresh dashboard serving snapshots
+        env:
+          SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/refresh_dashboard_snapshots.py
+
       - name: Invalidate Vercel dashboard cache
         continue-on-error: true
         env:

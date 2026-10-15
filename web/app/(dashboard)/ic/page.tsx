@@ -159,16 +159,14 @@ export default async function ICPage() {
 
   // Fetch every version independently so each result has its own cache TTL/tag and
   // no request can be truncated by PostgREST's 1,000-row response limit.
-  const [indRes, industryBatchRes, perVersionRows] = await Promise.all([
-    currentClient.from("v4_ic_by_indicator").select("indicator, horizon, ic, n"),
+  const [industryBatchRes, perVersionRows] = await Promise.all([
     currentClient.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
     Promise.all(officialVersions.map(async (version) => {
       const client = createCachedPublicClient("ic", version);
-      const [factorRes, marginalRes] = await Promise.all([
-        client.from("v4_ic_by_factor_ver").select("version, factor, horizon, ic, n").eq("version", version),
-        client.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n").eq("version", version),
-      ]);
-      return { version, factorRows: factorRes.data ?? [], marginalRows: marginalRes.data ?? [] };
+      const marginalRes = await client.from("v4_marginal_ic")
+        .select("version, indicator, factor, horizon, coef, tstat, univar_ic, n")
+        .eq("version", version);
+      return { version, marginalRows: marginalRes.data ?? [] };
     })),
   ]);
 
@@ -191,7 +189,9 @@ export default async function ICPage() {
         error: industryBatchRes.error?.message ?? null,
       }));
 
-  const factorVerRows = perVersionRows.flatMap((result) => result.factorRows) as FactorVerRow[];
+  const factorVerRows = rows.map((row) => ({
+    version: row.config_version, factor: row.factor, horizon: row.horizon, ic: row.ic, n: row.n,
+  })) as FactorVerRow[];
   const marginalRows = perVersionRows.flatMap((result) => result.marginalRows) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
     arr.map((row) => ({
@@ -200,7 +200,12 @@ export default async function ICPage() {
       ic: row.ic == null ? null : Number(row.ic),
       n: Number(row.n),
     }));
-  const indGroups = groupBrk(toBrk((indRes.data ?? []) as Record<string, unknown>[], "indicator"));
+  const indGroups = groupBrk(toBrk(
+    marginalRows
+      .filter((row) => row.version === curVer)
+      .map((row) => ({ indicator: row.indicator, horizon: row.horizon, ic: row.univar_ic, n: row.n })),
+    "indicator",
+  ));
 
   const indByName = new Map(indGroups.map((group) => [group.name, group]));
   const indByFactor = FACTOR_GROUPS.map((factorGroup) => ({
