@@ -189,6 +189,17 @@ jobs:
         run: |
           /opt/vnstock/.venv/bin/python scripts/run_historical_scoring.py
 
+      # Pinned v4.17 Zalo feed: independent signals and matching trade levels.
+      # Never use the v4.18 levels for v4.17 (decisions may differ).
+      - name: Step Price Levels V4.17 (Zalo only)
+        continue-on-error: true
+        env:
+          V4_SIGNALS_FILE: "v2f_signals_v4_17.json"
+          V4_TRADE_LEVELS_FILE: "v2f_trade_levels_v4_17.json"
+        run: |
+          rm -f output/v2f_trade_levels_v4_17.json
+          /opt/vnstock/.venv/bin/python steps/v2f_step_price_levels_v4.py
+
       - name: Step Price Levels V4 (độc lập v2.3)
         continue-on-error: true
         run: |
@@ -231,6 +242,8 @@ jobs:
             output/history/v2f_predictions/ \
             output/v2f_signals_v4.json \
             output/v2f_trade_levels_v4.json \
+            output/v2f_signals_v4_17.json \
+            output/v2f_trade_levels_v4_17.json \
             output/v2f_v4_regime_state.json \
             output/vnindex_live.json \
             output/history/v2f_predictions_v4/ ; do
