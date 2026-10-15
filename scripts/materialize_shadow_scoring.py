@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Materialize the forward-only equal-weight shadow from a v4.18 snapshot.
+"""Materialize the forward-only IC-weighted shadow from a v4.18 snapshot.
 
 The shadow reuses the factor norms and market regime already calculated by the
 production scorer. It does not call a market API, mutate production rows, or
@@ -61,6 +61,16 @@ def _gates(config: dict, regime: str) -> dict[str, float]:
     except ValueError:
         index = regimes.index("UNKNOWN")
     return {factor: _number(matrix[factor][index], f"gate.{factor}") for factor in FACTORS}
+
+
+def _weight_profile(weights: dict[str, float]) -> str:
+    aliases = {
+        "mean_reversion": "mr", "breakout": "bo", "flow": "flow",
+        "fundamental": "fund", "growth": "growth",
+    }
+    return "_".join(
+        f"{aliases[factor]}{int(round(weights[factor] * 100))}" for factor in TRADE_FACTORS
+    )
 
 
 def _decision(score: float, w_regime: float, thresholds: list[dict]) -> str:
@@ -140,7 +150,8 @@ def materialize_shadow_row(row: dict, config: dict | None = None) -> dict:
         "confluence_bonus": 0,
         "n_supergroups_aligned": 0,
         "shadow_parent_version": PARENT_VERSION,
-        "shadow_method": "equal_weight_core",
+        "shadow_method": f"{config['weight_method']['name']}_core",
+        "shadow_weight_profile": _weight_profile(weights),
         "shadow_core_only": True,
     })
     confidence_pct, confidence = _confidence(shadow, weights, gates)

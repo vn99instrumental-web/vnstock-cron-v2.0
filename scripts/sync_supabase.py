@@ -88,7 +88,7 @@ SIGNAL_BREAKDOWN_KEYS = frozenset({
     "score_trade_altfund", "decision_altfund", "_altfund_delta",
     "score_trade_rank", "decision_rank", "_rank_delta",
     "score_trade_gate1", "decision_gate1", "_gate1_delta",
-    "shadow_parent_version", "shadow_method", "shadow_core_only",
+    "shadow_parent_version", "shadow_method", "shadow_weight_profile", "shadow_core_only",
     # Mapping factor của scoring legacy v2.3
     "total_score", "norm_momentum", "norm_trend", "norm_ff",
     "norm_fundamental", "growth_score", "context_score",

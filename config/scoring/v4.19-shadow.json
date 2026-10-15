@@ -1,15 +1,28 @@
 {
   "version_label": "v4.19-shadow",
   "status": "shadow",
-  "based_on": "v4.18 factor values, regime gates and hold score",
-  "note": "Forward-only shadow candidate from HYBRID_BACKTEST_V417_V418: five trade factors weighted equally at 20%; context and score extras are excluded. This version never changes the production v4.18 decision or notification feeds.",
+  "based_on": "v4.18 factor values, regime gates and hold score; 5d forward-IC evidence from 2026-08-28 through 2026-09-30",
+  "note": "Forward-only IC-weighted shadow: MeanRev 5%, Breakout 15%, Flow 20%, Fund 25%, Growth 35%; context and score extras are excluded. This version never changes the production v4.18 decision or notification feeds.",
+  "weight_method": {
+    "name": "ic_shrunk_fixed",
+    "objective_horizon": 5,
+    "sample_start": "2026-08-28",
+    "sample_end": "2026-09-30",
+    "signal_days": 21,
+    "symbol_days": 2100,
+    "shrinkage_k": 20,
+    "uncertainty_penalty_se": 0.5,
+    "min_weight": 0.05,
+    "max_weight": 0.35,
+    "monitor_min_forward_days": 30
+  },
   "factor_weights": {
     "trade": {
-      "mean_reversion": 0.20,
-      "breakout": 0.20,
+      "mean_reversion": 0.05,
+      "breakout": 0.15,
       "flow": 0.20,
-      "fundamental": 0.20,
-      "growth": 0.20,
+      "fundamental": 0.25,
+      "growth": 0.35,
       "context": 0.00
     },
     "hold": {

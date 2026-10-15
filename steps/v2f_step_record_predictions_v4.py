@@ -216,6 +216,7 @@ def run():
             # Candidate forward-only: truy xuất nguồn mà không ảnh hưởng production/Zalo.
             "shadow_parent_version": sig.get("shadow_parent_version"),
             "shadow_method"        : sig.get("shadow_method"),
+            "shadow_weight_profile": sig.get("shadow_weight_profile"),
             "shadow_core_only"     : sig.get("shadow_core_only"),
 
             # ── RCEG metadata: để đo hiệu quả V4 THEO regime từ ledger ──

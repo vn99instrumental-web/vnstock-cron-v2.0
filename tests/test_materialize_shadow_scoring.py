@@ -36,21 +36,23 @@ def parent_row(**overrides):
 
 
 class ShadowMaterializerTests(unittest.TestCase):
-    def test_equal_weight_core_and_scaled_threshold(self):
+    def test_ic_weighted_core_and_scaled_threshold(self):
         shadow = materialize_shadow_row(parent_row())
         self.assertEqual(shadow["scoring_version"], "v4.19-shadow")
-        self.assertEqual(shadow["score_trade"], 36.0)
-        self.assertEqual(shadow["total_score"], 36.0)
+        self.assertEqual(shadow["score_trade"], 37.0)
+        self.assertEqual(shadow["total_score"], 37.0)
         self.assertEqual(shadow["decision"], "BUY")
-        self.assertEqual(shadow["_w_regime"], 0.9)
+        self.assertEqual(shadow["_w_regime"], 0.925)
         self.assertEqual(shadow["score_hold"], 12.5)
         self.assertEqual(shadow["shadow_parent_version"], "v4.18")
+        self.assertEqual(shadow["shadow_method"], "ic_shrunk_fixed_core")
+        self.assertEqual(shadow["shadow_weight_profile"], "mr5_bo15_flow20_fund25_growth35")
         self.assertTrue(shadow["shadow_core_only"])
 
     def test_extras_are_not_used_and_stale_alternatives_are_removed(self):
         base = parent_row(confluence_bonus=100, ff_intra_flag_pts=100, of_bp_pts=100)
         shadow = materialize_shadow_row(base)
-        self.assertEqual(shadow["score_trade"], 36.0)
+        self.assertEqual(shadow["score_trade"], 37.0)
         self.assertEqual(shadow["confluence_bonus"], 0)
         self.assertEqual(shadow["n_supergroups_aligned"], 0)
         self.assertNotIn("score_trade_nomr", shadow)

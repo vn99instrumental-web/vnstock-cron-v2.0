@@ -106,3 +106,8 @@ Score đối chứng được tái dựng từ factor norm × gate × weight. Le
 - Predictions: `output/history/v2f_predictions_v4/*.jsonl`.
 - Outcomes: `output/history/v2f_outcomes_v4/*.jsonl`.
 - Script: `backtest/backtest_hybrid_v417_v418.py`.
+## Quyết định vận hành v4.19-shadow (2026-10-15)
+
+`hybrid_equal` trong báo cáo trên được giữ như benchmark lịch sử, không còn là công thức shadow đang chạy. Batch equal-weight đầu tiên chưa có outcome đã được xóa khỏi Supabase; candidate vận hành được chốt thành trọng số IC cố định MeanRev/Breakout/Flow/Fund/Growth = 5/15/20/25/35.
+
+Trên cùng mẫu 21 ngày/2.100 mã-ngày ở horizon 5d, cấu hình làm tròn đạt daily IC +0,222 và top-20% excess +1,44%; equal-weight đạt +0,190 và +1,07%. Trọng số được tạo bằng IC theo ngày có shrinkage K=20, penalty 0,5 SE, sàn 5% và trần 35%. Vì vẫn là lựa chọn dựa trên cùng mẫu, v4.19 tiếp tục ở trạng thái shadow và cần tối thiểu 30 ngày outcome chín độc lập trước khi đánh giá promote. Chi tiết: `docs/V419_SHADOW_WEIGHTING.md`.

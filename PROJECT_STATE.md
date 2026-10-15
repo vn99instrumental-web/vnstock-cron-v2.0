@@ -128,12 +128,13 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Backtest ledger daily-last trên 2.100 mã-ngày, 21 ngày tín hiệu 2026-08-28 đến 2026-09-30; join outcome thật 3/5/10 phiên theo `pred_id`.
 - Candidate đăng ký trước `hybrid_equal` (20% mỗi factor) tại 5d đạt daily IC +0,190 và top-20% excess +1,07%; 7 ngày mới nhất đạt IC +0,157 và excess +0,58%. Rank correlation score tái dựng so với ledger production là 0,974 cho v4.17 và 0,983 cho v4.18.
 - Sensitivity `hybrid_no_mr` tốt hơn nhưng được hình thành sau khi xem dữ liệu nên có selection bias; chưa dùng làm production recommendation.
-- Production scoring chưa đổi. Khuyến nghị chạy `hybrid_equal` dạng shadow tới khi có ít nhất 30 ngày outcome chín độc lập. Script: `backtest/backtest_hybrid_v417_v418.py`; báo cáo: `docs/HYBRID_BACKTEST_V417_V418.md`.
+- Production scoring chưa đổi. `hybrid_equal` là benchmark lịch sử và đã được thay trong shadow bởi cấu hình IC-weighted ghi ở phần kế tiếp. Script: `backtest/backtest_hybrid_v417_v418.py`; báo cáo: `docs/HYBRID_BACKTEST_V417_V418.md`.
 
 ## Forward shadow v4.19 2026-10-15
 
-- `v4.19-shadow` materialize từ cùng snapshot v4.18, dùng 20% cho mỗi factor MeanRev/Breakout/Flow/Fund/Growth, context 0 và không cộng confluence/flow extras. Không gọi thêm market API.
-- Production mặc định, quyết định v4.18 và các feed thông báo/Zalo không đổi. Shadow có ledger/outcome/version selector riêng và chỉ xuất hiện trên dashboard sau lần intraday + sync đầu tiên có dữ liệu.
-- IC shadow được evaluator hiện hữu tự tính khi có tối thiểu 3 ngày outcome chín; mục tiêu review forward ít nhất 30 ngày trước mọi quyết định promote.
-- Supabase migration `0034_add_v419_shadow.sql` đã áp dụng: view phân tích nhận shadow; retention chỉ giữ daily-close và daily-BUY cho shadow. View dùng `security_invoker`; RPC prune chỉ `service_role` được execute.
-- Xác minh local: 5 unit test PASS; 100/100 mã snapshot hiện tại được materialize; payload sync giữ đủ trace fields; Python compile, ESLint, TypeScript và Next.js production build PASS.
+- `v4.19-shadow` materialize từ cùng snapshot v4.18; trọng số IC cố định MeanRev/Breakout/Flow/Fund/Growth = 5/15/20/25/35, context 0 và không cộng confluence/flow extras. Không gọi thêm market API.
+- Batch equal-weight đầu tiên (1 run/100 signal, chưa có outcome) đã được xóa khỏi Supabase trước khi deploy IC-weighted, nên không còn lịch sử trộn phương pháp. Mỗi prediction mới có trace `ic_shrunk_fixed_core` và profile `mr5_bo15_flow20_fund25_growth35` để audit.
+- Production mặc định, decision v4.18 và feed thông báo/Zalo không đổi. Shadow có ledger/outcome/version selector riêng; Supabase chỉ giữ daily-close và daily-BUY.
+- Trên mẫu thiết kế 21 ngày/2.100 mã-ngày, trọng số làm tròn đạt IC 5d +0,222 và top-20% excess +1,44%, nhưng vẫn là kết quả trong mẫu. Chỉ review promote sau tối thiểu 30 ngày outcome chín độc lập.
+- Supabase migration `0034_add_v419_shadow.sql` đã áp dụng: view phân tích nhận shadow; retention giữ daily-close và daily-BUY. View dùng `security_invoker`; RPC prune chỉ `service_role` được execute.
+- Tài liệu công thức, cơ sở và checklist monitor: `docs/V419_SHADOW_WEIGHTING.md`.

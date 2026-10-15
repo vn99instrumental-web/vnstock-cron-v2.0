@@ -12,6 +12,6 @@ export function availableReviewVersions(available: Iterable<string>): ReviewVers
 }
 
 export function versionLabel(version: string): string {
-  if (version === "v4.19-shadow") return "v4.19 · Shadow 20%/factor";
+  if (version === "v4.19-shadow") return "v4.19 · Shadow IC-weighted";
   return version === "v2.3" ? "v2.3 · Legacy" : version;
 }
