@@ -159,3 +159,4 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Snapshot refresh hằng ngày bỏ phép tính factor-pair vượt 60 giây khỏi critical path nhưng giữ snapshot pair gần nhất. Factor/split, IC history và version summary refresh production thành công trong 5,9 giây.
 - Bảo mật RPC đã kiểm tra: anon/authenticated không có EXECUTE; service_role có EXECUTE. Security advisor không phát hiện advisory mới thuộc dashboard; các cảnh báo còn lại thuộc bảng/hàm khác trong Supabase project dùng chung.
 - Kiểm tra local: Python compile PASS, 12 workflow YAML parse PASS, ESLint/TypeScript không có error và Next.js production build PASS. Server module `/today` chạy thành công với dữ liệu thật sau sửa.
+- PASS — commit chức năng `42848b2f` đã push lên `main`; Vercel deployment `dpl_3myo7hsopeL59LmQwhqZWCKuymQ2` READY và production alias trỏ đúng commit này.
