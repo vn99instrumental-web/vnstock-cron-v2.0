@@ -24,6 +24,8 @@ REVIEW_PATH = ROOT / "config" / "scoring" / "review_versions.json"
 OUTPUT = ROOT / "output"
 MANIFEST_PATH = ROOT / "config" / "scoring" / "historical_versions.json"
 COMBINED_PATH = OUTPUT / "v2f_signals_v4_all.json"
+# Isolated, strictly version-pinned feed for the Zalo BUY visual.
+ZALO_SIGNALS_PATH = OUTPUT / "v2f_signals_v4_17.json"
 STATE_DIR = OUTPUT / "scoring_states"
 TEMP_ROOT = ROOT / ".tmp"
 INPUT_FILES = (
@@ -112,6 +114,8 @@ def _run_version(version: str, source_root: Path, timeout: int) -> list[dict]:
 
 def main() -> None:
     COMBINED_PATH.unlink(missing_ok=True)
+    # Never publish a stale v4.17 snapshot after a failed historical replay.
+    ZALO_SIGNALS_PATH.unlink(missing_ok=True)
     parser = argparse.ArgumentParser()
     parser.add_argument("--versions", nargs="*", help="Optional subset for diagnostics")
     parser.add_argument("--timeout", type=int, default=120, help="Timeout per historical scorer")
@@ -142,7 +146,15 @@ def main() -> None:
             _safe_extract(archive, extracted)
         for version in sorted(selected, key=_version_key):
             try:
-                combined.extend(_run_version(version, extracted / version, args.timeout))
+                rows = _run_version(version, extracted / version, args.timeout)
+                if version == "v4.17":
+                    production_symbols = {r["symbol"] for r in production_rows}
+                    selected_symbols = {r["symbol"] for r in rows}
+                    if len(selected_symbols) != len(rows) or selected_symbols != production_symbols:
+                        raise RuntimeError("v4.17: symbol coverage differs from production snapshot")
+                    # Publish independently; other historical scorers must not block Zalo.
+                    _write_json_atomic(ZALO_SIGNALS_PATH, rows)
+                combined.extend(rows)
             except Exception as exc:
                 failures.append(str(exc))
 
