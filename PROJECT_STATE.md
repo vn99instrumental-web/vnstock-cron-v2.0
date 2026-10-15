@@ -138,3 +138,4 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Trên mẫu thiết kế 21 ngày/2.100 mã-ngày, trọng số làm tròn đạt IC 5d +0,222 và top-20% excess +1,44%, nhưng vẫn là kết quả trong mẫu. Chỉ review promote sau tối thiểu 30 ngày outcome chín độc lập.
 - Supabase migration `0034_add_v419_shadow.sql` đã áp dụng: view phân tích nhận shadow; retention giữ daily-close và daily-BUY. View dùng `security_invoker`; RPC prune chỉ `service_role` được execute.
 - Tài liệu công thức, cơ sở và checklist monitor: `docs/V419_SHADOW_WEIGHTING.md`.
+- Xác minh: 5 unit test PASS; materialize 100/100 mã; payload sync giữ đủ trace; ESLint, TypeScript và Next.js production build PASS. Deployment production cho commit công thức `eeebb4c6` READY; Supabase và ledger hiện có 0 row equal-weight.
