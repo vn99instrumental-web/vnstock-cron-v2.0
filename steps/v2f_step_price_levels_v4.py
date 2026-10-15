@@ -57,9 +57,9 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger(__name__)
 
 # ── V4 namespacing — bộ file độc lập ──
-SIGNALS_FILE = "v2f_signals_v4.json"
+SIGNALS_FILE = os.environ.get("V4_SIGNALS_FILE", "v2f_signals_v4.json")
 OF_FILE      = "v2f_order_flow.json"
-OUT_JSON     = "v2f_trade_levels_v4.json"
+OUT_JSON     = os.environ.get("V4_TRADE_LEVELS_FILE", "v2f_trade_levels_v4.json")
 
 ACTIONABLE_DECISIONS = ("BUY", "STRONG BUY")
 
@@ -110,6 +110,14 @@ def run():
     if not signals:
         log.warning(f"{SIGNALS_FILE} not found/rỗng — skip (shadow fail-soft)")
         return
+    # Only the isolated Zalo replay must be strictly v4.17.
+    is_zalo_v417 = SIGNALS_FILE == "v2f_signals_v4_17.json"
+    if is_zalo_v417:
+        if not isinstance(signals, list) or any(
+            not isinstance(r, dict) or r.get("scoring_version") != "v4.17"
+            for r in signals
+        ):
+            raise ValueError("Zalo levels: wrong scoring_version (expected v4.17)")
     if not order_flow:
         log.warning(f"{OF_FILE} not found — levels sẽ thiếu POC/VAL data")
         order_flow = []
@@ -139,8 +147,15 @@ def run():
                 skip_ct += 1
         else:
             _mark_reference_only(res)
+        if is_zalo_v417:
+            res["scoring_version"] = sig["scoring_version"]
+            res["date"] = sig.get("date")
+            res["snap_time"] = sig.get("snap_time")
         results.append(res)
 
+    if is_zalo_v417 and (len(results) != len(signals)
+                          or len({r.get("symbol") for r in results}) != len(signals)):
+        raise RuntimeError("Zalo levels: incomplete or duplicate symbol coverage")
     save_json(OUT_JSON, results)
     log.info(f"Đã tính levels {len(results)}/{len(signals)} mã → {OUT_JSON}")
     log.info(f"Actionable (BUY/SB theo V4): {actionable_ct} "
