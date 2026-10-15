@@ -120,3 +120,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Production hiện có 28.080 signal, 19.230 outcome và 264 run; đã xóa 139 orphan run, không còn orphan/dead tuple.
 - Migration 0033_prune_orphan_runs.sql và retention script ngăn orphan run tái tích lũy.
 - Database vẫn khoảng 350 MB vật lý; live signal payload khoảng 43,5 MB. VACUUM FULL chưa chạy vì cần maintenance lock riêng.
+
+## Backtest hybrid factor v4.17/v4.18 2026-10-15
+
+- Đã kiểm tra source: v4.18 chỉ đổi trọng số TRADE so với v4.17; công thức/cap của 5 factor không đổi. Vì vậy lựa chọn MeanRev/Flow từ v4.17 và các factor còn lại từ v4.18 thực chất là bài toán chọn trọng số, không phải ghép giá trị factor khác nhau.
+- Backtest ledger daily-last trên 2.100 mã-ngày, 21 ngày tín hiệu 2026-08-28 đến 2026-09-30; join outcome thật 3/5/10 phiên theo `pred_id`.
+- Candidate đăng ký trước `hybrid_equal` (20% mỗi factor) tại 5d đạt daily IC +0,190 và top-20% excess +1,07%; 7 ngày mới nhất đạt IC +0,157 và excess +0,58%. Rank correlation score tái dựng so với ledger production là 0,974 cho v4.17 và 0,983 cho v4.18.
+- Sensitivity `hybrid_no_mr` tốt hơn nhưng được hình thành sau khi xem dữ liệu nên có selection bias; chưa dùng làm production recommendation.
+- Production scoring chưa đổi. Khuyến nghị chạy `hybrid_equal` dạng shadow tới khi có ít nhất 30 ngày outcome chín độc lập. Script: `backtest/backtest_hybrid_v417_v418.py`; báo cáo: `docs/HYBRID_BACKTEST_V417_V418.md`.
