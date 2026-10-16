@@ -168,3 +168,13 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Migration `20261016002114_fix_dashboard_snapshot_safe_delete.sql` dùng predicate trên khóa chính `scoring_version is not null`; vẫn thay toàn bộ snapshot trong transaction và tránh exclusive lock của `TRUNCATE`.
 - Workflow tiếp tục chỉ dùng `workflow_dispatch`; n8n vẫn là bộ điều phối bên ngoài, không thêm GitHub schedule.
 - Production RPC đã chạy lại thành công: 243 factor, 464 split, 5.150 pair được giữ, 408 IC-history và 7 version summary; snapshot refresh lúc `2026-10-16 00:21:25 UTC`. Quyền execute vẫn chỉ cấp cho `service_role`.
+
+## Ngừng scoring v4.9 2026-10-16
+
+- v4.9 đã bị loại khỏi review config, historical scorer manifest, workflow label và selector dashboard; từ run kế tiếp GitHub không còn tính hoặc ghi record v4.9. Công thức production v4.18 không thay đổi.
+- Migration `20261016011829_retire_v49_data.sql` đã xóa production: 920 signal, 400 outcome, 8 run và 1.402 dòng IC/snapshot; kiểm tra sau xóa cho thấy 0 dòng v4.9 trong cả 10 bảng liên quan.
+- Dung lượng nội dung hàng trước xóa là 1.639.102 byte (~1,60 MB), ước khoảng ~2 MB nếu phân bổ thêm index. `DELETE` tạo vùng trống tái sử dụng; database vật lý vẫn khoảng 352 MB và không chạy `VACUUM FULL`.
+- Với nhịp quan sát 115 signal/ngày giao dịch, ngừng v4.9 tránh tăng khoảng 4–6 MB/tháng tùy outcome/index.
+- Dashboard summary production còn 6 version: v4.19-shadow, v4.18, v4.17, v4.8, v4.1 và v2.3; snapshot refresh thành công lúc `2026-10-16 01:18:29 UTC`.
+- Retention RPC không còn nhắc v4.9; anon/authenticated không có quyền execute và chỉ `service_role` được gọi.
+- Git ledger lịch sử không bị rewrite, nên vẫn có thể phục hồi có chủ đích nếu owner thay đổi quyết định.
