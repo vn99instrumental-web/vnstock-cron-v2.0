@@ -27,7 +27,7 @@ def _f(x):
 def _load(glob_pat):
     rows = []
     for fp in glob.glob(glob_pat):
-        for ln in open(fp):
+        for ln in open(fp, encoding="utf-8"):
             ln = ln.strip()
             if ln:
                 try: rows.append(json.loads(ln))
@@ -150,3 +150,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

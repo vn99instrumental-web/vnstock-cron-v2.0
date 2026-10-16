@@ -51,6 +51,9 @@ jobs:
       - name: Export forward IC → Supabase
         run: python3 scripts/export_ic_to_supabase.py
 
+      - name: Export historical backfill IC → Supabase
+        run: python3 scripts/export_backfill_ic_to_supabase.py
+
       - name: Export IC by industry and scoring version to Supabase
         run: python3 scripts/export_ic_industry_to_supabase.py
 
@@ -75,3 +78,4 @@ jobs:
 
       - name: Apply bounded Supabase retention
         run: python3 scripts/prune_supabase_retention.py
+

@@ -8,6 +8,7 @@ export interface FactorVerRow {
   horizon: number;
   ic: number | null;
   n: number;
+  sampleKind?: "forward" | "retrospective_backfill";
 }
 
 const FACTORS: { key: string; short: string; full: string }[] = [
@@ -53,11 +54,11 @@ export function FactorVerMatrix({
 
   // index: version → factor → {ic, n} tại horizon đang chọn
   const { versions, idx } = useMemo(() => {
-    const m = new Map<string, Map<string, { ic: number | null; n: number }>>();
+    const m = new Map<string, Map<string, { ic: number | null; n: number; sampleKind?: FactorVerRow["sampleKind"] }>>();
     for (const r of rows) {
       if (r.horizon !== hz) continue;
       if (!m.has(r.version)) m.set(r.version, new Map());
-      m.get(r.version)!.set(r.factor, { ic: r.ic, n: r.n });
+      m.get(r.version)!.set(r.factor, { ic: r.ic, n: r.n, sampleKind: r.sampleKind });
     }
     // chỉ giữ version có score_trade đủ n
     const vers = [...m.keys()].filter((v) => (m.get(v)!.get("score_trade")?.n ?? 0) >= minN);
@@ -111,6 +112,7 @@ export function FactorVerMatrix({
                 >
                   {v}
                   {v === curVer ? " ●" : ""}
+                  {idx.get(v)?.get("score_trade")?.sampleKind === "retrospective_backfill" ? <span className="ml-1 font-sans text-[9px] text-[var(--color-muted)]">backfill</span> : null}
                 </td>
                 {FACTORS.map((f) => {
                   const c = idx.get(v)?.get(f.key);
@@ -122,7 +124,8 @@ export function FactorVerMatrix({
                       ? "chưa đủ dữ liệu"
                       : `IC ${(ic >= 0 ? "+" : "") + ic.toFixed(3)} — ${strength(ic)}` +
                         (ic > 0 ? " (thuận)" : ic < 0 ? " (nghịch)" : "")) +
-                    `\nn = ${c?.n ?? "?"} quan sát (gộp toàn kỳ)`;
+                    `\nn = ${c?.n ?? "?"} quan sát (gộp toàn kỳ)` +
+                    (c?.sampleKind === "retrospective_backfill" ? "\nPhạm vi: backfill lịch sử, không phải forward IC" : "\nPhạm vi: forward");
                   return (
                     <td
                       key={f.key}
@@ -143,6 +146,8 @@ export function FactorVerMatrix({
         ● = version đang chạy. Xanh = factor dự báo thuận, đỏ = nghịch (nên giảm/đảo trọng số). Rê chuột xem n.
         Ước lượng pooled — version n nhỏ (cũ) nhiễu cao, chỉ tham chiếu.
       </p>
+        Dòng có nhãn backfill dùng outcome lịch sử của version nguồn và không được coi là forward validation.
     </div>
   );
 }
+

@@ -51,13 +51,14 @@ function verdict(coef: number | null, t: number | null, uic: number | null): str
  * ĐÓNG GÓP BIÊN (hồi quy đa biến) — hợp nhất 2 bảng thành 1 view / version.
  */
 export function FactorICTable({
-  version, curVer, official, marginal, updatedAt,
+  version, curVer, official, marginal, updatedAt, dataScope,
 }: {
   version: string;
   curVer: string | null;
   official: OfficialICRow[];
   marginal: MargRow[];
   updatedAt?: string | null;
+  dataScope?: "forward" | "retrospective_backfill";
 }) {
   // official: factor → horizon → {ic,n}
   const offMap = useMemo(() => {
@@ -117,6 +118,7 @@ export function FactorICTable({
         <span className="flex min-w-0 flex-wrap items-center gap-2">
           <span className="font-mono text-sm font-semibold">scoring {version}</span>
           {version === curVer ? <span className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-[10px] font-semibold text-white">hiện tại</span> : null}
+          {dataScope === "retrospective_backfill" ? <span className="rounded border border-amber-500/50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">backfill lịch sử</span> : null}
           <span className="text-[11px] font-normal text-[var(--color-muted)]">cập nhật {updatedAt ?? "chưa xác định"}</span>
         </span>
         <span className="row-span-2 text-[11px] font-normal text-[var(--color-muted)]">{tableOpen ? "Ẩn" : "Hiện"}</span>
@@ -243,3 +245,4 @@ function FactorBlock({
     </>
   );
 }
+

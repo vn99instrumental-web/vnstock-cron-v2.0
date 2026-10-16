@@ -156,6 +156,12 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/export_ic_to_supabase.py
 
+      - name: Refresh historical backfill IC metrics -> Supabase
+        env:
+          SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/export_backfill_ic_to_supabase.py
+
       - name: Refresh IC industry snapshot -> Supabase
         env:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
@@ -186,3 +192,4 @@ jobs:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/prune_supabase_retention.py
+

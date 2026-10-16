@@ -72,6 +72,8 @@ jobs:
 
       - name: Refresh forward IC metrics
         run: ${{ steps.python.outputs.python }} scripts/export_ic_to_supabase.py
+      - name: Refresh historical backfill IC metrics
+        run: ${{ steps.python.outputs.python }} scripts/export_backfill_ic_to_supabase.py
       - name: Refresh IC industry snapshot
         run: ${{ steps.python.outputs.python }} scripts/export_ic_industry_to_supabase.py
 
@@ -93,3 +95,4 @@ jobs:
 
       - name: Apply bounded Supabase retention
         run: ${{ steps.python.outputs.python }} scripts/prune_supabase_retention.py
+

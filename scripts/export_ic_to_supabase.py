@@ -72,7 +72,12 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger("export_ic")
 
 
-def compute_ic_rows(preds: list[dict], outs: list[dict]) -> list[dict]:
+def compute_ic_rows(
+    preds: list[dict],
+    outs: list[dict],
+    *,
+    include_retrospective: bool = False,
+) -> list[dict]:
     """Trả list row v4_ic_metrics: mỗi (scoring_version, factor, horizon) 1 row.
     ic = trung bình IC theo ngày (methodology chính thức); n = số quan sát đã chín."""
     ret_by_pid = {o.get("pred_id"): o for o in outs if o.get("pred_id")}
@@ -80,7 +85,7 @@ def compute_ic_rows(preds: list[dict], outs: list[dict]) -> list[dict]:
     # gom prediction theo version
     by_version: dict[str, list[dict]] = defaultdict(list)
     for p in preds:
-        if p.get("shadow_forward_eligible") is False:
+        if p.get("shadow_forward_eligible") is False and not include_retrospective:
             continue
         by_version[p.get("scoring_version") or "unknown"].append(p)
 
@@ -172,3 +177,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

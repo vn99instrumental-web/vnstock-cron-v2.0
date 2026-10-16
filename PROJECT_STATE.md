@@ -183,3 +183,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 - Tabs with a version selector default to `v4.19-shadow` when it has data, preserve an explicit valid URL selection, and otherwise fall back to the newest review version that has data.
 - The Today comparison remains three-version but orders columns `v4.19`, `v4.18`, `v4.17`; IC still shows all available versions and treats v4.19 as current only when official IC exists.
+
+## Historical IC for v4.19 backfill 2026-10-16
+
+- v4.19 forward IC remains isolated in `v4_ic_metrics`; retrospective rows are never written there.
+- `scripts/export_backfill_ic_to_supabase.py` joins each audited v4.19 backfill prediction to its v4.18 source outcome and writes `v4_ic_backfill_metrics`.
+- The IC tab uses forward rows when available; otherwise it shows the historical v4.19 rows with an explicit `backfill lịch sử` label in both the version table and factor × version matrix.
+- Daily, weekly, and manual Supabase workflows refresh this separate historical layer before dashboard snapshot/cache refresh. Workflows remain `workflow_dispatch`-driven by n8n; no GitHub schedule was added.
+- Production verification: 24 rows across six non-constant factors, 1,200 matured observations for each horizon, signal range 2026-09-17 through 2026-10-02. Context is absent because its backfill score has no cross-sectional variance.
+

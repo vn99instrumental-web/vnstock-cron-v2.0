@@ -70,6 +70,7 @@ interface ICRow {
   ic: number | null;
   n: number | null;
   computed_at: string | null;
+  sample_kind?: "forward" | "retrospective_backfill";
 }
 
 function formatUpdatedAt(value: string | null | undefined): string | null {
@@ -139,9 +140,14 @@ function BreakdownTable({
 
 export default async function ICPage() {
   const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
-  const [icResponse, coverageResponse] = await Promise.all([
+  const [icResponse, backfillResponse, coverageResponse] = await Promise.all([
     supabase.from("v4_ic_metrics")
       .select("config_version, factor, horizon, ic, n, computed_at")
+      .order("config_version", { ascending: false })
+      .order("factor", { ascending: true })
+      .order("horizon", { ascending: true }),
+    supabase.from("v4_ic_backfill_metrics")
+      .select("config_version, factor, horizon, ic, n, computed_at, sample_kind")
       .order("config_version", { ascending: false })
       .order("factor", { ascending: true })
       .order("horizon", { ascending: true }),
@@ -150,7 +156,16 @@ export default async function ICPage() {
       .order("scoring_version", { ascending: false }),
   ]);
 
-  const rows = (icResponse.data ?? []) as ICRow[];
+  const forwardRows = ((icResponse.data ?? []) as ICRow[]).map((row) => ({ ...row, sample_kind: "forward" as const }));
+  const historicalRows = (backfillResponse.data ?? []) as ICRow[];
+  // Never mix retrospective and forward evidence. Forward wins as soon as a
+  // version has enough independently matured observations to produce IC.
+  const rows = REVIEW_VERSIONS.flatMap((version) => {
+    const forward = forwardRows.filter((row) => row.config_version === version);
+    return forward.length
+      ? forward
+      : historicalRows.filter((row) => row.config_version === version);
+  });
   const coverageRows = (coverageResponse.data ?? []) as Array<{ scoring_version: string; signal_date_min: string | null; signal_date_max: string | null; signal_days: number; signal_rows: number; outcome_date_min: string | null; outcome_date_max: string | null; outcome_rows: number; latest_update: string | null }>;
   const officialVersions = REVIEW_VERSIONS.filter((version) => rows.some((row) => row.config_version === version));
   const curVer = officialVersions.includes(DEFAULT_SCORING_VERSION) ? DEFAULT_SCORING_VERSION : (officialVersions[0] ?? DEFAULT_SCORING_VERSION);
@@ -190,7 +205,7 @@ export default async function ICPage() {
       }));
 
   const factorVerRows = rows.map((row) => ({
-    version: row.config_version, factor: row.factor, horizon: row.horizon, ic: row.ic, n: row.n,
+    version: row.config_version, factor: row.factor, horizon: row.horizon, ic: row.ic, n: row.n, sampleKind: row.sample_kind,
   })) as FactorVerRow[];
   const marginalRows = perVersionRows.flatMap((result) => result.marginalRows) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
@@ -289,7 +304,9 @@ export default async function ICPage() {
         <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
           <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HIỆN TẠI</span>
           <span className="font-mono font-semibold">scoring {curVer}</span>
-          {curHasIC ? (
+          {rows.some((row) => row.config_version === curVer && row.sample_kind === "retrospective_backfill") ? (
+            <span className="text-[var(--color-muted)]">— IC hiện tại là <b className="text-[var(--color-ink)]">backfill lịch sử</b> từ outcome v4.18; chưa phải kết quả forward độc lập.</span>
+          ) : curHasIC ? (
             <span className="text-[var(--color-muted)]">— IC bên dưới (đánh dấu &ldquo;hiện tại&rdquo;).</span>
           ) : (
             <span className="text-[var(--color-muted)]">
@@ -308,6 +325,7 @@ export default async function ICPage() {
           official={rows.filter((row) => row.config_version === version)}
           marginal={marginalRows.filter((row) => row.version === version)}
           updatedAt={updatedAtByVersion.get(version)}
+          dataScope={rows.find((row) => row.config_version === version)?.sample_kind}
         />
       ))}
       <section className="card mb-6 p-3 sm:p-4">
@@ -452,3 +470,4 @@ export default async function ICPage() {
     </>
   );
 }
+
