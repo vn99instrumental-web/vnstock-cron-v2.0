@@ -160,3 +160,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Bảo mật RPC đã kiểm tra: anon/authenticated không có EXECUTE; service_role có EXECUTE. Security advisor không phát hiện advisory mới thuộc dashboard; các cảnh báo còn lại thuộc bảng/hàm khác trong Supabase project dùng chung.
 - Kiểm tra local: Python compile PASS, 12 workflow YAML parse PASS, ESLint/TypeScript không có error và Next.js production build PASS. Server module `/today` chạy thành công với dữ liệu thật sau sửa.
 - PASS — commit chức năng `42848b2f` đã push lên `main`; Vercel deployment `dpl_3myo7hsopeL59LmQwhqZWCKuymQ2` READY và production alias trỏ đúng commit này.
+
+## Sửa weekly snapshot refresh 2026-10-16
+
+- Run weekly `105227137731` hoàn tất eval, commit ledger, sync outcome, IC tổng và IC ngành nhưng lỗi tại dashboard snapshot với PostgreSQL `21000: DELETE requires a WHERE clause`.
+- Nguyên nhân là RPC `refresh_v4_dashboard_snapshots()` xóa toàn bộ bảng version summary mà không có điều kiện, bị lớp safe-update của production chặn.
+- Migration `20261016002114_fix_dashboard_snapshot_safe_delete.sql` dùng predicate trên khóa chính `scoring_version is not null`; vẫn thay toàn bộ snapshot trong transaction và tránh exclusive lock của `TRUNCATE`.
+- Workflow tiếp tục chỉ dùng `workflow_dispatch`; n8n vẫn là bộ điều phối bên ngoài, không thêm GitHub schedule.
+- Production RPC đã chạy lại thành công: 243 factor, 464 split, 5.150 pair được giữ, 408 IC-history và 7 version summary; snapshot refresh lúc `2026-10-16 00:21:25 UTC`. Quyền execute vẫn chỉ cấp cho `service_role`.
