@@ -235,239 +235,6 @@ export default async function ICPage() {
     factors: FACTOR_ORDER.map((factor) => ({
       factor,
       groups: groupBrk(toBrk(
-        (result.data as Record<string, unknown>[]).filter((row) => row.factor === factor),
-        "industry",
-      )),
-    })).filter((item) => item.groups.length),
-  }));
-  if (!rows.length) {
-    return (
-      <>
-        <PageHeader title="Ch·∫•t l∆∞·ª£ng nh√¢n t·ªë (IC)" desc="Forward rank-IC theo factor √ó horizon." />
-        <EmptyState
-          title="Ch∆∞a c√≥ d·ªØ li·ªáu IC"
-          hint="Ch·∫°y scripts/export_ic_to_supabase.py (evaluator Python, E6) sau khi c√≥ outcomes. B·∫£ng v4_ic_metrics hi·ªán r·ªóng."
-        />
-      </>
-    );
-  }
-
-  // Ch·ªâ hi·ªán version c√≥ IC official; version ch·ªâ c√≥ marginal kh√¥ng t·∫°o b·∫£ng r·ªóng.
-  const verList = officialVersions;
-
-  const updatedAtByVersion = new Map(verList.map((version) => {
-    const latest = rows.filter((row) => row.config_version === version && row.computed_at).map((row) => row.computed_at as string).sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0];
-    return [version, formatUpdatedAt(latest)] as const;
-  }));
-
-  const sampleByVersion = verList.map((version) => {
-    const byHorizon = new Map<number, number>();
-    for (const r of rows) if (r.config_version === version && r.n != null) byHorizon.set(r.horizon, Math.max(byHorizon.get(r.horizon) ?? 0, Number(r.n)));
-    return { version, byHorizon };
-  });
-
-
-  return (
-    <>
-      <PageHeader
-        title="Ch·∫•t l∆∞·ª£ng nh√¢n t·ªë (IC)"
-        desc="Forward rank-IC (Spearman theo ng√†y ‚Üí trung b√¨nh). T√≠nh b·∫±ng Python ‚Äî ngu·ªìn ch√¢n l√Ω. Xanh = d·ª± b√°o thu·∫≠n, ƒë·ªè = ngh·ªãch."
-      />
-
-      <details className="card group mb-4 overflow-hidden">
-        <summary className="touch-target flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
-          <span aria-hidden="true" className="text-[10px] text-[var(--color-muted)] transition-transform group-open:rotate-90">‚ñ∂</span>
-          <span className="text-sm font-semibold">So s√°nh factor √ó scoring version</span>
-          <span className="ml-auto hidden text-[10px] text-[var(--color-muted)] sm:inline">n‚â•30 ¬∑ m√†u ƒë·∫≠m h∆°n = |IC| l·ªõn h∆°n</span>
-        </summary>
-        <div className="border-t border-[var(--color-border)] p-3">
-          <FactorVerMatrix rows={factorVerRows} curVer={curVer} minN={30} />
-        </div>
-      </details>
-      {coverageRows.length ? (
-        <details className="card group mb-4 overflow-hidden">
-          <summary className="touch-target flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
-            <span aria-hidden="true" className="text-[10px] text-[var(--color-muted)] transition-transform group-open:rotate-90">‚ñ∂</span>
-            <span className="text-xs font-semibold sm:text-sm">Ph·∫°m vi d·ªØ li·ªáu d√πng khi ƒë·ªëi chi·∫øu version</span>
-            <span className="ml-auto hidden text-[10px] text-[var(--color-muted)] md:inline">So s√°nh kho·∫£ng t√≠n hi·ªáu v√† outcome</span>
-          </summary>
-          <div className="overflow-x-auto border-t border-[var(--color-border)]">
-            <p className="px-3 py-2 text-[10px] text-[var(--color-muted)]">Kh√¥ng ƒë·ªçc IC c·ªßa hai version nh∆∞ t∆∞∆°ng ƒë∆∞∆°ng n·∫øu kho·∫£ng th·ªùi gian ho·∫∑c s·ªë outcome kh√°c nhau.</p>
-            <table className="w-full min-w-[680px] text-[11px]">
-              <thead className="text-[var(--color-muted)]"><tr><th className="px-3 py-2 text-left">Version</th><th className="px-3 py-2 text-left">Kho·∫£ng t√≠n hi·ªáu</th><th className="px-3 py-2 text-right">Ng√†y</th><th className="px-3 py-2 text-right">D√≤ng t√≠n hi·ªáu</th><th className="px-3 py-2 text-left">Kho·∫£ng outcome</th><th className="px-3 py-2 text-right">Outcome</th></tr></thead>
-              <tbody>{REVIEW_VERSIONS.map((version) => coverageRows.find((row) => row.scoring_version === version)).filter((row): row is NonNullable<typeof row> => !!row).map((row) => <tr key={row.scoring_version} className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-mono font-semibold">{row.scoring_version}</td><td className="px-3 py-2 tabular">{row.signal_date_min ?? "‚Äî"} ‚Üí {row.signal_date_max ?? "‚Äî"}</td><td className="px-3 py-2 text-right tabular">{row.signal_days.toLocaleString("vi-VN")}</td><td className="px-3 py-2 text-right tabular">{Number(row.signal_rows).toLocaleString("vi-VN")}</td><td className="px-3 py-2 tabular">{row.outcome_date_min ?? "‚Äî"} ‚Üí {row.outcome_date_max ?? "‚Äî"}</td><td className="px-3 py-2 text-right tabular">{Number(row.outcome_rows).toLocaleString("vi-VN")}</td></tr>)}</tbody>
-            </table>
-          </div>
-        </details>
-      ) : null}
-      {curVer ? (
-        <div className="card mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 p-2.5 text-[13px]">
-          <span className="rounded-md bg-[var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-white">HI·ªÜN T·∫†I</span>
-          <span className="font-mono font-semibold">scoring {curVer}</span>
-          {rows.some((row) => row.config_version === curVer && row.sample_kind === "retrospective_backfill") ? (
-            <span className="text-[var(--color-muted)]">‚Äî IC hi·ªán t·∫°i l√† <b className="text-[var(--color-ink)]">backfill l·ªãch s·ª≠</b> t·ª´ outcome v4.18; ch∆∞a ph·∫£i k·∫øt qu·∫£ forward ƒë·ªôc l·∫≠p.</span>
-          ) : curHasIC ? (
-            <span className="text-[var(--color-muted)]">‚Äî IC b√™n d∆∞·ªõi (ƒë√°nh d·∫•u &ldquo;hi·ªán t·∫°i&rdquo;).</span>
-          ) : (
-            <span className="text-[var(--color-muted)]">
-              ‚Äî <b className="text-[var(--color-ink)]">ch∆∞a ƒë·ªß d·ªØ li·ªáu forward ƒë·ªÉ t√≠nh IC</b>. M·ªói l·∫ßn ƒë·ªïi version l√† reset
-              forward-validation ‚Üí c·∫ßn t√≠ch lu·ªπ outcomes v√†i phi√™n r·ªìi evaluator (Python) m·ªõi ghi IC. B·∫£ng d∆∞·ªõi l√† c√°c
-              version c≈© ƒë√£ ƒë·ªß m·∫´u, d√πng ƒë·ªÉ tham chi·∫øu.
-            </span>
-          )}
-        </div>
-      ) : null}
-      {verList.map((version) => (
-        <FactorICTable
-          key={version}
-          version={version}
-          curVer={curVer}
-          official={rows.filter((row) => row.config_version === version)}
-          marginal={marginalRows.filter((row) => row.version === version)}
-          updatedAt={updatedAtByVersion.get(version)}
-          dataScope={rows.find((row) => row.config_version === version)?.sample_kind}
-        />
-      ))}
-      <section className="card mb-6 p-3 sm:p-4">
-        <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <h2 className="text-sm font-semibold">IC theo ng√†nh v√† nh√≥m scoring</h2>
-            <p className="mt-1 text-[12px] text-[var(--color-muted)]">
-              M·ªói scoring version ƒë∆∞·ª£c t√°ch theo ƒëi·ªÉm t·ªïng v√† 6 category. M·ªü version, sau ƒë√≥ m·ªü category c·∫ßn xem.
-            </p>
-          </div>
-          <span className="rounded-md border border-[var(--color-border)] px-2 py-1 text-[11px] text-[var(--color-muted)]">
-            IC Spearman ¬∑ n = c·ª° m·∫´u
-          </span>
-        </div>
-
-        {officialVersions.length ? (
-          <div className="space-y-2">
-            {industryByVersion.map((versionData) => (
-              <details
-                key={versionData.version}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5"
-                open={versionData.version === curVer}
-              >
-                <summary className="flex cursor-pointer select-none items-center justify-between gap-2 font-mono text-[13px] font-semibold">
-                  <span>scoring {versionData.version}{versionData.version === curVer ? " (hi·ªán t·∫°i)" : ""}</span>
-                  <span className="font-sans text-[11px] font-normal text-[var(--color-muted)]">{versionData.factors.length} category</span>
-                </summary>
-                <div className="mt-2 space-y-2">
-                  {versionData.error ? (
-                    <div className="rounded-md border border-dashed border-[var(--color-border)] px-3 py-4 text-center text-xs text-[var(--color-muted)]">
-                      Kh√¥ng t·∫£i ƒë∆∞·ª£c d·ªØ li·ªáu c·ªßa scoring {versionData.version}. Vui l√≤ng t·∫£i l·∫°i trang.
-                    </div>
-                  ) : versionData.factors.map((factorData) => {
-                    const info = FACTOR_INFO[factorData.factor];
-                    return (
-                      <details
-                        key={factorData.factor}
-                        className="rounded-md border border-[var(--color-border)] bg-black/[0.015] p-2 dark:bg-white/[0.02]"
-                        open={factorData.factor === "score_trade"}
-                      >
-                        <summary className="flex cursor-pointer select-none items-center justify-between gap-2 text-[12px] font-semibold">
-                          <span>{info?.label ?? factorData.factor}</span>
-                          <span className="font-normal text-[var(--color-muted)]">{factorData.groups.length} ng√†nh</span>
-                        </summary>
-                        <div className="mt-2">
-                          <BreakdownTable groups={factorData.groups} colLabel="Ng√†nh" nameOf={(key) => key} minN={30} showSample />
-                        </div>
-                      </details>
-                    );
-                  })}
-                  <p className="text-[11px] text-[var(--color-muted)]">
-                    ƒê√¢y l√† IC pooled ƒë·ªÉ so t∆∞∆°ng ƒë·ªëi gi·ªØa ng√†nh/category. Th·∫≠n tr·ªçng v·ªõi √¥ c√≥ n &lt; 30; IC official theo ng√†y v·∫´n n·∫±m ·ªü b·∫£ng scoring ph√≠a tr√™n.
-                  </p>
-                </div>
-              </details>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-lg border border-dashed border-[var(--color-border)] px-3 py-6 text-center text-xs text-[var(--color-muted)]">
-            Ch∆∞a c√≥ IC theo ng√†nh cho c√°c scoring version c√≥ IC official.
-          </div>
-        )}
-      </section>
-      <details className="card mb-4 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">C√°ch ƒë·ªçc b·∫£ng IC</summary>
-        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]">
-          <table className="w-full min-w-[640px] text-xs">
-            <thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2 text-left">Kh√°i ni·ªám</th><th className="px-3 py-2 text-left">C√°ch hi·ªÉu</th></tr></thead>
-            <tbody>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">IC</td><td className="px-3 py-2 text-[var(--color-muted)]">T∆∞∆°ng quan h·∫°ng Spearman gi·ªØa ƒëi·ªÉm nh√¢n t·ªë khi ph√°t t√≠n hi·ªáu v√† l·ª£i nhu·∫≠n th·ª±c t·∫ø sau N phi√™n.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">ƒê·ªô m·∫°nh |IC|</td><td className="px-3 py-2 text-[var(--color-muted)]">D∆∞·ªõi 0,02: g·∫ßn nh∆∞ kh√¥ng d·ª± b√°o; 0,02‚Äì0,05: c√≥ t√≠n hi·ªáu; 0,05‚Äì0,10: t·ªët; tr√™n 0,10: r·∫•t m·∫°nh v√† c·∫ßn ki·ªÉm tra c·ª° m·∫´u.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">D·∫•u v√† m√†u</td><td className="px-3 py-2 text-[var(--color-muted)]"><span className="font-semibold text-[var(--color-buy)]">D∆∞∆°ng, m√†u xanh</span>: d·ª± b√°o thu·∫≠n. <span className="font-semibold text-[var(--color-sell)]">√Çm, m√†u ƒë·ªè</span>: d·ª± b√°o ngh·ªãch. M√†u ƒë·∫≠m h∆°n nghƒ©a l√† |IC| l·ªõn h∆°n.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">3d / 5d / 10d</td><td className="px-3 py-2 text-[var(--color-muted)]">L·ª£i nhu·∫≠n ƒë∆∞·ª£c ƒëo sau 3, 5 ho·∫∑c 10 phi√™n ƒë·ªÉ ph√¢n bi·ªát kh·∫£ nƒÉng d·ª± b√°o ng·∫Øn v√† d√†i h·∫°n. Khung 1 phi√™n kh√¥ng d√πng trong ph·∫ßn so s√°nh ch·∫•t l∆∞·ª£ng v√¨ d·ªÖ nhi·ªÖu.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">C·ª° m·∫´u n</td><td className="px-3 py-2 text-[var(--color-muted)]">n nh·ªè l√†m IC d·ªÖ nhi·ªÖu. ∆Øu ti√™n k·∫øt qu·∫£ c√≥ n l·ªõn v√† ·ªïn ƒë·ªãnh qua nhi·ªÅu khung phi√™n.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Scoring version</td><td className="px-3 py-2 text-[var(--color-muted)]">M·ªói version ƒë∆∞·ª£c forward-validation ri√™ng. Khi ƒë·ªïi version, c·∫ßn t√≠ch l≈©y outcomes m·ªõi tr∆∞·ªõc khi k·∫øt lu·∫≠n.</td></tr>
-              <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Ngu·ªìn s·ªë li·ªáu</td><td className="px-3 py-2 text-[var(--color-muted)]">IC ch√≠nh th·ª©c do evaluator Python t√≠nh tr√™n d·ªØ li·ªáu t∆∞∆°ng lai th·ª±c, kh√¥ng ph·∫£i backtest.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
-
-      <details className="card mb-4 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">√ù nghƒ©a t·ª´ng nh√¢n t·ªë</summary>
-        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]">
-          <table className="w-full min-w-[760px] text-xs">
-            <thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2 text-left">M√£ nh√¢n t·ªë</th><th className="px-3 py-2 text-left">T√™n</th><th className="px-3 py-2 text-left">Di·ªÖn gi·∫£i</th><th className="px-3 py-2 text-left">Ch·ªâ b√°o th√†nh vi√™n</th></tr></thead>
-            <tbody>{FACTOR_ORDER.filter((key) => FACTOR_INFO[key]).map((key) => { const info = FACTOR_INFO[key]; return (
-              <tr key={key} className="border-t border-[var(--color-border)] align-top"><td className="px-3 py-2 font-mono font-semibold">{key}</td><td className="px-3 py-2 font-medium">{info.label}</td><td className="px-3 py-2 text-[var(--color-muted)]">{info.desc}</td><td className="px-3 py-2 text-[var(--color-muted)]">{info.members.length ? info.members.join(" ¬∑ ") : "‚Äî"}</td></tr>
-            ); })}</tbody>
-          </table>
-        </div>
-      </details>
-
-      <details className="card mb-4 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">So s√°nh nh√¢n t·ªë qua t·∫•t c·∫£ version</summary>
-        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]"><table className="w-full min-w-[640px] text-xs"><thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2 text-left">N·ªôi dung</th><th className="px-3 py-2 text-left">C√°ch s·ª≠ d·ª•ng</th></tr></thead><tbody>
-          <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">M·ª•c ƒë√≠ch</td><td className="px-3 py-2 text-[var(--color-muted)]">T√¨m nh√¢n t·ªë d∆∞∆°ng ·ªïn ƒë·ªãnh qua nhi·ªÅu version ƒë·ªÉ c√¢n nh·∫Øc tƒÉng tr·ªçng s·ªë; nh√¢n t·ªë √¢m dai d·∫≥ng ƒë·ªÉ c√¢n nh·∫Øc gi·∫£m ho·∫∑c ƒë·∫£o tr·ªçng s·ªë.</td></tr>
-          <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Ph·∫°m vi</td><td className="px-3 py-2 text-[var(--color-muted)]">∆Ø·ªõc l∆∞·ª£ng pooled tr√™n c√°c version c√≥ ƒë·ªß m·∫´u; d√πng ƒë·ªÉ tham chi·∫øu. S·ªë ch√≠nh th·ª©c n·∫±m ·ªü b·∫£ng scoring ph√≠a tr√™n.</td></tr>
-        </tbody></table></div>
-      </details>
-
-      <details className="card mb-4 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">IC theo ch·ªâ s·ªë con</summary>
-        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]"><table className="w-full min-w-[640px] text-xs"><thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2 text-left">N·ªôi dung</th><th className="px-3 py-2 text-left">C√°ch ƒë·ªçc</th></tr></thead><tbody>
-          <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">Nh√≥m d·ªØ li·ªáu</td><td className="px-3 py-2 text-[var(--color-muted)]">C√°c ch·ªâ b√°o th√†nh vi√™n ƒë∆∞·ª£c gom theo nh√≥m nh√¢n t·ªë nh∆∞ mean_reversion, breakout, flow v√† c√°c nh√≥m c√≤n l·∫°i.</td></tr>
-          <tr className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-medium">√ù nghƒ©a</td><td className="px-3 py-2 text-[var(--color-muted)]">Xanh l√† ch·ªâ b√°o d·ª± b√°o thu·∫≠n, ƒë·ªè l√† d·ª± b√°o ngh·ªãch. ƒê√¢y l√† ∆∞·ªõc l∆∞·ª£ng Spearman pooled to√†n k·ª≥ ƒë·ªÉ tham chi·∫øu; r√™ chu·ªôt l√™n √¥ ƒë·ªÉ xem n.</td></tr>
-        </tbody></table></div>
-        <div className="mt-3 flex flex-col gap-3">{indByFactor.map((factor) => (
-          <div key={factor.key}><div className="mb-1 text-[13px] font-semibold">{factor.label} <span className="font-mono text-[11px] font-normal text-[var(--color-muted)]">{factor.key}</span></div><BreakdownTable groups={factor.members} colLabel="Ch·ªâ b√°o" nameOf={(key) => signalName(key)} minN={100} /></div>
-        ))}</div>
-      </details>
-
-      <details className="card mb-6 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">S·ªë l∆∞·ª£ng m·∫´u theo scoring version</summary>
-        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]"><table className="w-full text-xs"><thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]"><tr><th className="px-3 py-2 text-left">Version</th>{HORIZONS.map((h) => <th key={h} className="px-3 py-2 text-right">{h} phi√™n</th>)}</tr></thead><tbody>{sampleByVersion.map(({ version, byHorizon }) => <tr key={version} className="border-t border-[var(--color-border)]"><td className="px-3 py-2 font-mono">{version}{version === curVer ? " (hi·ªán t·∫°i)" : ""}</td>{HORIZONS.map((h) => <td key={h} className="tabular px-3 py-2 text-right">{byHorizon.get(h)?.toLocaleString() ?? "‚Äî"}</td>)}</tr>)}</tbody></table></div>
-      </details>
-      <details className="card mb-6 p-3">
-        <summary className="cursor-pointer select-none text-sm font-semibold">Thu·∫≠t ng·ªØ chuy√™n m√¥n v√† c√°ch ƒë·ªçc</summary>
-        <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--color-border)]">
-          <table className="w-full min-w-[980px] text-xs">
-            <thead className="bg-black/[0.03] text-[var(--color-muted)] dark:bg-white/[0.03]">
-              <tr>
-                <th className="px-3 py-2 text-left">Thu·∫≠t ng·ªØ</th>
-                <th className="px-3 py-2 text-left">ƒê·ªãnh nghƒ©a d·ªÖ hi·ªÉu</th>
-                <th className="px-3 py-2 text-left">C√¥ng th·ª©c c∆° b·∫£n</th>
-                <th className="px-3 py-2 text-left">C√°ch ƒë·ªçc / t·ªët / x·∫•u</th>
-              </tr>
-            </thead>
-            <tbody>
-              {TECHNICAL_TERMS.map((item) => (
-                <tr key={item.term} className="border-t border-[var(--color-border)] align-top">
-                  <td className="px-3 py-2 font-semibold">{item.term}</td>
-                  <td className="px-3 py-2 text-[var(--color-muted)]">{item.meaning}</td>
-                  <td className="px-3 py-2 font-mono text-[11px]">{item.formula}</td>
-                  <td className="px-3 py-2 text-[var(--color-muted)]">{item.reading}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
-    </>
-  );
-}
-
+        (result.data as Record<string, unkn◊è=∂âûÀk∫wµÁQï·–µ…•ù°–Å—Öâ’±Ö»à˘Ì9’µâï»°…Ω‹πΩ’—çΩµï}…Ω›Ã§π—Ω1ΩçÖ±ïM—…•πú†âŸ§µY8à•ÙΩ—ê¯Ω—»¯•ÙΩ—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄÄÄΩ—Öâ±î¯(ÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄΩëï—Ö•±Ã¯(ÄÄÄÄÄÄ§ÄËÅπ’±±Ù(ÄÄÄÄÄÅÌç’…Yï»Ä¸Ä†(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥–Åô±ï‡Åô±ï‡µ›…Ö¿Å•—ïµÃµçïπ—ï»ÅùÖ¿µ‡¥»ÅùÖ¿µ‰¥ƒÅ¿¥»∏‘Å—ï·–µlƒÕ¡·tà¯(ÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâ…Ω’πëïêµµêÅâúµmŸÖ»†¥µçΩ±Ω»µÖççïπ–•tÅ¡‡¥»Å¡‰¥¿∏‘Å—ï·–µlƒ≈¡·tÅôΩπ–µÕïµ•âΩ±êÅ—ï·–µ›°•—îà˘!'ÜÓ8ÅSÜÍÅ$ΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâôΩπ–µµΩπºÅôΩπ–µÕïµ•âΩ±êà˘ÕçΩ…•πúÅÌç’…Yï…ÙΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÅÌ…Ω›ÃπÕΩµî†°…Ω‹§ÄÙ¯Å…Ω‹πçΩπô•ù}Ÿï…Õ•Ω∏ÄÙÙÙÅç’…Yï»ÄòòÅ…Ω‹πÕÖµ¡±ï}≠•πêÄÙÙÙÄâ…ï—…ΩÕ¡ïç—•Ÿï}âÖç≠ô•±∞à§Ä¸Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˚äPÅ%Å°ßÜÓ∏Å”ÜÍÖ§Å≥ÄÄÒàÅç±ÖÕÕ9ÖµîÙâ—ï·–µmŸÖ»†¥µçΩ±Ω»µ•π¨•tà˘âÖç≠ô•±∞Å≥ÜÓ-ç†ÅœÜÓ¥Ωà¯Å”ÜÓ¨ÅΩ’—çΩµîÅÿ–∏ƒ‡ÏÅç£¡ÑÅ¡£ÜÍç§ÅØÜÍ˝–Å≈◊ÜÍåÅôΩ…›Ö…êÉGÜÓeåÅ≥ÜÍµ¿∏ΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄ§ÄËÅç’…!ÖÕ%Ä¸Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˚äPÅ%Åã©∏Åì√ÜÓm§Ä£GÖπ†ÅìÜÍï‘Äô±ë≈’ºÌ°ßÜÓ∏Å”ÜÍÖ§ô…ë≈’ºÏ§∏ΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄ§ÄËÄ†(ÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÉäPÄÒàÅç±ÖÕÕ9ÖµîÙâ—ï·–µmŸÖ»†¥µçΩ±Ω»µ•π¨•tà˘ç£¡ÑÉGÜÓúÅìÜÓºÅ±ßÜÓ‘ÅôΩ…›Ö…êÉGÜÓÅ”µπ†Å%Ωà¯∏Å7ÜÓ]§Å≥ÜÍù∏ÉGÜÓU§ÅŸï…Õ•Ω∏Å≥ÄÅ…ïÕï–(ÄÄÄÄÄÄÄÄÄÄÄÄÄÅôΩ…›Ö…êµŸÖ±•ëÖ—•Ω∏ÉäHÅèÜÍù∏Å”µç†Å±◊ÜÓ‰ÅΩ’—çΩµïÃÅ€Å§Å¡°ß©∏ÅÀÜÓM§ÅïŸÖ±’Ö—Ω»Ä°AÂ—°Ω∏§Å∑ÜÓm§Åù°§Å%∏ÅÜÍçπúÅì√ÜÓm§Å≥ÄÅèÖå(ÄÄÄÄÄÄÄÄÄÄÄÄÄÅŸï…Õ•Ω∏Åè§ÉGåÉGÜÓúÅ∑ÜÍ≠‘∞ÅìÂπúÉGÜÓÅ—°Ö¥Åç°ßÜÍ˝‘∏(ÄÄÄÄÄÄÄÄÄÄÄÄΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄ•Ù(ÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄ§ÄËÅπ’±±Ù(ÄÄÄÄÄÅÌŸï…1•Õ–πµÖ¿†°Ÿï…Õ•Ω∏§ÄÙ¯Ä†(ÄÄÄÄÄÄÄÄÒÖç—Ω…%QÖâ±î(ÄÄÄÄÄÄÄÄÄÅ≠ï‰ıÌŸï…Õ•ΩπÙ(ÄÄÄÄÄÄÄÄÄÅŸï…Õ•Ω∏ıÌŸï…Õ•ΩπÙ(ÄÄÄÄÄÄÄÄÄÅç’…Yï»ıÌç’…Yï…Ù(ÄÄÄÄÄÄÄÄÄÅΩôô•ç•Ö∞ıÌ…Ω›Ãπô•±—ï»†°…Ω‹§ÄÙ¯Å…Ω‹πçΩπô•ù}Ÿï…Õ•Ω∏ÄÙÙÙÅŸï…Õ•Ω∏•Ù(ÄÄÄÄÄÄÄÄÄÅµÖ…ù•πÖ∞ıÌµÖ…ù•πÖ±IΩ›Ãπô•±—ï»†°…Ω‹§ÄÙ¯Å…Ω‹πŸï…Õ•Ω∏ÄÙÙÙÅŸï…Õ•Ω∏•Ù(ÄÄÄÄÄÄÄÄÄÅ’¡ëÖ—ïë–ıÌ’¡ëÖ—ïë—	ÂYï…Õ•Ω∏πùï–°Ÿï…Õ•Ω∏•Ù(ÄÄÄÄÄÄÄÄÄÅëÖ—ÖMçΩ¡îıÌ…Ω›Ãπô•πê†°…Ω‹§ÄÙ¯Å…Ω‹πçΩπô•ù}Ÿï…Õ•Ω∏ÄÙÙÙÅŸï…Õ•Ω∏§¸πÕÖµ¡±ï}≠•πëÙ(ÄÄÄÄÄÄÄÄº¯(ÄÄÄÄÄÄ§•Ù(ÄÄÄÄÄÄÒÕïç—•Ω∏Åç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥ÿÅ¿¥ÃÅÕ¥È¿¥–à¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµà¥ÃÅô±ï‡Åô±ï‡µ›…Ö¿Å•—ïµÃµÕ—Ö…–Å©’Õ—•ô‰µâï—›ïï∏ÅùÖ¿¥»à¯(ÄÄÄÄÄÄÄÄÄÄÒë•ÿ¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ†»Åç±ÖÕÕ9ÖµîÙâ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˘%Å—°ïºÅπüÅπ†Å€ÄÅπ£Õ¥ÅÕçΩ…•πúΩ†»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ¿Åç±ÖÕÕ9ÖµîÙâµ–¥ƒÅ—ï·–µlƒ…¡·tÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÅ7ÜÓ]§ÅÕçΩ…•πúÅŸï…Õ•Ω∏ÉG√ÜÓçåÅ”Öç†Å—°ïºÉEßÜÓ¥Å”ÜÓUπúÅ€ÄÄÿÅçÖ—ïùΩ…‰∏Å7ÜÓ|ÅŸï…Õ•Ω∏∞ÅÕÖ‘ÉGÃÅ∑ÜÓ|ÅçÖ—ïùΩ…‰ÅèÜÍù∏Å·ï¥∏(ÄÄÄÄÄÄÄÄÄÄÄÄΩ¿¯(ÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâ…Ω’πëïêµµêÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅ¡‡¥»Å¡‰¥ƒÅ—ï·–µlƒ≈¡·tÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯(ÄÄÄÄÄÄÄÄÄÄÄÅ%ÅM¡ïÖ…µÖ∏É
+‹Å∏ÄÙÅèÜÓÑÅ∑ÜÍ≠‘(ÄÄÄÄÄÄÄÄÄÄΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄΩë•ÿ¯((ÄÄÄÄÄÄÄÅÌΩôô•ç•Ö±Yï…Õ•ΩπÃπ±ïπù—†Ä¸Ä†(ÄÄÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâÕ¡Öçîµ‰¥»à¯(ÄÄÄÄÄÄÄÄÄÄÄÅÌ•πë’Õ—…Â	ÂYï…Õ•Ω∏πµÖ¿†°Ÿï…Õ•ΩπÖ—Ñ§ÄÙ¯Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒëï—Ö•±Ã(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ≠ï‰ıÌŸï…Õ•ΩπÖ—ÑπŸï…Õ•ΩπÙ(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅç±ÖÕÕ9ÖµîÙâ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅâúµmŸÖ»†¥µçΩ±Ω»µÕ’…ôÖçî•tÅ¿¥»∏‘à(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅΩ¡ï∏ıÌŸï…Õ•ΩπÖ—ÑπŸï…Õ•Ω∏ÄÙÙÙÅç’…Yï…Ù(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâô±ï‡Åç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ•—ïµÃµçïπ—ï»Å©’Õ—•ô‰µâï—›ïï∏ÅùÖ¿¥»ÅôΩπ–µµΩπºÅ—ï·–µlƒÕ¡·tÅôΩπ–µÕïµ•âΩ±êà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏˘ÕçΩ…•πúÅÌŸï…Õ•ΩπÖ—ÑπŸï…Õ•ΩπıÌŸï…Õ•ΩπÖ—ÑπŸï…Õ•Ω∏ÄÙÙÙÅç’…Yï»Ä¸ÄàÄ°°ßÜÓ∏Å”ÜÍÖ§§àÄËÄàâÙΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâôΩπ–µÕÖπÃÅ—ï·–µlƒ≈¡·tÅôΩπ–µπΩ…µÖ∞Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘ÌŸï…Õ•ΩπÖ—ÑπôÖç—Ω…Ãπ±ïπù—°ÙÅçÖ—ïùΩ…‰ΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥»ÅÕ¡Öçîµ‰¥»à¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÌŸï…Õ•ΩπÖ—Ñπï……Ω»Ä¸Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâ…Ω’πëïêµµêÅâΩ…ëï»ÅâΩ…ëï»µëÖÕ°ïêÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅ¡‡¥ÃÅ¡‰¥–Å—ï·–µçïπ—ï»Å—ï·–µ·ÃÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ-£—πúÅ”ÜÍç§ÉG√ÜÓçåÅìÜÓºÅ±ßÜÓ‘ÅèÜÓùÑÅÕçΩ…•πúÅÌŸï…Õ•ΩπÖ—ÑπŸï…Õ•ΩπÙ∏ÅY’§Å≥…πúÅ”ÜÍç§Å≥ÜÍÖ§Å—…Öπú∏(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ§ÄËÅŸï…Õ•ΩπÖ—ÑπôÖç—Ω…ÃπµÖ¿†°ôÖç—Ω…Ö—Ñ§ÄÙ¯ÅÏ(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅçΩπÕ–Å•πôºÄÙÅQ=I}%9=môÖç—Ω…Ö—ÑπôÖç—Ω…tÏ(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ…ï—’…∏Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒëï—Ö•±Ã(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ≠ï‰ıÌôÖç—Ω…Ö—ÑπôÖç—Ω…Ù(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅç±ÖÕÕ9ÖµîÙâ…Ω’πëïêµµêÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅâúµâ±Öç¨Ωl¿∏¿ƒ’tÅ¿¥»ÅëÖ…¨Èâúµ›°•—îΩl¿∏¿…tà(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅΩ¡ï∏ıÌôÖç—Ω…Ö—ÑπôÖç—Ω»ÄÙÙÙÄâÕçΩ…ï}—…ÖëîâÙ(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâô±ï‡Åç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ•—ïµÃµçïπ—ï»Å©’Õ—•ô‰µâï—›ïï∏ÅùÖ¿¥»Å—ï·–µlƒ…¡·tÅôΩπ–µÕïµ•âΩ±êà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏˘Ì•πôº¸π±Öâï∞Ä¸¸ÅôÖç—Ω…Ö—ÑπôÖç—Ω…ÙΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâôΩπ–µπΩ…µÖ∞Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘ÌôÖç—Ω…Ö—Ñπù…Ω’¡Ãπ±ïπù—°ÙÅπüÅπ†ΩÕ¡Ö∏¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥»à¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ	…ïÖ≠ëΩ›πQÖâ±îÅù…Ω’¡ÃıÌôÖç—Ω…Ö—Ñπù…Ω’¡ÕÙÅçΩ±1Öâï∞Ùâ9üÅπ†àÅπÖµï=òıÏ°≠ï‰§ÄÙ¯Å≠ïÂÙÅµ•π8ıÏÃ¡ÙÅÕ°Ω›MÖµ¡±îÄº¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩëï—Ö•±Ã¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ§Ï(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÙ•Ù(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ¿Åç±ÖÕÕ9ÖµîÙâ—ï·–µlƒ≈¡·tÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÉCâ‰Å≥ÄÅ%Å¡ΩΩ±ïêÉGÜÓÅÕºÅ”√ÖπúÉGÜÓE§ÅùßÜÓΩÑÅπüÅπ†ΩçÖ—ïùΩ…‰∏ÅQ£ÜÍµ∏Å—ÀÜÓ5πúÅ€ÜÓm§É–ÅèÃÅ∏Äô±–ÏÄÃ¿ÏÅ%ÅΩôô•ç•Ö∞Å—°ïºÅπüÅ‰Å€ÜÍ≠∏ÅªÜÍ≈¥ÉÜÓ|ÅãÜÍçπúÅÕçΩ…•πúÅ¡£µÑÅ—À©∏∏(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩ¿¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩëï—Ö•±Ã¯(ÄÄÄÄÄÄÄÄÄÄÄÄ§•Ù(ÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄ§ÄËÄ†(ÄÄÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µëÖÕ°ïêÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅ¡‡¥ÃÅ¡‰¥ÿÅ—ï·–µçïπ—ï»Å—ï·–µ·ÃÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯(ÄÄÄÄÄÄÄÄÄÄÄÅ£¡ÑÅèÃÅ%Å—°ïºÅπüÅπ†Åç°ºÅèÖåÅÕçΩ…•πúÅŸï…Õ•Ω∏ÅèÃÅ%ÅΩôô•ç•Ö∞∏(ÄÄÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÄÄ•Ù(ÄÄÄÄÄÄΩÕïç—•Ω∏¯(ÄÄÄÄÄÄÒëï—Ö•±ÃÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥–Å¿¥Ãà¯(ÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˘Öç†ÉGÜÓ5åÅãÜÍçπúÅ%ΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅΩŸï…ô±Ω‹µ‡µÖ’—ºÅ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯(ÄÄÄÄÄÄÄÄÄÄÒ—Öâ±îÅç±ÖÕÕ9ÖµîÙâ‹µô’±∞Åµ•∏µ‹µlÿ–¡¡·tÅ—ï·–µ·Ãà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ—°ïÖêÅç±ÖÕÕ9ÖµîÙââúµâ±Öç¨Ωl¿∏¿ÕtÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tÅëÖ…¨Èâúµ›°•—îΩl¿∏¿Õtà¯Ò—»¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘-£Ö§ÅπßÜÓ¥Ω—†¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘Öç†Å°ßÜÓ‘Ω—†¯Ω—»¯Ω—°ïÖê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘%Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘S√ÖπúÅ≈’Ö∏Å£ÜÍÖπúÅM¡ïÖ…µÖ∏ÅùßÜÓΩÑÉEßÜÓ¥Åπ£â∏Å”ÜÓDÅ≠°§Å¡£Ö–Å”µ∏Å°ßÜÓ‘Å€ÄÅ≥ÜÓç§Åπ°◊ÜÍµ∏Å—£ÜÓ≈åÅ”ÜÍ¸ÅÕÖ‘Å8Å¡°ß©∏∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˚CÜÓdÅ∑ÜÍÖπ†ÅÒ%Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘√ÜÓm§Ä¿∞¿»ËÅüÜÍù∏Åπ£¿Å≠£—πúÅìÜÓƒÅãÖºÏÄ¿∞¿ÀäL¿∞¿‘ËÅèÃÅ”µ∏Å°ßÜÓ‘ÏÄ¿∞¿◊äL¿∞ƒ¿ËÅ”ÜÓE–ÏÅ—À©∏Ä¿∞ƒ¿ËÅÀÜÍï–Å∑ÜÍÖπ†Å€ÄÅèÜÍù∏Å≠ßÜÓ¥Å—…ÑÅèÜÓÑÅ∑ÜÍ≠‘∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘ÜÍï‘Å€ÄÅ∑Å‘Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà¯ÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâôΩπ–µÕïµ•âΩ±êÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µâ’‰•tà˘√Öπú∞Å∑Å‘Å·Öπ†ΩÕ¡Ö∏¯ËÅìÜÓƒÅãÖºÅ—°◊ÜÍµ∏∏ÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâôΩπ–µÕïµ•âΩ±êÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µÕï±∞•tà˚	¥∞Å∑Å‘ÉGÜÓ<ΩÕ¡Ö∏¯ËÅìÜÓƒÅãÖºÅπù£ÜÓ-ç†∏Å7Å‘ÉGÜÍµ¥Å£Ö∏Åπù£•ÑÅ≥ÄÅÒ%Å≥ÜÓm∏Å£Ö∏∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à¯ÕêÄºÄ’êÄºÄƒ¡êΩ—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘3ÜÓç§Åπ°◊ÜÍµ∏ÉG√ÜÓçåÉEºÅÕÖ‘ÄÃ∞Ä‘Å°øÜÍ›åÄƒ¿Å¡°ß©∏ÉGÜÓÅ¡£â∏ÅâßÜÓ–Å≠£ÜÍåÅªπúÅìÜÓƒÅãÖºÅπüÜÍΩ∏Å€ÄÅìÅ§Å£ÜÍÖ∏∏Å-°’πúÄƒÅ¡°ß©∏Å≠£—πúÅìÂπúÅ—…ΩπúÅ¡£ÜÍù∏ÅÕºÅœÖπ†Åç£ÜÍï–Å≥√ÜÓçπúÅ€∞ÅìÜÓÅπ°ßÜÓ‘∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘ÜÓÑÅ∑ÜÍ≠‘Å∏Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘∏Åπ£ÜÓ<Å≥Å¥Å%ÅìÜÓÅπ°ßÜÓ‘∏ÉΩ‘Å—ß©∏ÅØÜÍ˝–Å≈◊ÜÍåÅèÃÅ∏Å≥ÜÓm∏Å€ÄÉÜÓU∏ÉGÜÓ-π†Å≈’ÑÅπ°ßÜÓ‘Å≠°’πúÅ¡°ß©∏∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘MçΩ…•πúÅŸï…Õ•Ω∏Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘7ÜÓ]§ÅŸï…Õ•Ω∏ÉG√ÜÓçåÅôΩ…›Ö…êµŸÖ±•ëÖ—•Ω∏Å…ß©πú∏Å-°§ÉGÜÓU§ÅŸï…Õ•Ω∏∞ÅèÜÍù∏Å”µç†Å≥•‰ÅΩ’—çΩµïÃÅ∑ÜÓm§Å—À√ÜÓmåÅ≠°§ÅØÜÍ˝–Å±◊ÜÍµ∏∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘9ù◊ÜÓM∏ÅœÜÓDÅ±ßÜÓ‘Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘%Åç£µπ†Å—£ÜÓ•åÅëºÅïŸÖ±’Ö—Ω»ÅAÂ—°Ω∏Å”µπ†Å—À©∏ÅìÜÓºÅ±ßÜÓ‘Å”√ÖπúÅ±Ö§Å—£ÜÓ≈å∞Å≠£—πúÅ¡£ÜÍç§ÅâÖç≠—ïÕ–∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄΩ—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄΩ—Öâ±î¯(ÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄΩëï—Ö•±Ã¯((ÄÄÄÄÄÄÒëï—Ö•±ÃÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥–Å¿¥Ãà¯(ÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˚tÅπù£•ÑÅ”ÜÓ≠πúÅπ£â∏Å”ÜÓDΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅΩŸï…ô±Ω‹µ‡µÖ’—ºÅ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯(ÄÄÄÄÄÄÄÄÄÄÒ—Öâ±îÅç±ÖÕÕ9ÖµîÙâ‹µô’±∞Åµ•∏µ‹µl‹ÿ¡¡·tÅ—ï·–µ·Ãà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ—°ïÖêÅç±ÖÕÕ9ÖµîÙââúµâ±Öç¨Ωl¿∏¿ÕtÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tÅëÖ…¨Èâúµ›°•—îΩl¿∏¿Õtà¯Ò—»¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘7åÅπ£â∏Å”ÜÓDΩ—†¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘S©∏Ω—†¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘ßÜÓ∏ÅùßÜÍç§Ω—†¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘£ÜÓ$ÅãÖºÅ—£Åπ†ÅŸß©∏Ω—†¯Ω—»¯Ω—°ïÖê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ—âΩë‰˘ÌQ=I}=IHπô•±—ï»†°≠ï‰§ÄÙ¯ÅQ=I}%9=m≠ïÂt§πµÖ¿†°≠ï‰§ÄÙ¯ÅÏÅçΩπÕ–Å•πôºÄÙÅQ=I}%9=m≠ïÂtÏÅ…ï—’…∏Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Å≠ï‰ıÌ≠ïÂÙÅç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅÖ±•ù∏µ—Ω¿à¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµΩπºÅôΩπ–µÕïµ•âΩ±êà˘Ì≠ïÂÙΩ—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘Ì•πôºπ±Öâï±ÙΩ—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘Ì•πôºπëïÕçÙΩ—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘Ì•πôºπµïµâï…Ãπ±ïπù—†Ä¸Å•πôºπµïµâï…Ãπ©Ω•∏†àÉ
+‹Äà§ÄËÄãäPâÙΩ—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄ§ÏÅÙ•ÙΩ—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄΩ—Öâ±î¯(ÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄΩëï—Ö•±Ã¯((ÄÄÄÄÄÄÒëï—Ö•±ÃÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥–Å¿¥Ãà¯(ÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˘MºÅœÖπ†Åπ£â∏Å”ÜÓDÅ≈’ÑÅ”ÜÍï–ÅèÜÍåÅŸï…Õ•Ω∏ΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅΩŸï…ô±Ω‹µ‡µÖ’—ºÅ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—Öâ±îÅç±ÖÕÕ9ÖµîÙâ‹µô’±∞Åµ•∏µ‹µlÿ–¡¡·tÅ—ï·–µ·Ãà¯Ò—°ïÖêÅç±ÖÕÕ9ÖµîÙââúµâ±Öç¨Ωl¿∏¿ÕtÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tÅëÖ…¨Èâúµ›°•—îΩl¿∏¿Õtà¯Ò—»¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘;ÜÓe§Åë’πúΩ—†¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘Öç†ÅœÜÓ¥ÅìÜÓïπúΩ—†¯Ω—»¯Ω—°ïÖê¯Ò—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘7ÜÓïåÉGµç†Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘S±¥Åπ£â∏Å”ÜÓDÅì√ÖπúÉÜÓU∏ÉGÜÓ-π†Å≈’ÑÅπ°ßÜÓ‘ÅŸï…Õ•Ω∏ÉGÜÓÅèâ∏Åπ£ÜÍΩåÅ”πúÅ—ÀÜÓ5πúÅœÜÓDÏÅπ£â∏Å”ÜÓDÉâ¥ÅëÖ§ÅìÜÍÕπúÉGÜÓÅèâ∏Åπ£ÜÍΩåÅùßÜÍç¥Å°øÜÍ›åÉGÜÍçºÅ—ÀÜÓ5πúÅœÜÓD∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘A£ÜÍÖ¥ÅŸ§Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˚øÜÓmåÅ≥√ÜÓçπúÅ¡ΩΩ±ïêÅ—À©∏ÅèÖåÅŸï…Õ•Ω∏ÅèÃÉGÜÓúÅ∑ÜÍ≠‘ÏÅìÂπúÉGÜÓÅ—°Ö¥Åç°ßÜÍ˝‘∏ÅOÜÓDÅç£µπ†Å—£ÜÓ•åÅªÜÍ≈¥ÉÜÓ|ÅãÜÍçπúÅÕçΩ…•πúÅ¡£µÑÅ—À©∏∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄΩ—âΩë‰¯Ω—Öâ±î¯Ωë•ÿ¯(ÄÄÄÄÄÄΩëï—Ö•±Ã¯((ÄÄÄÄÄÄÒëï—Ö•±ÃÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥–Å¿¥Ãà¯(ÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˘%Å—°ïºÅç£ÜÓ$ÅœÜÓDÅçΩ∏ΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅΩŸï…ô±Ω‹µ‡µÖ’—ºÅ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—Öâ±îÅç±ÖÕÕ9ÖµîÙâ‹µô’±∞Åµ•∏µ‹µlÿ–¡¡·tÅ—ï·–µ·Ãà¯Ò—°ïÖêÅç±ÖÕÕ9ÖµîÙââúµâ±Öç¨Ωl¿∏¿ÕtÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tÅëÖ…¨Èâúµ›°•—îΩl¿∏¿Õtà¯Ò—»¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘;ÜÓe§Åë’πúΩ—†¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘Öç†ÉGÜÓ5åΩ—†¯Ω—»¯Ω—°ïÖê¯Ò—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˘9£Õ¥ÅìÜÓºÅ±ßÜÓ‘Ω—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘ÖåÅç£ÜÓ$ÅãÖºÅ—£Åπ†ÅŸß©∏ÉG√ÜÓçåÅùΩ¥Å—°ïºÅπ£Õ¥Åπ£â∏Å”ÜÓDÅπ£¿ÅµïÖπ}…ïŸï…Õ•Ω∏∞Åâ…ïÖ≠Ω’–∞Åô±Ω‹Å€ÄÅèÖåÅπ£Õ¥Åè…∏Å≥ÜÍÖ§∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄÄÄÒ—»Åç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµïë•’¥à˚tÅπù£•ÑΩ—ê¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘aÖπ†Å≥ÄÅç£ÜÓ$ÅãÖºÅìÜÓƒÅãÖºÅ—°◊ÜÍµ∏∞ÉGÜÓ<Å≥ÄÅìÜÓƒÅãÖºÅπù£ÜÓ-ç†∏ÉCâ‰Å≥ÄÉ√ÜÓmåÅ≥√ÜÓçπúÅM¡ïÖ…µÖ∏Å¡ΩΩ±ïêÅ—øÅ∏ÅØÜÓÃÉGÜÓÅ—°Ö¥Åç°ßÜÍ˝‘ÏÅÀ®Åç°◊ÜÓe–Å≥©∏É–ÉGÜÓÅ·ï¥Å∏∏Ω—ê¯Ω—»¯(ÄÄÄÄÄÄÄÄΩ—âΩë‰¯Ω—Öâ±î¯Ωë•ÿ¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅô±ï‡Åô±ï‡µçΩ∞ÅùÖ¿¥Ãà˘Ì•πë	ÂÖç—Ω»πµÖ¿†°ôÖç—Ω»§ÄÙ¯Ä†(ÄÄÄÄÄÄÄÄÄÄÒë•ÿÅ≠ï‰ıÌôÖç—Ω»π≠ïÂÙ¯Òë•ÿÅç±ÖÕÕ9ÖµîÙâµà¥ƒÅ—ï·–µlƒÕ¡·tÅôΩπ–µÕïµ•âΩ±êà˘ÌôÖç—Ω»π±Öâï±ÙÄÒÕ¡Ö∏Åç±ÖÕÕ9ÖµîÙâôΩπ–µµΩπºÅ—ï·–µlƒ≈¡·tÅôΩπ–µπΩ…µÖ∞Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘ÌôÖç—Ω»π≠ïÂÙΩÕ¡Ö∏¯Ωë•ÿ¯Ò	…ïÖ≠ëΩ›πQÖâ±îÅù…Ω’¡ÃıÌôÖç—Ω»πµïµâï…ÕÙÅçΩ±1Öâï∞Ùâ£ÜÓ$ÅãÖºàÅπÖµï=òıÏ°≠ï‰§ÄÙ¯ÅÕ•ùπÖ±9Öµî°≠ï‰•ÙÅµ•π8ıÏƒ¿¡ÙÄº¯Ωë•ÿ¯(ÄÄÄÄÄÄÄÄ§•ÙΩë•ÿ¯(ÄÄÄÄÄÄΩëï—Ö•±Ã¯((ÄÄÄÄÄÄÒëï—Ö•±ÃÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥ÿÅ¿¥Ãà¯(ÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˘OÜÓDÅ≥√ÜÓçπúÅ∑ÜÍ≠‘Å—°ïºÅÕçΩ…•πúÅŸï…Õ•Ω∏ΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅΩŸï…ô±Ω‹µ‡µÖ’—ºÅ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—Öâ±îÅç±ÖÕÕ9ÖµîÙâ‹µô’±∞Å—ï·–µ·Ãà¯Ò—°ïÖêÅç±ÖÕÕ9ÖµîÙââúµâ±Öç¨Ωl¿∏¿ÕtÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tÅëÖ…¨Èâúµ›°•—îΩl¿∏¿Õtà¯Ò—»¯Ò—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘Yï…Õ•Ω∏Ω—†˘Ì!=I%i=9LπµÖ¿†°†§ÄÙ¯ÄÒ—†Å≠ï‰ıÌ°ÙÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ…•ù°–à˘Ì°ÙÅ¡°ß©∏Ω—†¯•ÙΩ—»¯Ω—°ïÖê¯Ò—âΩë‰˘ÌÕÖµ¡±ï	ÂYï…Õ•Ω∏πµÖ¿†°ÏÅŸï…Õ•Ω∏∞ÅâÂ!Ω…•ÈΩ∏ÅÙ§ÄÙ¯ÄÒ—»Å≠ï‰ıÌŸï…Õ•ΩπÙÅç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯Ò—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµΩπºà˘ÌŸï…Õ•ΩπıÌŸï…Õ•Ω∏ÄÙÙÙÅç’…Yï»Ä¸ÄàÄ°°ßÜÓ∏Å”ÜÍÖ§§àÄËÄàâÙΩ—ê˘Ì!=I%i=9LπµÖ¿†°†§ÄÙ¯ÄÒ—êÅ≠ï‰ıÌ°ÙÅç±ÖÕÕ9ÖµîÙâ—Öâ’±Ö»Å¡‡¥ÃÅ¡‰¥»Å—ï·–µ…•ù°–à˘ÌâÂ!Ω…•ÈΩ∏πùï–°†§¸π—Ω1ΩçÖ±ïM—…•πú†§Ä¸¸ÄãäPâÙΩ—ê¯•ÙΩ—»¯•ÙΩ—âΩë‰¯Ω—Öâ±î¯Ωë•ÿ¯(ÄÄÄÄÄÄΩëï—Ö•±Ã¯(ÄÄÄÄÄÄÒëï—Ö•±ÃÅç±ÖÕÕ9ÖµîÙâçÖ…êÅµà¥ÿÅ¿¥Ãà¯(ÄÄÄÄÄÄÄÄÒÕ’µµÖ…‰Åç±ÖÕÕ9ÖµîÙâç’…ÕΩ»µ¡Ω•π—ï»ÅÕï±ïç–µπΩπîÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±êà˘Q°◊ÜÍµ–ÅπüÜÓºÅç°’Á©∏Å∑—∏Å€ÄÅèÖç†ÉGÜÓ5åΩÕ’µµÖ…‰¯(ÄÄÄÄÄÄÄÄÒë•ÿÅç±ÖÕÕ9ÖµîÙâµ–¥ÃÅΩŸï…ô±Ω‹µ‡µÖ’—ºÅ…Ω’πëïêµ±úÅâΩ…ëï»ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tà¯(ÄÄÄÄÄÄÄÄÄÄÒ—Öâ±îÅç±ÖÕÕ9ÖµîÙâ‹µô’±∞Åµ•∏µ‹µl‰‡¡¡·tÅ—ï·–µ·Ãà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ—°ïÖêÅç±ÖÕÕ9ÖµîÙââúµâ±Öç¨Ωl¿∏¿ÕtÅ—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tÅëÖ…¨Èâúµ›°•—îΩl¿∏¿Õtà¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘Q°◊ÜÍµ–ÅπüÜÓºΩ—†¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˚CÜÓ-π†Åπù£•ÑÅìÜÓÅ°ßÜÓ‘Ω—†¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘—πúÅ—£ÜÓ•åÅèÑÅãÜÍç∏Ω—†¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—†Åç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µ±ïô–à˘Öç†ÉGÜÓ5åÄºÅ”ÜÓE–ÄºÅ„ÜÍï‘Ω—†¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩ—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄΩ—°ïÖê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÒ—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÅÌQ!9%1}QI5LπµÖ¿†°•—ï¥§ÄÙ¯Ä†(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—»Å≠ï‰ıÌ•—ï¥π—ï…µÙÅç±ÖÕÕ9ÖµîÙââΩ…ëï»µ–ÅâΩ…ëï»µmŸÖ»†¥µçΩ±Ω»µâΩ…ëï»•tÅÖ±•ù∏µ—Ω¿à¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µÕïµ•âΩ±êà˘Ì•—ï¥π—ï…µÙΩ—ê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘Ì•—ï¥πµïÖπ•πùÙΩ—ê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»ÅôΩπ–µµΩπºÅ—ï·–µlƒ≈¡·tà˘Ì•—ï¥πôΩ…µ’±ÖÙΩ—ê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÒ—êÅç±ÖÕÕ9ÖµîÙâ¡‡¥ÃÅ¡‰¥»Å—ï·–µmŸÖ»†¥µçΩ±Ω»µµ’—ïê•tà˘Ì•—ï¥π…ïÖë•πùÙΩ—ê¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄΩ—»¯(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄ§•Ù(ÄÄÄÄÄÄÄÄÄÄÄÄΩ—âΩë‰¯(ÄÄÄÄÄÄÄÄÄÄΩ—Öâ±î¯(ÄÄÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄΩëï—Ö•±Ã¯(ÄÄÄÄº¯(ÄÄ§Ï)Ù(

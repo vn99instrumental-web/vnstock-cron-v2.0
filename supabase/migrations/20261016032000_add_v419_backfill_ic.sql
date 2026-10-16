@@ -38,4 +38,3 @@ comment on column public.v4_ic_backfill_metrics.source_version is
   'Version whose already-matured outcome is joined through shadow_backfill_source_pred_id.';
 comment on column public.v4_ic_backfill_metrics.sample_kind is
   'Explicit provenance; currently only retrospective_backfill is allowed.';
-

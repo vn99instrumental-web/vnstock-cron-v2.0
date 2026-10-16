@@ -78,4 +78,3 @@ jobs:
 
       - name: Apply bounded Supabase retention
         run: python3 scripts/prune_supabase_retention.py
-

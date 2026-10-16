@@ -59,4 +59,3 @@ Script tạo lại có tính idempotent: `python scripts/backfill_v419_shadow.py
 Backfill vẫn bị loại khỏi `v4_ic_metrics` và mọi kết luận forward. Để đối chiếu factor × scoring version, exporter riêng `scripts/export_backfill_ic_to_supabase.py` nối `shadow_backfill_source_pred_id` với outcome đã chín của v4.18 rồi ghi `v4_ic_backfill_metrics`.
 
 Tab IC ưu tiên IC forward nếu v4.19 đã đủ mẫu; trước thời điểm đó, IC lịch sử được hiển thị với nhãn `backfill lịch sử`. Hai phạm vi không bao giờ được trộn trong cùng một dòng IC.
-

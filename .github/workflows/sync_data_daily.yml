@@ -95,4 +95,3 @@ jobs:
 
       - name: Apply bounded Supabase retention
         run: ${{ steps.python.outputs.python }} scripts/prune_supabase_retention.py
-

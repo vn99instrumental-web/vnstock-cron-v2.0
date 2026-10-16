@@ -191,4 +191,3 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - The IC tab uses forward rows when available; otherwise it shows the historical v4.19 rows with an explicit `backfill lịch sử` label in both the version table and factor × version matrix.
 - Daily, weekly, and manual Supabase workflows refresh this separate historical layer before dashboard snapshot/cache refresh. Workflows remain `workflow_dispatch`-driven by n8n; no GitHub schedule was added.
 - Production verification: 24 rows across six non-constant factors, 1,200 matured observations for each horizon, signal range 2026-09-17 through 2026-10-02. Context is absent because its backfill score has no cross-sectional variance.
-
