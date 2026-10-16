@@ -6,7 +6,7 @@ Giữ dữ liệu đủ dài để so sánh các scoring version đang được 
 
 ## Phạm vi dữ liệu nóng
 
-- Scoring version được giữ trên dashboard: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`.
+- Scoring version được giữ trên dashboard: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.8`, `v4.1`, `v2.3`.
 - Đồng bộ hằng ngày chỉ nên ghi các version trên; version thử nghiệm khác không được tiếp tục nhân bản vào Supabase.
 - OHLC phục vụ tab Phân tích được làm mới theo cửa sổ 45 ngày và giữ tối đa 900 ngày để đủ EMA200/biểu đồ.
 - Ledger trong Git vẫn là nguồn dữ liệu gốc để có thể khôi phục hoặc backfill.
@@ -66,7 +66,7 @@ Chưa cần tách project ngay. Bắt đầu chuẩn bị phương án tách khi
 ## Retention intraday theo scoring version
 
 - v4.18 và v4.17: giữ toàn bộ snapshot intraday để đối chiếu trạng thái trong ngày.
-- v4.19-shadow, v4.9, v4.8, v4.1, v2.3: mỗi ngày giữ run cuối cùng và thêm run cuối cùng có BUY/STRONG BUY. Cách này giữ đủ breakdown cho tab Mua kể cả khi run đóng cửa không còn tín hiệu BUY, đồng thời không nhân dung lượng intraday cho candidate thử nghiệm.
+- v4.19-shadow, v4.8, v4.1, v2.3: mỗi ngày giữ run cuối cùng và thêm run cuối cùng có BUY/STRONG BUY. Cách này giữ đủ breakdown cho tab Mua kể cả khi run đóng cửa không còn tín hiệu BUY, đồng thời không nhân dung lượng intraday cho candidate thử nghiệm.
 - Outcomes và runs của các version daily-retention chỉ giữ khi còn liên kết với signal được giữ. Ledger Git vẫn là bản lossless để backfill.
 - IC tổng, IC theo ngành và marginal IC được tính từ ledger/daily-last trước khi retention chạy; Vercel đọc các bảng precompute thay vì tính lại từ toàn bộ intraday.
 - Hàm prune_v4_legacy_intraday() chỉ cấp quyền thực thi cho service_role; workflow refresh dashboard snapshot và xóa cache trước, sau đó mới chạy retention ở bước maintenance cuối.

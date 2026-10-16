@@ -184,7 +184,7 @@ jobs:
         run: |
           /opt/vnstock/.venv/bin/python steps/v2f_step_scoring_v4.py
 
-      - name: Step Scoring selected historical versions (v4.1/v4.8/v4.9/v4.17)
+      - name: Step Scoring selected historical versions (v4.1/v4.8/v4.17)
         continue-on-error: true
         run: |
           /opt/vnstock/.venv/bin/python scripts/run_historical_scoring.py

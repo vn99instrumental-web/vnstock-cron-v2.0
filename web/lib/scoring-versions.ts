@@ -1,4 +1,4 @@
-export const REVIEW_VERSIONS = ["v4.19-shadow", "v4.18", "v4.17", "v4.9", "v4.8", "v4.1", "v2.3"] as const;
+export const REVIEW_VERSIONS = ["v4.19-shadow", "v4.18", "v4.17", "v4.8", "v4.1", "v2.3"] as const;
 export type ReviewVersion = (typeof REVIEW_VERSIONS)[number];
 export const DEFAULT_SCORING_VERSION: ReviewVersion = "v4.18";
 

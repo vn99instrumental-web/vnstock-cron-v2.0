@@ -18,7 +18,7 @@
 
 ## Scoring version được review
 
-Theo thứ tự mới nhất: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`. Production mặc định vẫn là `v4.18`.
+Theo thứ tự mới nhất: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.8`, `v4.1`, `v2.3`. Production mặc định vẫn là `v4.18`.
 
 Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợp. Tab IC hiển thị toàn bộ version có dữ liệu, số mẫu và thời gian cập nhật đã quy đổi sang giờ Việt Nam.
 
@@ -111,7 +111,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Hai khối “So sánh factor × scoring version” và “Phạm vi dữ liệu dùng khi đối chiếu version” dùng `details`, mặc định đóng sau mỗi lần tải trang và chỉ hiện nội dung khi người dùng mở.
 ## Retention theo version 2026-10-15
 
-- v4.18 và v4.17 giữ full intraday trên Supabase; v4.19-shadow, v4.9, v4.8, v4.1, v2.3 chỉ giữ run cuối ngày và run BUY cuối ngày.
+- v4.18 và v4.17 giữ full intraday trên Supabase; v4.19-shadow, v4.8, v4.1, v2.3 chỉ giữ run cuối ngày và run BUY cuối ngày. v4.9 đã ngừng từ 2026-10-16.
 - Tab IC lấy factor × version từ v4_ic_metrics, indicator từ v4_marginal_ic, IC ngành từ batch v4_ic_industry_metrics; tab Mua cũng đọc IC ngành từ batch precompute.
 - Migration 0032_retain_legacy_daily_signals.sql tạo RPC service-role-only; daily sync, manual full sync và weekly flow refresh snapshot/revalidate trước rồi mới prune ở maintenance cuối.
 - Git ledger tiếp tục là nguồn lossless. Supabase là serving layer có retention; không chạy VACUUM FULL tự động.
