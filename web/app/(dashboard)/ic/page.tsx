@@ -152,8 +152,8 @@ export default async function ICPage() {
 
   const rows = (icResponse.data ?? []) as ICRow[];
   const coverageRows = (coverageResponse.data ?? []) as Array<{ scoring_version: string; signal_date_min: string | null; signal_date_max: string | null; signal_days: number; signal_rows: number; outcome_date_min: string | null; outcome_date_max: string | null; outcome_rows: number; latest_update: string | null }>;
-  const curVer = DEFAULT_SCORING_VERSION;
   const officialVersions = REVIEW_VERSIONS.filter((version) => rows.some((row) => row.config_version === version));
+  const curVer = officialVersions.includes(DEFAULT_SCORING_VERSION) ? DEFAULT_SCORING_VERSION : (officialVersions[0] ?? DEFAULT_SCORING_VERSION);
   const curHasIC = rows.some((row) => row.config_version === curVer);
   const currentClient = createCachedPublicClient("ic", curVer);
 

@@ -18,7 +18,7 @@
 
 ## Scoring version được review
 
-Theo thứ tự mới nhất: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.8`, `v4.1`, `v2.3`. Production mặc định vẫn là `v4.18`.
+Theo thứ tự mới nhất: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.8`, `v4.1`, `v2.3`. Dashboard mặc định hiển thị `v4.19-shadow` khi có dữ liệu; scoring production vẫn là `v4.18`.
 
 Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợp. Tab IC hiển thị toàn bộ version có dữ liệu, số mẫu và thời gian cập nhật đã quy đổi sang giờ Việt Nam.
 
@@ -178,3 +178,8 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Dashboard summary production còn 6 version: v4.19-shadow, v4.18, v4.17, v4.8, v4.1 và v2.3; snapshot refresh thành công lúc `2026-10-16 01:18:29 UTC`.
 - Retention RPC không còn nhắc v4.9; anon/authenticated không có quyền execute và chỉ `service_role` được gọi.
 - Git ledger lịch sử không bị rewrite, nên vẫn có thể phục hồi có chủ đích nếu owner thay đổi quyết định.
+
+## Dashboard default version 2026-10-16
+
+- Tabs with a version selector default to `v4.19-shadow` when it has data, preserve an explicit valid URL selection, and otherwise fall back to the newest review version that has data.
+- The Today comparison remains three-version but orders columns `v4.19`, `v4.18`, `v4.17`; IC still shows all available versions and treats v4.19 as current only when official IC exists.

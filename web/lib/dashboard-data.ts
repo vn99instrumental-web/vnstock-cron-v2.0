@@ -53,7 +53,9 @@ export function resolveReviewVersion(
   requested: unknown,
   available: Partial<Record<ReviewVersion, unknown>>,
 ): ReviewVersion {
-  return isReviewVersion(requested) && available[requested]
-    ? requested
-    : DEFAULT_SCORING_VERSION;
+  if (isReviewVersion(requested) && available[requested]) return requested;
+  if (available[DEFAULT_SCORING_VERSION]) return DEFAULT_SCORING_VERSION;
+
+  return REVIEW_VERSIONS.find((version) => available[version])
+    ?? DEFAULT_SCORING_VERSION;
 }

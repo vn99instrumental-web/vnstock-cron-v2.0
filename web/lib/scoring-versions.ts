@@ -1,6 +1,6 @@
 export const REVIEW_VERSIONS = ["v4.19-shadow", "v4.18", "v4.17", "v4.8", "v4.1", "v2.3"] as const;
 export type ReviewVersion = (typeof REVIEW_VERSIONS)[number];
-export const DEFAULT_SCORING_VERSION: ReviewVersion = "v4.18";
+export const DEFAULT_SCORING_VERSION: ReviewVersion = "v4.19-shadow";
 
 export function isReviewVersion(value: unknown): value is ReviewVersion {
   return typeof value === "string" && REVIEW_VERSIONS.includes(value as ReviewVersion);
