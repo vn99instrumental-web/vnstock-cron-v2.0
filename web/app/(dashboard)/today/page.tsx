@@ -68,7 +68,7 @@ export default async function TodayPage() {
   const symbolCount = new Set(signals.map((signal) => signal.symbol)).size;
   const latestTimes = TODAY_COMPARE_VERSIONS.flatMap((version) => {
     const run = metadata.byVersion[version];
-    return run ? [`${version === "v4.19-shadow" ? "v4.19" : version} ${hmVN(run.started_at)}`] : [];
+    return run ? [`${version === "v4.19-shadow" ? "v4.19" : version} · ${versionDates[version]} · cập nhật ${hmVN(run.started_at)}`] : [];
   });
 
   return (
