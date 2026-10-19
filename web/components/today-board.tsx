@@ -26,6 +26,22 @@ export interface TodaySignal {
   breakdown: Record<string, unknown> | null;
 }
 
+const QUAL_FF = 5;
+const QUAL_FUND = 5;
+
+function SignalQualityStar({ ff, fund }: { ff: number | null; fund: number | null }) {
+  if (ff == null || fund == null || ff < QUAL_FF || fund < QUAL_FUND) return null;
+  return (
+    <span
+      className="inline-flex items-center rounded border border-[var(--color-buy)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-buy)]"
+      title={`Signal quality: khối ngoại mạnh (FF ${ff}≥${QUAL_FF}) và cơ bản tốt (Fund ${fund}≥${QUAL_FUND})`}
+      aria-label="Signal quality"
+    >
+      ⭐ Quality
+    </span>
+  );
+}
+
 function num(v: unknown): number | null {
   if (v == null || v === "") return null;
   const n = typeof v === "number" ? v : parseFloat(String(v));
@@ -254,6 +270,7 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
         <div className="flex items-center gap-1.5">
           <DecisionBadge decision={group.latest.decision} />
           <SignalQualityChip confidence={group.latest.confidence} />
+          <SignalQualityStar ff={group.latest.ffScore} fund={group.latest.fundScore} />
           <span className="ml-auto tabular text-base font-semibold">{fmtNum(group.scoreLast)}</span>
           {group.nSnap > 1 && Math.abs(delta) >= 0.01 ? <span className={`tabular text-[10px] ${signClass(delta)}`}>{delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}</span> : null}
         </div>
