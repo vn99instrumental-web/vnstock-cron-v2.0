@@ -3,7 +3,7 @@
 import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
-import { CONFIDENCE_LABEL, DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
+import { DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
 import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
 
 export interface TodaySignal {
@@ -67,21 +67,6 @@ interface Group {
 }
 
 type SortKey = "score" | "buy" | "delta";
-
-function SignalQualityChip({ confidence }: { confidence: string | null }) {
-  const quality = CONFIDENCE_LABEL[String(confidence ?? "").toUpperCase()];
-  if (!quality) return null;
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium"
-      style={{ color: quality.color, borderColor: quality.color }}
-      title="Chất lượng tín hiệu (confidence)"
-    >
-      <span aria-hidden style={{ width: 6, height: 6, borderRadius: 9, background: quality.color }} />
-      Chất lượng: {quality.text}
-    </span>
-  );
-}
 
 function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) {
   const groups = factorGroupViews(breakdown);
@@ -269,7 +254,6 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
       >
         <div className="flex items-center gap-1.5">
           <DecisionBadge decision={group.latest.decision} />
-          <SignalQualityChip confidence={group.latest.confidence} />
           <SignalQualityStar ff={group.latest.ffScore} fund={group.latest.fundScore} />
           <span className="ml-auto tabular text-base font-semibold">{fmtNum(group.scoreLast)}</span>
           {group.nSnap > 1 && Math.abs(delta) >= 0.01 ? <span className={`tabular text-[10px] ${signClass(delta)}`}>{delta > 0 ? "▲" : "▼"}{Math.abs(delta).toFixed(1)}</span> : null}
