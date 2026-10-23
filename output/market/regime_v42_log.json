@@ -1467,5 +1467,18 @@
     "pending": "DOWNTREND",
     "note": "pending confirm (DOWNTREND)",
     "reason": "duoi EMA50 & momentum am"
+  },
+  {
+    "date": "2026-10-23",
+    "time": "08:01",
+    "close": 1760.63,
+    "c5": 3.67,
+    "c20": -0.81,
+    "regime_now": "DEEP_DOWN",
+    "raw": "RECOVERY",
+    "eff": "DEEP_DOWN",
+    "pending": "RECOVERY",
+    "note": "pending confirm (RECOVERY)",
+    "reason": "duoi EMA50 & c5=+3.67>=+2"
   }
 ]
