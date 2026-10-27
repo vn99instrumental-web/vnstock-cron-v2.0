@@ -1,6 +1,6 @@
 import { DataStatusPanel, type DataStatusItem, type DataStatusTone } from "@/components/data-status-panel";
 import { PageHeader, EmptyState, QueryErrorState } from "@/components/ui";
-import { TodayBoard, type TodaySignal } from "@/components/today-board";
+import { TodayBoard, type TodayPriceStat, type TodaySignal } from "@/components/today-board";
 import { getLatestVersionRuns } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { dateTimeVN, hmVN } from "@/lib/format";
@@ -50,6 +50,68 @@ export default async function TodayPage() {
 
   const signals = signalResponses.flatMap((response) => response.data);
   const baseClient = createCachedPublicClient("today-compare-health", "v4.18");
+
+  // Pick one current price per symbol, from the newest dated snapshot across versions.
+  // This avoids comparing an old version's price against a newer version's reference close.
+  const latestPrices = new Map<string, { price: number; signalDate: string; snapTime: string; versionOrder: number }>();
+  for (const signal of signals) {
+    const price = signal.price == null || signal.price === "" ? NaN : Number(signal.price);
+    if (!Number.isFinite(price) || price <= 0) continue;
+    const versionOrder = TODAY_COMPARE_VERSIONS.indexOf(signal.scoring_version as (typeof TODAY_COMPARE_VERSIONS)[number]);
+    if (versionOrder < 0) continue;
+    const snapTime = signal.snap_time ?? "";
+    const previous = latestPrices.get(signal.symbol);
+    if (!previous || signal.signal_date > previous.signalDate ||
+        (signal.signal_date === previous.signalDate &&
+          (snapTime > previous.snapTime || (snapTime === previous.snapTime && versionOrder < previous.versionOrder)))) {
+      latestPrices.set(signal.symbol, { price, signalDate: signal.signal_date, snapTime, versionOrder });
+    }
+  }
+
+  const priceStats: Record<string, TodayPriceStat> = {};
+  const symbolsByDate = new Map<string, string[]>();
+  for (const [symbol, latest] of latestPrices) {
+    priceStats[symbol] = { price: latest.price, changePct: null };
+    const symbols = symbolsByDate.get(latest.signalDate) ?? [];
+    symbols.push(symbol);
+    symbolsByDate.set(latest.signalDate, symbols);
+  }
+
+  // Follow the Buy tab: price change vs last trading session's OHLC close.
+  // Query in small batches to stay below the Supabase 1,000-row response limit.
+  const priceQueries = [...symbolsByDate.entries()].flatMap(([signalDate, symbols]) => {
+    const start = new Date(`${signalDate}T00:00:00Z`);
+    start.setUTCDate(start.getUTCDate() - 21);
+    const since = start.toISOString().slice(0, 10);
+    const batches: { signalDate: string; symbols: string[]; since: string }[] = [];
+    for (let offset = 0; offset < symbols.length; offset += 40) {
+      batches.push({ signalDate, symbols: symbols.slice(offset, offset + 40), since });
+    }
+    return batches;
+  });
+  const priceResponses = await Promise.all(priceQueries.map(async (batch) => {
+    const response = await baseClient.from("v4_ohlc").select("symbol, date, close")
+      .in("symbol", batch.symbols).lt("date", batch.signalDate).gte("date", batch.since)
+      .order("date", { ascending: false });
+    return { batch, data: response.data, error: response.error };
+  }));
+  for (const response of priceResponses) {
+    if (response.error) continue; // Missing OHLC must not break the entire Today page.
+    const previousCloses = new Map<string, number>();
+    for (const row of (response.data ?? []) as { symbol: string; close: number | string | null }[]) {
+      const close = row.close == null ? NaN : Number(row.close);
+      if (!previousCloses.has(row.symbol) && Number.isFinite(close) && close > 0) {
+        previousCloses.set(row.symbol, close);
+      }
+    }
+    for (const symbol of response.batch.symbols) {
+      const previousClose = previousCloses.get(symbol);
+      const current = priceStats[symbol];
+      if (current && previousClose != null) {
+        current.changePct = (current.price - previousClose) / previousClose * 100;
+      }
+    }
+  }
   const { data: ohlc } = await baseClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle();
   const ohlcRow = ohlc as { date?: string; synced_at?: string } | null;
   const statusItems: DataStatusItem[] = [
@@ -75,7 +137,7 @@ export default async function TodayPage() {
     <>
       <PageHeader title="Hôm nay" desc={`${symbolCount} mã hợp nhất · ${latestTimes.join(" · ")} (giờ VN)`} />
       <DataStatusPanel items={statusItems} />
-      {signals.length ? <TodayBoard signals={signals} versionDates={versionDates} /> : <EmptyState title="Chưa có dữ liệu cho ba version" hint="Cần ít nhất một run v4.17, v4.18 hoặc v4.19." />}
+      {signals.length ? <TodayBoard signals={signals} versionDates={versionDates} priceStats={priceStats} /> : <EmptyState title="Chưa có dữ liệu cho ba version" hint="Cần ít nhất một run v4.17, v4.18 hoặc v4.19." />}
     </>
   );
 }
