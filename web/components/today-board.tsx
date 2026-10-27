@@ -2,9 +2,14 @@
 
 import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
-import { fmtNum, hmVN, signClass, fmtBil } from "@/lib/format";
+import { fmtNum, fmtPct, hmVN, signClass, fmtBil } from "@/lib/format";
 import { DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
 import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
+
+export interface TodayPriceStat {
+  price: number;
+  changePct: number | null;
+}
 
 export interface TodaySignal {
   symbol: string;
@@ -66,7 +71,7 @@ interface Group {
   priceLow: number | null; priceHigh: number | null;
 }
 
-type SortKey = "score" | "buy" | "delta";
+type SortKey = "score" | "buy" | "delta" | "price_desc" | "price_asc" | "decline_1d";
 type SignalMode = "both" | "strong" | "buy" | "all";
 
 /** Match the latest decision for each version, never historical BUY snapshots. */
@@ -129,7 +134,7 @@ function cellTone(decision: string | null | undefined): string {
   return "border-[var(--color-border)] bg-[var(--color-bg)]";
 }
 
-export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; versionDates: Record<string, string> }) {
+export function TodayBoard({ signals, versionDates, priceStats }: { signals: TodaySignal[]; versionDates: Record<string, string>; priceStats: Record<string, TodayPriceStat> }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [signalMode, setSignalMode] = useState<SignalMode>("both");
   const [hideThin, setHideThin] = useState(false);
@@ -231,7 +236,21 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
       return true;
     });
     const scoreDelta = (group: VersionGroup | undefined) => group ? (group.scoreLast ?? 0) - (group.scoreFirst ?? 0) : -999;
+    const compareNumber = (a: number | null, b: number | null, ascending: boolean): number => {
+      if (a == null) return b == null ? 0 : 1;
+      if (b == null) return -1;
+      return ascending ? a - b : b - a;
+    };
     result.sort((a, b) => {
+      if (sortKey === "price_desc" || sortKey === "price_asc") {
+        const comparison = compareNumber(priceStats[a.symbol]?.price ?? null, priceStats[b.symbol]?.price ?? null, sortKey === "price_asc");
+        return comparison || a.symbol.localeCompare(b.symbol);
+      }
+      if (sortKey === "decline_1d") {
+        // Most negative 1D change first; missing prior-close data always sorts last.
+        const comparison = compareNumber(priceStats[a.symbol]?.changePct ?? null, priceStats[b.symbol]?.changePct ?? null, true);
+        return comparison || a.symbol.localeCompare(b.symbol);
+      }
       if (sortKey === "buy") {
         const aBuy = TODAY_COMPARE_VERSIONS.reduce((sum, version) => sum + (a.byVersion[version]?.nBuy ?? 0), 0);
         const bBuy = TODAY_COMPARE_VERSIONS.reduce((sum, version) => sum + (b.byVersion[version]?.nBuy ?? 0), 0);
@@ -243,7 +262,7 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
       return Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(a.byVersion[version])));
     });
     return result;
-  }, [groups, q, commonOnly, signalMode, hideThin, minLiquidity, liquidityBySymbol, sortKey]);
+  }, [groups, q, commonOnly, signalMode, hideThin, minLiquidity, liquidityBySymbol, priceStats, sortKey]);
 
   const totalSymbols = new Set(groups.map((group) => group.symbol)).size;
   const commonSymbols = useMemo(() => {
@@ -327,6 +346,9 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
           <option value="score">Score cao nhất ↓</option>
           <option value="buy">Số lần BUY ↓</option>
           <option value="delta">Score tăng mạnh ↓</option>
+          <option value="price_desc">Giá cổ phiếu cao nhất ↓</option>
+          <option value="price_asc">Giá cổ phiếu thấp nhất ↑</option>
+          <option value="decline_1d">Giá giảm nhiều nhất 1D (%)</option>
         </select>
         <select
           aria-label="Lọc theo tín hiệu mới nhất"
@@ -378,6 +400,12 @@ export function TodayBoard({ signals, versionDates }: { signals: TodaySignal[]; 
                     <tr className="border-b border-[var(--color-border)]/70 align-top">
                       <td className="px-3 py-3">
                         <span className="sticky left-0 text-sm font-semibold">{row.symbol}</span>
+                        <div title="Giá snapshot gần nhất trên 3 version; % 1D so với đóng cửa phiên giao dịch trước" className="mt-1 text-[10px] tabular text-[var(--color-muted)]">
+                          <span>Giá {priceStats[row.symbol] ? fmtNum(priceStats[row.symbol].price) : "—"}</span>
+                          <span className={`ml-1 ${signClass(priceStats[row.symbol]?.changePct)}`}>
+                            1D {priceStats[row.symbol]?.changePct != null ? fmtPct(priceStats[row.symbol].changePct, 1) : "—"}
+                          </span>
+                        </div>
                         <div title="Thanh khoản giá trị trung bình mỗi phiên (ADTV) từ snapshot mới nhất có dữ liệu" className="mt-1 text-[10px] tabular text-[var(--color-muted)]">
                           ⚡ {liquidityBySymbol.get(row.symbol) == null
                             ? "Chưa có TK"
