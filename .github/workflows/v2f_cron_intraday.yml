@@ -250,6 +250,16 @@ jobs:
             git add "$p" 2>/dev/null || true
           done
 
+          # GitHub rejects newly pushed blobs above 100 MB. Keep a 5 MB safety margin.
+          while IFS= read -r staged_file; do
+            [ -f "$staged_file" ] || continue
+            bytes=$(wc -c < "$staged_file")
+            if [ "$bytes" -gt 95000000 ]; then
+              echo "::error file=$staged_file::Staged file is $bytes bytes; split the ledger partition before commit (limit 95 MB)."
+              exit 1
+            fi
+          done < <(git diff --staged --name-only --diff-filter=ACM)
+
           if git diff --staged --quiet; then
             echo "No changes to commit — skipping."
             exit 0
@@ -371,6 +381,16 @@ jobs:
             output/history/v2f_predictions_v4/ ; do
             git add "$p" 2>/dev/null || true
           done
+          # GitHub rejects newly pushed blobs above 100 MB. Keep a 5 MB safety margin.
+          while IFS= read -r staged_file; do
+            [ -f "$staged_file" ] || continue
+            bytes=$(wc -c < "$staged_file")
+            if [ "$bytes" -gt 95000000 ]; then
+              echo "::error file=$staged_file::Staged file is $bytes bytes; split the ledger partition before commit (limit 95 MB)."
+              exit 1
+            fi
+          done < <(git diff --staged --name-only --diff-filter=ACM)
+
           if git diff --staged --quiet; then
             echo "No changes to commit — skipping."; exit 0
           fi
