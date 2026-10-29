@@ -182,7 +182,7 @@ def main():
     if run_date is None:
         qc.warn("ledger_v4", "bỏ qua (không có run_date)")
     elif ledger_rows is None:
-        qc.error("ledger_v4", f"không mở được partition {run_date[:7]}.jsonl")
+        qc.error("ledger_v4", f"không mở được partition cho {run_date}")
     else:
         n_led = len(ledger_rows)
         if n_led == 0:
@@ -250,9 +250,14 @@ def _read_ledger_for_run(run_date, snap_time):
     if not run_date:
         return []
     month = run_date[:7]
-    path = LEDGER_DIR / f"{month}.jsonl"
-    if not path.exists():
-        # thử partition mới nhất nếu tháng lệch
+    daily_path = LEDGER_DIR / f"{run_date[:10]}.jsonl"
+    monthly_path = LEDGER_DIR / f"{month}.jsonl"
+    if daily_path.exists():
+        path = daily_path
+    elif monthly_path.exists():
+        path = monthly_path
+    else:
+        # thử partition mới nhất nếu ngày/tháng lệch
         cands = sorted(glob.glob(str(LEDGER_DIR / "*.jsonl")))
         if not cands:
             return None
