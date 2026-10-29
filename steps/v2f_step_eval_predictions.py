@@ -120,6 +120,12 @@ def _path(subdir: str, month: str) -> Path:
     return Path(OUTPUT_DIR) / subdir / f"{month}.jsonl"
 
 
+def _partition_paths(subdir: str, month: str) -> list[Path]:
+    """Read legacy monthly plus new daily prediction partitions."""
+    directory = Path(OUTPUT_DIR) / subdir
+    return sorted(directory.glob(f"{month}*.jsonl"))
+
+
 def _read_jsonl(path: Path) -> list[dict]:
     if not path.exists():
         return []
@@ -411,7 +417,8 @@ def main():
     for pred_sub, out_trade, out_hold, label in TRACKS:
         preds = []
         for m in months:
-            preds += _read_jsonl(_path(pred_sub, m))
+            for path in _partition_paths(pred_sub, m):
+                preds += _read_jsonl(path)
         if not preds:
             log.info(f"[{label}] ledger trống/chưa tồn tại — skip")
             continue
