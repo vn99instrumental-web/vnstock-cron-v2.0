@@ -179,8 +179,15 @@ def run():
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{snap_date[:10]}.jsonl"
 
-    existing = _load_existing_keys(out_path)
-    log.info(f"Existing prediction keys in {out_path.name}: {len(existing)}")
+    # During the transition, dedup against both the legacy monthly file and
+    # the new daily partition so a rerun cannot duplicate an existing snapshot.
+    legacy_month_path = out_dir / f"{snap_date[:7]}.jsonl"
+    existing = _load_existing_keys(legacy_month_path)
+    existing.update(_load_existing_keys(out_path))
+    log.info(
+        "Existing prediction keys across %s + %s: %d",
+        legacy_month_path.name, out_path.name, len(existing),
+    )
 
     new_records = []
     for sig in signals:
