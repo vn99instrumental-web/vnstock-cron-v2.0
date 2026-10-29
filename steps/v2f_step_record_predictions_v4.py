@@ -10,7 +10,7 @@ Fork từ v2f_step_record_predictions_v3.py. KHÁC BIỆT so với v3:
      định dạng dict {buy_levels:[...]} mà _load_trade_map chỉ tìm key "symbols"
      → map RỖNG → mọi BUY nhận entry/stop/tp1 = None → trọng tài không chấm
      được TP/SL. Hệ quả: 678/678 BUG bị mất phần chấm lệnh.)
-  - Ghi output/history/v2f_predictions_v4/{YYYY-MM}.jsonl (LEDGER RIÊNG)
+  - Ghi output/history/v2f_predictions_v4/{YYYY-MM-DD}.jsonl (LEDGER RIÊNG)
   - pred_id = "{symbol}_{date}_{snap_time}_v2fv4"
   - Ghi THÊM metadata RCEG: regime (hiệu lực), regime_raw (trước hysteresis),
     gate_version, gates (dict factor→hệ số) → sau này đo hiệu quả V4 THEO regime
@@ -177,7 +177,7 @@ def run():
 
     out_dir = Path(OUTPUT_DIR) / HISTORY_SUBDIR
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"{snap_date[:7]}.jsonl"
+    out_path = out_dir / f"{snap_date[:10]}.jsonl"
 
     existing = _load_existing_keys(out_path)
     log.info(f"Existing prediction keys in {out_path.name}: {len(existing)}")
