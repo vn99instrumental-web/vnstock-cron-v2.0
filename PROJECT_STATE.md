@@ -71,6 +71,13 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - PASS — sau run: IC tổng `2026-10-13 18:25:51 UTC`, IC ngành `2026-10-13 18:25:57 UTC`, 136 dòng IC tổng và 14.456 dòng IC ngành.
 - Hạn chế — production route sau đăng nhập cần session owner để visual QA đầy đủ.
 
+## Điều chỉnh ledger 2026-10-29
+
+- `output/history/v2f_predictions_v4` chuyển từ partition tháng `YYYY-MM.jsonl` sang partition ngày `YYYY-MM-DD.jsonl` để không tạo blob vượt giới hạn 100 MB của GitHub.
+- Reader Supabase, weekly evaluator và QC đọc tương thích cả file tháng cũ lẫn file ngày mới; dữ liệu lịch sử không bị mất và không cần Git LFS.
+- Workflow intraday chặn sớm staged file lớn hơn 95 MB với thông báo rõ trước bước commit/push.
+- File tháng 10 cũ được giữ nguyên làm lịch sử; recorder không ghi thêm vào file này.
+
 ## Việc tiếp theo
 
 - Theo dõi dung lượng Supabase hằng tháng theo `docs/DATA_RETENTION.md`; snapshot trước retention 2026-10-14/15 khoảng 350 MB (~70% mốc 500 MB).
