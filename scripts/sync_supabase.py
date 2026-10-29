@@ -3,8 +3,8 @@
 sync_supabase.py — [E1] Mirror ledger JSONL → Supabase (idempotent upsert).
 
 Đọc sổ cái append-only:
-  output/history/v2f_predictions_v4/YYYY-MM.jsonl  → v4_runs + v4_signals
-  output/history/v2f_outcomes_v4/YYYY-MM.jsonl     → v4_outcomes (WIDE, ADR-002)
+  output/history/v2f_predictions_v4/YYYY-MM*.jsonl → v4_runs + v4_signals
+  output/history/v2f_outcomes_v4/YYYY-MM*.jsonl    → v4_outcomes (WIDE, ADR-002)
 
 Nguyên tắc (CLAUDE.md):
   • Supabase là BẢN MIRROR; nguồn chân lý con số là Python pipeline + ledger.
@@ -129,9 +129,15 @@ def _months_available() -> list[str]:
     for d in (*PRED_DIRS, *OUTC_DIRS):
         if d.exists():
             for f in d.glob("*.jsonl"):
-                if MONTH_RE.match(f.stem):
-                    months.add(f.stem)
+                month = f.stem[:7]
+                if MONTH_RE.fullmatch(month):
+                    months.add(month)
     return sorted(months)
+
+
+def _partition_files(directory: Path, month: str) -> list[Path]:
+    """Return legacy monthly and new daily JSONL partitions for one month."""
+    return sorted(directory.glob(f"{month}*.jsonl"))
 
 
 def _read_jsonl(path: Path):
@@ -347,7 +353,8 @@ def main() -> int:
 
     if args.only != "outcomes":
         preds = [
-            p for d in PRED_DIRS for m in months for p in _read_jsonl(d / f"{m}.jsonl")
+            p for d in PRED_DIRS for m in months for path in _partition_files(d, m)
+            for p in _read_jsonl(path)
             if p.get("scoring_version") in REVIEW_VERSIONS
         ]
         sig_rows = [build_signal_row(p) for p in preds]
@@ -356,7 +363,8 @@ def main() -> int:
 
     if args.only != "predictions":
         outs = [
-            o for d in OUTC_DIRS for m in months for o in _read_jsonl(d / f"{m}.jsonl")
+            o for d in OUTC_DIRS for m in months for path in _partition_files(d, m)
+            for o in _read_jsonl(path)
             if o.get("scoring_version") in REVIEW_VERSIONS
         ]
         out_rows = [build_outcome_row(o) for o in outs]
