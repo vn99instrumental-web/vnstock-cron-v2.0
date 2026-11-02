@@ -1,112 +1,32 @@
 import { PageHeader } from "@/components/ui";
-import { BuyBoard, type BuySignal, type ExpectancyRow, type RobustnessRow } from "@/components/buy-board";
+import { BuyBoard } from "@/components/buy-board";
 import { ScoringVersionSelect } from "@/components/scoring-version-select";
-import { createCachedPublicClient } from "@/lib/supabase/cached-public";
-import { getCompanyName } from "@/lib/company-names";
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
+import { getBuyPageData } from "@/lib/data-source/buy";
+import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
-
 type BuyPageProps = { searchParams: Promise<{ version?: string }> };
 
 export default async function BuyPage({ searchParams }: BuyPageProps) {
   const params = await searchParams;
-  const metadata = await getLatestVersionRuns("buy-metadata");
+  const requestedSource = await getDashboardDataSource();
+  const metadata = await getLatestVersionRuns("buy-metadata", requestedSource);
   const currentVersion = resolveReviewVersion(params.version, metadata.byVersion);
   const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
-  const dataClient = createCachedPublicClient("buy", currentVersion);
-
-  const [latestBuyResponse, newestRunResponse] = await Promise.all([
-    dataClient.from("v4_signals").select("run_id, signal_date, snap_time")
-      .in("decision", ["BUY", "STRONG BUY"]).eq("scoring_version", currentVersion)
-      .order("signal_date", { ascending: false }).order("snap_time", { ascending: false }).limit(1).maybeSingle(),
-    dataClient.from("v4_runs").select("run_id").eq("scoring_version", currentVersion)
-      .order("started_at", { ascending: false }).limit(1).maybeSingle(),
-  ]);
-  if (metadata.error || latestBuyResponse.error) throw metadata.error ?? latestBuyResponse.error;
-  const latestBuy = latestBuyResponse.data;
-  const newestRun = newestRunResponse.data;
-
-  const industryBatchResponse = await dataClient.from("v4_ic_industry_batch")
-    .select("batch_id").eq("status", "ready")
-    .order("computed_at", { ascending: false }).limit(1).maybeSingle();
-
-  const [signalsResponse, runResponse, expectancyResponse, robustnessResponse, industryResponse] = await Promise.all([
-    latestBuy
-      ? dataClient.from("v4_signals").select("id, symbol, decision, score_trade, signal_date, breakdown")
-          .eq("run_id", latestBuy.run_id).eq("scoring_version", currentVersion)
-          .in("decision", ["BUY", "STRONG BUY"]).order("score_trade", { ascending: false })
-      : Promise.resolve({ data: [], error: null }),
-    latestBuy
-      ? dataClient.from("v4_runs").select("started_at").eq("run_id", latestBuy.run_id)
-          .eq("scoring_version", currentVersion).maybeSingle()
-      : Promise.resolve({ data: null, error: null }),
-    dataClient.from("v4_buy_expectancy").select("*").eq("scoring_version", currentVersion),
-    dataClient.from("v4_buy_robustness").select("*").eq("scoring_version", currentVersion),
-    industryBatchResponse.data
-      ? dataClient.from("v4_ic_industry_metrics").select("industry, ic, n")
-          .eq("batch_id", industryBatchResponse.data.batch_id)
-          .eq("version", currentVersion).eq("factor", "score_trade").eq("horizon", 5)
-      : Promise.resolve({ data: [], error: industryBatchResponse.error }),
-  ]);
-
-  if (signalsResponse.error) throw signalsResponse.error;
-  const signals = ((signalsResponse.data ?? []) as BuySignal[]).map((signal) => ({
-    ...signal,
-    companyName: getCompanyName(signal.symbol),
-  }));
-
-  if (signals.length && latestBuy) {
-    const sigDate = latestBuy.signal_date as string;
-    const since = new Date(new Date(sigDate).getTime() - 14 * 864e5).toISOString().slice(0, 10);
-    const { data: ohlc } = await dataClient.from("v4_ohlc").select("symbol, date, close")
-      .in("symbol", signals.map((signal) => signal.symbol)).lt("date", sigDate).gte("date", since)
-      .order("date", { ascending: false });
-    const previousClose = new Map<string, number>();
-    for (const row of (ohlc ?? []) as { symbol: string; close: number }[]) {
-      if (!previousClose.has(row.symbol)) previousClose.set(row.symbol, Number(row.close));
-    }
-    for (const signal of signals) {
-      const price = Number((signal.breakdown ?? {}).price);
-      const previous = previousClose.get(signal.symbol);
-      signal.changePct = previous && Number.isFinite(price) ? (price - previous) / previous * 100 : null;
-    }
+  const data = await getBuyPageData(currentVersion, metadata.source);
+  const startedAt = data.runRow?.started_at ?? null;
+  let freshTxt = "";
+  if (startedAt && data.latestBuy?.run_id) {
+    const min = Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 60000));
+    const ago = min < 1 ? "vừa xong" : min < 60 ? `${min} phút trước` : Math.floor(min / 60) < 24 ? `${Math.floor(min / 60)} giờ trước` : `${Math.floor(min / 1440)} ngày trước`;
+    const ict = new Date(Date.now() + 7 * 3600e3), dow = ict.getUTCDay(), hh = ict.getUTCHours() + ict.getUTCMinutes() / 60;
+    freshTxt = ` · Run ${data.latestBuy.run_id} · cập nhật ${ago} · ${dow >= 1 && dow <= 5 && hh >= 9 && hh <= 15 ? "phiên ĐANG MỞ" : "ngoài phiên"}`;
   }
-
-  const runRow = runResponse.data as { started_at?: string } | null;
-  const startedAt = runRow?.started_at ?? null;
-  let freshText = "";
-  if (startedAt) {
-    const minutes = Math.max(0, Math.round((Date.now() - new Date(startedAt).getTime()) / 60000));
-    const ago = minutes < 1 ? "vừa xong" : minutes < 60 ? `${minutes} phút trước` : (() => {
-      const hours = Math.floor(minutes / 60);
-      return hours < 24 ? `${hours} giờ trước` : `${Math.floor(hours / 24)} ngày trước`;
-    })();
-    freshText = `cập nhật ${ago}`;
-  }
-
-  const industryIC: Record<string, { ic: number | null; n: number }> = {};
-  for (const row of (industryResponse.data ?? []) as { industry: string; ic: number | string | null; n: number }[]) {
-    industryIC[row.industry] = { ic: row.ic == null ? null : Number(row.ic), n: Number(row.n) };
-  }
-
-  return (
-    <>
-      <PageHeader
-        title="Mua"
-        desc={freshText || undefined}
-        actions={<ScoringVersionSelect currentVersion={currentVersion} versions={Object.keys(versionDates)} route="/buy" dates={versionDates} compact />}
-      />
-      <BuyBoard
-        signals={signals}
-        expectancy={(expectancyResponse.data ?? []) as ExpectancyRow[]}
-        robustness={(robustnessResponse.data ?? []) as RobustnessRow[]}
-        runId={latestBuy?.run_id}
-        runStartedAt={startedAt}
-        newestRunId={(newestRun?.run_id as string | undefined) ?? null}
-        industryIC={industryIC}
-        currentVersion={currentVersion}
-      />
-    </>
-  );
+  return <>
+    <PageHeader title="Mua" desc={`${currentVersion} Â· ${data.signals.length} mÃ£ BUY / STRONG BUY${freshTxt}`} actions={<ScoringVersionSelect currentVersion={currentVersion} versions={Object.keys(versionDates)} route="/buy" dates={versionDates} compact />} />
+    <BuyBoard signals={data.signals} expectancy={data.expectancy} robustness={data.robustness}
+      runId={data.latestBuy?.run_id} runStartedAt={startedAt} newestRunId={data.newestRun?.run_id}
+      industryIC={data.industryIC} currentVersion={currentVersion} />
+  </>;
 }

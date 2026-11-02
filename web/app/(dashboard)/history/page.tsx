@@ -5,6 +5,8 @@ import { HistoryFilters } from "@/components/history-filters";
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyName } from "@/lib/company-names";
+import { githubServing } from "@/lib/data-source/github-serving";
+import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 50;
@@ -13,26 +15,41 @@ type Params = { date?: string; symbol?: string; decision?: string; version?: str
 
 export default async function HistoryPage({ searchParams }: { searchParams: Promise<Params> }) {
   const sp = await searchParams;
-  const metadata = await getLatestVersionRuns("history-metadata");
+  const requestedSource = await getDashboardDataSource();
+  const metadata = await getLatestVersionRuns("history-metadata", requestedSource);
   const currentVersion = resolveReviewVersion(sp.version, metadata.byVersion);
   const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
 
   const supabase = await createClient();
-  let query = supabase
-    .from("v4_signals")
-    .select("id, symbol, decision, score_trade, regime, signal_date, snap_time, scoring_version, breakdown", { count: "exact" })
-    .eq("scoring_version", currentVersion)
-    .order("signal_date", { ascending: false })
-    .order("snap_time", { ascending: false })
-    .range(from, from + PAGE_SIZE - 1);
-  if (sp.date) query = query.eq("signal_date", sp.date);
-  if (sp.symbol) query = query.eq("symbol", sp.symbol.toUpperCase().trim());
-  if (sp.decision) query = query.eq("decision", sp.decision);
-
-  const { data, count, error } = await query;
-  const baseRows = (data ?? []) as SignalRow[];
+  let baseRows: SignalRow[] = [];
+  let total = 0;
+  let error: unknown = null;
+  if (metadata.source === "github") {
+    try {
+      const snapshot = await githubServing.history(currentVersion);
+      let filtered = snapshot.rows as unknown as SignalRow[];
+      if (sp.date) filtered = filtered.filter((row) => row.signal_date === sp.date);
+      if (sp.symbol) filtered = filtered.filter((row) => row.symbol === sp.symbol!.toUpperCase().trim());
+      if (sp.decision) filtered = filtered.filter((row) => row.decision === sp.decision);
+      total = filtered.length;
+      baseRows = filtered.slice(from, from + PAGE_SIZE);
+    } catch (githubError) { error = githubError; }
+  }
+  if (metadata.source !== "github" || error) {
+    let query = supabase.from("v4_signals")
+      .select("id, symbol, decision, score_trade, regime, signal_date, snap_time, scoring_version, breakdown", { count: "exact" })
+      .eq("scoring_version", currentVersion).order("signal_date", { ascending: false })
+      .order("snap_time", { ascending: false }).range(from, from + PAGE_SIZE - 1);
+    if (sp.date) query = query.eq("signal_date", sp.date);
+    if (sp.symbol) query = query.eq("symbol", sp.symbol.toUpperCase().trim());
+    if (sp.decision) query = query.eq("decision", sp.decision);
+    const response = await query;
+    baseRows = (response.data ?? []) as SignalRow[];
+    total = response.count ?? 0;
+    error = response.error;
+  }
   const predIds = baseRows.map((row) => String((row.breakdown ?? {}).pred_id ?? "")).filter(Boolean);
   const outcomesResponse = predIds.length
     ? await supabase.from("v4_outcomes").select("pred_id, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct")
@@ -44,7 +61,6 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
     companyName: getCompanyName(row.symbol),
     outcome: outcomeMap.get(String((row.breakdown ?? {}).pred_id ?? "")) ?? null,
   }));
-  const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const qs = (nextPage: number) => {
     const params = new URLSearchParams({ version: currentVersion, page: String(nextPage) });

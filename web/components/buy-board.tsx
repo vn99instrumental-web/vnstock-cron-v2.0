@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
 import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
@@ -269,31 +268,18 @@ export function BuyBoard({
     setLoading(true);
     (async () => {
       try {
-        const supabase = createClient();
-        // Song song: snaps (marker BUY + intraday + fallback) và OHLC thật (nến daily có lịch sử).
-        const [sigRes, ohlcRes] = await Promise.all([
-          supabase
-            .from("v4_signals")
-            .select("signal_date, snap_time, decision, price:breakdown->>price")
-            .eq("symbol", sel.symbol)
-            .order("signal_date", { ascending: true })
-            .eq("scoring_version", currentVersion)
-            .order("snap_time", { ascending: true }),
-          supabase
-            .from("v4_ohlc")
-            .select("date, open, high, low, close")
-            .eq("symbol", sel.symbol)
-            .order("date", { ascending: true }),
-        ]);
+        const response = await fetch(`/api/chart?version=${encodeURIComponent(currentVersion)}&symbol=${encodeURIComponent(sel.symbol)}`);
+        if (!response.ok) throw new Error("Chart data unavailable");
+        const payload = await response.json() as { signals?: Record<string, unknown>[]; ohlc?: Record<string, unknown>[] };
         if (!alive) return;
-        const rows = (sigRes.data ?? []) as Record<string, unknown>[];
+        const rows = payload.signals ?? [];
         const points: PricePoint[] = rows
           .map((r) => ({ signal_date: String(r.signal_date), snap_time: String(r.snap_time), price: num(r.price) ?? NaN }))
           .filter((p) => Number.isFinite(p.price));
         const snapCandles = buildCandles(points);
         const snapMap = new Map(snapCandles.map((c) => [c.date, c.snaps]));
 
-        const ohlc = (ohlcRes.data ?? []) as Record<string, unknown>[];
+        const ohlc = payload.ohlc ?? [];
         let finalCandles: Candle[];
         if (ohlc.length) {
           // Nến thật từ v4_ohlc; đính kèm snaps cùng ngày (cho strip intraday).

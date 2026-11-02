@@ -5,6 +5,8 @@ import { getLatestVersionRuns } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { dateTimeVN, hmVN } from "@/lib/format";
 import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
+import { githubServing } from "@/lib/data-source/github-serving";
+import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +26,8 @@ function dateAgeTone(dateValue: string | null | undefined, okDays: number, warnD
 const SIGNAL_COLUMNS = "symbol, signal_date, scoring_version, decision, score_trade, snap_time, price:breakdown->>price, confidence:breakdown->>confidence, ff_intra_net:breakdown->>ff_intra_net, ff_intra_ratio:breakdown->>ff_intra_ratio, n_aligned:breakdown->>n_supergroups_aligned, ff_score:breakdown->>ff_score, fundamental_score:breakdown->>fundamental_score, entry:breakdown->>entry, stop:breakdown->>stop, tp1:breakdown->>tp1, breakdown";
 
 export default async function TodayPage() {
-  const metadata = await getLatestVersionRuns("today-compare-metadata");
+  const requestedSource = await getDashboardDataSource();
+  const metadata = await getLatestVersionRuns("today-compare-metadata", requestedSource);
   if (metadata.error) {
     return <><PageHeader title="Hôm nay" desc="Đối chiếu tín hiệu v4.17–v4.19." /><QueryErrorState hint="Không đọc được metadata scoring version từ Supabase." /></>;
   }
@@ -37,13 +40,20 @@ export default async function TodayPage() {
   const signalResponses = await Promise.all(TODAY_COMPARE_VERSIONS.map(async (version) => {
     const signalDate = versionDates[version];
     if (!signalDate) return { version, data: [] as TodaySignal[], error: null };
+    if (metadata.source === "github") {
+      try {
+        const snapshot = await githubServing.today(version);
+        return { version, data: snapshot.signals as unknown as TodaySignal[], error: null };
+      } catch (error) {
+        return { version, data: [] as TodaySignal[], error };
+      }
+    }
     const client = createCachedPublicClient(`today-compare-${version}`, version);
     const response = await client.from("v4_signals").select(SIGNAL_COLUMNS)
       .eq("scoring_version", version).eq("signal_date", signalDate)
       .order("snap_time", { ascending: true });
     return { version, data: (response.data ?? []) as TodaySignal[], error: response.error };
-  }));
-  const failed = signalResponses.find((response) => response.error);
+  }));  const failed = signalResponses.find((response) => response.error);
   if (failed) {
     return <><PageHeader title="Hôm nay" desc="Đối chiếu tín hiệu v4.17–v4.19." /><QueryErrorState hint={`Không đọc được tín hiệu ${failed.version} từ Supabase.`} /></>;
   }

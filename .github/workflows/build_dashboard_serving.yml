@@ -1,0 +1,53 @@
+name: Build dashboard serving snapshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: "Comma-separated scoring versions (blank = current review list)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dashboard-serving-manual
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build and validate atomic snapshots
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          INPUT_VERSIONS: ${{ inputs.versions }}
+        run: |
+          ARGS=()
+          if [ -n "$INPUT_VERSIONS" ]; then ARGS+=(--versions "$INPUT_VERSIONS"); fi
+          python scripts/build_dashboard_serving.py "${ARGS[@]}"
+          test -s output/serving/current/manifest.json
+      - name: Publish only serving snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- output/serving
+          git diff --cached --quiet && exit 0
+          git commit -m "data: publish dashboard serving snapshot"
+          git push
+      - name: Revalidate Vercel cache
+        env:
+          URL: ${{ secrets.DASHBOARD_REVALIDATE_URL }}
+          SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$SECRET" ]; then echo "Revalidation not configured; skipping"; exit 0; fi
+          curl --fail --silent --show-error -X POST -H "Authorization: Bearer $SECRET" "$URL"

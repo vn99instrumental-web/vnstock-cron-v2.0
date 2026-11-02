@@ -1,4 +1,6 @@
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
+import { githubServing } from "@/lib/data-source/github-serving";
+import type { DashboardDataSource } from "@/lib/data-source/source";
 import {
   DEFAULT_SCORING_VERSION,
   REVIEW_VERSIONS,
@@ -17,7 +19,28 @@ export interface LatestVersionRun {
 }
 
 /** Fetch one latest row per curated version instead of downloading up to 1,000 runs. */
-export async function getLatestVersionRuns(scope = "version-metadata") {
+export async function getLatestVersionRuns(
+  scope = "version-metadata",
+  source: DashboardDataSource = "supabase",
+) {
+  if (source === "github") {
+    try {
+      const metadata = await githubServing.metadata();
+      const runs = Object.values(metadata.runs)
+        .filter((run) => isReviewVersion(run.scoring_version))
+        .map((run) => ({ ...run, scoring_version: run.scoring_version as ReviewVersion }));
+      const byVersion: Partial<Record<ReviewVersion, LatestVersionRun>> = {};
+      const versionDates: Partial<Record<ReviewVersion, string>> = {};
+      for (const run of runs) {
+        byVersion[run.scoring_version] = run;
+        versionDates[run.scoring_version] = String(run.run_id).split("_")[0];
+      }
+      return { runs, byVersion, versionDates, error: null, source: "github" as const };
+    } catch {
+      // During shadow rollout GitHub is optional. Fall through to the proven
+      // Supabase path so selecting GitHub cannot blank the dashboard.
+    }
+  }
   const client = createCachedPublicClient(scope, DEFAULT_SCORING_VERSION);
   const results = await Promise.all(
     REVIEW_VERSIONS.map(async (version) => {
@@ -46,7 +69,7 @@ export async function getLatestVersionRuns(scope = "version-metadata") {
     byVersion[run.scoring_version] = run;
     versionDates[run.scoring_version] = String(run.run_id).split("_")[0];
   }
-  return { runs, byVersion, versionDates, error };
+  return { runs, byVersion, versionDates, error, source: "supabase" as const };
 }
 
 export function resolveReviewVersion(

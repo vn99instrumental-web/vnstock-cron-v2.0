@@ -4,6 +4,8 @@ import { AnalysisBoard, type SignalResult, type FactorCorr, type FactorPair, typ
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { ScoringVersionSelect } from "@/components/scoring-version-select";
+import { githubServing } from "@/lib/data-source/github-serving";
+import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,8 @@ type Props = { searchParams: Promise<{ version?: string; symbol?: string; window
 
 export default async function PhanTichPage({ searchParams }: Props) {
   const params = await searchParams;
-  const metadata = await getLatestVersionRuns("analysis-metadata");
+  const requestedSource = await getDashboardDataSource();
+  const metadata = await getLatestVersionRuns("analysis-metadata", requestedSource);
   const currentVersion = resolveReviewVersion(params.version, metadata.byVersion);
   const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
   const symbol = String(params.symbol ?? "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
@@ -28,42 +31,44 @@ export default async function PhanTichPage({ searchParams }: Props) {
   const commonAvailable = !!commonStart && !!commonEnd && commonStart <= commonEnd;
   const useCommonWindow = params.window === "common" && commonAvailable;
 
-  let resultsQuery = dataClient
-    .from("v4_signal_analysis_dashboard")
-    .select(RESULT_COLUMNS)
-    .eq("scoring_version", currentVersion)
-    .order("signal_date", { ascending: false })
-    .order("symbol", { ascending: true })
-    .limit(symbol ? 1000 : INITIAL_LIMIT);
-  if (symbol) resultsQuery = resultsQuery.eq("symbol", symbol);
-  if (useCommonWindow) resultsQuery = resultsQuery.gte("signal_date", commonStart!).lte("signal_date", commonEnd!);
-
-  const [resultsResponse, diagnosticsResponse] = await Promise.all([
-    resultsQuery,
-    dataClient
-      .from("v4_analysis_diagnostics_snapshot")
-      .select("kind, dim, bucket, factor, factor_b, grp, n, corr_ret5, corr_win, corr, computed_at")
-      .eq("scoring_version", currentVersion),
-  ]);
-  // Timeline is the primary dataset. Diagnostics are read from the daily snapshot,
-  // never from the expensive correlation views during a page request.
-  const hasError = metadata.error || resultsResponse.error;
-  const hasOptionalError = diagnosticsResponse.error;
-  const rows = (resultsResponse.data ?? []) as SignalResult[];
-  const diagnostics = (diagnosticsResponse.data ?? []) as Array<Record<string, unknown>>;
-  const corr = diagnostics.filter((row) => row.kind === "factor").map((row) => ({
-    factor: String(row.factor), grp: row.grp == null ? null : String(row.grp), n: Number(row.n),
-    corr_ret5: row.corr_ret5 as number | string | null, corr_win: row.corr_win as number | string | null,
-  })) as FactorCorr[];
-  const pairs = diagnostics.filter((row) => row.kind === "pair" && row.factor_b).map((row) => ({
-    fa: String(row.factor), fb: String(row.factor_b), n: Number(row.n), corr: row.corr as number | string | null,
-  })) as FactorPair[];
-  const split = diagnostics.filter((row) => row.kind === "split").map((row) => ({
-    dim: String(row.dim), bucket: String(row.bucket), factor: String(row.factor),
-    grp: row.grp == null ? null : String(row.grp), n: Number(row.n),
-    corr_ret5: row.corr_ret5 as number | string | null, corr_win: row.corr_win as number | string | null,
-  })) as FactorCorrSplit[];
-
+  let rows: SignalResult[] = [];
+  let corr: FactorCorr[] = [];
+  let pairs: FactorPair[] = [];
+  let split: FactorCorrSplit[] = [];
+  let hasError: unknown = null;
+  let hasOptionalError: unknown = null;
+  if (metadata.source === "github") {
+    try {
+      const snapshot = await githubServing.analysis(currentVersion);
+      let selected = snapshot.results as unknown as SignalResult[];
+      if (symbol) selected = selected.filter((row) => row.symbol === symbol);
+      if (useCommonWindow) selected = selected.filter((row) => row.signal_date >= commonStart! && row.signal_date <= commonEnd!);
+      rows = selected.slice(0, symbol ? 1000 : INITIAL_LIMIT);
+      corr = snapshot.corr as unknown as FactorCorr[];
+      pairs = snapshot.pairs as unknown as FactorPair[];
+      split = snapshot.split as unknown as FactorCorrSplit[];
+    } catch (githubError) { hasError = githubError; }
+  }
+  if (metadata.source !== "github" || hasError) {
+    let resultsQuery = dataClient.from("v4_signal_analysis_dashboard").select(RESULT_COLUMNS)
+      .eq("scoring_version", currentVersion).order("signal_date", { ascending: false })
+      .order("symbol", { ascending: true }).limit(symbol ? 1000 : INITIAL_LIMIT);
+    if (symbol) resultsQuery = resultsQuery.eq("symbol", symbol);
+    if (useCommonWindow) resultsQuery = resultsQuery.gte("signal_date", commonStart!).lte("signal_date", commonEnd!);
+    const [resultsResponse, diagnosticsResponse] = await Promise.all([
+      resultsQuery,
+      dataClient.from("v4_analysis_diagnostics_snapshot")
+        .select("kind, dim, bucket, factor, factor_b, grp, n, corr_ret5, corr_win, corr, computed_at")
+        .eq("scoring_version", currentVersion),
+    ]);
+    hasError = metadata.error || resultsResponse.error;
+    hasOptionalError = diagnosticsResponse.error;
+    rows = (resultsResponse.data ?? []) as SignalResult[];
+    const diagnostics = (diagnosticsResponse.data ?? []) as Array<Record<string, unknown>>;
+    corr = diagnostics.filter((row) => row.kind === "factor").map((row) => ({ factor: String(row.factor), grp: row.grp == null ? null : String(row.grp), n: Number(row.n), corr_ret5: row.corr_ret5 as number | string | null, corr_win: row.corr_win as number | string | null })) as FactorCorr[];
+    pairs = diagnostics.filter((row) => row.kind === "pair" && row.factor_b).map((row) => ({ fa: String(row.factor), fb: String(row.factor_b), n: Number(row.n), corr: row.corr as number | string | null })) as FactorPair[];
+    split = diagnostics.filter((row) => row.kind === "split").map((row) => ({ dim: String(row.dim), bucket: String(row.bucket), factor: String(row.factor), grp: row.grp == null ? null : String(row.grp), n: Number(row.n), corr_ret5: row.corr_ret5 as number | string | null, corr_win: row.corr_win as number | string | null })) as FactorCorrSplit[];
+  }
   return (
     <>
       <PageHeader title="Phân tích tín hiệu" desc="Tín hiệu BUY/STRONG BUY mới nhất và kết quả đã đủ phiên, cùng các biến đầu vào liên quan." />

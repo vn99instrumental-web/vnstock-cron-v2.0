@@ -4,6 +4,8 @@ import { FACTOR_GROUPS, signalName } from "@/lib/interpret";
 import { FactorVerMatrix, type FactorVerRow } from "@/components/factor-ver-matrix";
 import { FactorICTable, type MargRow } from "@/components/factor-ic-table";
 import { DEFAULT_SCORING_VERSION, REVIEW_VERSIONS } from "@/lib/scoring-versions";
+import { getICDashboardSnapshot } from "@/lib/data-source/ic";
+import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
 
@@ -139,75 +141,54 @@ function BreakdownTable({
 }
 
 export default async function ICPage() {
-  const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
-  const [icResponse, backfillResponse, coverageResponse] = await Promise.all([
-    supabase.from("v4_ic_metrics")
-      .select("config_version, factor, horizon, ic, n, computed_at")
-      .order("config_version", { ascending: false })
-      .order("factor", { ascending: true })
-      .order("horizon", { ascending: true }),
-    supabase.from("v4_ic_backfill_metrics")
-      .select("config_version, factor, horizon, ic, n, computed_at, sample_kind")
-      .order("config_version", { ascending: false })
-      .order("factor", { ascending: true })
-      .order("horizon", { ascending: true }),
-    supabase.from("v4_dashboard_version_summary")
-      .select("scoring_version, signal_date_min, signal_date_max, signal_days, signal_rows, outcome_date_min, outcome_date_max, outcome_rows, latest_update")
-      .order("scoring_version", { ascending: false }),
-  ]);
-
-  const forwardRows = ((icResponse.data ?? []) as ICRow[]).map((row) => ({ ...row, sample_kind: "forward" as const }));
-  const historicalRows = (backfillResponse.data ?? []) as ICRow[];
-  // Never mix retrospective and forward evidence. Forward wins as soon as a
-  // version has enough independently matured observations to produce IC.
-  const rows = REVIEW_VERSIONS.flatMap((version) => {
-    const forward = forwardRows.filter((row) => row.config_version === version);
-    return forward.length
-      ? forward
-      : historicalRows.filter((row) => row.config_version === version);
-  });
-  const coverageRows = (coverageResponse.data ?? []) as Array<{ scoring_version: string; signal_date_min: string | null; signal_date_max: string | null; signal_days: number; signal_rows: number; outcome_date_min: string | null; outcome_date_max: string | null; outcome_rows: number; latest_update: string | null }>;
-  const officialVersions = REVIEW_VERSIONS.filter((version) => rows.some((row) => row.config_version === version));
+  const source = await getDashboardDataSource();
+  const snapshot = source === "github" ? await getICDashboardSnapshot(source) : null;
+  let rows: ICRow[] = [];
+  let coverageRows: Array<{ scoring_version: string; signal_date_min: string | null; signal_date_max: string | null; signal_days: number; signal_rows: number; outcome_date_min: string | null; outcome_date_max: string | null; outcome_rows: number; latest_update: string | null }> = [];
+  if (snapshot?.source === "github") {
+    rows = snapshot.metrics.map((row) => ({ ...row, sample_kind: "forward" as const }));
+  } else {
+    const supabase = createCachedPublicClient("ic-metadata", DEFAULT_SCORING_VERSION);
+    const [icResponse, backfillResponse, coverageResponse] = await Promise.all([
+      supabase.from("v4_ic_metrics").select("config_version, factor, horizon, ic, n, computed_at").order("config_version", { ascending: false }).order("factor", { ascending: true }).order("horizon", { ascending: true }),
+      supabase.from("v4_ic_backfill_metrics").select("config_version, factor, horizon, ic, n, computed_at, sample_kind").order("config_version", { ascending: false }).order("factor", { ascending: true }).order("horizon", { ascending: true }),
+      supabase.from("v4_dashboard_version_summary").select("scoring_version, signal_date_min, signal_date_max, signal_days, signal_rows, outcome_date_min, outcome_date_max, outcome_rows, latest_update").order("scoring_version", { ascending: false }),
+    ]);
+    const forwardRows = ((icResponse.data ?? []) as ICRow[]).map((row) => ({ ...row, sample_kind: "forward" as const }));
+    const historicalRows = (backfillResponse.data ?? []) as ICRow[];
+    rows = REVIEW_VERSIONS.flatMap((version) => {
+      const forward = forwardRows.filter((row) => row.config_version === version);
+      return forward.length ? forward : historicalRows.filter((row) => row.config_version === version);
+    });
+    coverageRows = (coverageResponse.data ?? []) as typeof coverageRows;
+  }  const officialVersions = REVIEW_VERSIONS.filter((version) => rows.some((row) => row.config_version === version));
   const curVer = officialVersions.includes(DEFAULT_SCORING_VERSION) ? DEFAULT_SCORING_VERSION : (officialVersions[0] ?? DEFAULT_SCORING_VERSION);
   const curHasIC = rows.some((row) => row.config_version === curVer);
-  const currentClient = createCachedPublicClient("ic", curVer);
-
-  // Fetch every version independently so each result has its own cache TTL/tag and
-  // no request can be truncated by PostgREST's 1,000-row response limit.
-  const [industryBatchRes, perVersionRows] = await Promise.all([
-    currentClient.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
-    Promise.all(officialVersions.map(async (version) => {
-      const client = createCachedPublicClient("ic", version);
-      const marginalRes = await client.from("v4_marginal_ic")
-        .select("version, indicator, factor, horizon, coef, tstat, univar_ic, n")
-        .eq("version", version);
-      return { version, marginalRows: marginalRes.data ?? [] };
-    })),
-  ]);
-
-  const industryResults = industryBatchRes.data
-    ? await Promise.all(officialVersions.map(async (version) => {
+  let marginalRows: (MargRow & { version: string })[] = [];
+  let industryResults: Array<{ version: string; data: unknown[]; error: string | null }> = [];
+  if (snapshot?.source === "github") {
+    marginalRows = snapshot.marginal as (MargRow & { version: string })[];
+    industryResults = officialVersions.map((version) => ({ version, data: snapshot.industry.filter((row) => row.version === version), error: snapshot.industry_errors[version] ?? null }));
+  } else {
+    const currentClient = createCachedPublicClient("ic", curVer);
+    const [industryBatchRes, perVersionRows] = await Promise.all([
+      currentClient.from("v4_ic_industry_batch").select("batch_id, data_asof, computed_at").eq("status", "ready").order("computed_at", { ascending: false }).limit(1).maybeSingle(),
+      Promise.all(officialVersions.map(async (version) => {
         const client = createCachedPublicClient("ic", version);
-        const result = await client
-          .from("v4_ic_industry_metrics")
-          .select("version, factor, industry, horizon, ic, n")
-          .eq("batch_id", industryBatchRes.data!.batch_id)
-          .eq("version", version)
-          .order("factor", { ascending: true })
-          .order("industry", { ascending: true })
-          .order("horizon", { ascending: true });
-        return { version, data: result.data ?? [], error: result.error?.message ?? null };
-      }))
-    : officialVersions.map((version) => ({
-        version,
-        data: [],
-        error: industryBatchRes.error?.message ?? null,
-      }));
-
+        const marginalRes = await client.from("v4_marginal_ic").select("version, indicator, factor, horizon, coef, tstat, univar_ic, n").eq("version", version);
+        return { marginalRows: marginalRes.data ?? [] };
+      })),
+    ]);
+    marginalRows = perVersionRows.flatMap((result) => result.marginalRows) as (MargRow & { version: string })[];
+    industryResults = industryBatchRes.data ? await Promise.all(officialVersions.map(async (version) => {
+      const client = createCachedPublicClient("ic", version);
+      const result = await client.from("v4_ic_industry_metrics").select("version, factor, industry, horizon, ic, n").eq("batch_id", industryBatchRes.data!.batch_id).eq("version", version).order("factor", { ascending: true }).order("industry", { ascending: true }).order("horizon", { ascending: true });
+      return { version, data: result.data ?? [], error: result.error?.message ?? null };
+    })) : officialVersions.map((version) => ({ version, data: [], error: industryBatchRes.error?.message ?? null }));
+  }
   const factorVerRows = rows.map((row) => ({
     version: row.config_version, factor: row.factor, horizon: row.horizon, ic: row.ic, n: row.n, sampleKind: row.sample_kind,
   })) as FactorVerRow[];
-  const marginalRows = perVersionRows.flatMap((result) => result.marginalRows) as (MargRow & { version: string })[];
   const toBrk = (arr: Record<string, unknown>[], keyField: string): BrkRow[] =>
     arr.map((row) => ({
       key: String(row[keyField]),
