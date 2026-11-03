@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHeader, EmptyState, QueryErrorState } from "@/components/ui";
+import { EmptyState, QueryErrorState } from "@/components/ui";
 import { AnalysisBoard, type SignalResult, type FactorCorr, type FactorPair, type FactorCorrSplit } from "@/components/analysis-board";
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
@@ -79,7 +79,6 @@ export default async function PhanTichPage({ searchParams }: Props) {
   }
   return (
     <>
-      <PageHeader title="Phân tích tín hiệu" desc="Tín hiệu BUY/STRONG BUY mới nhất và kết quả đã đủ phiên, cùng các biến đầu vào liên quan." />
       <div className="mb-4 flex flex-wrap items-end gap-2">
         <ScoringVersionSelect currentVersion={currentVersion} versions={Object.keys(versionDates)} route="/phan-tich" dates={versionDates} />
         {commonAvailable ? <div className="inline-flex min-h-10 items-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-1 text-xs"><Link href={`/phan-tich?version=${encodeURIComponent(currentVersion)}`} className={`rounded-md px-2.5 py-1.5 ${!useCommonWindow ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>Toàn lịch sử</Link><Link href={`/phan-tich?version=${encodeURIComponent(currentVersion)}&window=common`} className={`rounded-md px-2.5 py-1.5 ${useCommonWindow ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`} title={`${commonStart} → ${commonEnd}`}>Cùng cửa sổ</Link></div> : null}
