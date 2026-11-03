@@ -2,7 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
-import { PriceChart, IntradayStrip, type BuyMarker } from "@/components/price-chart";
+import {
+  PriceChart, IntradayStrip, CHART_SIMPLE_LAYERS, CHART_ADVANCED_LAYERS,
+  CHART_LAYER_OPTIONS, type ChartLayerSelection, type BuyMarker,
+} from "@/components/price-chart";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, fmtPct, signClass } from "@/lib/format";
 import {
@@ -239,6 +242,21 @@ export function BuyBoard({
   const [markers, setMarkers] = useState<BuyMarker[]>([]);
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState("");
+  // Shared chart display state: controls sit beside Quality; layers apply to PriceChart.
+  const [chartMode, setChartMode] = useState<"simple" | "advanced" | "custom">("simple");
+  const [chartLayers, setChartLayers] = useState<ChartLayerSelection>({ ...CHART_SIMPLE_LAYERS });
+  const [showIndicatorOptions, setShowIndicatorOptions] = useState(false);
+  const allChartLayersSelected = CHART_LAYER_OPTIONS.every(({ k }) => chartLayers[k]);
+  const chooseChartMode = (next: "simple" | "advanced") => {
+    setChartMode(next);
+    setChartLayers(next === "simple" ? { ...CHART_SIMPLE_LAYERS } : { ...CHART_ADVANCED_LAYERS });
+  };
+  const selectAllChartLayers = (checked: boolean) => {
+    setChartMode("custom");
+    setChartLayers((current) => Object.fromEntries(
+      Object.keys(current).map((key) => [key, checked]),
+    ) as ChartLayerSelection);
+  };
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [showList, setShowList] = useState(true);
   const [hideThin, setHideThin] = useState(false); // D — ẩn mã thanh khoản < 10 tỷ
@@ -597,13 +615,51 @@ export function BuyBoard({
               </h2>
               <DecisionBadge decision={sel.decision} />
               <ConfChip conf={b.confidence} withLabel />
+
+              {/* Keep controls in a single right-aligned row after the Quality badge. */}
+              <div className="ml-auto flex max-w-full min-w-0 items-center justify-end gap-1.5 overflow-x-auto whitespace-nowrap text-[10px]">
+                <div className="inline-flex shrink-0 rounded-md border border-[var(--color-border)] p-0.5">
+                  <button type="button" onClick={() => chooseChartMode("simple")} aria-pressed={chartMode === "simple"}
+                    className={`touch-target rounded px-2 py-1 font-medium ${chartMode === "simple" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)] hover:bg-black/5 dark:hover:bg-white/5"}`}>
+                    Đơn giản
+                  </button>
+                  <button type="button" onClick={() => chooseChartMode("advanced")} aria-pressed={chartMode === "advanced"}
+                    className={`touch-target rounded px-2 py-1 font-medium ${chartMode === "advanced" ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)] hover:bg-black/5 dark:hover:bg-white/5"}`}>
+                    Nâng cao
+                  </button>
+                </div>
+                <label className="touch-target inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2 py-1 font-medium">
+                  <input type="checkbox" checked={allChartLayersSelected} onChange={(event) => selectAllChartLayers(event.target.checked)}
+                    className="h-3.5 w-3.5" />
+                  Chọn tất cả
+                </label>
+                <button type="button" aria-controls="buy-chart-indicators" aria-expanded={showIndicatorOptions}
+                  onClick={() => setShowIndicatorOptions((open) => !open)}
+                  className={`touch-target shrink-0 rounded-md border px-2 py-1 font-medium ${showIndicatorOptions ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}>
+                  ⚙ {showIndicatorOptions ? "Ẩn chỉ báo" : "Hiện chỉ báo"}
+                </button>
+              </div>
             </div>
+            {showIndicatorOptions ? (
+              <div id="buy-chart-indicators" className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-[var(--color-border)] bg-black/[0.02] px-3 py-2 text-[11px] dark:bg-white/[0.02]">
+                {CHART_LAYER_OPTIONS.map((option) => (
+                  <label key={option.k} className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap">
+                    <input type="checkbox" checked={chartLayers[option.k]}
+                      onChange={(event) => {
+                        setChartMode("custom");
+                        setChartLayers((current) => ({ ...current, [option.k]: event.target.checked }));
+                      }} className="h-3.5 w-3.5" />
+                    {option.lb}
+                  </label>
+                ))}
+              </div>
+            ) : null}
 
             {candles.length ? (
               // Giữ chart cũ MỜ ĐI khi đang tải mã mới (mượt hơn, không nháy trắng).
               <div className="relative">
                 <div className={loading ? "pointer-events-none opacity-40 transition-opacity duration-200" : "transition-opacity duration-200"}>
-                  <PriceChart candles={candles} levels={levels} buyMarkers={markers} />
+                  <PriceChart candles={candles} levels={levels} buyMarkers={markers} layers={chartLayers} />
                   <div className="mt-1.5">
                     <IntradayStrip candle={entryCandle} />
                   </div>
