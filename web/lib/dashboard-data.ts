@@ -36,9 +36,14 @@ export async function getLatestVersionRuns(
         versionDates[run.scoring_version] = String(run.run_id).split("_")[0];
       }
       return { runs, byVersion, versionDates, error: null, source: "github" as const };
-    } catch {
-      // During shadow rollout GitHub is optional. Fall through to the proven
-      // Supabase path so selecting GitHub cannot blank the dashboard.
+    } catch (error) {
+      return {
+        runs: [],
+        byVersion: {} as Partial<Record<ReviewVersion, LatestVersionRun>>,
+        versionDates: {} as Partial<Record<ReviewVersion, string>>,
+        error,
+        source: "github" as const,
+      };
     }
   }
   const client = createCachedPublicClient(scope, DEFAULT_SCORING_VERSION);

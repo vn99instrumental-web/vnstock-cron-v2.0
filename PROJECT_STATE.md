@@ -205,3 +205,23 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Owner sees two explicit buttons, Supabase and GitHub. Dashboard datasets fall back to Supabase when a GitHub release is missing.
 - Manual-only snapshot workflow publishes atomic current/previous JSON releases with SHA-256 manifest validation.
 - Local verification passed: TypeScript, ESLint, Next.js production build, security review and authenticated-boundary smoke tests.
+
+## GitHub serving doc lap (2026-11-03, thay the muc hybrid 2026-11-02)
+
+- Supabase Auth duoc giu nguyen. Hai nut Supabase/GitHub doc dung nguon da chon; khong fallback am tham. GitHub la mac dinh khi khong co env/cookie ghi de.
+- Workflow intraday do n8n dispatch dung `output/serving/current` truc tiep tu ledger cua chinh run, validate manifest/hash/kich thuoc, commit cung ledger, push roi revalidate Vercel. Supabase sync chay sau nhu mirror non-blocking.
+- Daily workflow ghi OHLC vao `output/ohlc`, dung full GitHub release va publish truoc cac buoc Supabase. Loi Supabase mirror khong lam hong local OHLC export.
+- Weekly workflow dung full release sau khi hoan tat outcome; forward IC duoc tinh lai tu prediction/outcome ledger local. Workflow manual serving cung dung local ledger, khong can Supabase key.
+- Publisher deduplicate theo version/pred_id, gan `source_provenance=git-ledger`, giu moi serving blob duoi 20 MiB va xoa ban `previous` trung lap; Git history la rollback.
+- Full publisher tu tinh forward IC, IC theo nganh, BUY expectancy va BUY robustness tu ledger Git; khong can doc Supabase. Intraday giu cac metric tu full release gan nhat.
+- Dry-run thuc te: 100 signal moi nhat cho ca 6 version, release khoang 71.3 MiB, file lon nhat khoang 6.2 MiB.
+- Detail cua run moi doc truc tiep JSONL partition trong Git thay vi Supabase, tranh nhan doi ledger trong serving release.
+
+### Verification 2026-11-03
+
+- PASS: publisher intraday dry-run va `--full --dry-run`; full IC tao 144 dong cho du 6 version review.
+- PASS: Python compile cho publisher/OHLC exporter; YAML parse cho 4 workflow thay doi.
+- PASS: TypeScript, ESLint va Next.js production build (15 route).
+- PASS: security review khong thay service-role key/client secret bi dua sang frontend; API chart van yeu cau Supabase Auth; revalidation van dung server secret constant-time.
+- Chua chay authenticated browser flow vi worktree khong co owner session. Can smoke test hai nut tren Vercel sau merge/deploy.
+- Gioi han da biet: detail GitHub truoc luc ledger v4 chuyen sang partition ngay co the khong mo duoc; list/history/chart van co data. Khong sao chep file thang 10 gan 100 MiB vao serving layer.

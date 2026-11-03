@@ -22,9 +22,17 @@ export default async function PhanTichPage({ searchParams }: Props) {
   const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
   const symbol = String(params.symbol ?? "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
   const dataClient = createCachedPublicClient("analysis", currentVersion);
-  const coverageResponse = await dataClient.from("v4_dashboard_version_summary")
-    .select("scoring_version, signal_date_min, signal_date_max")
-    .in("scoring_version", Object.keys(versionDates));
+  const coverageResponse = metadata.source === "github"
+    ? {
+        data: Object.entries((await githubServing.metadata()).coverage ?? {}).map(([scoring_version, value]) => ({
+          scoring_version,
+          signal_date_min: value.min,
+          signal_date_max: value.max,
+        })),
+      }
+    : await dataClient.from("v4_dashboard_version_summary")
+        .select("scoring_version, signal_date_min, signal_date_max")
+        .in("scoring_version", Object.keys(versionDates));
   const coverage = (coverageResponse.data ?? []) as Array<{ scoring_version: string; signal_date_min: string | null; signal_date_max: string | null }>;
   const commonStart = coverage.map((row) => row.signal_date_min).filter((value): value is string => !!value).sort().at(-1) ?? null;
   const commonEnd = coverage.map((row) => row.signal_date_max).filter((value): value is string => !!value).sort()[0] ?? null;

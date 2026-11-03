@@ -5,6 +5,12 @@ function baseUrl(): string {
     ?? "https://raw.githubusercontent.com/vn99instrumental-web/vnstock-cron-v2.0/main/output/serving/current")
     .replace(/\/+$/, "");
 }
+function repositoryRawBaseUrl(): string {
+  return (process.env.GITHUB_REPOSITORY_RAW_BASE_URL
+    ?? "https://raw.githubusercontent.com/vn99instrumental-web/vnstock-cron-v2.0/main")
+    .replace(/\/+$/, "");
+}
+
 
 function safeSegment(value: string): string {
   if (!/^[A-Za-z0-9._-]+$/.test(value)) throw new Error("Invalid GitHub serving path segment");
@@ -23,9 +29,23 @@ export async function fetchGitHubServing<T>(path: string): Promise<T> {
   if (!response.ok) throw new Error(`GitHub serving ${cleanPath} returned HTTP ${response.status}`);
   return await response.json() as T;
 }
+export async function fetchGitHubLedgerText(path: string): Promise<string> {
+  const cleanPath = path.split("/").map(safeSegment).join("/");
+  const response = await fetch(`${repositoryRawBaseUrl()}/${cleanPath}`, {
+    cache: "force-cache",
+    next: { revalidate: ACTIVE_TTL_SECONDS, tags: ["dashboard-data", "github-ledger"] },
+  });
+  if (!response.ok) throw new Error(`GitHub ledger ${cleanPath} returned HTTP ${response.status}`);
+  return response.text();
+}
+
+export function parseJsonLines(text: string): Array<Record<string, unknown>> {
+  return text.split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line) as Record<string, unknown>);
+}
+
 
 export interface GitHubMetadata {
-  schema_version: 1;
+  schema_version: 1 | 2;
   release_id: string;
   generated_at: string;
   runs: Record<string, {
@@ -37,6 +57,7 @@ export interface GitHubMetadata {
     n_buy: number | null;
     health: unknown;
   }>;
+  coverage?: Record<string, { min: string; max: string }>;
 }
 
 export interface GitHubTodaySnapshot {

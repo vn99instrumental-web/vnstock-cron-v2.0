@@ -35,11 +35,7 @@ export async function GET(request: NextRequest) {
 
   try {
     if (await getDashboardDataSource() === "github") {
-      try {
-        return NextResponse.json(await githubServing.chart(version, symbol));
-      } catch {
-        // A partial/old release must not break the chart while Supabase is available.
-      }
+      return NextResponse.json(await githubServing.chart(version, symbol));
     }
     return NextResponse.json(await loadSupabase(version, symbol));
   } catch {

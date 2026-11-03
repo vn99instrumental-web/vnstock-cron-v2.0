@@ -110,6 +110,7 @@ def main() -> int:
     ap.add_argument("--symbols", nargs="*", help="lọc mã (mặc định: mọi mã trong ledger)")
     ap.add_argument("--limit", type=int, default=0, help="giới hạn số mã (0 = tất cả)")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--write-local", action="store_true", help="write output/ohlc JSON for GitHub serving")
     args = ap.parse_args()
 
     end = date.today().strftime("%Y-%m-%d")
@@ -125,24 +126,40 @@ def main() -> int:
 
     url = os.environ.get("SUPABASE_URL") or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
     key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
-    if not url or not key:
+    if not args.write_local and (not url or not key):
         log.error("Thiếu SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY.")
         return 2
-    sb = Supabase(url, key)
+    sb = Supabase(url, key) if url and key else None
+    local_dir = ROOT / "output" / "ohlc"
+    if args.write_local:
+        local_dir.mkdir(parents=True, exist_ok=True)
 
     total_rows = 0
     ok = 0
     for i, sym in enumerate(symbols, 1):
         bars = fetch_ohlcv(sym, start, end)
         if bars:
-            sb.upsert("v4_ohlc", bars, on_conflict="symbol,date")
+            if args.write_local:
+                target = local_dir / f"{sym}.json"
+                temp = target.with_suffix(".json.tmp")
+                temp.write_text(json.dumps(bars, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+                temp.replace(target)
+            if sb:
+                try:
+                    sb.upsert("v4_ohlc", bars, on_conflict="symbol,date")
+                except Exception as exc:
+                    if not args.write_local:
+                        raise
+                    log.warning("Supabase OHLC mirror failed; local Git export continues: %s", exc)
+                    sb = None
             total_rows += len(bars)
             ok += 1
         log.info("[%d/%d] %s: %d bars", i, len(symbols), sym, len(bars))
         time.sleep(THROTTLE)
 
     cutoff = (date.today() - timedelta(days=RETENTION_DAYS)).isoformat()
-    sb.delete("v4_ohlc", {"date": f"lt.{cutoff}"})
+    if sb:
+        sb.delete("v4_ohlc", {"date": f"lt.{cutoff}"})
 
     log.info("=== OHLC DONE === %d/%d mã có data, %d bars", ok, len(symbols), total_rows)
     return 0

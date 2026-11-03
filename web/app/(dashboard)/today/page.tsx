@@ -81,7 +81,11 @@ export default async function TodayPage() {
   const priceStats: Record<string, TodayPriceStat> = {};
   const symbolsByDate = new Map<string, string[]>();
   for (const [symbol, latest] of latestPrices) {
-    priceStats[symbol] = { price: latest.price, changePct: null };
+    const sourceSignal = signals.find((signal) => signal.symbol === symbol && signal.signal_date === latest.signalDate);
+    const githubChange = metadata.source === "github"
+      ? Number((sourceSignal as TodaySignal & { changePct?: number | null } | undefined)?.changePct)
+      : NaN;
+    priceStats[symbol] = { price: latest.price, changePct: Number.isFinite(githubChange) ? githubChange : null };
     const symbols = symbolsByDate.get(latest.signalDate) ?? [];
     symbols.push(symbol);
     symbolsByDate.set(latest.signalDate, symbols);
@@ -99,7 +103,7 @@ export default async function TodayPage() {
     }
     return batches;
   });
-  const priceResponses = await Promise.all(priceQueries.map(async (batch) => {
+  const priceResponses = metadata.source === "github" ? [] : await Promise.all(priceQueries.map(async (batch) => {
     const response = await baseClient.from("v4_ohlc").select("symbol, date, close")
       .in("symbol", batch.symbols).lt("date", batch.signalDate).gte("date", batch.since)
       .order("date", { ascending: false });
@@ -122,7 +126,9 @@ export default async function TodayPage() {
       }
     }
   }
-  const { data: ohlc } = await baseClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle();
+  const { data: ohlc } = metadata.source === "github"
+    ? { data: null }
+    : await baseClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle();
   const ohlcRow = ohlc as { date?: string; synced_at?: string } | null;
   const statusItems: DataStatusItem[] = [
     ...TODAY_COMPARE_VERSIONS.map((version) => {

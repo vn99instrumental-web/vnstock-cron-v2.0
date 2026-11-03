@@ -9,7 +9,7 @@ export function parseDashboardDataSource(value: unknown): DashboardDataSource | 
 }
 
 export function defaultDashboardDataSource(): DashboardDataSource {
-  return parseDashboardDataSource(process.env.DASHBOARD_DATA_SOURCE) ?? "supabase";
+  return parseDashboardDataSource(process.env.DASHBOARD_DATA_SOURCE) ?? "github";
 }
 
 export async function getDashboardDataSource(): Promise<DashboardDataSource> {

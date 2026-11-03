@@ -3,7 +3,7 @@ import { DecisionBadge } from "@/components/ui";
 import { fmtNum, fmtPct, signClass, snapHM } from "@/lib/format";
 
 export interface SignalRow {
-  id: number;
+  id: number | string;
   symbol: string;
   decision: string | null;
   score_trade: number | null;
@@ -32,7 +32,7 @@ export function SignalsTable({
           const b = r.breakdown ?? {};
           return (
             <li key={r.id}>
-              <Link href={`/history/${r.id}`} className="card flex items-center gap-2 px-3 py-2.5 active:bg-black/[0.03] dark:active:bg-white/[0.03]">
+              <Link href={`/history/${encodeURIComponent(String(b.pred_id ?? r.id))}`} className="card flex items-center gap-2 px-3 py-2.5 active:bg-black/[0.03] dark:active:bg-white/[0.03]">
                 <span className="w-14 shrink-0 font-semibold" title={r.companyName ?? undefined}>{r.symbol}</span>
                 <DecisionBadge decision={r.decision} />
                 <span className="tabular ml-auto shrink-0 text-right font-semibold">{fmtNum(r.score_trade)}</span>
@@ -87,7 +87,7 @@ export function SignalsTable({
                   ) : null}
                   <td className="px-2 py-1.5 text-right">
                     <Link
-                      href={`/history/${r.id}`}
+                      href={`/history/${encodeURIComponent(String(b.pred_id ?? r.id))}`}
                       className="inline-flex min-h-[36px] items-center rounded-md px-2.5 py-1.5 text-xs font-medium text-[var(--color-accent)] active:bg-[var(--color-accent)]/10 hover:underline"
                     >
                       chi tiết →

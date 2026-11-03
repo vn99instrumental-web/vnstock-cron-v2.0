@@ -102,6 +102,12 @@ jobs:
           source /opt/vnstock/.venv/bin/activate
           python steps/v2f_step_eval_predictions.py
 
+      - name: Build full GitHub dashboard data from local ledgers
+        if: always()
+        run: |
+          /opt/vnstock/.venv/bin/python scripts/build_dashboard_serving_local.py --full
+          test -s output/serving/current/manifest.json
+
       # -- Commit (pull --rebase + retry, giong intraday) --
       - name: Commit history ledger
         id: commit_ledger
@@ -136,6 +142,7 @@ jobs:
       # commit/push để Supabase không đi trước nguồn chân lý trong Git.
       - name: Sync weekly outcomes → Supabase
         if: ${{ always() && steps.commit_ledger.outcome == 'success' }}
+        continue-on-error: true
         env:
           SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -151,24 +158,28 @@ jobs:
             --only outcomes --months "$CUR" "$PREV"
 
       - name: Refresh forward IC metrics → Supabase
+        continue-on-error: true
         env:
           SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/export_ic_to_supabase.py
 
       - name: Refresh historical backfill IC metrics -> Supabase
+        continue-on-error: true
         env:
           SUPABASE_URL:              https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/export_backfill_ic_to_supabase.py
 
       - name: Refresh IC industry snapshot -> Supabase
+        continue-on-error: true
         env:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/export_ic_industry_to_supabase.py
 
       - name: Refresh dashboard serving snapshots
+        continue-on-error: true
         env:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -188,6 +199,7 @@ jobs:
             -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
 
       - name: Apply bounded Supabase retention
+        continue-on-error: true
         env:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

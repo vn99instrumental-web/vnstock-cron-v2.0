@@ -156,22 +156,9 @@ async function loadGitHubIC(): Promise<ICDashboardSnapshot> {
   if (!isGitHubSnapshot(snapshot)) throw new Error("GitHub IC snapshot has an unsupported schema");
   return { ...snapshot, source: "github" };
 }
-/**
- * IC is the first dual-source dashboard dataset. Supabase remains the default,
- * and GitHub failures fall back to Supabase until the shadow snapshots are proven.
- */
+/** Load exactly the selected source so GitHub and Supabase remain comparable. */
 export async function getICDashboardSnapshot(
-  source: DashboardDataSource = "supabase",
+  source: DashboardDataSource = "github",
 ): Promise<ICDashboardSnapshot> {
-  if (source === "supabase") return loadSupabaseIC();
-
-  try {
-    return await loadGitHubIC();
-  } catch (error) {
-    const fallback = await loadSupabaseIC();
-    return {
-      ...fallback,
-      fallback_reason: error instanceof Error ? error.message : "Unknown GitHub serving error",
-    };
-  }
+  return source === "github" ? loadGitHubIC() : loadSupabaseIC();
 }

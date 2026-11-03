@@ -66,21 +66,5 @@ async function loadGitHub(version: string): Promise<BuyPageData> {
 }
 
 export async function getBuyPageData(version: string, source: DashboardDataSource): Promise<BuyPageData> {
-  if (source === "github") {
-    try {
-      return await loadGitHub(version);
-    } catch {
-      return loadSupabase(version);
-    }
-  }
-
-  try {
-    return await loadSupabase(version);
-  } catch (supabaseError) {
-    try {
-      return await loadGitHub(version);
-    } catch {
-      throw supabaseError;
-    }
-  }
+  return source === "github" ? loadGitHub(version) : loadSupabase(version);
 }

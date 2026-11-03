@@ -37,7 +37,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
       baseRows = filtered.slice(from, from + PAGE_SIZE);
     } catch (githubError) { error = githubError; }
   }
-  if (metadata.source !== "github" || error) {
+  if (metadata.source !== "github") {
     let query = supabase.from("v4_signals")
       .select("id, symbol, decision, score_trade, regime, signal_date, snap_time, scoring_version, breakdown", { count: "exact" })
       .eq("scoring_version", currentVersion).order("signal_date", { ascending: false })
@@ -51,7 +51,9 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
     error = response.error;
   }
   const predIds = baseRows.map((row) => String((row.breakdown ?? {}).pred_id ?? "")).filter(Boolean);
-  const outcomesResponse = predIds.length
+  const outcomesResponse = metadata.source === "github"
+    ? { data: [], error: null }
+    : predIds.length
     ? await supabase.from("v4_outcomes").select("pred_id, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct")
         .eq("scoring_version", currentVersion).eq("lens", "trade").in("pred_id", predIds)
     : { data: [], error: null };
@@ -59,7 +61,9 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
   const rows = baseRows.map((row) => ({
     ...row,
     companyName: getCompanyName(row.symbol),
-    outcome: outcomeMap.get(String((row.breakdown ?? {}).pred_id ?? "")) ?? null,
+    outcome: (row as SignalRow & { outcome?: unknown }).outcome
+      ?? outcomeMap.get(String((row.breakdown ?? {}).pred_id ?? ""))
+      ?? null,
   }));
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const qs = (nextPage: number) => {

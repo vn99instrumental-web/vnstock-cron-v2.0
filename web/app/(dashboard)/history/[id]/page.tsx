@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { PageHeader, Card, DecisionBadge } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { fmtNum, fmtPct, signClass, snapHM } from "@/lib/format";
+import { fetchGitHubLedgerText, parseJsonLines } from "@/lib/data-source/github-serving";
+import { getDashboardDataSource } from "@/lib/data-source/source";
+import { REVIEW_VERSIONS } from "@/lib/scoring-versions";
+
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +40,37 @@ function KV({ obj, keys }: { obj: Record<string, unknown>; keys: string[] }) {
     </div>
   );
 }
+async function findGitHubSignal(predId: string) {
+  const date = predId.match(/\d{4}-\d{2}-\d{2}/)?.[0];
+  if (!date) return null;
+  for (const version of REVIEW_VERSIONS) {
+    const directory = version === "v2.3" ? "v2f_predictions" : "v2f_predictions_v4";
+    const partition = version === "v2.3" ? date.slice(0, 7) : date;
+    try {
+      const text = await fetchGitHubLedgerText(`output/history/${directory}/${partition}.jsonl`);
+      const row = parseJsonLines(text).find((item) => item.pred_id === predId && item.scoring_version === version);
+      if (row) return row;
+    } catch {
+      // A version can legitimately have no partition for this date.
+    }
+  }
+  return null;
+}
+
+async function findGitHubOutcome(predId: string, version: string, signalDate: string) {
+  const directory = version === "v2.3" ? "v2f_outcomes" : "v2f_outcomes_v4";
+  try {
+    const text = await fetchGitHubLedgerText(`output/history/${directory}/${signalDate.slice(0, 7)}.jsonl`);
+    return parseJsonLines(text).find((item) => item.pred_id === predId && (item.lens ?? "trade") === "trade") ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Supabase generated types and Git ledger rows share this serving projection.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DetailRow = Record<string, any>;
+
 
 export default async function SignalDetailPage({
   params,
@@ -43,32 +78,50 @@ export default async function SignalDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const numId = parseInt(id, 10);
-  if (!Number.isFinite(numId)) notFound();
-
+  const source = await getDashboardDataSource();
   const supabase = await createClient();
-  const { data: sig, error: signalError } = await supabase
-    .from("v4_signals")
-    .select("*")
-    .eq("id", numId)
-    .maybeSingle();
-
-  if (signalError) throw signalError;
+  let sig: DetailRow | null = null;
+  if (source === "github") {
+    const predId = id;
+    const prediction = await findGitHubSignal(predId);
+    if (prediction) sig = {
+      id: predId,
+      symbol: prediction.symbol,
+      signal_date: prediction.signal_date,
+      snap_time: prediction.snap_time,
+      scoring_version: prediction.scoring_version,
+      gate_version: prediction.gate_version,
+      decision: prediction.decision,
+      score_trade: prediction.score_trade ?? prediction.total_score,
+      regime: prediction.regime,
+      breakdown: prediction,
+    };
+  } else {
+    const numId = parseInt(id, 10);
+    if (!Number.isFinite(numId)) notFound();
+    const response = await supabase.from("v4_signals").select("*").eq("id", numId).maybeSingle();
+    if (response.error) throw response.error;
+    sig = response.data;
+  }
   if (!sig) notFound();
   const b: Record<string, unknown> = sig.breakdown ?? {};
 
   // Outcome (nếu đã chín): match theo symbol + signal_date + snap_time(text từ breakdown).
-  const snapText = String(b.snap_time ?? "");
-  const { data: outcome, error: outcomeError } = await supabase
-    .from("v4_outcomes")
-    .select("ret_1d, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct, eval_date, n_bars, lens")
-    .eq("symbol", sig.symbol)
-    .eq("signal_date", sig.signal_date)
-    .eq("snap_time", snapText)
-    .eq("scoring_version", sig.scoring_version)
-    .maybeSingle();
-
-  if (outcomeError) throw outcomeError;
+  let outcome: DetailRow | null = null;
+  if (source === "github") {
+    outcome = await findGitHubOutcome(String(sig.id), String(sig.scoring_version), String(sig.signal_date));
+  } else {
+    const response = await supabase
+      .from("v4_outcomes")
+      .select("ret_1d, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct, eval_date, n_bars, lens")
+      .eq("symbol", sig.symbol)
+      .eq("signal_date", sig.signal_date)
+      .eq("snap_time", String(b.snap_time ?? ""))
+      .eq("scoring_version", sig.scoring_version)
+      .maybeSingle();
+    if (response.error) throw response.error;
+    outcome = response.data;
+  }
 
   const gates = (b.gates ?? {}) as Record<string, unknown>;
 

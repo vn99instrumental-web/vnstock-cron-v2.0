@@ -212,6 +212,20 @@ jobs:
         run: |
           /opt/vnstock/.venv/bin/python steps/v2f_step_record_predictions_v4.py
 
+      # Primary GitHub serving path: build from this run's local ledger only.
+      - name: Build GitHub dashboard data from local ledger
+        run: |
+          /opt/vnstock/.venv/bin/python scripts/build_dashboard_serving_local.py
+          test -s output/serving/current/manifest.json
+          /opt/vnstock/.venv/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path("output/serving/current/manifest.json").read_text())
+          assert manifest["quality"]["status"] == "PASS"
+          assert manifest["source_provenance"] == "git-ledger"
+          PY
+
+
       # ──────────────────────────────────────────────────────────────────
       # COMMIT — add v2f_* output + 2 ledger (v2f_predictions + _v4).
       # KHÔNG đụng output của track v2 cũ. Push retry + rebase để tránh race với
@@ -246,7 +260,8 @@ jobs:
             output/v2f_trade_levels_v4_17.json \
             output/v2f_v4_regime_state.json \
             output/vnindex_live.json \
-            output/history/v2f_predictions_v4/ ; do
+            output/history/v2f_predictions_v4/ \
+            output/serving/ ; do
             git add "$p" 2>/dev/null || true
           done
 
@@ -282,6 +297,20 @@ jobs:
             echo "❌ push failed after 5 attempts"
             exit 1
           fi
+
+      - name: Revalidate Vercel after GitHub publish
+        continue-on-error: true
+        env:
+          DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          if [ -z "$DASHBOARD_REVALIDATE_SECRET" ]; then
+            echo "DASHBOARD_REVALIDATE_SECRET is not configured; 5-minute TTL remains active."
+            exit 0
+          fi
+          curl --fail --silent --show-error \
+            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+            -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+
 
       # ──────────────────────────────────────────────────────────────────
       # [E1.8 · ADR-008] MIRROR ledger → Supabase (app query layer).
