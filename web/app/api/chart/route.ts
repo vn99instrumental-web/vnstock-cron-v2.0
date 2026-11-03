@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { githubServing } from "@/lib/data-source/github-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 import { createClient } from "@/lib/supabase/server";
+import { isReviewVersion } from "@/lib/scoring-versions";
 
-const SAFE_VERSION = /^v\d+(?:\.\d+)?$/;
 const SAFE_SYMBOL = /^[A-Z0-9]{1,10}$/;
 
 async function loadSupabase(version: string, symbol: string) {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
   const version = request.nextUrl.searchParams.get("version") ?? "";
   const symbol = (request.nextUrl.searchParams.get("symbol") ?? "").toUpperCase();
-  if (!SAFE_VERSION.test(version) || !SAFE_SYMBOL.test(symbol)) {
+  if (!isReviewVersion(version) || !SAFE_SYMBOL.test(symbol)) {
     return NextResponse.json({ error: "Invalid version or symbol" }, { status: 400 });
   }
 
