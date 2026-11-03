@@ -539,9 +539,6 @@ export function BuyBoard({
           <input type="checkbox" checked={hideThin} onChange={(e) => setHideThin(e.target.checked)} className="h-4 w-4" />
           Ẩn mã thanh khoản &lt; 10 tỷ/phiên
         </label>
-        <div className="px-2.5 py-1 text-[10px] text-[var(--color-muted)]">
-          {displayed.length}/{signals.length} mã · %so giá TC · ⚡ thanh khoản · bền = số phiên giữ BUY · KN = khối ngoại ròng
-        </div>
         <ul className="max-h-[70vh] overflow-y-auto">
           {displayed.length === 0 ? (
             <li className="px-2.5 py-4 text-center text-xs text-[var(--color-muted)]">Không có mã khớp “{q}”.</li>
