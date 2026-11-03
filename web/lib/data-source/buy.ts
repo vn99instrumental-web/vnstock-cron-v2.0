@@ -31,8 +31,10 @@ async function loadSupabase(version: string): Promise<BuyPageData> {
     db.from("v4_buy_robustness").select("*").eq("scoring_version", version),
     industryBatch.data ? db.from("v4_ic_industry_metrics").select("industry, ic, n").eq("batch_id", industryBatch.data.batch_id).eq("version", version).eq("factor", "score_trade").eq("horizon", 5) : Promise.resolve({ data: [], error: industryBatch.error }),
   ]);
-  const failures = [newest.error, signalResponse.error, runResponse.error, exp.error, robust.error, industry.error].filter(Boolean);
-  if (failures.length) throw failures[0];
+  // Expectancy, robustness, industry IC and run metadata are enhancements.
+  // Some public Supabase roles cannot read those views, so preserve the
+  // original page behavior: only the core signals query is fatal.
+  if (signalResponse.error) throw signalResponse.error;
   const signals = ((signalResponse.data ?? []) as BuySignal[]).map((row) => ({ ...row, companyName: getCompanyName(row.symbol) }));
   if (signals.length && latestBuy?.signal_date) {
     const since = new Date(new Date(latestBuy.signal_date).getTime() - 14 * 864e5).toISOString().slice(0, 10);
