@@ -557,7 +557,6 @@ export function PriceChart({
         <span><span style={{ color: BUYC }}>◆</span> BUY</span>
         {reach.up3 ? <span className="text-[var(--color-buy)]">✓ đạt +3%{reach.up6 ? "/+6%" : ""}</span> : null}
         {reach.dn3 ? <span className="text-[var(--color-sell)]">▼ thủng −3%{reach.dn6 ? "/−6%" : ""}</span> : null}
-        <span className="ml-auto italic">2 ngón = zoom · kéo ngang = trượt (máy tính: Ctrl+lăn)</span>
       </div>
     </div>
   );
