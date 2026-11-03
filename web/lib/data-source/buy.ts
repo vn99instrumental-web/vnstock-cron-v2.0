@@ -55,17 +55,32 @@ async function loadSupabase(version: string): Promise<BuyPageData> {
   return { latestBuy, newestRun: newest.data, signals, runRow: runResponse.data, expectancy: (exp.data ?? []) as ExpectancyRow[], robustness: (robust.data ?? []) as RobustnessRow[], industryIC };
 }
 
+async function loadGitHub(version: string): Promise<BuyPageData> {
+  const data = await githubServing.buy(version);
+  return {
+    latestBuy: data.latestBuy as BuyPageData["latestBuy"], newestRun: data.newestRun as BuyPageData["newestRun"],
+    signals: (data.signals as unknown as BuySignal[]).map((row) => ({ ...row, companyName: getCompanyName(row.symbol) })),
+    runRow: data.runRow as BuyPageData["runRow"], expectancy: data.expectancy as unknown as ExpectancyRow[],
+    robustness: data.robustness as unknown as RobustnessRow[], industryIC: data.industryIC,
+  };
+}
+
 export async function getBuyPageData(version: string, source: DashboardDataSource): Promise<BuyPageData> {
   if (source === "github") {
     try {
-      const data = await githubServing.buy(version);
-      return {
-        latestBuy: data.latestBuy as BuyPageData["latestBuy"], newestRun: data.newestRun as BuyPageData["newestRun"],
-        signals: (data.signals as unknown as BuySignal[]).map((row) => ({ ...row, companyName: getCompanyName(row.symbol) })),
-        runRow: data.runRow as BuyPageData["runRow"], expectancy: data.expectancy as unknown as ExpectancyRow[],
-        robustness: data.robustness as unknown as RobustnessRow[], industryIC: data.industryIC,
-      };
-    } catch { /* fall through */ }
+      return await loadGitHub(version);
+    } catch {
+      return loadSupabase(version);
+    }
   }
-  return loadSupabase(version);
+
+  try {
+    return await loadSupabase(version);
+  } catch (supabaseError) {
+    try {
+      return await loadGitHub(version);
+    } catch {
+      throw supabaseError;
+    }
+  }
 }
