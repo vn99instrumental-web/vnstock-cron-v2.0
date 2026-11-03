@@ -213,7 +213,6 @@ const FACTOR_GUIDE = [
 ] as const;
 export function BuyBoard({
   signals,
-  expectancy = [],
   robustness = [],
   runId,
   runStartedAt = null,
@@ -390,7 +389,6 @@ export function BuyBoard({
   const entryCandle = candles.find((c) => c.date === sel?.signal_date);
   const b = sel?.breakdown ?? {};
   const groups = useMemo(() => factorGroupViews(sel?.breakdown ?? {}), [sel]);
-  const buyDays = new Set(markers.map((m) => m.date)).size;
 
   // 1 dòng mã trong danh sách (dùng chung cho chế độ phẳng & nhóm ngành).
   const symbolRow = (s: BuySignal) => {
@@ -444,18 +442,6 @@ export function BuyBoard({
     return { ageMin, marketOpen, stale: marketOpen && ageMin > 30 };
   })();
   const runStale = !!newestRunId && !!runId && newestRunId !== runId;
-
-  // A/B — kỳ vọng lịch sử theo (decision, confidence).
-  const expLookup = (dec: string | null, conf: unknown): ExpectancyRow | null => {
-    const c = String(conf ?? "").toUpperCase();
-    return (
-      expectancy.find((e) => e.decision === dec && e.confidence === c) ||
-      expectancy.find((e) => e.decision === "BUY" && e.confidence === c) ||
-      null
-    );
-  };
-  const exp = sel ? expLookup(sel.decision, (sel.breakdown ?? {}).confidence) : null;
-
 
   const insightPanel = (
     <details className="card group overflow-hidden">
@@ -614,74 +600,7 @@ export function BuyBoard({
               </h2>
               <DecisionBadge decision={sel.decision} />
               <ConfChip conf={b.confidence} withLabel />
-              <span className="text-[11px] text-[var(--color-muted)]">
-                tín hiệu {sel.signal_date} · score {fmtNum(sel.score_trade)}
-                {buyDays > 1 ? ` · ${buyDays} ngày có tín hiệu BUY` : ""}
-              </span>
-              <div className="ml-auto flex flex-wrap gap-x-2.5 text-[11px] tabular">
-                <span>Entry <b>{levels.entry != null ? fmtNum(levels.entry) : "—"}</b></span>
-                {levels.entry != null ? (
-                  <>
-                    <span className="text-[var(--color-buy)]">+3% {fmtNum(levels.entry * 1.03)}</span>
-                    <span className="text-[var(--color-buy)]">+6% {fmtNum(levels.entry * 1.06)}</span>
-                    <span className="text-[var(--color-sell)]">−3% {fmtNum(levels.entry * 0.97)}</span>
-                  </>
-                ) : null}
-              </div>
             </div>
-
-            {/* D/E/F — độ vững tín hiệu: thanh khoản · độ bền qua phiên · đồng thuận intraday */}
-            {(() => {
-              const r = robMap.get(sel.symbol);
-              const adtv = adtvOf(sel);
-              const bd = r ? Number(r.buy_days_15d) || 0 : 0;
-              const td = r ? Number(r.total_days_15d) || 0 : 0;
-              const bs = r ? Number(r.buy_snaps_today) || 0 : 0;
-              const ts = r ? Number(r.total_snaps_today) || 0 : 0;
-              return (
-                <div className="mb-1.5 flex flex-wrap items-center gap-x-4 gap-y-0.5 rounded-md border border-[var(--color-border)] px-2.5 py-1 text-[11px]">
-                  <span className="font-medium">Độ vững tín hiệu:</span>
-                  <span className="flex items-center gap-1.5">
-                    Thanh khoản <LiqBadge adtv={adtv} />
-                  </span>
-                  {td ? (
-                    <span title="Số phiên (ngày) mã giữ tín hiệu BUY trong ~15 phiên gần nhất.">
-                      Bền qua phiên{" "}
-                      <b style={{ color: robColor(bd / td) }}>{bd}/{td} phiên</b>
-                    </span>
-                  ) : null}
-                  {ts ? (
-                    <span title="Số lần chạy intraday hôm nay mã vẫn là BUY / tổng số lần chạy.">
-                      Đồng thuận hôm nay{" "}
-                      <b style={{ color: robColor(bs / ts) }}>{bs}/{ts} snap</b>
-                      {r?.first_buy_snap_vn ? <span className="text-[var(--color-muted)]"> · từ {r.first_buy_snap_vn}</span> : null}
-                    </span>
-                  ) : null}
-                  <span className="ml-auto italic text-[var(--color-muted)]">
-                    {adtv != null && adtv < 10 ? "⚠ thanh khoản mỏng — vào/ra dễ trượt giá" : "bền + đồng thuận cao ⇒ tín hiệu đáng tin hơn"}
-                  </span>
-                </div>
-              );
-            })()}
-
-            {/* A/B — kỳ vọng lịch sử + gợi ý thoát */}
-            {exp ? (
-              <div className="mb-1.5 flex flex-wrap items-center gap-x-4 gap-y-0.5 rounded-md border border-[var(--color-border)] bg-black/[0.02] px-2.5 py-1 text-[11px] dark:bg-white/[0.03]">
-                <span className="font-medium">Kỳ vọng lịch sử (BUY·{exp.confidence}, n={exp.n}):</span>
-                <span>Win 5 phiên{" "}
-                  <b style={{ color: (num(exp.winrate_5d) ?? 0) >= 55 ? "var(--color-buy)" : (num(exp.winrate_5d) ?? 0) < 50 ? "var(--color-sell)" : "#ca8a04" }}>
-                    {num(exp.winrate_5d) ?? "—"}%
-                  </b>
-                </span>
-                <span>TB 5 phiên <b className={signClass(num(exp.avg_ret_5d))}>{num(exp.avg_ret_5d) != null ? fmtPct(num(exp.avg_ret_5d)) : "—"}</b></span>
-                <span>MFE <b className="text-[var(--color-buy)]">{num(exp.avg_mfe) != null ? fmtPct(num(exp.avg_mfe)) : "—"}</b> · MAE <b className="text-[var(--color-sell)]">{num(exp.avg_mae) != null ? fmtPct(num(exp.avg_mae)) : "—"}</b></span>
-                <span className="ml-auto">Gợi ý thoát: chốt quanh <b className="text-[var(--color-buy)]">+{num(exp.avg_mfe) != null ? Math.abs(num(exp.avg_mfe)!).toFixed(1) : "3"}%</b>, cắt quanh <b className="text-[var(--color-sell)]">{num(exp.avg_mae) != null ? num(exp.avg_mae)!.toFixed(1) : "-3"}%</b></span>
-              </div>
-            ) : (
-              <div className="mb-1.5 rounded-md border border-dashed border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-muted)]">
-                Chưa đủ mẫu lịch sử cho {sel.decision}·{String(b.confidence ?? "")} để ước lượng kỳ vọng.
-              </div>
-            )}
 
             {candles.length ? (
               // Giữ chart cũ MỜ ĐI khi đang tải mã mới (mượt hơn, không nháy trắng).
