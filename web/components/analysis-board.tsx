@@ -324,38 +324,58 @@ export function AnalysisBoard({
         </div>
       </details>
 
-      {/* Tìm mã luôn hiển thị ở đầu tab Phân tích */}
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-[var(--color-muted)]">Tìm mã:</span>
-        <input value={symbolQuery} onChange={(e) => searchSymbol(e.target.value)} placeholder="VD: FPT" aria-label="Tìm mã cổ phiếu" className="w-28 rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm uppercase" />
-        <select value={activeSym} onChange={(e) => selectSymbol(e.target.value)} aria-label="Chọn mã cổ phiếu" className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm" disabled={!filteredSymbols.length}>
-          {filteredSymbols.length ? filteredSymbols.map((s) => <option key={s} value={s}>{s}</option>) : <option value={activeSym}>Không tìm thấy mã</option>}
-        </select>
-        <span className="text-[var(--color-muted)]">{symbols.length} mã</span>
-      </div>
+      {/* Thanh điều khiển chung: một hàng gọn trên desktop, nhóm tự xuống dòng khi hẹp */}
+      <div className="card flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2 text-xs xl:flex-nowrap xl:gap-x-5">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 xl:flex-nowrap">
+          <span className="shrink-0 whitespace-nowrap font-medium text-[var(--color-muted)]">Tìm mã</span>
+          <input
+            value={symbolQuery}
+            onChange={(e) => searchSymbol(e.target.value)}
+            placeholder="VD: FPT"
+            aria-label="Tìm mã cổ phiếu"
+            className="min-h-8 w-24 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm uppercase"
+          />
+          <select
+            value={activeSym}
+            onChange={(e) => selectSymbol(e.target.value)}
+            aria-label="Chọn mã cổ phiếu"
+            className="min-h-8 max-w-28 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-sm"
+            disabled={!filteredSymbols.length}
+          >
+            {filteredSymbols.length ? filteredSymbols.map((s) => <option key={s} value={s}>{s}</option>) : <option value={activeSym}>Không tìm thấy mã</option>}
+          </select>
+          <span className="shrink-0 whitespace-nowrap text-[10px] text-[var(--color-muted)]">{symbols.length} mã</span>
+        </div>
 
-      {/* Tab segmented */}
-      <div className="inline-flex w-fit card p-0.5">
-        <TabBtn k="overall" label="Góc tổng thể" />
-        <TabBtn k="symbol" label="Từng mã" />
+        <div aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-[var(--color-border)] xl:block" />
+        <div className="inline-flex shrink-0 items-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5">
+          <TabBtn k="overall" label="Góc tổng thể" />
+          <TabBtn k="symbol" label="Từng mã" />
+        </div>
+
+        <div aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-[var(--color-border)] xl:block" />
+        <div className="flex min-w-0 flex-wrap items-center gap-2 xl:ml-auto xl:flex-nowrap">
+          <span className="shrink-0 whitespace-nowrap font-medium text-[var(--color-muted)]">Mục tiêu chốt/cắt</span>
+          <div className="inline-flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5">
+            {TARGETS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                title={t.label}
+                aria-label={t.label}
+                aria-pressed={target === t.key}
+                onClick={() => setTarget(t.key)}
+                className={`rounded px-2.5 py-1.5 font-medium whitespace-nowrap transition-colors ${target === t.key ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)] hover:bg-black/5 dark:hover:bg-white/5"}`}
+              >
+                {t.key === "std3_outcome" ? "+3% / −3%" : "+6% / −4%"}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {tab === "overall" ? (
         <div className="flex flex-col gap-4">
-          {/* Chọn mục tiêu */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-[var(--color-muted)]">Mục tiêu chốt/cắt:</span>
-            {TARGETS.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setTarget(t.key)}
-                className={`rounded border px-2 py-1 ${target === t.key ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-muted)]"}`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
           {/* Tỷ lệ chạm TP/SL — tổng + theo quyết định */}
           <div className="card p-3">
             <h3 className="mb-2 text-sm font-semibold">Tỷ lệ chạm mục tiêu (đi theo nến thật, cửa sổ ~10 phiên)</h3>
@@ -515,11 +535,6 @@ export function AnalysisBoard({
             <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
               <h3 className="text-sm font-semibold">Diễn biến tín hiệu {activeSym} theo thời gian</h3>
               <span className="text-[10px] text-[var(--color-muted)]">cột = lãi 5 phiên · màu = kết quả</span>
-              <div className="ml-auto inline-flex rounded-md border border-[var(--color-border)] p-0.5 text-[10px]">
-                {([["std3_outcome", "±3%"], ["std_outcome", "+6/−4"]] as const).map(([k, lb]) => (
-                  <button key={k} onClick={() => setTarget(k)} className={`rounded px-2.5 py-1.5 ${target === k ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)]"}`}>{lb}</button>
-                ))}
-              </div>
             </div>
             <SignalTimeline rows={symRows} target={target} />
           </div>
