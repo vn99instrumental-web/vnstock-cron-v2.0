@@ -24,7 +24,9 @@ npm run check
 
 ## Dữ liệu và cache
 
-- Các trang dashboard đọc qua Supabase với RLS.
+- GitHub serving là nguồn mặc định; hai nút GitHub/Supabase đọc đúng nguồn đã chọn và không fallback âm thầm.
+- Supabase tiếp tục cung cấp Auth và làm mirror non-blocking trong giai đoạn chuyển đổi.
+- GitHub snapshots được tạo trực tiếp từ ledger cùng commit với mỗi intraday run.
 - Cache server có TTL 5 phút cho mọi scoring version đang review.
 - `POST /api/revalidate` xóa cache sau khi workflow sync thành công; endpoint yêu cầu bearer token `REVALIDATE_SECRET`.
 - GitHub Actions dùng secret `DASHBOARD_REVALIDATE_SECRET` có cùng giá trị.
