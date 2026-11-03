@@ -39,7 +39,7 @@ permissions:
 
 # Group riêng → không đụng intraday.
 concurrency:
-  group: vnstock-data-qc
+  group: vnstock-main-writer
   cancel-in-progress: false
 
 jobs:

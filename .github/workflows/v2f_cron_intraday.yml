@@ -25,7 +25,7 @@ permissions:
 
 # Concurrency group RIÊNG → không serialize / cancel chéo với v2.
 concurrency:
-  group: vnstock-intraday-v2f
+  group: vnstock-main-writer
   cancel-in-progress: false
 
 jobs:

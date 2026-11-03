@@ -30,7 +30,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: cron-weekly
+  group: vnstock-main-writer
   cancel-in-progress: false
 
 jobs:

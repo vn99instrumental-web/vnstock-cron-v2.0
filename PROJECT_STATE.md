@@ -225,3 +225,13 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - PASS: security review khong thay service-role key/client secret bi dua sang frontend; API chart van yeu cau Supabase Auth; revalidation van dung server secret constant-time.
 - Chua chay authenticated browser flow vi worktree khong co owner session. Can smoke test hai nut tren Vercel sau merge/deploy.
 - Gioi han da biet: detail GitHub truoc luc ledger v4 chuyen sang partition ngay co the khong mo duoc; list/history/chart van co data. Khong sao chep file thang 10 gan 100 MiB vao serving layer.
+
+
+## GitHub-independent hardening (2026-11-03)
+
+- n8n workflow `gy5bMCRrABkdbjEc` keeps its existing schedule, GitHub dispatch and fixed 15-minute wait. Active version `46a909e3-1edc-49c9-b148-b22d5390f891` routes only to the two v4.17 Zalo inputs; legacy v2.3/v4 publication branches remain on canvas but are disconnected. Both v4.17 GitHub writes retry up to three times on transient conflicts.
+- All seven GitHub Actions workflows that write to `main` share concurrency group `vnstock-main-writer` with queueing instead of cancellation. The manual serving publisher retries pull/rebase/push up to five times.
+- Serving manifests are built only by scanning the finished staging tree. Dataset paths are relative and unique; SHA-256 and the 20 MiB per-file guard remain mandatory.
+- A full GitHub build recomputes official daily IC, pooled indicator/factor IC, marginal IC, industry IC and analysis factor/pair/split diagnostics from the Git ledger plus local OHLC. Intraday builds preserve analytics `generated_at` and only advance `published_at`.
+- Supabase Auth and the Supabase mirror remain unchanged for source comparison. Vercel keeps the ignored-build command `git diff HEAD^ HEAD --quiet -- .`, so data/docs-only commits do not replace the production web deployment.
+- Verification: final full dry-run completed in about 1m42s; 726 unique relative datasets, largest 6,324,366 bytes; 144 official IC, 68 indicator IC, 160 factor-version IC, 320 marginal IC and 1,152 industry IC rows; latest signal count is 100 for each of six review versions.

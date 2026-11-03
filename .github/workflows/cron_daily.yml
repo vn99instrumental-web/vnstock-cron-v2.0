@@ -11,7 +11,7 @@ permissions:
 # Tránh 2 run daily chồng nhau (vd scheduled + manual). cancel-in-progress
 # = false để KHÔNG kill một lần finance scan đang chạy dở.
 concurrency:
-  group: vnstock-daily
+  group: vnstock-main-writer
   cancel-in-progress: false
 
 jobs:
