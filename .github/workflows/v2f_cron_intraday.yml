@@ -340,6 +340,13 @@ jobs:
           echo "Sync months: $CUR $PREV"
           /opt/vnstock/.venv/bin/python scripts/sync_supabase.py --months "$CUR" "$PREV"
 
+      - name: Verify latest GitHub-Supabase parity
+        continue-on-error: true
+        env:
+          SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/verify_supabase_mirror.py
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB PHỤ — chỉ chạy tay (workflow_dispatch) để BACKFILL V4 trên dữ liệu
   # đã commit (v2f_signals.json + context.json của phiên gần nhất). KHÔNG

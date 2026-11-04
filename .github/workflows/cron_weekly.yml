@@ -204,3 +204,10 @@ jobs:
           SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: /opt/vnstock/.venv/bin/python scripts/prune_supabase_retention.py
+
+      - name: Verify GitHub-Supabase latest and history parity
+        continue-on-error: true
+        env:
+          SUPABASE_URL: https://mcaqnaomzoqgxccdgvls.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: /opt/vnstock/.venv/bin/python scripts/verify_supabase_mirror.py --history

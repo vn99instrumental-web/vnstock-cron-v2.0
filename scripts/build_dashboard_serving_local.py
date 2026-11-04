@@ -214,6 +214,12 @@ def _previous_close(version: str, symbol: str, signal_date: str) -> float | None
         return None
 
 
+def _outcome_projection(outcome: dict[str, Any]) -> dict[str, Any]:
+    return {key: outcome.get(key) for key in (
+        "pred_id", "ret_1d", "ret_3d", "ret_5d", "ret_10d", "mfe_pct", "mae_pct", "eval_date", "n_bars", "lens"
+    )}
+
+
 def _history_row(row: dict[str, Any], outcome: dict[str, Any] | None, *, compact: bool = True) -> dict[str, Any]:
     signal = build_signal_row(row)
     breakdown = signal["breakdown"]
@@ -228,9 +234,7 @@ def _history_row(row: dict[str, Any], outcome: dict[str, Any] | None, *, compact
         "scoring_version": signal["scoring_version"], "breakdown": breakdown,
     }
     if outcome:
-        projection["outcome"] = {key: outcome.get(key) for key in (
-            "pred_id", "ret_1d", "ret_3d", "ret_5d", "ret_10d", "mfe_pct", "mae_pct", "eval_date", "n_bars", "lens"
-        )}
+        projection["outcome"] = _outcome_projection(outcome)
     return projection
 
 
@@ -246,6 +250,14 @@ def _merge_history(version: str, predictions: list[dict[str, Any]], outcomes: di
             continue
         pred_id = str(row.get("pred_id") or "")
         merged[pred_id or "|".join(map(str, _run_key(row)))] = _history_row(row, outcomes.get((version, pred_id)))
+    # A full rebuild reads every outcome partition, but deliberately preserves the
+    # already-retained history signal set. This refreshes matured historical outcomes
+    # without re-introducing signal rows removed by the serving retention policy.
+    for row in merged.values():
+        pred_id = str((row.get("breakdown") or {}).get("pred_id") or row.get("id") or "")
+        outcome = outcomes.get((version, pred_id))
+        if outcome:
+            row["outcome"] = _outcome_projection(outcome)
     rows = sorted(merged.values(), key=lambda row: (str(row.get("signal_date")), str(row.get("snap_time"))), reverse=True)
     return {"version": version, "rows": rows, "count": len(rows)}
 
@@ -671,9 +683,12 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
         full_predictions = _full_ledger(PRED_GLOBS, set(versions))
         full_outcomes = _full_ledger(OUT_GLOBS, set(versions), outcomes=True)
         industry_rows, _ = compute_industry_ic_rows(full_predictions, full_outcomes, release_id)
+    full_outcome_map = {
+        (str(row.get("scoring_version")), str(row.get("pred_id"))): row for row in full_outcomes
+    }
 
     for version in versions:
-        history = _merge_history(version, predictions, outcomes)
+        history = _merge_history(version, predictions, full_outcome_map if full else outcomes)
         dates = [str(row.get("signal_date")) for row in history["rows"] if row.get("signal_date")]
         if dates:
             coverage[version] = {"min": min(dates), "max": max(dates)}
@@ -683,8 +698,7 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
                             industry_rows=industry_rows)
         _write(staging / "buy" / f"{version}.json", buy)
         analysis_predictions = full_predictions if full else predictions
-        analysis_outcomes = ({(str(row.get("scoring_version")), str(row.get("pred_id"))): row
-                              for row in full_outcomes} if full else outcomes)
+        analysis_outcomes = full_outcome_map if full else outcomes
         _write(staging / "analysis" / f"{version}.json", _merge_analysis(
             version, analysis_predictions, analysis_outcomes, recompute=full, generated_at=generated_at))
 

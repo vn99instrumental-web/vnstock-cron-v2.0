@@ -142,3 +142,7 @@ jobs:
       - name: Apply bounded Supabase retention
         run: ${{ steps.python.outputs.python }} scripts/prune_supabase_retention.py
         continue-on-error: true
+
+      - name: Verify GitHub-Supabase latest and history parity
+        continue-on-error: true
+        run: ${{ steps.python.outputs.python }} scripts/verify_supabase_mirror.py --history
