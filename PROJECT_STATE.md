@@ -1,6 +1,6 @@
 # PROJECT_STATE.md
 
-**Cập nhật:** 2026-10-16
+**Cập nhật:** 2026-11-04
 **Branch production:** `main`
 **Dashboard:** <https://trading-snapshot-dl.vercel.app>
 
@@ -250,3 +250,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Factor verification: production GitHub/Supabase `pred_id` hashes match for all three Today versions. Coverage counts also match for all six factor groups, `s_ff_net`, `ff_intra_net`, and entry/stop/tp1.
 - Verification PASS: Python compile, publisher dry-run/manifest checks, TypeScript, ESLint, Next.js production build, security review, GitHub Actions run `41753270325`, data commit `886ee833`, and Vercel deployment for code commit `cdf0e57a`.
 - Auth boundary smoke test PASS: unauthenticated `/today` and `/phan-tich` redirect to login with no browser console errors. Authenticated source-button interaction still requires the owner's existing login session for visual testing.
+
+## GitHub/Supabase history parity and automatic audit (2026-11-04)
+
+- Root cause of missing GitHub historical outcomes: the full publisher loaded all outcome partitions for analytics, but History merged only the two recent months. Full builds now enrich every retained History signal from the complete outcome ledger without restoring signal rows removed by serving retention.
+- Production GitHub and Supabase are aligned for all six review versions on retained signal `pred_id` sets, embedded outcome `pred_id` sets, and latest run metadata. Verified counts include v4.17 = 14,100 signals / 9,400 outcomes and v4.18 = 16,200 signals / 11,500 outcomes.
+- Latest production run at verification is `2026-11-04_13:13_*`; each version has universe size 100 and matching BUY counts in both sources.
+- `scripts/verify_supabase_mirror.py` is read-only. Intraday checks the latest run after mirror sync; daily, weekly and manual sync also compare retained History signals and outcomes after retention. Audit failure is visible but non-blocking so GitHub remains authoritative and independent from Supabase availability.
+- Verification PASS: Python compile, parity smoke test, YAML parse for 13 workflows, `git diff --check`, full ledger dry-run, security review, production full-build run `41789223365`, and read-only production SQL/Git hash comparison. Largest History file after outcome enrichment is 7.36 MiB, below the 20 MiB serving guard.
+- The production full build published data commit `f7aa0df3`. The new parity step itself will first execute on the next intraday/daily/weekly/manual mirror workflow; no manual retention workflow was triggered during this verification.
