@@ -1,36 +1,26 @@
 # ============================================================
-# Deploy GitHub Pages — CHỈ khi dashboard (docs/) thay đổi
+# Deploy GitHub Pages — CHỈ cho Zalo V4.17
 # ------------------------------------------------------------
-# Muc dich: cham dut viec MOI commit vao main (ke ca commit output/
-# data tu cac workflow) deu bat Pages build lai -> nghen hang doi ->
-# loi "Deployment failed, try again later".
-#
-# Cach hoat dong:
-#   - Chi chay khi co file trong docs/** doi (paths filter ben duoi).
-#     => commit output/*.json cua v1/v2f/daily KHONG con kich hoat Pages.
-#   - concurrency + cancel-in-progress: deploy sau tu huy deploy truoc
-#     dang chay dang do -> khong con xep hang chong nhau.
-#   - Stage rieng thu muc docs/ -> URL giu nguyen .../docs/indexv2.html
-#     (khong doi link Telegram/dashboard hien co).
+# Chỉ publish HTML/ảnh/JS phục vụ visual Zalo V4.17. Các dashboard
+# legacy vẫn có thể nằm trong repo nhưng không được đưa vào Pages artifact.
 # ============================================================
-name: Deploy Pages (docs only)
+name: Deploy Pages (Zalo V4.17 only)
 
 on:
   push:
     branches: [main]
     paths:
-      - 'docs/**'
+      - 'docs/indexv4_17.html'
+      - 'docs/v2f_zalo_buy_latest.png'
+      - 'docs/vnindex_live.js'
       - '.github/workflows/pages.yml'
-  workflow_dispatch:   # cho phep bam chay tay de test / deploy lai
+  workflow_dispatch:
 
-# Quyen toi thieu bat buoc cho actions/deploy-pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Deploy moi tu huy deploy cu dang chay -> chi ban moi nhat len web,
-# het canh nhieu deploy chen nhau gay "try again later".
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -45,12 +35,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Chi dua thu muc docs/ len site, GIU nguyen cau truc /docs/
-      # => URL van la .../vnstock-cron-v2.0/docs/indexv2.html nhu cu.
-      - name: Stage docs folder
+      # Keep /docs/ in the artifact so the public Zalo URL stays unchanged.
+      - name: Stage Zalo V4.17 assets
         run: |
-          mkdir -p _site
-          cp -r docs _site/docs
+          set -euo pipefail
+          mkdir -p _site/docs
+          cp docs/indexv4_17.html _site/docs/
+          cp docs/v2f_zalo_buy_latest.png _site/docs/
+          cp docs/vnindex_live.js _site/docs/
+          test "$(find _site -type f | wc -l)" -eq 3
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
