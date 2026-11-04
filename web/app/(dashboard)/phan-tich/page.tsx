@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 const RESULT_COLUMNS = "pred_id, scoring_version, symbol, signal_date, snap_time, decision, score_trade, confidence, t0_close, ret_1d, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct, own_entry, own_tp1, own_tp2, own_stop, std_outcome, std_days, std3_outcome, own_outcome, own_days";
 const INITIAL_LIMIT = 2000;
+const SUPABASE_PAGE_SIZE = 1000;
 
 type Props = { searchParams: Promise<{ version?: string; symbol?: string; window?: string }> };
 
@@ -58,20 +59,27 @@ export default async function PhanTichPage({ searchParams }: Props) {
     } catch (githubError) { hasError = githubError; }
   }
   if (metadata.source !== "github" || hasError) {
-    let resultsQuery = dataClient.from("v4_signal_analysis_dashboard").select(RESULT_COLUMNS)
-      .eq("scoring_version", currentVersion).order("signal_date", { ascending: false })
-      .order("symbol", { ascending: true }).limit(symbol ? 1000 : INITIAL_LIMIT);
-    if (symbol) resultsQuery = resultsQuery.eq("symbol", symbol);
-    if (useCommonWindow) resultsQuery = resultsQuery.gte("signal_date", commonStart!).lte("signal_date", commonEnd!);
-    const [resultsResponse, diagnosticsResponse] = await Promise.all([
-      resultsQuery,
+    const resultLimit = symbol ? SUPABASE_PAGE_SIZE : INITIAL_LIMIT;
+    const resultQueries = Array.from({ length: Math.ceil(resultLimit / SUPABASE_PAGE_SIZE) }, (_, page) => {
+      const from = page * SUPABASE_PAGE_SIZE;
+      const to = Math.min(from + SUPABASE_PAGE_SIZE, resultLimit) - 1;
+      let query = dataClient.from("v4_signal_analysis_dashboard").select(RESULT_COLUMNS)
+        .eq("scoring_version", currentVersion).order("signal_date", { ascending: false })
+        .order("symbol", { ascending: true }).order("pred_id", { ascending: true })
+        .range(from, to);
+      if (symbol) query = query.eq("symbol", symbol);
+      if (useCommonWindow) query = query.gte("signal_date", commonStart!).lte("signal_date", commonEnd!);
+      return query;
+    });
+    const [resultPages, diagnosticsResponse] = await Promise.all([
+      Promise.all(resultQueries),
       dataClient.from("v4_analysis_diagnostics_snapshot")
         .select("kind, dim, bucket, factor, factor_b, grp, n, corr_ret5, corr_win, corr, computed_at")
         .eq("scoring_version", currentVersion),
     ]);
-    hasError = metadata.error || resultsResponse.error;
+    hasError = metadata.error || resultPages.find((response) => response.error)?.error;
     hasOptionalError = diagnosticsResponse.error;
-    rows = (resultsResponse.data ?? []) as SignalResult[];
+    rows = resultPages.flatMap((response) => response.data ?? []) as SignalResult[];
     const diagnostics = (diagnosticsResponse.data ?? []) as Array<Record<string, unknown>>;
     corr = diagnostics.filter((row) => row.kind === "factor").map((row) => ({ factor: String(row.factor), grp: row.grp == null ? null : String(row.grp), n: Number(row.n), corr_ret5: row.corr_ret5 as number | string | null, corr_win: row.corr_win as number | string | null })) as FactorCorr[];
     pairs = diagnostics.filter((row) => row.kind === "pair" && row.factor_b).map((row) => ({ fa: String(row.factor), fb: String(row.factor_b), n: Number(row.n), corr: row.corr as number | string | null })) as FactorPair[];

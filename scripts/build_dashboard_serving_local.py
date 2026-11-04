@@ -154,6 +154,27 @@ def _latest_runs(predictions: list[dict[str, Any]], versions: list[str]) -> tupl
     return runs, latest_rows
 
 
+def _latest_day_rows(predictions: list[dict[str, Any]], versions: list[str]) -> dict[str, list[dict[str, Any]]]:
+    """Keep every intraday snapshot from the newest signal date per version."""
+    newest_dates = {
+        version: max(
+            (str(row.get("signal_date")) for row in predictions
+             if row.get("scoring_version") == version and row.get("signal_date")),
+            default="",
+        )
+        for version in versions
+    }
+    return {
+        version: [
+            row for row in predictions
+            if row.get("scoring_version") == version
+            and str(row.get("signal_date")) == newest_dates[version]
+        ]
+        for version in versions
+        if newest_dates[version]
+    }
+
+
 def _breakdown(row: dict[str, Any]) -> dict[str, Any]:
     return build_signal_row(row)["breakdown"]
 
@@ -596,7 +617,9 @@ def _merge_analysis(version: str, predictions: list[dict[str, Any]], outcomes: d
         results[pred_id] = result
         if recompute:
             diagnostic_rows.append((result, _numeric_factors(breakdown)))
-    ordered = sorted(results.values(), key=lambda row: (str(row.get("signal_date")), str(row.get("symbol"))), reverse=True)[:2000]
+    ordered = sorted(results.values(), key=lambda row: str(row.get("symbol")))
+    ordered.sort(key=lambda row: str(row.get("signal_date")), reverse=True)
+    ordered = ordered[:2000]
     corr, pairs, split = (_analysis_diagnostics(diagnostic_rows) if recompute
                           else (old.get("corr", []), old.get("pairs", []), old.get("split", [])))
     return {"version": version, "results": ordered, "corr": corr, "pairs": pairs, "split": split,
@@ -634,6 +657,7 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
     predictions = _recent_predictions(set(versions))
     outcomes = _recent_outcomes(set(versions))
     runs, latest = _latest_runs(predictions, versions)
+    latest_day = _latest_day_rows(predictions, versions)
     if not runs:
         raise RuntimeError("No local review-version run found")
 
@@ -667,10 +691,12 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
         if version not in latest:
             continue
         run = runs[version]
-        signal_date = str(run["run_id"]).split("_")[0]
+        signal_date = max(str(row.get("signal_date")) for row in latest[version])
         projected = [
-            _today_signal(row, _previous_close(version, str(row.get("symbol")), signal_date))
-            for row in sorted(latest[version], key=lambda item: float(item.get("score_trade") or item.get("total_score") or 0), reverse=True)
+            _today_signal(row, _previous_close(version, str(row.get("symbol")), str(row.get("signal_date"))))
+            for row in sorted(latest_day[version], key=lambda item: (
+                str(item.get("snap_time")), float(item.get("score_trade") or item.get("total_score") or 0)
+            ))
         ]
         status = _json(CURRENT / "today" / f"{version}.json", {}).get("status", {})
         _write(staging / "today" / f"{version}.json", {
@@ -721,6 +747,7 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
     if len(paths) != len(set(paths)) or any(Path(path).is_absolute() for path in paths):
         raise RuntimeError("Manifest dataset paths must be unique and relative")
     counts = {version: len(latest.get(version, [])) for version in versions}
+    today_counts = {version: len(latest_day.get(version, [])) for version in versions}
     missing = [version for version, count in counts.items() if version in runs and count == 0]
     if missing:
         raise RuntimeError(f"Empty latest run for: {', '.join(missing)}")
@@ -728,9 +755,9 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
         "schema_version": 2, "release_id": release_id, "generated_at_utc": generated_at,
         "asof_ict": now.astimezone(ICT).isoformat(), "source_provenance": "git-ledger",
         "quality": {"status": "PASS", "checks": [
-            "local_ledger_only", "non_empty_runs", "deduplicated_pred_id", "json_serializable",
+            "local_ledger_only", "non_empty_runs", "complete_latest_day", "deduplicated_pred_id", "json_serializable",
             "sha256", "max_file_20_mib", "relative_unique_paths",
-        ], "latest_signal_counts": counts},
+        ], "latest_signal_counts": counts, "today_signal_counts": today_counts},
         "datasets": datasets,
     }
     _write(staging / "manifest.json", manifest)

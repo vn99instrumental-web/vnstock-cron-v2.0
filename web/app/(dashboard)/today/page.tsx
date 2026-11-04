@@ -63,7 +63,7 @@ export default async function TodayPage() {
 
   // Pick one current price per symbol, from the newest dated snapshot across versions.
   // This avoids comparing an old version's price against a newer version's reference close.
-  const latestPrices = new Map<string, { price: number; signalDate: string; snapTime: string; versionOrder: number }>();
+  const latestPrices = new Map<string, { price: number; signalDate: string; snapTime: string; versionOrder: number; changePct: number | null }>();
   for (const signal of signals) {
     const price = signal.price == null || signal.price === "" ? NaN : Number(signal.price);
     if (!Number.isFinite(price) || price <= 0) continue;
@@ -74,18 +74,22 @@ export default async function TodayPage() {
     if (!previous || signal.signal_date > previous.signalDate ||
         (signal.signal_date === previous.signalDate &&
           (snapTime > previous.snapTime || (snapTime === previous.snapTime && versionOrder < previous.versionOrder)))) {
-      latestPrices.set(signal.symbol, { price, signalDate: signal.signal_date, snapTime, versionOrder });
+      const rawChange = (signal as TodaySignal & { changePct?: number | null }).changePct;
+      const changePct = rawChange == null ? NaN : Number(rawChange);
+      latestPrices.set(signal.symbol, {
+        price,
+        signalDate: signal.signal_date,
+        snapTime,
+        versionOrder,
+        changePct: Number.isFinite(changePct) ? changePct : null,
+      });
     }
   }
 
   const priceStats: Record<string, TodayPriceStat> = {};
   const symbolsByDate = new Map<string, string[]>();
   for (const [symbol, latest] of latestPrices) {
-    const sourceSignal = signals.find((signal) => signal.symbol === symbol && signal.signal_date === latest.signalDate);
-    const githubChange = metadata.source === "github"
-      ? Number((sourceSignal as TodaySignal & { changePct?: number | null } | undefined)?.changePct)
-      : NaN;
-    priceStats[symbol] = { price: latest.price, changePct: Number.isFinite(githubChange) ? githubChange : null };
+    priceStats[symbol] = { price: latest.price, changePct: metadata.source === "github" ? latest.changePct : null };
     const symbols = symbolsByDate.get(latest.signalDate) ?? [];
     symbols.push(symbol);
     symbolsByDate.set(latest.signalDate, symbols);
