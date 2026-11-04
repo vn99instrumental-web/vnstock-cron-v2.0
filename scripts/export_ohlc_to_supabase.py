@@ -22,10 +22,12 @@ import logging
 import os
 import sys
 import time
+from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_dashboard_serving import SupabaseReader  # noqa: E402
 from sync_supabase import Supabase  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -104,6 +106,64 @@ def fetch_ohlcv(symbol: str, start: str, end: str) -> list[dict]:
     return []
 
 
+def merge_ohlc_rows(existing: list[dict], incoming: list[dict], cutoff: str) -> list[dict]:
+    """Apply the same ``(symbol, date)`` upsert semantics used by Supabase."""
+    by_date: dict[str, dict] = {}
+    for row in (*existing, *incoming):
+        day = str(row.get("date") or "")
+        if day and day >= cutoff:
+            by_date[day] = row
+    return [by_date[day] for day in sorted(by_date)]
+
+
+def write_local_ohlc(local_dir: Path, symbol: str, bars: list[dict], cutoff: str) -> int:
+    """Atomically merge recent bars without truncating the existing GitHub history."""
+    target = local_dir / f"{symbol}.json"
+    existing: list[dict] = []
+    if target.exists():
+        try:
+            payload = json.loads(target.read_text(encoding="utf-8"))
+            if isinstance(payload, list):
+                existing = payload
+        except (OSError, json.JSONDecodeError):
+            log.warning("  %s: local OHLC is unreadable; rebuilding from available rows", symbol)
+    merged = merge_ohlc_rows(existing, bars, cutoff)
+    temp = target.with_suffix(".json.tmp")
+    temp.write_text(json.dumps(merged, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    temp.replace(target)
+    return len(merged)
+
+
+def bootstrap_local_from_supabase(
+    url: str,
+    key: str,
+    local_dir: Path,
+    cutoff: str,
+    selected_symbols: set[str] | None = None,
+) -> tuple[int, int]:
+    """Seed GitHub OHLC from the authoritative rows already retained in Supabase."""
+    reader = SupabaseReader(url, key)
+    rows = reader.rows(
+        "v4_ohlc",
+        select="symbol,date,open,high,low,close,volume",
+        filters={"date": f"gte.{cutoff}"},
+        order="symbol.asc,date.asc",
+    )
+    grouped: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        symbol = str(row.get("symbol") or "").upper()
+        if not symbol or (selected_symbols is not None and symbol not in selected_symbols):
+            continue
+        grouped[symbol].append(row)
+    total = 0
+    for symbol, bars in grouped.items():
+        total += write_local_ohlc(local_dir, symbol, bars, cutoff)
+    if not grouped or not total:
+        raise RuntimeError("Supabase OHLC bootstrap returned no usable rows")
+    log.info("Bootstrap Supabase -> GitHub OHLC: %d symbols, %d retained bars", len(grouped), total)
+    return len(grouped), total
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Backfill OHLC daily → v4_ohlc.")
     ap.add_argument("--days", type=int, default=900, help="số ngày lịch sử (mặc định 900 ~ đủ EMA200 nếu nguồn cho)")
@@ -111,6 +171,11 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0, help="giới hạn số mã (0 = tất cả)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--write-local", action="store_true", help="write output/ohlc JSON for GitHub serving")
+    ap.add_argument(
+        "--bootstrap-local-from-supabase",
+        action="store_true",
+        help="one-time/recovery seed of output/ohlc from the retained v4_ohlc rows in Supabase",
+    )
     args = ap.parse_args()
 
     end = date.today().strftime("%Y-%m-%d")
@@ -133,6 +198,22 @@ def main() -> int:
     local_dir = ROOT / "output" / "ohlc"
     if args.write_local:
         local_dir.mkdir(parents=True, exist_ok=True)
+    cutoff = (date.today() - timedelta(days=RETENTION_DAYS)).isoformat()
+
+    if args.bootstrap_local_from_supabase:
+        if not args.write_local:
+            log.error("--bootstrap-local-from-supabase requires --write-local")
+            return 2
+        if not url or not key:
+            log.error("Supabase credentials are required for the OHLC bootstrap")
+            return 2
+        bootstrap_local_from_supabase(
+            url,
+            key,
+            local_dir,
+            cutoff,
+            set(symbols) if args.symbols else None,
+        )
 
     total_rows = 0
     ok = 0
@@ -140,10 +221,8 @@ def main() -> int:
         bars = fetch_ohlcv(sym, start, end)
         if bars:
             if args.write_local:
-                target = local_dir / f"{sym}.json"
-                temp = target.with_suffix(".json.tmp")
-                temp.write_text(json.dumps(bars, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-                temp.replace(target)
+                retained = write_local_ohlc(local_dir, sym, bars, cutoff)
+                log.info("  %s: local GitHub history now has %d bars", sym, retained)
             if sb:
                 try:
                     sb.upsert("v4_ohlc", bars, on_conflict="symbol,date")
@@ -157,7 +236,6 @@ def main() -> int:
         log.info("[%d/%d] %s: %d bars", i, len(symbols), sym, len(bars))
         time.sleep(THROTTLE)
 
-    cutoff = (date.today() - timedelta(days=RETENTION_DAYS)).isoformat()
     if sb:
         sb.delete("v4_ohlc", {"date": f"lt.{cutoff}"})
 

@@ -4,6 +4,12 @@ name: Sync data daily → Supabase
 # cho return 3/5 phiên, mirror ledger và refresh IC nếu có outcome mới.
 on:
   workflow_dispatch:
+    inputs:
+      bootstrap_ohlc_from_supabase:
+        description: 'Seed full retained OHLC from Supabase into GitHub before the incremental refresh'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -61,8 +67,14 @@ jobs:
           echo "Supabase key is optional; GitHub is the primary publish path."
           test -n "$VNSTOCK_API_KEY" || { echo 'Missing VNSTOCK_API_KEY'; exit 1; }
 
-      - name: Refresh daily OHLC for analysis (45 days)
-        run: ${{ steps.python.outputs.python }} scripts/export_ohlc_to_supabase.py --days 45 --write-local
+      - name: Refresh daily OHLC with Supabase-compatible upsert retention
+        shell: bash
+        run: |
+          bootstrap=()
+          if [ "${{ inputs.bootstrap_ohlc_from_supabase }}" = "true" ]; then
+            bootstrap+=(--bootstrap-local-from-supabase)
+          fi
+          ${{ steps.python.outputs.python }} scripts/export_ohlc_to_supabase.py --days 45 --write-local "${bootstrap[@]}"
 
       - name: Build full GitHub dashboard data from local ledgers
         run: ${{ steps.python.outputs.python }} scripts/build_dashboard_serving_local.py --full

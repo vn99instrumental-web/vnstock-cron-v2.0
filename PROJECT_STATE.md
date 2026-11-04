@@ -235,3 +235,10 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - A full GitHub build recomputes official daily IC, pooled indicator/factor IC, marginal IC, industry IC and analysis factor/pair/split diagnostics from the Git ledger plus local OHLC. Intraday builds preserve analytics `generated_at` and only advance `published_at`.
 - Supabase Auth and the Supabase mirror remain unchanged for source comparison. Vercel keeps the ignored-build command `git diff HEAD^ HEAD --quiet -- .`, so data/docs-only commits do not replace the production web deployment.
 - Verification: final full rebuild on the latest weekly ledger completed in about 1m03s; 726 unique relative datasets, largest 6,400,454 bytes; 144 official IC, 68 indicator IC, 160 factor-version IC, 320 marginal IC and 1,152 industry IC rows; latest signal count is 100 for each of six review versions.
+
+## OHLC parity Supabase/GitHub (2026-11-04)
+
+- Root cause of the Buy-chart mismatch: the daily workflow fetched 45 calendar days and replaced each `output/ohlc/<symbol>.json`, while Supabase retained 900 days. SHB had 32 GitHub bars versus 616 Supabase bars.
+- `export_ohlc_to_supabase.py` now supports a one-time/recovery Supabase-to-GitHub OHLC seed and merges subsequent rows by `(symbol, date)` instead of truncating history. Both stores use the same 900-day cutoff.
+- `sync_data_daily.yml` exposes `bootstrap_ohlc_from_supabase`; normal n8n dispatches keep the input false and remain GitHub-independent after the seed. The service-role key remains server-side in GitHub Secrets.
+- Local verification: Python compile, three OHLC unit tests, workflow YAML parse and `git diff --check` pass. Production bootstrap and source-count comparison remain pending until the workflow change is pushed and dispatched once with the bootstrap input enabled.
