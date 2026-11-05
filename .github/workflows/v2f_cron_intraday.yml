@@ -89,6 +89,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
           python-version: '3.11'
 
@@ -96,7 +97,11 @@ jobs:
       # Cache dùng chung với v2 (cùng venv vnstock, an toàn vì read-only ở đây).
       - name: Compute cache key suffix (weekly)
         id: cache-suffix
-        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+        run: |
+          image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
+          python_version="${{ steps.setup-python.outputs.python-version }}"
+          echo "suffix=${image}-py${python_version}-$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-py${python_version}-$(date -u +%Y-W%V)"
 
       - name: Restore vnstock cache
         id: cache-venv
@@ -105,9 +110,8 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
-          restore-keys: |
-            vnstock-stable-v4-
+            /home/runner/.local/bin/uv
+          key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
 
       - name: Verify venv
         run: |
@@ -371,12 +375,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
           python-version: '3.11'
 
       - name: Compute cache key suffix (weekly)
         id: cache-suffix
-        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+        run: |
+          image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
+          python_version="${{ steps.setup-python.outputs.python-version }}"
+          echo "suffix=${image}-py${python_version}-$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-py${python_version}-$(date -u +%Y-W%V)"
 
       - name: Restore vnstock cache
         uses: actions/cache@v4
@@ -384,9 +393,8 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
-          restore-keys: |
-            vnstock-stable-v4-
+            /home/runner/.local/bin/uv
+          key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
 
       - name: Verify venv
         run: |
