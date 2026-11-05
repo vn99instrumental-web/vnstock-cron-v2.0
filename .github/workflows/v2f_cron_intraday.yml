@@ -99,9 +99,10 @@ jobs:
         id: cache-suffix
         run: |
           image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
-          python_version="${{ steps.setup-python.outputs.python-version }}"
-          echo "suffix=${image}-py${python_version}-$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
-          echo "Cache suffix: ${image}-py${python_version}-$(date -u +%Y-W%V)"
+          week="$(date -u +%Y-W%V)"
+          echo "image=${image}" >> "$GITHUB_OUTPUT"
+          echo "suffix=${image}-${{ runner.arch }}-${week}" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-${{ runner.arch }}-${week}"
 
       - name: Restore vnstock cache
         id: cache-venv
@@ -112,6 +113,8 @@ jobs:
             /home/runner/.vnstock
             /home/runner/.local/bin/uv
           key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
+          restore-keys: |
+            vnstock-stable-v5-${{ steps.cache-suffix.outputs.image }}-py
 
       - name: Verify venv
         run: |
@@ -383,9 +386,10 @@ jobs:
         id: cache-suffix
         run: |
           image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
-          python_version="${{ steps.setup-python.outputs.python-version }}"
-          echo "suffix=${image}-py${python_version}-$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
-          echo "Cache suffix: ${image}-py${python_version}-$(date -u +%Y-W%V)"
+          week="$(date -u +%Y-W%V)"
+          echo "image=${image}" >> "$GITHUB_OUTPUT"
+          echo "suffix=${image}-${{ runner.arch }}-${week}" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-${{ runner.arch }}-${week}"
 
       - name: Restore vnstock cache
         uses: actions/cache@v4
@@ -395,6 +399,8 @@ jobs:
             /home/runner/.vnstock
             /home/runner/.local/bin/uv
           key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
+          restore-keys: |
+            vnstock-stable-v5-${{ steps.cache-suffix.outputs.image }}-py
 
       - name: Verify venv
         run: |

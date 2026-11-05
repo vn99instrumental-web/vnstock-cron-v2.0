@@ -259,3 +259,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - `scripts/verify_supabase_mirror.py` is read-only. Intraday checks the latest run after mirror sync; daily, weekly and manual sync also compare retained History signals and outcomes after retention. Audit failure is visible but non-blocking so GitHub remains authoritative and independent from Supabase availability.
 - Verification PASS: Python compile, parity smoke test, YAML parse for 13 workflows, `git diff --check`, full ledger dry-run, security review, production full-build run `41789223365`, and read-only production SQL/Git hash comparison. Largest History file after outcome enrichment is 7.36 MiB, below the 20 MiB serving guard.
 - The production full build published data commit `f7aa0df3`. The new parity step itself will first execute on the next intraday/daily/weekly/manual mirror workflow; no manual retention workflow was triggered during this verification.
+
+## VNStock workflow cache stability (2026-11-05)
+
+- Intraday runs alternated between success and cache miss while GitHub rolled out two Ubuntu 26.04 runner images. `actions/setup-python` resolved `3.11` to 3.11.17 on the old image and 3.11.18 on the new image.
+- The old cache key included that setup-Python patch even though the cached VNStock environment owns a different Python under `/opt/vnstock/.venv`. Runs on 3.11.18 therefore could not see the cache created with the 3.11.17 key.
+- Daily, intraday, and V4 backfill now key the VNStock cache by Ubuntu version, runner architecture, and ISO week. They can migrate the prior same-Ubuntu v5 Python-patch cache.
+- Daily rebuilds only when its explicit environment validation fails, so a valid migrated cache is not discarded merely because the primary key was a partial match.
+- Verification: both workflow YAML files parse, all three cache blocks use the stable key and migration prefix, `git diff --check` passes, and the workflow/security review found no new secret or permission exposure.
