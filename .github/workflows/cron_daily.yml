@@ -35,19 +35,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
           python-version: '3.11'
 
       # ──────────────────────────────────────────────────────────────────
       # CACHE STRATEGY — Layer 2 of "latest vnstock" guarantee:
-      # Cache key includes ISO week number → cache invalidates weekly.
-      # Restore-keys fallback uses any older v4 cache for warm-start.
+      # Cache key includes runner OS, Python patch version, and ISO week.
+      # This avoids restoring a virtualenv created for an incompatible runner image.
       # ──────────────────────────────────────────────────────────────────
       - name: Compute cache key suffix (weekly)
         id: cache-suffix
         run: |
-          echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
-          echo "Cache suffix: $(date -u +%Y-W%V)"
+          image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
+          python_version="${{ steps.setup-python.outputs.python-version }}"
+          echo "suffix=${image}-py${python_version}-$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-py${python_version}-$(date -u +%Y-W%V)"
 
       - name: Restore vnstock cache
         id: cache-venv
@@ -56,17 +59,31 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
-          restore-keys: |
-            vnstock-stable-v4-
+          key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
 
-      - name: Fallback install nếu cache miss
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+      - name: Validate cached vnstock environment
+        id: validate-venv
+        shell: bash
+        run: |
+          venv_python="$VNSTOCK_VENV_PATH/bin/python"
+          if [ -x "$venv_python" ] && "$venv_python" -c "import pandas"; then
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+            echo "Cached vnstock environment is healthy."
+          else
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            echo "Cached vnstock environment is missing or incompatible; it will be rebuilt."
+          fi
+
+      - name: Install vnstock environment if cache is missing or invalid
+        if: steps.cache-venv.outputs.cache-hit != 'true' || steps.validate-venv.outputs.valid != 'true'
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          pip install requests
+          if [ -d "$VNSTOCK_VENV_PATH" ]; then
+            rm -rf -- "$VNSTOCK_VENV_PATH"
+          fi
+          python -m pip install requests
           mkdir -p /home/runner/.vnstock
           wget -q https://vnstocks.com/files/vnstock-cli-installer.run \
             -O installer.run
@@ -78,14 +95,13 @@ jobs:
             --language en
           wget -q https://vnstocks.com/files/generate_user_info.min.py \
             -O generate_user_info.min.py
-          source /opt/vnstock/.venv/bin/activate
-          python3 generate_user_info.min.py \
+          "$VNSTOCK_VENV_PATH/bin/python" -c "import pandas"
+          "$VNSTOCK_VENV_PATH/bin/python" generate_user_info.min.py \
             --api-key "$VNSTOCK_API_KEY"
 
       - name: Install extra dependencies
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          pip install -q gspread google-auth
+          "$VNSTOCK_VENV_PATH/bin/python" -m pip install -q gspread google-auth
 
       # ──────────────────────────────────────────────────────────────────
       # UPGRADE STEP — Layer 1 of "latest vnstock" guarantee:
@@ -96,25 +112,25 @@ jobs:
       - name: Ensure latest vnstock packages
         run: |
           # Use venv's pip directly to avoid shell context issues
-          VENV_PIP="/opt/vnstock/.venv/bin/pip"
+          VENV_PYTHON="$VNSTOCK_VENV_PATH/bin/python"
 
-          if [ ! -x "$VENV_PIP" ]; then
-            echo "⚠️ Venv pip not found at $VENV_PIP — skipping upgrade"
-            exit 0
+          if [ ! -x "$VENV_PYTHON" ]; then
+            echo "❌ Venv Python not found at $VENV_PYTHON"
+            exit 1
           fi
 
           echo "=== Current versions (venv: /opt/vnstock/.venv) ==="
-          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
+          "$VENV_PYTHON" -m pip list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
           echo ""
 
           echo "=== Upgrading public 'vnstock' package only ==="
-          $VENV_PIP install --upgrade vnstock 2>&1 | tail -5 || \
+          "$VENV_PYTHON" -m pip install --upgrade vnstock 2>&1 | tail -5 || \
             echo "⚠️ vnstock upgrade failed (continuing)"
           echo ""
 
           echo "=== Sponsor packages (refresh on weekly cache miss) ==="
           for pkg in vnstock_data vnstock_news vnstock_ta; do
-            version=$($VENV_PIP show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
+            version=$("$VENV_PYTHON" -m pip show "$pkg" 2>/dev/null | grep -i "^Version:" | awk '{print $2}')
             if [ -n "$version" ]; then
               echo "  $pkg: $version"
             else
@@ -124,7 +140,7 @@ jobs:
           echo ""
 
           echo "=== Final versions ==="
-          $VENV_PIP list 2>&1 | grep -iE "vnstock|vnai" || true
+          "$VENV_PYTHON" -m pip list 2>&1 | grep -iE "vnstock|vnai" || true
 
       - name: Step Context — Market PE/PB + Industry Map
         env:
@@ -132,16 +148,14 @@ jobs:
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
           mkdir -p /home/runner/.config/matplotlib
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step3_context.py
+          "$VNSTOCK_VENV_PATH/bin/python" steps/step3_context.py
 
       - name: Step Finance Scan — Quarterly cache (TTL-based)
         env:
           VNSTOCK_API_KEY:   ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
-          source /opt/vnstock/.venv/bin/activate
-          python steps/step_finance_scan_vci.py
+          "$VNSTOCK_VENV_PATH/bin/python" steps/step_finance_scan_vci.py
 
       # ──────────────────────────────────────────────────────────────────
       # [DISABLED 2026-06-17] News crawl — tạm tắt để tối ưu thời gian run.
