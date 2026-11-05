@@ -59,6 +59,7 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
+            /home/runner/.local/bin/uv
           key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
 
       - name: Validate cached vnstock environment
@@ -100,8 +101,27 @@ jobs:
             --api-key "$VNSTOCK_API_KEY"
 
       - name: Install extra dependencies
+        shell: bash
         run: |
-          "$VNSTOCK_VENV_PATH/bin/python" -m pip install -q gspread google-auth
+          venv_python="$VNSTOCK_VENV_PATH/bin/python"
+          test -x "$venv_python"
+
+          if ! "$venv_python" -m pip --version >/dev/null 2>&1; then
+            uv_bin="$(command -v uv || true)"
+            if [ -z "$uv_bin" ] && [ -x "$HOME/.local/bin/uv" ]; then
+              uv_bin="$HOME/.local/bin/uv"
+            fi
+            if [ -z "$uv_bin" ]; then
+              echo "::error::VNStock venv has no pip and the installer-provided uv executable was not found."
+              exit 1
+            fi
+
+            echo "Bootstrapping pip into VNStock venv with $uv_bin"
+            "$uv_bin" pip install --python "$venv_python" pip
+          fi
+
+          "$venv_python" -m pip --version
+          "$venv_python" -m pip install -q gspread google-auth
 
       # ──────────────────────────────────────────────────────────────────
       # UPGRADE STEP — Layer 1 of "latest vnstock" guarantee:
@@ -118,6 +138,7 @@ jobs:
             echo "❌ Venv Python not found at $VENV_PYTHON"
             exit 1
           fi
+          "$VENV_PYTHON" -m pip --version
 
           echo "=== Current versions (venv: /opt/vnstock/.venv) ==="
           "$VENV_PYTHON" -m pip list 2>&1 | grep -iE "vnstock|vnai" || echo "(none found)"
