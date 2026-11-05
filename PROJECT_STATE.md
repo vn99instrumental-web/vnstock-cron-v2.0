@@ -264,6 +264,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 
 - Intraday runs alternated between success and cache miss while GitHub rolled out two Ubuntu 26.04 runner images. `actions/setup-python` resolved `3.11` to 3.11.17 on the old image and 3.11.18 on the new image.
 - The old cache key included that setup-Python patch even though the cached VNStock environment owns a different Python under `/opt/vnstock/.venv`. Runs on 3.11.18 therefore could not see the cache created with the 3.11.17 key.
-- Daily, intraday, and V4 backfill now key the VNStock cache by Ubuntu version, runner architecture, and ISO week. They can migrate the prior same-Ubuntu v5 Python-patch cache.
+- Daily, intraday, V4 backfill, and weekly now key the VNStock cache by Ubuntu version, runner architecture, and ISO week. They can migrate the prior same-Ubuntu v5 Python-patch cache.
+- Weekly run `41991776979` restored the legacy OS-agnostic v4 cache but its venv failed with exit 127 on Ubuntu 26. Weekly now consumes the same compatible v5 cache as daily and intraday.
 - Daily rebuilds only when its explicit environment validation fails, so a valid migrated cache is not discarded merely because the primary key was a partial match.
-- Verification: both workflow YAML files parse, all three cache blocks use the stable key and migration prefix, `git diff --check` passes, and the workflow/security review found no new secret or permission exposure.
+- Verification: all 13 workflow YAML files parse, the four production cache blocks use the stable key and migration prefix, `git diff --check` passes, and the workflow/security review found no new secret or permission exposure.

@@ -59,9 +59,14 @@ jobs:
           python-version: '3.11'
 
       # -- Restore vnstock venv (dung chung cache voi production) --
-      - name: Compute cache key
+      - name: Compute cache key suffix (weekly)
         id: cache-suffix
-        run: echo "week=$(date -u +%Y-W%V)" >> $GITHUB_OUTPUT
+        run: |
+          image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
+          week="$(date -u +%Y-W%V)"
+          echo "image=${image}" >> "$GITHUB_OUTPUT"
+          echo "suffix=${image}-${{ runner.arch }}-${week}" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-${{ runner.arch }}-${week}"
 
       - name: Restore vnstock cache
         id: cache-venv
@@ -70,9 +75,10 @@ jobs:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4-${{ steps.cache-suffix.outputs.week }}
+            /home/runner/.local/bin/uv
+          key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
           restore-keys: |
-            vnstock-stable-v4-
+            vnstock-stable-v5-${{ steps.cache-suffix.outputs.image }}-py
 
       - name: Verify venv + dependencies
         run: |
