@@ -40,22 +40,34 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Compute cache key suffix (weekly)
+        id: cache-suffix
+        shell: bash
+        run: |
+          image="$(. /etc/os-release && echo "${ID}-${VERSION_ID}")"
+          week="$(date -u +%Y-W%V)"
+          echo "image=${image}" >> "$GITHUB_OUTPUT"
+          echo "suffix=${image}-${{ runner.arch }}-${week}" >> "$GITHUB_OUTPUT"
+          echo "Cache suffix: ${image}-${{ runner.arch }}-${week}"
+
       - name: Restore vnstock cache
         uses: actions/cache@v4
         with:
           path: |
             /opt/vnstock/.venv
             /home/runner/.vnstock
-          key: vnstock-stable-v4-${{ github.run_number }}
+            /home/runner/.local/bin/uv
+          key: vnstock-stable-v5-${{ steps.cache-suffix.outputs.suffix }}
           restore-keys: |
-            vnstock-stable-v4-
+            vnstock-stable-v5-${{ steps.cache-suffix.outputs.image }}-py
 
       - name: Select Python runtime
         id: python
         shell: bash
         run: |
-          if [ -x /opt/vnstock/.venv/bin/python ]; then
-            echo "python=/opt/vnstock/.venv/bin/python" >> "$GITHUB_OUTPUT"
+          venv_python="/opt/vnstock/.venv/bin/python"
+          if [ -x "$venv_python" ] && "$venv_python" -c "import vnstock_data, pandas, requests, numpy"; then
+            echo "python=$venv_python" >> "$GITHUB_OUTPUT"
           else
             python3 -m pip install --quiet vnstock_data pandas requests numpy
             echo "python=python3" >> "$GITHUB_OUTPUT"
