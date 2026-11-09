@@ -117,7 +117,7 @@ export default async function Vnstock6Page() {
       <div className="grid gap-3 lg:grid-cols-2">
         <ProbePanel
           title="Pipeline hiện tại"
-          badge="Môi trường production"
+          badge="Snapshot production"
           source={current.source}
           packageName={current.package}
           packageVersion={current.package_version}
@@ -128,7 +128,7 @@ export default async function Vnstock6Page() {
         />
         <ProbePanel
           title="Thế hệ 6 preview"
-          badge="Môi trường thử nghiệm"
+          badge="API live preview"
           source={preview.source}
           packageName={preview.package}
           packageVersion={preview.package_version}

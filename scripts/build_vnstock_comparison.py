@@ -67,6 +67,7 @@ def main() -> None:
         },
         "notes": [
             "Hai job chạy song song trong môi trường Python tách biệt.",
+            "Phía hiện tại đọc snapshot VCI do production tạo; phía Gen 6 gọi SSI Open API live.",
             "Đây là đối chiếu danh mục mã tham chiếu; không so sánh hay thay đổi scoring production.",
             "Nguồn hiện tại là VCI, bản Gen 6 preview dùng SSI Open API nên chênh lệch không chỉ do phiên bản thư viện.",
         ],
