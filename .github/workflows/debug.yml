@@ -7,9 +7,15 @@ on:
         description: 'Script to run. Để trống = chạy tất cả trong scripts/'
         required: false
         default: ''
+      vnstock6_preview:
+        description: 'Cài và kiểm tra vnstock 6 preview với Open API SSI'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   run:
+    if: ${{ inputs.vnstock6_preview != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -130,3 +136,92 @@ jobs:
             python "$f" || echo "⚠️  $f exited with error"
             echo ""
           done
+
+  vnstock6-preview:
+    name: Vnstock 6 preview (SSI)
+    if: ${{ inputs.vnstock6_preview == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+
+    env:
+      HOME: /home/runner
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check Python and existing vnstock 6 environment
+        id: vnstock6-env
+        shell: bash
+        run: |
+          python3 --version
+          if [ -x ~/.venv_6x/bin/python ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            ~/.venv_6x/bin/python -m pip show vnstock vnstock-oapi vnstock_data vnai || true
+            ~/.venv_6x/bin/python - <<'PY'
+          from importlib.metadata import PackageNotFoundError, version
+
+          for package in ("vnstock_data", "vnai"):
+              try:
+                  installed = version(package)
+              except PackageNotFoundError:
+                  continue
+              raise SystemExit(
+                  f"Refusing to reuse ~/.venv_6x: {package} {installed} belongs to an older generation"
+              )
+
+          try:
+              installed = version("vnstock")
+          except PackageNotFoundError:
+              pass
+          else:
+              if not installed.startswith("6."):
+                  raise SystemExit(
+                      f"Refusing to reuse ~/.venv_6x: vnstock {installed} is not generation 6"
+                  )
+          PY
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create vnstock 6 environment
+        if: steps.vnstock6-env.outputs.exists != 'true'
+        run: python3 -m venv ~/.venv_6x
+
+      - name: Install vnstock 6 preview
+        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0rc4" "vnstock-oapi==0.1.0rc3"
+
+      - name: Verify account and SSI source configuration
+        shell: bash
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          SSI_API_KEY:     ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET:  ${{ secrets.SSI_API_SECRET }}
+        run: |
+          test -n "$SSI_API_KEY" || { echo "Missing GitHub Secret: SSI_API_KEY"; exit 1; }
+          test -n "$SSI_API_SECRET" || { echo "Missing GitHub Secret: SSI_API_SECRET"; exit 1; }
+          ~/.venv_6x/bin/vnstock version
+          ~/.venv_6x/bin/python -c "import vnstock; assert vnstock.__version__ == '6.0.0rc4', vnstock.__version__; print(vnstock.__version__)"
+          ~/.venv_6x/bin/vnstock status
+          ~/.venv_6x/bin/vnstock keys
+          ~/.venv_6x/bin/vnstock keys check ssi
+          ~/.venv_6x/bin/vnstock doctor
+          ~/.venv_6x/bin/vnstock onboard
+
+      - name: Smoke test SSI read-only access
+        env:
+          SSI_API_KEY:    ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+        run: |
+          ~/.venv_6x/bin/python - <<'PY'
+          from vnstock import Reference
+
+          frame = Reference("ssi").equity.list()
+          print(f"SSI equity reference rows: {len(frame)}")
+          PY
