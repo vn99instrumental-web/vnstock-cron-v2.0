@@ -11,11 +11,6 @@ jobs:
     name: Current generation (VCI)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      HOME: /home/runner
-      VNSTOCK_INTERACTIVE: "0"
-      VNSTOCK_LANGUAGE: en
-      VNSTOCK_VENV_PATH: /opt/vnstock/.venv
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,7 +35,7 @@ jobs:
         run: |
           test -d /opt/vnstock/.venv/lib/python3.11/site-packages
           test -s output/market/industry_map.json
-          python3 scripts/probe_vnstock_current.py \
+          python3 -u scripts/probe_vnstock_current.py \
             --input output/market/industry_map.json \
             --metadata-root /opt/vnstock/.venv/lib/python3.11/site-packages \
             --output comparison/current.json
