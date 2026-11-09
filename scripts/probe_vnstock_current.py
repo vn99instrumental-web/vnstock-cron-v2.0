@@ -5,21 +5,23 @@ from __future__ import annotations
 import argparse
 import json
 from datetime import datetime, timezone
-from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
 
-def package_version(name: str) -> str:
-    try:
-        return version(name)
-    except PackageNotFoundError:
-        return "unknown"
+def package_version(metadata_root: Path, name: str) -> str:
+    normalized = name.replace("-", "_")
+    for metadata in metadata_root.glob(f"{normalized}-*.dist-info/METADATA"):
+        for line in metadata.read_text(encoding="utf-8", errors="replace").splitlines():
+            if line.startswith("Version: "):
+                return line.removeprefix("Version: ").strip()
+    return "unknown"
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
+    parser.add_argument("--metadata-root", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
@@ -37,7 +39,7 @@ def main() -> None:
         "source": "VCI",
         "data_origin": "production-snapshot",
         "package": "vnstock_data",
-        "package_version": package_version("vnstock_data"),
+        "package_version": package_version(Path(args.metadata_root), "vnstock_data"),
         "observed_at": datetime.now(timezone.utc).isoformat(),
         "reference": {
             "rows": len(rows),
