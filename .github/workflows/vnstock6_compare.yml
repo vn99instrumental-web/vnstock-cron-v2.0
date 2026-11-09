@@ -6,10 +6,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: vnstock-main-writer
-  cancel-in-progress: false
-
 jobs:
   current:
     name: Current generation (VCI)
@@ -108,6 +104,9 @@ jobs:
     needs: [current, preview]
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: vnstock-main-writer
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
