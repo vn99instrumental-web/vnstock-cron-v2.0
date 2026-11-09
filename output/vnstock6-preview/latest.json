@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-09T02:41:55.615830+00:00",
+  "generated_at": "2026-11-09T06:49:38.384395+00:00",
   "run": {
-    "id": "42552143294",
-    "url": "https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/42552143294",
+    "id": "42575241241",
+    "url": "https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/42575241241",
     "status": "success"
   },
   "current": {
@@ -14,7 +14,7 @@
     "data_origin": "production-snapshot",
     "package": "vnstock_data",
     "package_version": "3.3.1",
-    "observed_at": "2026-11-09T02:40:32.176Z",
+    "observed_at": "2026-11-09T06:48:34.490Z",
     "reference": {
       "rows": 3730,
       "unique_symbols": 3730,
@@ -41,7 +41,7 @@
     "package": "vnstock",
     "package_version": "6.0.0rc4",
     "oapi_version": "0.1.0rc3",
-    "observed_at": "2026-11-09T02:40:43.161161+00:00",
+    "observed_at": "2026-11-09T06:48:46.519018+00:00",
     "reference": {
       "rows": 1517,
       "unique_symbols": 1517,
@@ -87,9 +87,9 @@
     "only_preview_sample": []
   },
   "notes": [
-    "Hai job chạy song song trong môi trường Python tách biệt.",
-    "Phía hiện tại đọc snapshot VCI do production tạo; phía Gen 6 gọi SSI Open API live.",
-    "Đây là đối chiếu danh mục mã tham chiếu; không so sánh hay thay đổi scoring production.",
-    "Nguồn hiện tại là VCI, bản Gen 6 preview dùng SSI Open API nên chênh lệch không chỉ do phiên bản thư viện."
+    "The current and generation-6 probes run in separate Python environments.",
+    "The current side reads the production VCI snapshot; generation 6 calls SSI Open API live.",
+    "This snapshot compares reference universes and does not claim native generation-6 scoring.",
+    "Source differences can contribute to differences observed between the two generations."
   ]
 }
