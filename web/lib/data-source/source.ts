@@ -1,11 +1,11 @@
 import { cookies } from "next/headers";
 
-export type DashboardDataSource = "supabase" | "github";
+export type DashboardDataSource = "supabase" | "github" | "vnstock6";
 
 export const DATA_SOURCE_COOKIE = "dashboard_data_source";
 
 export function parseDashboardDataSource(value: unknown): DashboardDataSource | null {
-  return value === "supabase" || value === "github" ? value : null;
+  return value === "supabase" || value === "github" || value === "vnstock6" ? value : null;
 }
 
 export function defaultDashboardDataSource(): DashboardDataSource {

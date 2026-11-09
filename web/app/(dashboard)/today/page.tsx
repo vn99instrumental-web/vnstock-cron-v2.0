@@ -5,7 +5,7 @@ import { getLatestVersionRuns } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { dateTimeVN, hmVN } from "@/lib/format";
 import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
-import { githubServing } from "@/lib/data-source/github-serving";
+import { servingForSource } from "@/lib/data-source/vnstock6-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
@@ -40,9 +40,9 @@ export default async function TodayPage() {
   const signalResponses = await Promise.all(TODAY_COMPARE_VERSIONS.map(async (version) => {
     const signalDate = versionDates[version];
     if (!signalDate) return { version, data: [] as TodaySignal[], error: null };
-    if (metadata.source === "github") {
+    if (metadata.source !== "supabase") {
       try {
-        const snapshot = await githubServing.today(version);
+        const snapshot = await servingForSource(metadata.source).today(version);
         return { version, data: snapshot.signals as unknown as TodaySignal[], error: null };
       } catch (error) {
         return { version, data: [] as TodaySignal[], error };
@@ -89,7 +89,7 @@ export default async function TodayPage() {
   const priceStats: Record<string, TodayPriceStat> = {};
   const symbolsByDate = new Map<string, string[]>();
   for (const [symbol, latest] of latestPrices) {
-    priceStats[symbol] = { price: latest.price, changePct: metadata.source === "github" ? latest.changePct : null };
+    priceStats[symbol] = { price: latest.price, changePct: metadata.source !== "supabase" ? latest.changePct : null };
     const symbols = symbolsByDate.get(latest.signalDate) ?? [];
     symbols.push(symbol);
     symbolsByDate.set(latest.signalDate, symbols);
@@ -107,7 +107,7 @@ export default async function TodayPage() {
     }
     return batches;
   });
-  const priceResponses = metadata.source === "github" ? [] : await Promise.all(priceQueries.map(async (batch) => {
+  const priceResponses = metadata.source !== "supabase" ? [] : await Promise.all(priceQueries.map(async (batch) => {
     const response = await baseClient.from("v4_ohlc").select("symbol, date, close")
       .in("symbol", batch.symbols).lt("date", batch.signalDate).gte("date", batch.since)
       .order("date", { ascending: false });
@@ -130,7 +130,7 @@ export default async function TodayPage() {
       }
     }
   }
-  const { data: ohlc } = metadata.source === "github"
+  const { data: ohlc } = metadata.source !== "supabase"
     ? { data: null }
     : await baseClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle();
   const ohlcRow = ohlc as { date?: string; synced_at?: string } | null;

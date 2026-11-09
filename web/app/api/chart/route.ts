@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { githubServing } from "@/lib/data-source/github-serving";
+import { servingForSource } from "@/lib/data-source/vnstock6-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 import { createClient } from "@/lib/supabase/server";
 import { isReviewVersion } from "@/lib/scoring-versions";
@@ -34,8 +34,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    if (await getDashboardDataSource() === "github") {
-      return NextResponse.json(await githubServing.chart(version, symbol));
+    const source = await getDashboardDataSource();
+    if (source !== "supabase") {
+      return NextResponse.json(await servingForSource(source).chart(version, symbol));
     }
     return NextResponse.json(await loadSupabase(version, symbol));
   } catch {

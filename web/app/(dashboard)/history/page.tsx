@@ -5,7 +5,7 @@ import { HistoryFilters } from "@/components/history-filters";
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyName } from "@/lib/company-names";
-import { githubServing } from "@/lib/data-source/github-serving";
+import { servingForSource } from "@/lib/data-source/vnstock6-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
@@ -26,9 +26,9 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
   let baseRows: SignalRow[] = [];
   let total = 0;
   let error: unknown = null;
-  if (metadata.source === "github") {
+  if (metadata.source !== "supabase") {
     try {
-      const snapshot = await githubServing.history(currentVersion);
+      const snapshot = await servingForSource(metadata.source).history(currentVersion);
       let filtered = snapshot.rows as unknown as SignalRow[];
       if (sp.date) filtered = filtered.filter((row) => row.signal_date === sp.date);
       if (sp.symbol) filtered = filtered.filter((row) => row.symbol === sp.symbol!.toUpperCase().trim());
@@ -37,7 +37,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
       baseRows = filtered.slice(from, from + PAGE_SIZE);
     } catch (githubError) { error = githubError; }
   }
-  if (metadata.source !== "github") {
+  if (metadata.source === "supabase") {
     let query = supabase.from("v4_signals")
       .select("id, symbol, decision, score_trade, regime, signal_date, snap_time, scoring_version, breakdown", { count: "exact" })
       .eq("scoring_version", currentVersion).order("signal_date", { ascending: false })
@@ -51,7 +51,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
     error = response.error;
   }
   const predIds = baseRows.map((row) => String((row.breakdown ?? {}).pred_id ?? "")).filter(Boolean);
-  const outcomesResponse = metadata.source === "github"
+  const outcomesResponse = metadata.source !== "supabase"
     ? { data: [], error: null }
     : predIds.length
     ? await supabase.from("v4_outcomes").select("pred_id, ret_3d, ret_5d, ret_10d, mfe_pct, mae_pct")

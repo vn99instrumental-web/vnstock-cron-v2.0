@@ -118,13 +118,19 @@ jobs:
             --current comparison/current/current.json \
             --preview comparison/preview/preview.json \
             --output output/vnstock6-preview/latest.json \
+            --dashboard-output output/vnstock6-preview/dashboard.json \
             --run-id "${{ github.run_id }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      - name: Publish only the comparison snapshot
+      - name: Validate generation 6 dashboard contract
+        run: |
+          python scripts/validate_vnstock6_dashboard.py \
+            --manifest output/vnstock6-preview/dashboard.json \
+            --serving-root output/serving/current
+      - name: Publish generation 6 snapshots
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- output/vnstock6-preview/latest.json
+          git add -- output/vnstock6-preview/latest.json output/vnstock6-preview/dashboard.json
           git diff --cached --quiet && exit 0
           git commit -m "data: publish vnstock generation comparison"
           for attempt in 1 2 3 4 5; do

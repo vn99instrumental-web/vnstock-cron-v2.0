@@ -4,7 +4,7 @@ import { AnalysisBoard, type SignalResult, type FactorCorr, type FactorPair, typ
 import { getLatestVersionRuns, resolveReviewVersion } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { ScoringVersionSelect } from "@/components/scoring-version-select";
-import { githubServing } from "@/lib/data-source/github-serving";
+import { servingForSource } from "@/lib/data-source/vnstock6-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 
 export const dynamic = "force-dynamic";
@@ -23,9 +23,9 @@ export default async function PhanTichPage({ searchParams }: Props) {
   const versionDates = Object.fromEntries(Object.entries(metadata.versionDates).filter(([, value]) => !!value)) as Record<string, string>;
   const symbol = String(params.symbol ?? "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
   const dataClient = createCachedPublicClient("analysis", currentVersion);
-  const coverageResponse = metadata.source === "github"
+  const coverageResponse = metadata.source !== "supabase"
     ? {
-        data: Object.entries((await githubServing.metadata()).coverage ?? {}).map(([scoring_version, value]) => ({
+        data: Object.entries((await servingForSource(metadata.source).metadata()).coverage ?? {}).map(([scoring_version, value]) => ({
           scoring_version,
           signal_date_min: value.min,
           signal_date_max: value.max,
@@ -46,9 +46,9 @@ export default async function PhanTichPage({ searchParams }: Props) {
   let split: FactorCorrSplit[] = [];
   let hasError: unknown = null;
   let hasOptionalError: unknown = null;
-  if (metadata.source === "github") {
+  if (metadata.source !== "supabase") {
     try {
-      const snapshot = await githubServing.analysis(currentVersion);
+      const snapshot = await servingForSource(metadata.source).analysis(currentVersion);
       let selected = snapshot.results as unknown as SignalResult[];
       if (symbol) selected = selected.filter((row) => row.symbol === symbol);
       if (useCommonWindow) selected = selected.filter((row) => row.signal_date >= commonStart! && row.signal_date <= commonEnd!);
@@ -58,7 +58,7 @@ export default async function PhanTichPage({ searchParams }: Props) {
       split = snapshot.split as unknown as FactorCorrSplit[];
     } catch (githubError) { hasError = githubError; }
   }
-  if (metadata.source !== "github" || hasError) {
+  if (metadata.source === "supabase" || hasError) {
     const resultLimit = symbol ? SUPABASE_PAGE_SIZE : INITIAL_LIMIT;
     const resultQueries = Array.from({ length: Math.ceil(resultLimit / SUPABASE_PAGE_SIZE) }, (_, page) => {
       const from = page * SUPABASE_PAGE_SIZE;

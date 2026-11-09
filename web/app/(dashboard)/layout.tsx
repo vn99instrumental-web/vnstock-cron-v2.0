@@ -5,6 +5,7 @@ import { VersionBadge } from "@/components/version-badge";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DataSourceToggle } from "@/components/data-source-toggle";
+import { Vnstock6SourceNotice } from "@/components/vnstock6-source-notice";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 import { getUser, isOwner } from "@/lib/supabase/server";
 
@@ -55,7 +56,10 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-2 pb-24 md:px-5 md:py-2 md:pb-5">{children}</main>
+      <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-2 pb-24 md:px-5 md:py-2 md:pb-5">
+        {dataSource === "vnstock6" ? <Vnstock6SourceNotice /> : null}
+        {children}
+      </main>
       <MobileNav isOwner={owner} />
     </div>
   );

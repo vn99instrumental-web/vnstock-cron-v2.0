@@ -1,5 +1,5 @@
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
-import { githubServing } from "@/lib/data-source/github-serving";
+import { servingForSource } from "@/lib/data-source/vnstock6-serving";
 import type { DashboardDataSource } from "@/lib/data-source/source";
 import {
   DEFAULT_SCORING_VERSION,
@@ -23,9 +23,9 @@ export async function getLatestVersionRuns(
   scope = "version-metadata",
   source: DashboardDataSource = "supabase",
 ) {
-  if (source === "github") {
+  if (source !== "supabase") {
     try {
-      const metadata = await githubServing.metadata();
+      const metadata = await servingForSource(source).metadata();
       const runs = Object.values(metadata.runs)
         .filter((run) => isReviewVersion(run.scoring_version))
         .map((run) => ({ ...run, scoring_version: run.scoring_version as ReviewVersion }));
@@ -35,14 +35,14 @@ export async function getLatestVersionRuns(
         byVersion[run.scoring_version] = run;
         versionDates[run.scoring_version] = String(run.run_id).split("_")[0];
       }
-      return { runs, byVersion, versionDates, error: null, source: "github" as const };
+      return { runs, byVersion, versionDates, error: null, source };
     } catch (error) {
       return {
         runs: [],
         byVersion: {} as Partial<Record<ReviewVersion, LatestVersionRun>>,
         versionDates: {} as Partial<Record<ReviewVersion, string>>,
         error,
-        source: "github" as const,
+        source,
       };
     }
   }

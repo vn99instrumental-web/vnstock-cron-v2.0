@@ -1,5 +1,6 @@
 import { EmptyState, InsightStrip, PageHeader, QueryErrorState } from "@/components/ui";
 import { getVnstock6Comparison } from "@/lib/vnstock6-comparison";
+import { getVnstock6DashboardManifest } from "@/lib/data-source/vnstock6-serving";
 
 function integer(value: number) {
   return new Intl.NumberFormat("vi-VN").format(value);
@@ -73,8 +74,12 @@ function ProbePanel({
 
 export default async function Vnstock6Page() {
   let data;
+  let dashboard;
   try {
-    data = await getVnstock6Comparison();
+    [data, dashboard] = await Promise.all([
+      getVnstock6Comparison(),
+      getVnstock6DashboardManifest(),
+    ]);
   } catch (error) {
     const missing = error instanceof Error && error.message.includes("HTTP 404");
     return (
@@ -139,6 +144,31 @@ export default async function Vnstock6Page() {
           fptPresent={preview.reference.fpt_present}
         />
       </div>
+
+      <section className="card p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Dashboard serving</p>
+            <h2 className="mt-1 text-sm font-bold">Flow Thế hệ 6</h2>
+          </div>
+          <span className="rounded-full border border-amber-500/40 bg-amber-500/5 px-2.5 py-1 text-[11px] font-semibold">
+            {dashboard.mode === "bridge" ? "Bridge có kiểm soát" : "Native độc lập"}
+          </span>
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          {dashboard.flow.stages.map((stage) => (
+            <div key={stage.name} className="rounded-lg border border-[var(--color-border)] px-3 py-2">
+              <p className="font-mono text-[11px] font-semibold">{stage.name}</p>
+              <p className="mt-1 text-[11px] text-[var(--color-muted)]">
+                {stage.status} · {stage.mode}
+              </p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+          Tất cả tab hiện đọc cùng contract. Ở chế độ bridge, signals/scoring vẫn từ GitHub production và chỉ được lọc theo {integer(dashboard.symbols.length)} mã SSI; market ingest và scoring Gen 6 native chưa được đánh dấu hoàn tất.
+        </p>
+      </section>
 
       <section className="card p-4 sm:p-5">
         <h2 className="text-sm font-bold">Sai khác mẫu</h2>

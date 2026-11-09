@@ -1,7 +1,7 @@
 import type { BuySignal, ExpectancyRow, RobustnessRow } from "@/components/buy-board";
 import { getCompanyName } from "@/lib/company-names";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
-import { githubServing } from "./github-serving";
+import { servingForSource } from "./vnstock6-serving";
 import type { DashboardDataSource } from "./source";
 
 export interface BuyPageData {
@@ -55,8 +55,8 @@ async function loadSupabase(version: string): Promise<BuyPageData> {
   return { latestBuy, newestRun: newest.data, signals, runRow: runResponse.data, expectancy: (exp.data ?? []) as ExpectancyRow[], robustness: (robust.data ?? []) as RobustnessRow[], industryIC };
 }
 
-async function loadGitHub(version: string): Promise<BuyPageData> {
-  const data = await githubServing.buy(version);
+async function loadServing(version: string, source: Exclude<DashboardDataSource, "supabase">): Promise<BuyPageData> {
+  const data = await servingForSource(source).buy(version);
   return {
     latestBuy: data.latestBuy as BuyPageData["latestBuy"], newestRun: data.newestRun as BuyPageData["newestRun"],
     signals: (data.signals as unknown as BuySignal[]).map((row) => ({ ...row, companyName: getCompanyName(row.symbol) })),
@@ -66,5 +66,5 @@ async function loadGitHub(version: string): Promise<BuyPageData> {
 }
 
 export async function getBuyPageData(version: string, source: DashboardDataSource): Promise<BuyPageData> {
-  return source === "github" ? loadGitHub(version) : loadSupabase(version);
+  return source === "supabase" ? loadSupabase(version) : loadServing(version, source);
 }

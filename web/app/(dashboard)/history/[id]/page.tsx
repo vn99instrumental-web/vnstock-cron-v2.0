@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fmtNum, fmtPct, signClass, snapHM } from "@/lib/format";
 import { fetchGitHubLedgerText, parseJsonLines } from "@/lib/data-source/github-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
+import { getVnstock6DashboardManifest } from "@/lib/data-source/vnstock6-serving";
 import { REVIEW_VERSIONS } from "@/lib/scoring-versions";
 
 
@@ -81,9 +82,13 @@ export default async function SignalDetailPage({
   const source = await getDashboardDataSource();
   const supabase = await createClient();
   let sig: DetailRow | null = null;
-  if (source === "github") {
+  if (source !== "supabase") {
     const predId = id;
-    const prediction = await findGitHubSignal(predId);
+    let prediction = await findGitHubSignal(predId);
+    if (prediction && source === "vnstock6") {
+      const manifest = await getVnstock6DashboardManifest();
+      if (!manifest.symbols.includes(String(prediction.symbol).toUpperCase())) prediction = null;
+    }
     if (prediction) sig = {
       id: predId,
       symbol: prediction.symbol,
@@ -108,7 +113,7 @@ export default async function SignalDetailPage({
 
   // Outcome (nếu đã chín): match theo symbol + signal_date + snap_time(text từ breakdown).
   let outcome: DetailRow | null = null;
-  if (source === "github") {
+  if (source !== "supabase") {
     outcome = await findGitHubOutcome(String(sig.id), String(sig.scoring_version), String(sig.signal_date));
   } else {
     const response = await supabase

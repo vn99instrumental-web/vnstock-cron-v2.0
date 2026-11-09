@@ -2,6 +2,7 @@ import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { DEFAULT_SCORING_VERSION, REVIEW_VERSIONS } from "@/lib/scoring-versions";
 import type { DashboardDataSource } from "@/lib/data-source/source";
 import { fetchGitHubServing } from "@/lib/data-source/github-serving";
+import { getVnstock6DashboardManifest } from "@/lib/data-source/vnstock6-serving";
 
 export interface ICMetricRow {
   config_version: string;
@@ -151,14 +152,20 @@ function isGitHubSnapshot(value: unknown): value is ICDashboardSnapshot {
     && typeof candidate.industry_errors === "object";
 }
 
-async function loadGitHubIC(): Promise<ICDashboardSnapshot> {
+async function loadServingIC(source: Exclude<DashboardDataSource, "supabase">): Promise<ICDashboardSnapshot> {
+  if (source === "vnstock6") {
+    const manifest = await getVnstock6DashboardManifest();
+    if (manifest.mode !== "bridge" || manifest.capabilities.ic !== "bridge") {
+      throw new Error("VNStock 6 IC serving is not available");
+    }
+  }
   const snapshot: unknown = await fetchGitHubServing("ic.json");
   if (!isGitHubSnapshot(snapshot)) throw new Error("GitHub IC snapshot has an unsupported schema");
-  return { ...snapshot, source: "github" };
+  return { ...snapshot, source };
 }
 /** Load exactly the selected source so GitHub and Supabase remain comparable. */
 export async function getICDashboardSnapshot(
   source: DashboardDataSource = "github",
 ): Promise<ICDashboardSnapshot> {
-  return source === "github" ? loadGitHubIC() : loadSupabaseIC();
+  return source === "supabase" ? loadSupabaseIC() : loadServingIC(source);
 }
