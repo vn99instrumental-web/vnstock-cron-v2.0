@@ -41,7 +41,12 @@ jobs:
           echo "Current-generation cache is unavailable; refusing to reinstall or alter production." >&2
           exit 1
       - name: Probe VCI reference data (read-only)
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
         run: |
+          test -n "$VNSTOCK_API_KEY" || { echo "Missing GitHub Secret: VNSTOCK_API_KEY"; exit 1; }
+          test -n "$VNSTOCK_DEVICE_ID" || { echo "Missing GitHub Secret: VNSTOCK_DEVICE_ID"; exit 1; }
           test -x /opt/vnstock/.venv/bin/python
           /opt/vnstock/.venv/bin/python scripts/probe_vnstock_current.py --output comparison/current.json
       - uses: actions/upload-artifact@v4
