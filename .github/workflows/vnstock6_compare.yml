@@ -30,11 +30,11 @@ jobs:
           exit 1
       - name: Probe current VCI production snapshot (read-only)
         run: |
-          test -d /opt/vnstock/.venv/lib/python3.11/site-packages
           test -s output/market/industry_map.json
+          SITE_PACKAGES=$(find /opt/vnstock/.venv -type d -name site-packages -print -quit)
           node scripts/probe_vnstock_current.mjs \
             --input output/market/industry_map.json \
-            --metadata-root /opt/vnstock/.venv/lib/python3.11/site-packages \
+            --metadata-root "${SITE_PACKAGES:-/opt/vnstock/.venv}" \
             --output comparison/current.json
       - uses: actions/upload-artifact@v4
         with:
