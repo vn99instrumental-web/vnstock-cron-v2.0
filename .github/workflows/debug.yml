@@ -201,13 +201,17 @@ jobs:
         shell: bash
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
           SSI_API_KEY:     ${{ secrets.SSI_API_KEY }}
           SSI_API_SECRET:  ${{ secrets.SSI_API_SECRET }}
         run: |
+          test -n "$VNSTOCK_API_KEY" || { echo "Missing GitHub Secret: VNSTOCK_API_KEY"; exit 1; }
+          test -n "$VNSTOCK_DEVICE_ID" || { echo "Missing GitHub Secret: VNSTOCK_DEVICE_ID"; exit 1; }
           test -n "$SSI_API_KEY" || { echo "Missing GitHub Secret: SSI_API_KEY"; exit 1; }
           test -n "$SSI_API_SECRET" || { echo "Missing GitHub Secret: SSI_API_SECRET"; exit 1; }
           ~/.venv_6x/bin/vnstock version
           ~/.venv_6x/bin/python -c "import vnstock; assert vnstock.__version__ == '6.0.0rc4', vnstock.__version__; print(vnstock.__version__)"
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
           ~/.venv_6x/bin/vnstock status
           ~/.venv_6x/bin/vnstock keys
           ~/.venv_6x/bin/vnstock keys check ssi
