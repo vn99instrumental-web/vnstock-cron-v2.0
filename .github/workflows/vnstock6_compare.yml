@@ -13,9 +13,6 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
       - name: Restore current-generation environment
         id: stable-cache
         uses: actions/cache/restore@v4
@@ -35,7 +32,7 @@ jobs:
         run: |
           test -d /opt/vnstock/.venv/lib/python3.11/site-packages
           test -s output/market/industry_map.json
-          python3 -u scripts/probe_vnstock_current.py \
+          node scripts/probe_vnstock_current.mjs \
             --input output/market/industry_map.json \
             --metadata-root /opt/vnstock/.venv/lib/python3.11/site-packages \
             --output comparison/current.json
@@ -59,14 +56,10 @@ jobs:
           python-version: "3.11"
       - name: Restore generation 6 environment
         id: preview-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
-          path: |
-            /home/runner/.venv_6x
-            /home/runner/.vnstock
-          key: vnstock-gen6-rc4-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: |
-            vnstock-gen6-rc4-${{ runner.os }}-
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-rc4-${{ runner.os }}-python311
       - name: Create vnstock 6 environment
         if: steps.preview-cache.outputs.cache-hit != 'true'
         run: python3 -m venv ~/.venv_6x
