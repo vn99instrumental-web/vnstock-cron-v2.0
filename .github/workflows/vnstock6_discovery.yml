@@ -1,0 +1,53 @@
+name: VNStock 6 capability discovery
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore generation 6 environment
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-rc4-${{ runner.os }}-python311
+      - name: Create generation 6 environment
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python3 -m venv ~/.venv_6x
+      - name: Install pinned generation 6
+        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0rc4" "vnstock-oapi==0.1.0rc3"
+      - name: Discover documented SSI capabilities
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+        run: |
+          test -n "$VNSTOCK_API_KEY"
+          test -n "$SSI_API_KEY"
+          test -n "$SSI_API_SECRET"
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/vnstock onboard --json
+          ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('migration-assistant', component='reference:gen5-to-gen6.md'))"
+          ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('solution-architect'))"
+          ~/.venv_6x/bin/vnstock doc Market.equity.ohlcv
+          ~/.venv_6x/bin/python scripts/probe_vnstock6_capabilities.py --output comparison/capabilities.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vnstock6-capabilities
+          path: comparison/capabilities.json
+          if-no-files-found: error
+          retention-days: 7
