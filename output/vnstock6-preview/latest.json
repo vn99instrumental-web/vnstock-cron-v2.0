@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-09T02:41:55.615830+00:00",
+  "run": {
+    "id": "42552143294",
+    "url": "https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/42552143294",
+    "status": "success"
+  },
+  "current": {
+    "schema_version": 1,
+    "status": "ok",
+    "generation": "current",
+    "source": "VCI",
+    "data_origin": "production-snapshot",
+    "package": "vnstock_data",
+    "package_version": "3.3.1",
+    "observed_at": "2026-11-09T02:40:32.176Z",
+    "reference": {
+      "rows": 3730,
+      "unique_symbols": 3730,
+      "exchanges": [
+        "HSX"
+      ],
+      "columns": [
+        "exchange",
+        "icb_code",
+        "icb_name",
+        "organ_name",
+        "organ_short_name",
+        "symbol",
+        "type"
+      ],
+      "fpt_present": true
+    }
+  },
+  "preview": {
+    "schema_version": 1,
+    "status": "ok",
+    "generation": "6-preview",
+    "source": "SSI",
+    "package": "vnstock",
+    "package_version": "6.0.0rc4",
+    "oapi_version": "0.1.0rc3",
+    "observed_at": "2026-11-09T02:40:43.161161+00:00",
+    "reference": {
+      "rows": 1517,
+      "unique_symbols": 1517,
+      "exchanges": [
+        "HNX",
+        "HOSE",
+        "UPCOM"
+      ],
+      "columns": [
+        "exchange",
+        "icb_code",
+        "icb_name",
+        "listed_shares",
+        "listing_date",
+        "lot_size",
+        "name_en",
+        "organ_name",
+        "organ_short_name",
+        "symbol",
+        "type"
+      ],
+      "fpt_present": true
+    }
+  },
+  "comparison": {
+    "overlap_symbols": 1517,
+    "union_symbols": 3730,
+    "jaccard_percent": 40.67,
+    "only_current_count": 2213,
+    "only_preview_count": 0,
+    "only_current_sample": [
+      "41B5G3000",
+      "41B5G6000",
+      "41B5G9000",
+      "41B5GC000",
+      "41B5H3000",
+      "41B5H6000",
+      "41BAG3000",
+      "41BAG6000",
+      "41BAG9000",
+      "41BAGC000"
+    ],
+    "only_preview_sample": []
+  },
+  "notes": [
+    "Hai job chạy song song trong môi trường Python tách biệt.",
+    "Phía hiện tại đọc snapshot VCI do production tạo; phía Gen 6 gọi SSI Open API live.",
+    "Đây là đối chiếu danh mục mã tham chiếu; không so sánh hay thay đổi scoring production.",
+    "Nguồn hiện tại là VCI, bản Gen 6 preview dùng SSI Open API nên chênh lệch không chỉ do phiên bản thư viện."
+  ]
+}
