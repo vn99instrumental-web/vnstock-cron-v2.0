@@ -269,3 +269,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Daily Supabase sync runs `41992391250` and `41993902442` failed in the OHLC step after accepting an untested legacy v4 venv. The workflow now executes an import probe before selecting the cached runtime and falls back to setup Python when the probe fails.
 - Daily rebuilds only when its explicit environment validation fails, so a valid migrated cache is not discarded merely because the primary key was a partial match.
 - Verification: all 13 workflow YAML files parse, the five production cache blocks use the stable key and migration prefix, `git diff --check` passes, and the workflow/security review found no new secret or permission exposure.
+
+## VNStock generation 6 parallel preview (2026-11-09)
+
+- Production generation remains unchanged. The manual `vnstock6_compare.yml` workflow probes the preserved current VCI snapshot and the SSI generation 6 preview in separate jobs and environments, then publishes only `output/vnstock6-preview/latest.json`.
+- Generation 6 uses `~/.venv_6x` with pinned packages `vnstock==6.0.0rc4` and `vnstock-oapi==0.1.0rc3`. Source credentials remain scoped to the probe step and are never written to the comparison artifact.
+- Owner UI exposes `/vnstock6` beside the Supabase/GitHub controls. It is a comparison page, not a replacement dashboard data source.
+- Verified GitHub Actions run `42552143294`: current VCI = 3,730 symbols; preview SSI = 1,517 symbols; overlap = 1,517; current-only = 2,213; preview-only = 0; Jaccard = 40.67%. Both probe jobs started at the same timestamp and all three jobs succeeded.
+- Web quality gate `42549791414` passed lint, typecheck and production build. Vercel production deployment `dpl_6WQ14Mc5ciTFXRLqgD2C6TPfxjuG` is READY and serves the generation 6 route behind the existing owner login boundary; unauthenticated access returns HTTP 200 on `/login` after redirect.
+- Visual interaction in the owner's authenticated Chrome session was not completed because the browser-control bridge failed before navigation. No credentials or API keys were read or printed.
