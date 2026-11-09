@@ -1,0 +1,153 @@
+name: Compare current vnstock with generation 6
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vnstock-main-writer
+  cancel-in-progress: false
+
+jobs:
+  current:
+    name: Current generation (VCI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOME: /home/runner
+      VNSTOCK_INTERACTIVE: "0"
+      VNSTOCK_LANGUAGE: en
+      VNSTOCK_VENV_PATH: /opt/vnstock/.venv
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore current-generation environment
+        id: stable-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /opt/vnstock/.venv
+            /home/runner/.vnstock
+          key: vnstock-stable-v4-compare-${{ github.run_id }}
+          restore-keys: |
+            vnstock-stable-v4-
+      - name: Require the preserved current-generation environment
+        if: steps.stable-cache.outputs.cache-matched-key == ''
+        run: |
+          echo "Current-generation cache is unavailable; refusing to reinstall or alter production." >&2
+          exit 1
+      - name: Probe VCI reference data (read-only)
+        run: |
+          test -x /opt/vnstock/.venv/bin/python
+          /opt/vnstock/.venv/bin/python scripts/probe_vnstock_current.py --output comparison/current.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vnstock-current-probe
+          path: comparison/current.json
+          if-no-files-found: error
+          retention-days: 7
+
+  preview:
+    name: Generation 6 preview (SSI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOME: /home/runner
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore generation 6 environment
+        id: preview-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /home/runner/.venv_6x
+            /home/runner/.vnstock
+          key: vnstock-gen6-rc4-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            vnstock-gen6-rc4-${{ runner.os }}-
+      - name: Create vnstock 6 environment
+        if: steps.preview-cache.outputs.cache-hit != 'true'
+        run: python3 -m venv ~/.venv_6x
+      - name: Install vnstock 6 preview
+        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0rc4" "vnstock-oapi==0.1.0rc3"
+      - name: Load vnstock guidance and probe SSI (read-only)
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+        run: |
+          test -n "$VNSTOCK_API_KEY" || { echo "Missing GitHub Secret: VNSTOCK_API_KEY"; exit 1; }
+          test -n "$VNSTOCK_DEVICE_ID" || { echo "Missing GitHub Secret: VNSTOCK_DEVICE_ID"; exit 1; }
+          test -n "$SSI_API_KEY" || { echo "Missing GitHub Secret: SSI_API_KEY"; exit 1; }
+          test -n "$SSI_API_SECRET" || { echo "Missing GitHub Secret: SSI_API_SECRET"; exit 1; }
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/vnstock onboard
+          ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('migration-assistant'))"
+          ~/.venv_6x/bin/python scripts/probe_vnstock6.py --output comparison/preview.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vnstock6-preview-probe
+          path: comparison/preview.json
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish comparison snapshot
+    needs: [current, preview]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: vnstock-current-probe
+          path: comparison/current
+      - uses: actions/download-artifact@v4
+        with:
+          name: vnstock6-preview-probe
+          path: comparison/preview
+      - name: Build secret-free comparison snapshot
+        run: |
+          python scripts/build_vnstock_comparison.py \
+            --current comparison/current/current.json \
+            --preview comparison/preview/preview.json \
+            --output output/vnstock6-preview/latest.json \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Publish only the comparison snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- output/vnstock6-preview/latest.json
+          git diff --cached --quiet && exit 0
+          git commit -m "data: publish vnstock generation comparison"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          exit 1
+      - name: Revalidate Vercel cache
+        env:
+          URL: ${{ secrets.DASHBOARD_REVALIDATE_URL }}
+          SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$SECRET" ]; then echo "Revalidation not configured; skipping"; exit 0; fi
+          curl --fail --silent --show-error -X POST -H "Authorization: Bearer $SECRET" "$URL"

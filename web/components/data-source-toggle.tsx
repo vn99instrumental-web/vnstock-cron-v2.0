@@ -1,11 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { DashboardDataSource } from "@/lib/data-source/source";
 
 export function DataSourceToggle({ source }: { source: DashboardDataSource }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [value, setValue] = useState(source);
   const [pending, startTransition] = useTransition();
 
@@ -45,6 +47,17 @@ export function DataSourceToggle({ source }: { source: DashboardDataSource }) {
           </button>
         );
       })}
+      <Link
+        href="/vnstock6"
+        aria-current={pathname.startsWith("/vnstock6") ? "page" : undefined}
+        className={`min-h-7 rounded-md px-2.5 py-1.5 font-semibold transition-colors ${
+          pathname.startsWith("/vnstock6")
+            ? "bg-[var(--color-accent)] text-white shadow-sm"
+            : "text-[var(--color-muted)] hover:bg-black/5 hover:text-[var(--color-ink)] dark:hover:bg-white/5"
+        }`}
+      >
+        Thế hệ 6
+      </Link>
     </div>
   );
 }
