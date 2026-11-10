@@ -1,6 +1,8 @@
 import { EmptyState, InsightStrip, PageHeader, QueryErrorState } from "@/components/ui";
 import { getVnstock6Comparison } from "@/lib/vnstock6-comparison";
 import { getVnstock6DashboardManifest } from "@/lib/data-source/vnstock6-serving";
+import { getSsiV418OfflineEvidence } from "@/lib/ssi-v418-offline";
+import { SsiOfflineComparison } from "@/components/ssi-offline-comparison";
 
 function integer(value: number) {
   return new Intl.NumberFormat("vi-VN").format(value);
@@ -73,6 +75,7 @@ function ProbePanel({
 }
 
 export default async function Vnstock6Page() {
+  const ssiOffline = getSsiV418OfflineEvidence();
   let data;
   let dashboard;
   try {
@@ -85,6 +88,7 @@ export default async function Vnstock6Page() {
     return (
       <>
         <PageHeader title="Đối chiếu thế hệ 6" desc="Hai môi trường tách biệt · VCI hiện tại và SSI Open API preview." />
+        {ssiOffline ? <SsiOfflineComparison data={ssiOffline} /> : null}
         {missing ? (
           <EmptyState title="Chưa có lần chạy đối chiếu" hint="Chạy workflow “Compare current vnstock with generation 6” trên GitHub Actions để tạo snapshot đầu tiên." />
         ) : (
@@ -108,6 +112,10 @@ export default async function Vnstock6Page() {
           </a>
         )}
       />
+
+      {ssiOffline ? <SsiOfflineComparison data={ssiOffline} /> : (
+        <div className="card border border-amber-500/40 p-3 text-xs">Chưa có báo cáo SSI/Finhay offline được kiểm chứng để đối chiếu.</div>
+      )}
 
       <InsightStrip
         className="sm:grid-cols-4"
