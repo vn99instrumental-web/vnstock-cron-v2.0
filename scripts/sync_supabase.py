@@ -67,6 +67,7 @@ MONTH_RE = re.compile(r"^\d{4}-\d{2}$")
 SIGNAL_BREAKDOWN_KEYS = frozenset({
     # Join / nhãn / phân nhóm
     "pred_id", "industry", "sector_group", "confidence", "snap_time",
+    "pipeline_generation", "market_source", "data_origin", "fundamental_status",
     "size_band", "exchange", "gates",
     # Giá, mức giao dịch và dữ liệu thô dùng để diễn giải
     "price", "entry", "stop", "stop_loss", "tp1", "tp2", "adtv_bil",

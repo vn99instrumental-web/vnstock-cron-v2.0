@@ -44,8 +44,8 @@ from sync_supabase import Supabase  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW_CONFIG = __import__("json").loads((ROOT / "config/scoring/review_versions.json").read_text(encoding="utf-8"))
 REVIEW_VERSIONS = frozenset(REVIEW_CONFIG["versions"])
-PRED_GLOBS = [str(ROOT / "output/history/v2f_predictions_v4/*.jsonl"), str(ROOT / "output/history/v2f_predictions/*.jsonl")]
-OUT_GLOBS = [str(ROOT / "output/history/v2f_outcomes_v4/*.jsonl"), str(ROOT / "output/history/v2f_outcomes/*.jsonl")]
+PRED_GLOBS = [str(ROOT / "output/history/v2f_predictions_v4/*.jsonl"), str(ROOT / "output/history/v2f_predictions/*.jsonl"), str(ROOT / "output/history/vnstock6/predictions/*.jsonl")]
+OUT_GLOBS = [str(ROOT / "output/history/v2f_outcomes_v4/*.jsonl"), str(ROOT / "output/history/v2f_outcomes/*.jsonl"), str(ROOT / "output/history/vnstock6/outcomes/*.jsonl")]
 
 # factor label (ghi vào v4_ic_metrics.factor) → cột trong prediction ledger.
 FACTOR_COLS = {

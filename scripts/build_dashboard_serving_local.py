@@ -97,8 +97,12 @@ def _recent_files(directory: Path) -> list[Path]:
 
 def _recent_predictions(versions: set[str]) -> list[dict[str, Any]]:
     paths: list[Path] = []
-    for name in ("v2f_predictions_v4", "v2f_predictions"):
-        paths.extend(_recent_files(ROOT / "output" / "history" / name))
+    for directory in (
+        ROOT / "output" / "history" / "v2f_predictions_v4",
+        ROOT / "output" / "history" / "v2f_predictions",
+        ROOT / "output" / "history" / "vnstock6" / "predictions",
+    ):
+        paths.extend(_recent_files(directory))
     dedup: dict[tuple[str, str], dict[str, Any]] = {}
     for row in _read_jsonl(paths):
         version = str(row.get("scoring_version") or "")
@@ -112,8 +116,12 @@ def _recent_predictions(versions: set[str]) -> list[dict[str, Any]]:
 
 def _recent_outcomes(versions: set[str]) -> dict[tuple[str, str], dict[str, Any]]:
     paths: list[Path] = []
-    for name in ("v2f_outcomes_v4", "v2f_outcomes"):
-        paths.extend(_recent_files(ROOT / "output" / "history" / name))
+    for directory in (
+        ROOT / "output" / "history" / "v2f_outcomes_v4",
+        ROOT / "output" / "history" / "v2f_outcomes",
+        ROOT / "output" / "history" / "vnstock6" / "outcomes",
+    ):
+        paths.extend(_recent_files(directory))
     output: dict[tuple[str, str], dict[str, Any]] = {}
     for row in _read_jsonl(paths):
         version, pred_id = str(row.get("scoring_version") or ""), str(row.get("pred_id") or "")
@@ -187,6 +195,7 @@ def _today_signal(row: dict[str, Any], previous_close: float | None) -> dict[str
         change = (float(price) - previous_close) / previous_close * 100
     return {
         "symbol": row.get("symbol"), "scoring_version": row.get("scoring_version"),
+        "pipeline_generation": row.get("pipeline_generation"), "market_source": row.get("market_source"),
         "signal_date": row.get("signal_date"), "decision": row.get("decision"),
         "score_trade": row.get("score_trade", row.get("total_score")),
         "snap_time": row.get("snap_time"), "price": price,
