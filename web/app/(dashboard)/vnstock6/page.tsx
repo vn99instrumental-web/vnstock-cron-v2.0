@@ -3,6 +3,8 @@ import { getVnstock6Comparison } from "@/lib/vnstock6-comparison";
 import { getVnstock6DashboardManifest } from "@/lib/data-source/vnstock6-serving";
 import { getSsiV418OfflineEvidence } from "@/lib/ssi-v418-offline";
 import { SsiOfflineComparison } from "@/components/ssi-offline-comparison";
+import { getSsiV418Shadow } from "@/lib/ssi-v418-shadow";
+import { SsiV418ShadowPanel } from "@/components/ssi-v418-shadow-panel";
 
 function integer(value: number) {
   return new Intl.NumberFormat("vi-VN").format(value);
@@ -76,6 +78,7 @@ function ProbePanel({
 
 export default async function Vnstock6Page() {
   const ssiOffline = getSsiV418OfflineEvidence();
+  const ssiShadow = getSsiV418Shadow();
   let data;
   let dashboard;
   try {
@@ -88,6 +91,7 @@ export default async function Vnstock6Page() {
     return (
       <>
         <PageHeader title="Đối chiếu thế hệ 6" desc="Hai môi trường tách biệt · VCI hiện tại và SSI Open API preview." />
+        {ssiShadow ? <SsiV418ShadowPanel data={ssiShadow} /> : <div className="card p-3 text-xs">Scoring Shadow v4.18 chưa có dữ liệu kiểm chứng; không sử dụng điểm thay thế.</div>}
         {ssiOffline ? <SsiOfflineComparison data={ssiOffline} /> : null}
         {missing ? (
           <EmptyState title="Chưa có lần chạy đối chiếu" hint="Chạy workflow “Compare current vnstock with generation 6” trên GitHub Actions để tạo snapshot đầu tiên." />
@@ -113,6 +117,9 @@ export default async function Vnstock6Page() {
         )}
       />
 
+      {ssiShadow ? <SsiV418ShadowPanel data={ssiShadow} /> : (
+        <div className="card border border-amber-500/40 p-3 text-xs">Chưa có bản ghi SSI v4.18 Shadow hợp lệ, điểm chưa được tính.</div>
+      )}
       {ssiOffline ? <SsiOfflineComparison data={ssiOffline} /> : (
         <div className="card border border-amber-500/40 p-3 text-xs">Chưa có báo cáo SSI/Finhay offline được kiểm chứng để đối chiếu.</div>
       )}
