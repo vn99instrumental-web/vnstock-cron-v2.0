@@ -1,3 +1,13 @@
+## Trạng thái nghiệm thu lúc 11/11/2026
+
+- [SSI PR #43](https://github.com/vn99instrumental-web/ssi-data-pipeline/pull/43) **MERGED** (`37b49009aab894b56b0d339d0b47711a099b9c05`), toàn bộ **370/370 tests PASS**.
+- [VNStock PR #50](https://github.com/vn99instrumental-web/vnstock-cron-v2.0/pull/50) **MERGED** (`607a1e0f87b431be00fb4cec9f9078c0342ee10a`), [web lint, typecheck, build #42992918298](https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/42992918298) **PASS**. Shadow JSON trên hai repo có cùng Git blob SHA `01f850081817f78963e51a8e1620a3f8ce6d08cd`.
+- **CHƯA live trên Vercel production**: tool authenticated deploy `trading-web` project ID `prj_wisfNIVNrS6et4U9RsAl5O2cBEKt`, target production, GitHub main SHA chính xác đã bị Vercel trả HTTP **402 payment_required: api-deployments-free-per-day** (Hobby >100 lượt/ngày; response retryAfter 86400 giây). Không thay đổi gói/billing. Deployment READY được quan sát cuối vẫn dùng code cũ SHA `6550b80b58fa03653695a120ff3b7f2aa04fcbf8`.
+- **Pending duy nhất để nhìn thấy Shadow trên web:** Khi quota được reset hoặc chủ tài khoản điều chỉnh gói hạn mức, deploy đúng commit `607a1e0f87b431be00fb4cec9f9078c0342ee10a`, xác minh trạng thái READY và `https://trading-snapshot-dl.vercel.app/vnstock6` hiển thị bảng 97 mã, chi tiết 17 signals, null missing. Chỉ xác nhận hoàn tất rollout sau kiểm nghiệm thực, không suy từ Git merge.
+- Chưa có official Trade/Hold SSI hoặc BUY/SELL, dữ liệu source trade_date 09/11; trang phải ghi NOT FOR TRADING.
+
+---
+
 # SSI + Finhay Scoring v4.18 Shadow — Thế hệ 6 / Vercel
 
 **Nguồn:** [SSI v4.18 shadow export](https://github.com/vn99instrumental-web/ssi-data-pipeline/blob/main/output/audit/ssi_v418_gen6_shadow.json) / [source PR #43](https://github.com/vn99instrumental-web/ssi-data-pipeline/pull/43).
