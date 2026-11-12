@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-12T03:27:06.503043+00:00",
+  "generated_at": "2026-11-12T03:34:31.311012+00:00",
   "scoring_version": "v6.0-native",
   "universe_size": 100,
   "sources": {
@@ -14,19 +14,21 @@
   "fundamental_checks": {
     "balance_sheet": {
       "status": "success",
-      "rows": 9009
+      "rows": 9009,
+      "attempt": 1
     },
     "income_statement": {
       "status": "success",
-      "rows": 1848
+      "rows": 1848,
+      "attempt": 1
     },
     "cash_flow": {
-      "status": "error",
-      "type": "NetworkError",
-      "code": "VNSTOCK_SOURCE_NETWORK"
+      "status": "success",
+      "rows": 3465,
+      "attempt": 1
     }
   },
-  "fundamental_status": "degraded",
+  "fundamental_status": "available_not_scored",
   "successful_symbols": 100,
   "failed_symbols": [],
   "records_added": 100
