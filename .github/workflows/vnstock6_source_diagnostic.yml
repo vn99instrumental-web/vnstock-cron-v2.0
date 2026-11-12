@@ -34,7 +34,7 @@ jobs:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
           SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
-          FHSC_API_KEY: ${{ secrets.FHSC_API_KEY }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
         run: |
           test -n "$VNSTOCK_API_KEY"
           test -n "$SSI_API_KEY"
