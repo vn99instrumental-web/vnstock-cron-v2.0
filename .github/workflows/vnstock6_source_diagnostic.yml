@@ -32,6 +32,7 @@ jobs:
       - name: Diagnose account, keys and source routes
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
           SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
           SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
           FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
