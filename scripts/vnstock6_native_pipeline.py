@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from vnstock import Market, Reference
+from vnstock import Fundamental, Market, Reference
 from vnstock.errors import VnstockError
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -28,8 +28,9 @@ ICT = timezone(timedelta(hours=7))
 
 def load_config() -> dict[str, Any]:
     value = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-    if value.get("source") != "SSI" or not value.get("universe"):
-        raise ValueError("VNStock6 config must declare the user-selected SSI source and universe")
+    sources_config = value.get("sources") or {}
+    if sources_config.get("reference") != "ssi" or sources_config.get("fundamental") != "fhsc" or not value.get("universe"):
+        raise ValueError("VNStock6 config must declare SSI reference/market and FHSC fundamental sources")
     return value
 
 
@@ -41,7 +42,7 @@ def finite(value: Any) -> float | None:
         return None
 
 
-def normalize_ohlcv(frame: pd.DataFrame, symbol: str) -> list[dict[str, Any]]:
+def normalize_ohlcv(frame: pd.DataFrame, symbol: str, market_source: str) -> list[dict[str, Any]]:
     data = frame.reset_index()
     lowered = {str(column).lower(): column for column in data.columns}
     time_column = next((lowered[key] for key in ("time", "date", "datetime", "index") if key in lowered), None)
@@ -54,7 +55,7 @@ def normalize_ohlcv(frame: pd.DataFrame, symbol: str) -> list[dict[str, Any]]:
         if pd.isna(parsed):
             continue
         day = parsed.date().isoformat()
-        row = {"symbol": symbol, "date": day, "market_source": "SSI", "pipeline_generation": 6}
+        row = {"symbol": symbol, "date": day, "market_source": market_source.upper(), "pipeline_generation": 6}
         for name, column in required.items():
             row[name] = finite(source[column])
         if all(row[name] is not None for name in ("open", "high", "low", "close")):
@@ -85,7 +86,7 @@ def rsi(series: pd.Series, periods: int = 14) -> float | None:
     return finite(100 - (100 / (1 + gain.iloc[-1] / denominator)))
 
 
-def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str) -> dict[str, Any]:
+def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str, fundamental_status: str) -> dict[str, Any]:
     frame = pd.DataFrame(rows).sort_values("date")
     if len(frame) < 50:
         raise ValueError(f"Insufficient OHLC history for {symbol}: {len(frame)}")
@@ -108,18 +109,19 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str)
     total = round(max(-100, min(100, trend + momentum + breakout + liquidity)), 2)
     decision = "STRONG BUY" if total >= 55 else "BUY" if total >= 25 else "STRONG SELL" if total <= -55 else "SELL" if total <= -25 else "NEUTRAL"
     signal_date = str(latest["date"])
-    raw_id = f"6|SSI|{symbol}|{signal_date}|{snap_time}|{version}"
+    raw_id = f"6|{latest.get('market_source')}|{symbol}|{signal_date}|{snap_time}|{version}"
     pred_id = f"v6_{hashlib.sha256(raw_id.encode()).hexdigest()[:24]}"
     return {
         "pred_id": pred_id, "symbol": symbol, "signal_date": signal_date, "snap_time": snap_time,
         "scoring_version": version, "decision": decision, "score_trade": total, "total_score": total,
         "price": current, "confidence": "HIGH" if abs(total) >= 55 else "MEDIUM" if abs(total) >= 25 else "LOW",
-        "pipeline_generation": 6, "market_source": "SSI", "data_origin": "native",
+        "pipeline_generation": 6, "reference_source": "SSI", "market_source": str(latest.get("market_source") or "UNKNOWN"),
+        "fundamental_source": "FHSC", "data_origin": "native",
         "flow": "vnstock6_native", "universe_variant": "vn100-cutover", "registry_version": 1,
         "ema20": ema20, "ema50": ema50, "ema200": ema200, "rsi_14": rsi14,
         "return_20d": return20, "vol_ma_ratio": vol_ratio, "high_52w": high52, "low_52w": low52,
         "s_trend_st": trend, "s_momentum_native": momentum, "s_breakout_native": breakout,
-        "s_volume_native": liquidity, "fundamental_status": "unavailable_in_gen6_community",
+        "s_volume_native": liquidity, "fundamental_status": fundamental_status,
     }
 
 
@@ -142,27 +144,48 @@ def run_native(config: dict[str, Any], force: bool) -> None:
     today = date.today()
     if today.isoformat() < config["cutover_date"] and not force:
         raise RuntimeError("VNStock6 cutover date has not been reached")
-    reference = Reference("ssi").equity.list()
+    source_config = config["sources"]
+    reference_source = source_config["reference"]
+    market_sources = [source_config["market"]["primary"], source_config["market"]["fallback"]]
+    fundamental_source = source_config["fundamental"]
+    reference = Reference(reference_source).equity.list()
     available = {str(value).upper() for value in reference["symbol"].dropna()}
     universe = [symbol for symbol in config["universe"] if symbol in available]
     start = (today - timedelta(days=int(config["history_days"]))).isoformat()
     now = datetime.now(ICT)
     predictions: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
-    for symbol in universe:
+    source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
+    fundamental_checks = {}
+    for statement in ("balance_sheet", "income_statement", "cash_flow"):
         try:
-            frame = Market("ssi").equity(symbol).ohlcv(start=start)
-            merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol))
-            predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M")))
-        except (VnstockError, ValueError, KeyError) as exc:
-            errors.append({"symbol": symbol, "type": type(exc).__name__, "code": getattr(exc, "code", None)})
+            frame = getattr(Fundamental(fundamental_source).equity("FPT"), statement)()
+            fundamental_checks[statement] = {"status": "success", "rows": int(len(frame))}
+        except Exception as exc:
+            fundamental_checks[statement] = {"status": "error", "type": type(exc).__name__, "code": getattr(exc, "code", None)}
+    fundamental_status = "available_not_scored" if all(item["status"] == "success" for item in fundamental_checks.values()) else "degraded"
+    for symbol in universe:
+        attempts = []
+        for market_source in market_sources:
+            try:
+                frame = Market(market_source).equity(symbol).ohlcv(start=start)
+                merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))
+                predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), fundamental_status))
+                source_counts[market_source.upper()] += 1
+                break
+            except Exception as exc:
+                attempts.append({"source": market_source.upper(), "type": type(exc).__name__, "code": getattr(exc, "code", None)})
+        else:
+            errors.append({"symbol": symbol, "attempts": attempts})
     if len(predictions) < int(config["minimum_coverage"]):
         raise RuntimeError(f"VNStock6 coverage {len(predictions)}/{len(universe)} below minimum; errors={errors[:10]}")
     partition = PRED_ROOT / f"{predictions[0]['signal_date']}.jsonl"
     added = append_jsonl(partition, predictions, "pred_id")
     status = {
-        "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(), "source": "SSI",
+        "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "scoring_version": config["scoring_version"], "universe_size": len(universe),
+        "sources": {"reference": reference_source.upper(), "market_counts": source_counts, "fundamental": fundamental_source.upper()},
+        "fundamental_checks": fundamental_checks, "fundamental_status": fundamental_status,
         "successful_symbols": len(predictions), "failed_symbols": errors, "records_added": added,
     }
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"

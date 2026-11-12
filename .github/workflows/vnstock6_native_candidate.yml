@@ -51,7 +51,10 @@ jobs:
           if [ "${{ inputs.force }}" = "true" ]; then force+=(--force); fi
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${force[@]}"
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
-          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full
+          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.0-native
+          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py \
             --run-id "${{ github.run_id }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \

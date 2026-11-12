@@ -70,47 +70,56 @@ function filterSymbolRows<T>(rows: T[], allowed: Set<string>): T[] {
 async function bridgeContext() {
   const manifest = await getVnstock6DashboardManifest();
   if (manifest.mode !== "bridge" || manifest.upstream !== "github") {
-    throw new Error("VNStock 6 native serving is not available in this web release");
+    throw new Error("VNStock 6 bridge serving is not available");
   }
   return { manifest, allowed: new Set(manifest.symbols) };
 }
 
+async function fetchNative<T>(path: string): Promise<T> {
+  const text = await fetchGitHubLedgerText(`output/serving/vnstock6/current/${path}`);
+  return JSON.parse(text) as T;
+}
+
 export const vnstock6Serving = {
   metadata: async () => {
-    const [{ manifest }, metadata] = await Promise.all([bridgeContext(), githubServing.metadata()]);
-    return {
-      ...metadata,
-      release_id: `vnstock6-${manifest.generated_at}`,
-      source_provenance: "vnstock6-bridge",
-      generation: "6-preview",
-      market_source: manifest.source,
-    };
+    const manifest = await getVnstock6DashboardManifest();
+    if (manifest.mode === "native") return fetchNative<Awaited<ReturnType<typeof githubServing.metadata>>>("metadata.json");
+    const [{ manifest: bridge }, metadata] = await Promise.all([bridgeContext(), githubServing.metadata()]);
+    return { ...metadata, release_id: `vnstock6-${bridge.generated_at}`, source_provenance: "vnstock6-bridge", generation: "6-preview", market_source: bridge.source };
   },
   today: async (version: string) => {
+    const manifest = await getVnstock6DashboardManifest();
+    if (manifest.mode === "native") return fetchNative<Awaited<ReturnType<typeof githubServing.today>>>(`today/${version}.json`);
     const [{ allowed }, snapshot] = await Promise.all([bridgeContext(), githubServing.today(version)]);
     return { ...snapshot, signals: filterSymbolRows(snapshot.signals, allowed) };
   },
   buy: async (version: string) => {
+    const manifest = await getVnstock6DashboardManifest();
+    if (manifest.mode === "native") return fetchNative<Awaited<ReturnType<typeof githubServing.buy>>>(`buy/${version}.json`);
     const [{ allowed }, snapshot] = await Promise.all([bridgeContext(), githubServing.buy(version)]);
     return { ...snapshot, signals: filterSymbolRows(snapshot.signals, allowed) };
   },
   analysis: async (version: string) => {
+    const manifest = await getVnstock6DashboardManifest();
+    if (manifest.mode === "native") return fetchNative<Awaited<ReturnType<typeof githubServing.analysis>>>(`analysis/${version}.json`);
     const [{ allowed }, snapshot] = await Promise.all([bridgeContext(), githubServing.analysis(version)]);
     return { ...snapshot, results: filterSymbolRows(snapshot.results, allowed) };
   },
   history: async (version: string) => {
+    const manifest = await getVnstock6DashboardManifest();
+    if (manifest.mode === "native") return fetchNative<Awaited<ReturnType<typeof githubServing.history>>>(`history/${version}.json`);
     const [{ allowed }, snapshot] = await Promise.all([bridgeContext(), githubServing.history(version)]);
     const rows = filterSymbolRows(snapshot.rows, allowed);
     return { ...snapshot, rows, count: rows.length };
   },
   chart: async (version: string, symbol: string) => {
-    const { allowed } = await bridgeContext();
+    const manifest = await getVnstock6DashboardManifest();
     const normalized = symbol.toUpperCase();
-    if (!allowed.has(normalized)) throw new Error("Symbol is outside the VNStock 6 SSI universe");
+    if (!manifest.symbols.includes(normalized)) throw new Error("Symbol is outside the VNStock 6 universe");
+    if (manifest.mode === "native") return fetchNative<Awaited<ReturnType<typeof githubServing.chart>>>(`charts/${version}/${normalized}.json`);
     return githubServing.chart(version, normalized);
   },
 };
-
 export function servingForSource(source: DashboardDataSource) {
   if (source === "supabase") throw new Error("Supabase does not use the serving adapter");
   return source === "vnstock6" ? vnstock6Serving : githubServing;
