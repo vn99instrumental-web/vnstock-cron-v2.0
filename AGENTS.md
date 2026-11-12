@@ -1,11 +1,11 @@
 <!-- vnstock-guide:start -->
 ## vnstock
 
-This project uses the Python library `vnstock` generation 6 (preview, with `vnstock-oapi`).
+This project uses the Python library `vnstock` generation 6 final (`vnstock==6.0.0`, `vnstock-oapi==0.1.1`).
 
 - Environment: `~/.venv_6x` (Windows `$HOME\.venv_6x`) unless noted here. Run code and commands with `~/.venv_6x/bin/python` and `~/.venv_6x/bin/vnstock`. Do not install vnstock into another Python.
 - At the start of a session: run `vnstock onboard` and follow it; `vnstock doctor` when something fails.
-- Every data call names a source: `Market("<nguồn>").equity("FPT").ohlcv(start=...)`, or `vnstock.sources.use(...)` once. The user's source is: SSI.
+- Every data call names a source: `Market("<nguồn>").equity("FPT").ohlcv(start=...)`, or `vnstock.sources.use(...)` once. The user's sources are: SSI for reference/market and FHSC for fundamentals/market fallback.
 - Keys: the user stores source keys with `vnstock keys set <nguồn>` and logs in with `vnstock login`, in their own terminal. Never ask for a key in chat, never put one in code or print it. `vnstock keys` shows which sources have one.
 - Look functions up before writing them: `vnstock tools`, `vnstock doc Market.equity.ohlcv`.
 - Ratios: compute with `vnstock_quant.fa`; `ratio()`, `Insights`, `Analytics`, `Macro` are not in this release.

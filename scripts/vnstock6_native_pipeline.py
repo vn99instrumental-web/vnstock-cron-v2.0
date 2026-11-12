@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import math
+import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -158,11 +159,16 @@ def run_native(config: dict[str, Any], force: bool) -> None:
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     fundamental_checks = {}
     for statement in ("balance_sheet", "income_statement", "cash_flow"):
-        try:
-            frame = getattr(Fundamental(fundamental_source).equity("FPT"), statement)()
-            fundamental_checks[statement] = {"status": "success", "rows": int(len(frame))}
-        except Exception as exc:
-            fundamental_checks[statement] = {"status": "error", "type": type(exc).__name__, "code": getattr(exc, "code", None)}
+        for attempt in range(1, 4):
+            try:
+                frame = getattr(Fundamental(fundamental_source).equity("FPT"), statement)()
+                fundamental_checks[statement] = {"status": "success", "rows": int(len(frame)), "attempt": attempt}
+                break
+            except Exception as exc:
+                if attempt == 3:
+                    fundamental_checks[statement] = {"status": "error", "type": type(exc).__name__, "code": getattr(exc, "code", None), "attempt": attempt}
+                else:
+                    time.sleep(attempt)
     fundamental_status = "available_not_scored" if all(item["status"] == "success" for item in fundamental_checks.values()) else "degraded"
     for symbol in universe:
         attempts = []
