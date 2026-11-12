@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 ROOT=Path(__file__).resolve().parent.parent
-VERSION="v6.0-native"
+CONFIG=json.loads((ROOT/"config/vnstock6.json").read_text(encoding="utf-8"))
+VERSION=str(CONFIG["scoring_version"])
 SOURCE=ROOT/"output/serving/current"
 TARGET=ROOT/"output/serving/vnstock6/current"
 def read(path: Path, default: Any=None) -> Any:

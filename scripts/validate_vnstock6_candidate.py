@@ -31,12 +31,19 @@ def main() -> None:
     invalid = [row for row in rows if row.get("market_source") not in {"SSI", "FHSC"} or row.get("pipeline_generation") != 6]
     if invalid:
         raise RuntimeError("Candidate contains rows without native SSI generation provenance")
+    invalid_scoring = [row for row in rows if row.get("missing_data_policy") != "exclude_and_renormalize" or not isinstance(row.get("factor_status"), dict) or not isinstance(row.get("excluded_factors"), list) or not row.get("included_factors")]
+    if invalid_scoring:
+        raise RuntimeError("Candidate contains rows without availability-aware scoring provenance")
+    excluded_counts = {}
+    for row in rows:
+        for factor in row.get("excluded_factors", []):
+            excluded_counts[factor] = excluded_counts.get(factor, 0) + 1
     summary = {
         "schema_version": 1, "candidate_status": "PASS", "generated_at": datetime.now(timezone.utc).isoformat(),
         "run": {"id": args.run_id, "url": args.run_url}, "sources": status["sources"], "scoring_version": version,
         "cutover_date": config["cutover_date"], "universe_size": status["universe_size"],
         "successful_symbols": status["successful_symbols"], "serving_rows": len(rows),
-        "failed_symbol_count": len(status["failed_symbols"]),
+        "failed_symbol_count": len(status["failed_symbols"]), "excluded_factor_counts": excluded_counts,
         "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
     }
     output = Path(args.output)

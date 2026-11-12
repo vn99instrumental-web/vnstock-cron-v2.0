@@ -60,7 +60,10 @@ export async function getVnstock6DashboardManifest(): Promise<Vnstock6DashboardM
   const manifest = parseManifest(JSON.parse(text) as unknown);
   if (process.env.VNSTOCK6_NATIVE_MODE !== "1") return manifest;
 
-  const nativeToday = await fetchNative<{ signals?: unknown[] }>("today/v6.0-native.json");
+  const nativeMetadata = await fetchNative<{ runs?: Record<string, unknown> }>("metadata.json");
+  const nativeVersion = Object.keys(nativeMetadata.runs ?? {}).filter((version) => version.startsWith("v6.")).sort().reverse()[0];
+  if (!nativeVersion) throw new Error("VNStock 6 native serving has no scoring version");
+  const nativeToday = await fetchNative<{ signals?: unknown[] }>(`today/${nativeVersion}.json`);
   const symbols = Array.from(new Set((nativeToday.signals ?? []).flatMap((row) => {
     if (!isRecord(row) || typeof row.symbol !== "string") return [];
     const symbol = row.symbol.toUpperCase();

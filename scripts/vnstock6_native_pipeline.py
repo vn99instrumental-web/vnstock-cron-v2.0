@@ -19,6 +19,8 @@ import pandas as pd
 from vnstock import Fundamental, Market, Reference
 from vnstock.errors import VnstockError
 
+from vnstock6_scoring import availability_score
+
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "vnstock6.json"
 PRED_ROOT = ROOT / "output" / "history" / "vnstock6" / "predictions"
@@ -32,6 +34,10 @@ def load_config() -> dict[str, Any]:
     sources_config = value.get("sources") or {}
     if sources_config.get("reference") != "ssi" or sources_config.get("fundamental") != "fhsc" or not value.get("universe"):
         raise ValueError("VNStock6 config must declare SSI reference/market and FHSC fundamental sources")
+    weights = (value.get("scoring") or {}).get("weights") or {}
+    required = {"trend", "momentum", "breakout", "liquidity", "fundamental", "growth"}
+    if set(weights) != required or abs(sum(float(item) for item in weights.values()) - 1.0) > 1e-9:
+        raise ValueError("VNStock6 scoring weights must contain the six production-reference factors and sum to 1")
     return value
 
 
@@ -87,7 +93,7 @@ def rsi(series: pd.Series, periods: int = 14) -> float | None:
     return finite(100 - (100 / (1 + gain.iloc[-1] / denominator)))
 
 
-def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str, fundamental_status: str) -> dict[str, Any]:
+def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str, fundamental_status: str, weights: dict[str, float]) -> dict[str, Any]:
     frame = pd.DataFrame(rows).sort_values("date")
     if len(frame) < 50:
         raise ValueError(f"Insufficient OHLC history for {symbol}: {len(frame)}")
@@ -107,8 +113,12 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
     momentum = 0 if rsi14 is None else (15 if 45 <= rsi14 <= 70 else -12 if rsi14 > 75 else 10 if rsi14 < 30 else 0)
     breakout = 15 if return20 is not None and return20 > 5 else -15 if return20 is not None and return20 < -5 else 0
     liquidity = 5 if vol_ratio is not None and vol_ratio >= 1.2 else -5 if vol_ratio is not None and vol_ratio < 0.5 else 0
-    total = round(max(-100, min(100, trend + momentum + breakout + liquidity)), 2)
-    decision = "STRONG BUY" if total >= 55 else "BUY" if total >= 25 else "STRONG SELL" if total <= -55 else "SELL" if total <= -25 else "NEUTRAL"
+    availability = availability_score({
+        "price": current, "ema20": ema20, "ema50": ema50, "rsi14": rsi14,
+        "return20": return20, "volume_ratio": vol_ratio,
+        "fundamental": None, "growth": None,
+    }, weights)
+    total, decision = availability["score"], availability["decision"]
     signal_date = str(latest["date"])
     raw_id = f"6|{latest.get('market_source')}|{symbol}|{signal_date}|{snap_time}|{version}"
     pred_id = f"v6_{hashlib.sha256(raw_id.encode()).hexdigest()[:24]}"
@@ -118,11 +128,13 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
         "price": current, "confidence": "HIGH" if abs(total) >= 55 else "MEDIUM" if abs(total) >= 25 else "LOW",
         "pipeline_generation": 6, "reference_source": "SSI", "market_source": str(latest.get("market_source") or "UNKNOWN"),
         "fundamental_source": "FHSC", "data_origin": "native",
-        "flow": "vnstock6_native", "universe_variant": "vn100-cutover", "registry_version": 1,
+        "flow": "vnstock6_native", "universe_variant": "vn100-cutover", "registry_version": 2,
         "ema20": ema20, "ema50": ema50, "ema200": ema200, "rsi_14": rsi14,
         "return_20d": return20, "vol_ma_ratio": vol_ratio, "high_52w": high52, "low_52w": low52,
         "s_trend_st": trend, "s_momentum_native": momentum, "s_breakout_native": breakout,
         "s_volume_native": liquidity, "fundamental_status": fundamental_status,
+        "scoring_reference": "vnstock-production-factor-contract",
+        **availability,
     }
 
 
@@ -176,7 +188,7 @@ def run_native(config: dict[str, Any], force: bool) -> None:
             try:
                 frame = Market(market_source).equity(symbol).ohlcv(start=start)
                 merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))
-                predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), fundamental_status))
+                predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), fundamental_status, config["scoring"]["weights"]))
                 source_counts[market_source.upper()] += 1
                 break
             except Exception as exc:

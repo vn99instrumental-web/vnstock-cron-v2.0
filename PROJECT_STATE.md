@@ -289,3 +289,10 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - `vnstock6_native_production.yml` is the n8n/manual entry point for intraday/daily/weekly modes and shares the `vnstock-main-writer` lock. `activate_dashboard` defaults to false and must stay false until the compatible web release is deployed.
 - Current `v6.0-native` is technical-only. FHSC fundamental routes are health/schema checked and provenance is recorded, but fundamental values are not yet included in scoring. It is not numerically equivalent to v4.18/v4.19.
 - A transient FHSC cash-flow network error in the first production publish was handled with bounded retries. Verification run `43148729804` published commit `2738d7f5` with all three FHSC statements successful on attempt 1 and `fundamental_status=available_not_scored`; dashboard mode remained `bridge`.
+
+## Gen 6 intraday restart 2026-11-12
+
+- `vnstock6_native_production.yml` is the only Gen 6 writer entry point for n8n. The documented cadence is five weekday triggers in `Asia/Ho_Chi_Minh`: 09:15, 10:30, 11:30, 13:45 and 14:50.
+- Every successful run fetches SSI with FHSC fallback, publishes the isolated Gen 6 Git/serving release and revalidates Vercel. Intraday runs keep derived work incremental; daily/weekly modes rebuild full IC/analysis.
+- Active scorer is `v6.1-availability`, adapted from the production factor contract. Missing factor inputs are recorded per symbol and excluded with weight renormalization; they are never silently treated as zero. Fundamental and growth remain excluded until per-symbol FHSC normalization exists.
+- External n8n schedule activation is outside the repository and must be verified in n8n; the GitHub dispatch contract is recorded in `docs/vnstock6-flow.md`.

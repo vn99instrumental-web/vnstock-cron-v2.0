@@ -12,7 +12,7 @@ The source contract is explicit:
 | Market OHLCV | SSI | FHSC | fallback is used only after a typed/source error |
 | Fundamental | FHSC | none | balance sheet, income statement and cash flow; currently verified but not included in the technical score |
 
-The public dashboard manifest remains `mode=bridge` until the compatible web release is approved for Vercel. Native data is already isolated under `output/serving/vnstock6/current` and can be inspected without switching the deployed dashboard.
+The Vercel release is native-capable and `VNSTOCK6_NATIVE_MODE=1` makes the selected Gen6 source read only `output/serving/vnstock6/current`. It does not fall back to Supabase or the legacy serving root.
 
 ## Verified flows
 
@@ -33,22 +33,23 @@ Historical generation 4/5 prediction ledgers are immutable. Generation 6 writes 
 
 Each native signal records `pipeline_generation`, `reference_source`, `market_source`, `fundamental_source`, `fundamental_status` and `data_origin`.
 
-## n8n handoff
+## n8n handoff: five intraday runs
 
-Dispatch `.github/workflows/vnstock6_native_production.yml` with:
+Use one active n8n Schedule Trigger in timezone `Asia/Ho_Chi_Minh`, weekdays only, with five local trigger times: `09:15`, `10:30`, `11:30`, `13:45` and `14:50`. Each trigger sends the same authenticated GitHub REST request:
 
-| Existing cadence | Input |
-| --- | --- |
-| Intraday runs | `mode=intraday`, `activate_dashboard=false` |
-| End-of-day data run | `mode=daily`, `activate_dashboard=false` |
-| Weekly evaluation/IC run | `mode=weekly`, `activate_dashboard=false` |
+- method: `POST`;
+- URL: `https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/vnstock6_native_production.yml/dispatches`;
+- GitHub credential: stored in n8n credential storage, never in the workflow JSON;
+- body: `{"ref":"main","inputs":{"mode":"intraday","activate_dashboard":"true"}}`;
+- headers: `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`.
 
-Keep `activate_dashboard=false` until the native-capable web commit has been deployed to Vercel and verified. Do not dispatch old and Gen6 writer workflows concurrently.
+The workflow concurrency group `vnstock-main-writer` queues overlapping calls. A successful run fetches SSI/FHSC data, writes a distinct minute-level snapshot, evaluates matured outcomes, publishes the Gen6 ledger/serving release, pushes `main`, then calls the authenticated Vercel revalidation endpoint. n8n should treat HTTP `204` from GitHub dispatch as accepted and alert only when dispatch fails; GitHub Actions remains the source of run success/failure.
 
+For end-of-day or weekly maintenance, dispatch the same workflow manually with `mode=daily` or `mode=weekly`; those modes recompute the full IC/analysis layer. Do not run the legacy writer concurrently.
 ## Promotion gates
 
 Promotion requires final package/version checks, account/device reuse, SSI and FHSC key checks, at least 80 successful universe symbols, complete native serving datasets, provenance validation, deterministic IDs, security review and web quality gates. A missing/invalid native manifest must fail visibly; the selected Gen6 source must never silently fall back to Supabase or the old GitHub serving root.
 
-## Known scoring constraint
+## Availability-aware scoring
 
-`v6.0-native` currently scores EMA, RSI, 20-day return, volume ratio and 52-week range. FHSC fundamentals are connectivity/schema checked and tagged as `available_not_scored` when healthy, but are not yet part of the score. This version must not be described as numerically equivalent to v4.18/v4.19.
+`v6.1-availability` follows the production factor contract but is not numerically labelled as v4.18/v4.19. Each row records `factor_status`, `included_factors`, `excluded_factors`, `available_weight` and `missing_data_policy=exclude_and_renormalize`. A factor with incomplete inputs is excluded from both numerator and denominator. Current FHSC fundamental/growth data is connectivity/schema checked but not normalized per symbol, so both factors remain explicitly excluded until that ingestion is implemented.
