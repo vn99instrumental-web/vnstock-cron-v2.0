@@ -57,7 +57,26 @@ function parseManifest(value: unknown): Vnstock6DashboardManifest {
 
 export async function getVnstock6DashboardManifest(): Promise<Vnstock6DashboardManifest> {
   const text = await fetchGitHubLedgerText("output/vnstock6-preview/dashboard.json");
-  return parseManifest(JSON.parse(text) as unknown);
+  const manifest = parseManifest(JSON.parse(text) as unknown);
+  if (process.env.VNSTOCK6_NATIVE_MODE !== "1") return manifest;
+
+  const nativeToday = await fetchNative<{ signals?: unknown[] }>("today/v6.0-native.json");
+  const symbols = Array.from(new Set((nativeToday.signals ?? []).flatMap((row) => {
+    if (!isRecord(row) || typeof row.symbol !== "string") return [];
+    const symbol = row.symbol.toUpperCase();
+    return SAFE_SYMBOL.test(symbol) ? [symbol] : [];
+  }))).sort();
+  if (!symbols.length) throw new Error("VNStock 6 native serving has no valid symbols");
+
+  return {
+    ...manifest,
+    mode: "native",
+    package_version: "6.0.0",
+    oapi_version: "0.1.1",
+    upstream: null,
+    symbols,
+    capabilities: Object.fromEntries(Object.keys(manifest.capabilities).map((key) => [key, "native"])),
+  };
 }
 
 function filterSymbolRows<T>(rows: T[], allowed: Set<string>): T[] {

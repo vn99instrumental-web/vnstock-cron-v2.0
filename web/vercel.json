@@ -1,4 +1,7 @@
 {
+  "env": {
+    "VNSTOCK6_NATIVE_MODE": "1"
+  },
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["hnd1"]
 }
