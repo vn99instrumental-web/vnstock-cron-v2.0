@@ -8,6 +8,10 @@ on:
         type: choice
         options: [intraday, daily, weekly]
         default: intraday
+      activate_dashboard:
+        description: Switch the public manifest to native after the compatible web release is deployed
+        type: boolean
+        default: false
 
 concurrency:
   group: vnstock-main-writer
@@ -59,6 +63,9 @@ jobs:
             --run-id "${{ github.run_id }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --output comparison/native-production-summary.json
+      - name: Keep dashboard bridge until the compatible Vercel release is approved
+        if: inputs.activate_dashboard != true
+        run: git restore -- output/vnstock6-preview/dashboard.json
       - name: Publish native Git ledger and serving
         run: |
           git config user.name "github-actions[bot]"
