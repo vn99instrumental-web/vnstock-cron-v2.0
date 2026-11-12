@@ -295,4 +295,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - `vnstock6_native_production.yml` is the only Gen 6 writer entry point for n8n. The documented cadence is five weekday triggers in `Asia/Ho_Chi_Minh`: 09:15, 10:30, 11:30, 13:45 and 14:50.
 - Every successful run fetches SSI with FHSC fallback, publishes the isolated Gen 6 Git/serving release and revalidates Vercel. Intraday runs keep derived work incremental; daily/weekly modes rebuild full IC/analysis.
 - Active scorer is `v6.1-availability`, adapted from the production factor contract. Missing factor inputs are recorded per symbol and excluded with weight renormalization; they are never silently treated as zero. Fundamental and growth remain excluded until per-symbol FHSC normalization exists.
-- External n8n schedule activation is outside the repository and must be verified in n8n; the GitHub dispatch contract is recorded in `docs/vnstock6-flow.md`.
+- n8n workflow `AAUC60oWWlwKunaR` (`VNStock Gen6 intraday`) is published and active with the five documented weekday schedules and `Asia/Ho_Chi_Minh`. It dispatches production through the stored `GitHub account` credential; no token is embedded in its two nodes.
+- Availability-aware candidate run `43178700815` passed. Production run `43179238229` passed and published data commit `845cbce2` with 100/100 symbols and zero failed symbols.
+- The serving release contains 100 `v6.1-availability` rows. All rows declare `exclude_and_renormalize`; fundamental and growth were unavailable for scoring and explicitly excluded from all 100 rows.
+- Vercel commit status is successful and `/vnstock6` responds, but anonymous requests redirect to `/login`; authenticated rendered-data verification remains a separate owner-session smoke test.
