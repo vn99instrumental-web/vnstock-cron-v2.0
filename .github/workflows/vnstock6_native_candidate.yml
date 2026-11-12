@@ -2,6 +2,16 @@ name: VNStock 6 native candidate
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "config/vnstock6.json"
+      - "config/scoring/review_versions.json"
+      - "scripts/vnstock6_*.py"
+      - "scripts/materialize_vnstock6_serving.py"
+      - "scripts/validate_vnstock6_candidate.py"
+      - ".github/workflows/vnstock6_native_candidate.yml"
+      - ".github/workflows/vnstock6_native_production.yml"
     inputs:
       force:
         description: Run before the configured cutover date
