@@ -21,6 +21,7 @@ def main() -> None:
     if missing: raise RuntimeError(f"Missing Gen6 serving datasets: {missing}")
     if TARGET.parent.exists(): shutil.rmtree(TARGET.parent)
     for section in ("today","buy","history","analysis"):
+        (TARGET/section).mkdir(parents=True,exist_ok=True)
         shutil.copy2(SOURCE/section/f"{VERSION}.json",TARGET/section/f"{VERSION}.json")
     charts=SOURCE/"charts"/VERSION
     if not charts.exists(): raise RuntimeError("Missing Gen6 charts")
