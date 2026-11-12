@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-12T03:27:06.503043+00:00",
+  "scoring_version": "v6.0-native",
+  "universe_size": 100,
+  "sources": {
+    "reference": "SSI",
+    "market_counts": {
+      "SSI": 100,
+      "FHSC": 0
+    },
+    "fundamental": "FHSC"
+  },
+  "fundamental_checks": {
+    "balance_sheet": {
+      "status": "success",
+      "rows": 9009
+    },
+    "income_statement": {
+      "status": "success",
+      "rows": 1848
+    },
+    "cash_flow": {
+      "status": "error",
+      "type": "NetworkError",
+      "code": "VNSTOCK_SOURCE_NETWORK"
+    }
+  },
+  "fundamental_status": "degraded",
+  "successful_symbols": 100,
+  "failed_symbols": [],
+  "records_added": 100
+}
