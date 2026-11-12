@@ -37,11 +37,13 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: /home/runner/.venv_6x
-          key: vnstock-gen6-6.0.0-oapi0.1.1-${{ runner.os }}-python311
+          key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
       - name: Ensure generation 6 environment
         run: |
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
-          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1"
+          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
+      - name: Verify scoring calculations
+        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant
       - name: Build and validate native release
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
@@ -56,9 +58,9 @@ jobs:
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
           if [ "${{ inputs.mode }}" = "intraday" ]; then
-            ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --versions v6.1-availability
+            ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --versions v6.2-quant
           else
-            ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.1-availability
+            ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.2-quant
           fi
           ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
             --run-id "${{ github.run_id }}" \

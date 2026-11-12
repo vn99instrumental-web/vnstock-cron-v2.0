@@ -32,6 +32,9 @@ def main() -> None:
     if invalid:
         raise RuntimeError("Candidate contains rows without native SSI generation provenance")
     invalid_scoring = [row for row in rows if row.get("missing_data_policy") != "exclude_and_renormalize" or not isinstance(row.get("factor_status"), dict) or not isinstance(row.get("excluded_factors"), list) or not row.get("included_factors")]
+    invalid_quant = [row for row in rows if row.get("calculation_engine") != "vnstock_quant" or row.get("calculation_version") != "1.0.0"]
+    if invalid_quant:
+        raise RuntimeError("Candidate contains rows not calculated by pinned vnstock_quant")
     if invalid_scoring:
         raise RuntimeError("Candidate contains rows without availability-aware scoring provenance")
     excluded_counts = {}
@@ -44,6 +47,7 @@ def main() -> None:
         "cutover_date": config["cutover_date"], "universe_size": status["universe_size"],
         "successful_symbols": status["successful_symbols"], "serving_rows": len(rows),
         "failed_symbol_count": len(status["failed_symbols"]), "excluded_factor_counts": excluded_counts,
+        "fundamental_scored_rows": sum(row.get("fundamental_status") == "scored" for row in rows),
         "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
     }
     output = Path(args.output)

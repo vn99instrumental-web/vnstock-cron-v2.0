@@ -16,10 +16,11 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from vnstock import Fundamental, Market, Reference
+from vnstock import Fundamental, Market, Reference, sources
 from vnstock.errors import VnstockError
 
 from vnstock6_scoring import availability_score
+from vnstock6_quant import fundamental_factors, technical_indicators
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "vnstock6.json"
@@ -38,6 +39,17 @@ def load_config() -> dict[str, Any]:
     required = {"trend", "momentum", "breakout", "liquidity", "fundamental", "growth"}
     if set(weights) != required or abs(sum(float(item) for item in weights.values()) - 1.0) > 1e-9:
         raise ValueError("VNStock6 scoring weights must contain the six production-reference factors and sum to 1")
+    route_sources = {
+        "reference.equity.list": sources_config["reference"],
+        "market.equity.ohlcv": sources_config["market"]["primary"],
+        "fundamental.equity.balance_sheet": sources_config["fundamental"],
+        "fundamental.equity.income_statement": sources_config["fundamental"],
+        "fundamental.equity.cash_flow": sources_config["fundamental"],
+    }
+    for route, source in route_sources.items():
+        readers = {str(item).lower() for item in sources.readers(route)}
+        if source not in readers:
+            raise ValueError(f"VNStock6 source {source} cannot read {route}")
     return value
 
 
@@ -93,18 +105,17 @@ def rsi(series: pd.Series, periods: int = 14) -> float | None:
     return finite(100 - (100 / (1 + gain.iloc[-1] / denominator)))
 
 
-def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str, fundamental_status: str, weights: dict[str, float]) -> dict[str, Any]:
+def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str, factors: dict[str, Any], weights: dict[str, float]) -> dict[str, Any]:
     frame = pd.DataFrame(rows).sort_values("date")
     if len(frame) < 50:
         raise ValueError(f"Insufficient OHLC history for {symbol}: {len(frame)}")
     close = pd.to_numeric(frame["close"], errors="coerce")
     volume = pd.to_numeric(frame["volume"], errors="coerce")
     latest = frame.iloc[-1]
-    ema20 = finite(close.ewm(span=20, adjust=False).mean().iloc[-1])
-    ema50 = finite(close.ewm(span=50, adjust=False).mean().iloc[-1])
-    ema200 = finite(close.ewm(span=200, adjust=False).mean().iloc[-1]) if len(frame) >= 200 else None
+    indicators = technical_indicators(frame)
+    ema20, ema50, ema200 = indicators.get("ema20"), indicators.get("ema50"), indicators.get("ema200")
+    rsi14 = indicators.get("rsi14")
     current = finite(latest["close"])
-    rsi14 = rsi(close)
     return20 = finite((current / close.iloc[-21] - 1) * 100) if len(frame) >= 21 and current else None
     vol_ratio = finite(volume.iloc[-1] / volume.tail(20).mean())
     high52 = finite(pd.to_numeric(frame["high"], errors="coerce").tail(252).max())
@@ -116,7 +127,9 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
     availability = availability_score({
         "price": current, "ema20": ema20, "ema50": ema50, "rsi14": rsi14,
         "return20": return20, "volume_ratio": vol_ratio,
-        "fundamental": None, "growth": None,
+        "fundamental": factors.get("fundamental"), "growth": factors.get("growth"),
+        "fundamental_reason": factors.get("fundamental_reason"),
+        "growth_reason": factors.get("growth_reason"),
     }, weights)
     total, decision = availability["score"], availability["decision"]
     signal_date = str(latest["date"])
@@ -132,7 +145,10 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
         "ema20": ema20, "ema50": ema50, "ema200": ema200, "rsi_14": rsi14,
         "return_20d": return20, "vol_ma_ratio": vol_ratio, "high_52w": high52, "low_52w": low52,
         "s_trend_st": trend, "s_momentum_native": momentum, "s_breakout_native": breakout,
-        "s_volume_native": liquidity, "fundamental_status": fundamental_status,
+        "s_volume_native": liquidity,
+        "fundamental_status": "scored" if factors.get("fundamental") is not None else "excluded",
+        "quant_indicators": indicators, "fundamental_metrics": factors,
+        "calculation_engine": "vnstock_quant", "calculation_version": "1.0.0",
         "scoring_reference": "vnstock-production-factor-contract",
         **availability,
     }
@@ -184,11 +200,12 @@ def run_native(config: dict[str, Any], force: bool) -> None:
     fundamental_status = "available_not_scored" if all(item["status"] == "success" for item in fundamental_checks.values()) else "degraded"
     for symbol in universe:
         attempts = []
+        factors = fundamental_factors(symbol, fundamental_source)
         for market_source in market_sources:
             try:
                 frame = Market(market_source).equity(symbol).ohlcv(start=start)
                 merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))
-                predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), fundamental_status, config["scoring"]["weights"]))
+                predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), factors, config["scoring"]["weights"]))
                 source_counts[market_source.upper()] += 1
                 break
             except Exception as exc:
@@ -223,7 +240,7 @@ def evaluate(config: dict[str, Any]) -> None:
         entry = finite(prediction.get("price"))
         if not entry or not later:
             continue
-        row = {"pred_id": prediction["pred_id"], "symbol": prediction["symbol"], "scoring_version": config["scoring_version"], "lens": "trade", "pipeline_generation": 6, "market_source": "SSI", "n_bars": len(later), "eval_date": later[-1]["date"]}
+        row = {"pred_id": prediction["pred_id"], "symbol": prediction["symbol"], "scoring_version": config["scoring_version"], "lens": "trade", "pipeline_generation": 6, "market_source": prediction.get("market_source"), "n_bars": len(later), "eval_date": later[-1]["date"]}
         for horizon in (1, 3, 5, 10):
             row[f"ret_{horizon}d"] = round((float(later[horizon - 1]["close"]) / entry - 1) * 100, 6) if len(later) >= horizon else None
         outcomes.append(row)

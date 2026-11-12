@@ -1,4 +1,4 @@
-export const REVIEW_VERSIONS = ["v6.1-availability", "v6.0-native", "v4.19-shadow", "v4.18", "v4.17", "v4.8", "v4.1", "v2.3"] as const;
+export const REVIEW_VERSIONS = ["v6.2-quant", "v6.1-availability", "v6.0-native", "v4.19-shadow", "v4.18", "v4.17", "v4.8", "v4.1", "v2.3"] as const;
 export type ReviewVersion = (typeof REVIEW_VERSIONS)[number];
 export const DEFAULT_SCORING_VERSION: ReviewVersion = "v4.19-shadow";
 
@@ -12,6 +12,7 @@ export function availableReviewVersions(available: Iterable<string>): ReviewVers
 }
 
 export function versionLabel(version: string): string {
+  if (version === "v6.2-quant") return "v6.2 - Native SSI/FHSC + Vnstock Quant";
   if (version === "v6.1-availability") return "v6.1 · Native, loại factor thiếu";
   if (version === "v6.0-native") return "v6.0 · Native SSI/FHSC";
   if (version === "v4.19-shadow") return "v4.19 · Shadow IC-weighted";

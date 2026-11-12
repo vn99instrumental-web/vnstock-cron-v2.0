@@ -37,8 +37,8 @@ def availability_score(inputs: dict[str, float | None], weights: dict[str, float
         "momentum": _component(momentum, weights["momentum"]),
         "breakout": _component(breakout, weights["breakout"]),
         "liquidity": _component(liquidity, weights["liquidity"]),
-        "fundamental": _component(inputs.get("fundamental"), weights["fundamental"], "fundamental_not_normalized_per_symbol"),
-        "growth": _component(inputs.get("growth"), weights["growth"], "growth_not_normalized_per_symbol"),
+        "fundamental": _component(inputs.get("fundamental"), weights["fundamental"], inputs.get("fundamental_reason") or "fundamental_missing"),
+        "growth": _component(inputs.get("growth"), weights["growth"], inputs.get("growth_reason") or "growth_missing"),
     }
     available_weight = sum(item["configured_weight"] for item in factors.values() if item["included"])
     if available_weight <= 0:

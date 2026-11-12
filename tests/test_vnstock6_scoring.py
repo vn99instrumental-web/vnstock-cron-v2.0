@@ -8,6 +8,7 @@ class AvailabilityScoreTest(unittest.TestCase):
         result = availability_score({"price": 110, "ema20": 100, "ema50": 90, "rsi14": 55, "return20": 8, "volume_ratio": None, "fundamental": None, "growth": None}, WEIGHTS)
         self.assertEqual(result["excluded_factors"], ["liquidity", "fundamental", "growth"])
         self.assertAlmostEqual(result["available_weight"], .55)
+        self.assertEqual(result["factor_status"]["fundamental"]["reason"], "fundamental_missing")
         self.assertEqual(result["score"], 100.0)
 
     def test_no_available_factor_fails_closed(self):
