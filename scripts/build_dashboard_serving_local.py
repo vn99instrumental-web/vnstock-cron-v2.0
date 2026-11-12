@@ -193,7 +193,7 @@ def _today_signal(row: dict[str, Any], previous_close: float | None) -> dict[str
     change = None
     if isinstance(price, (int, float)) and previous_close:
         change = (float(price) - previous_close) / previous_close * 100
-    return {
+    signal = {
         "symbol": row.get("symbol"), "scoring_version": row.get("scoring_version"),
         "pipeline_generation": row.get("pipeline_generation"), "market_source": row.get("market_source"),
         "signal_date": row.get("signal_date"), "decision": row.get("decision"),
@@ -206,6 +206,14 @@ def _today_signal(row: dict[str, Any], previous_close: float | None) -> dict[str
         "stop": breakdown.get("stop", breakdown.get("stop_loss")), "tp1": breakdown.get("tp1"),
         "previous_close": previous_close, "changePct": change, "breakdown": breakdown,
     }
+    # Preserve missing-data provenance at the serving boundary so the UI can
+    # explain which unavailable factors were excluded from each score.
+    for key in (
+        "missing_data_policy", "factor_status", "included_factors",
+        "excluded_factors", "available_weight", "configured_weight",
+    ):
+        signal[key] = row.get(key)
+    return signal
 
 
 def _chart_baseline(version: str, symbol: str) -> dict[str, Any]:
