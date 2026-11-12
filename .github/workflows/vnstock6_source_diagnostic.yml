@@ -44,7 +44,7 @@ jobs:
           ~/.venv_6x/bin/vnstock version
           ~/.venv_6x/bin/vnstock status
           ~/.venv_6x/bin/vnstock doctor
-          ~/.venv_6x/bin/vnstock onboard --json
+          ~/.venv_6x/bin/vnstock onboard
           ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('migration-assistant'))"
           ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('solution-architect'))"
           ~/.venv_6x/bin/vnstock keys
