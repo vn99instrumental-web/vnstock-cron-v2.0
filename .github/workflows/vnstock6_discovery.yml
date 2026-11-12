@@ -23,12 +23,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /home/runner/.venv_6x
-          key: vnstock-gen6-rc4-${{ runner.os }}-python311
+          key: vnstock-gen6-6.0.0-oapi0.1.1-${{ runner.os }}-python311
       - name: Create generation 6 environment
         if: steps.cache.outputs.cache-hit != 'true'
         run: python3 -m venv ~/.venv_6x
       - name: Install pinned generation 6
-        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0rc4" "vnstock-oapi==0.1.0rc3"
+        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1"
       - name: Discover documented SSI capabilities
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}

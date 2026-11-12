@@ -1,0 +1,59 @@
+name: VNStock 6 SSI and FHSC diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore generation 6 environment
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-6.0.0-oapi0.1.1-${{ runner.os }}-python311
+      - name: Create generation 6 environment
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python3 -m venv ~/.venv_6x
+      - name: Install pinned generation 6
+        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1"
+      - name: Diagnose account, keys and source routes
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FHSC_API_KEY }}
+        run: |
+          test -n "$VNSTOCK_API_KEY"
+          test -n "$SSI_API_KEY"
+          test -n "$SSI_API_SECRET"
+          test -n "$FHSC_API_KEY"
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/vnstock version
+          ~/.venv_6x/bin/vnstock status
+          ~/.venv_6x/bin/vnstock doctor
+          ~/.venv_6x/bin/vnstock onboard --json
+          ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('migration-assistant'))"
+          ~/.venv_6x/bin/python -c "from vnstock.utils.agents import load_skill; print(load_skill('solution-architect'))"
+          ~/.venv_6x/bin/vnstock keys
+          ~/.venv_6x/bin/vnstock keys check ssi
+          ~/.venv_6x/bin/vnstock keys check fhsc
+          ~/.venv_6x/bin/python scripts/diagnose_vnstock6_sources.py --output comparison/source-diagnostic.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vnstock6-source-diagnostic
+          path: comparison/source-diagnostic.json
+          if-no-files-found: error
+          retention-days: 7

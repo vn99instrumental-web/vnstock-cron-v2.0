@@ -1,5 +1,9 @@
 {
-  "source": "SSI",
+  "sources": {
+    "reference": "ssi",
+    "market": {"primary": "ssi", "fallback": "fhsc"},
+    "fundamental": "fhsc"
+  },
   "scoring_version": "v6.0-native",
   "cutover_date": "2026-11-10",
   "history_days": 500,

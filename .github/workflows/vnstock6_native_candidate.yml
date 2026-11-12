@@ -28,22 +28,24 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /home/runner/.venv_6x
-          key: vnstock-gen6-rc4-${{ runner.os }}-python311
+          key: vnstock-gen6-6.0.0-oapi0.1.1-${{ runner.os }}-python311
       - name: Create generation 6 environment
         if: steps.cache.outputs.cache-hit != 'true'
         run: python3 -m venv ~/.venv_6x
       - name: Install pinned generation 6
-        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0rc4" "vnstock-oapi==0.1.0rc3"
+        run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1"
       - name: Build and validate native candidate
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
           SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
           SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FHSC_API_KEY }}
         run: |
           test -n "$VNSTOCK_API_KEY"
           test -n "$SSI_API_KEY"
           test -n "$SSI_API_SECRET"
+          test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
           force=()
           if [ "${{ inputs.force }}" = "true" ]; then force+=(--force); fi
