@@ -8,6 +8,7 @@ on:
       - "config/vnstock6.json"
       - "config/scoring/review_versions.json"
       - "scripts/vnstock6_*.py"
+      - "scripts/build_dashboard_serving_local.py"
       - "scripts/materialize_vnstock6_serving.py"
       - "scripts/validate_vnstock6_candidate.py"
       - ".github/workflows/vnstock6_native_candidate.yml"
