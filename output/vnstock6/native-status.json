@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-13T02:10:58.324150+00:00",
+  "generated_at": "2026-11-13T02:16:46.899694+00:00",
   "scoring_version": "v6.2-quant",
   "universe_size": 100,
   "sources": {
@@ -11,26 +11,10 @@
     },
     "fundamental": "FHSC"
   },
-  "fundamental_checks": {
-    "balance_sheet": {
-      "status": "success",
-      "rows": 9009,
-      "attempt": 1
-    },
-    "income_statement": {
-      "status": "success",
-      "rows": 1848,
-      "attempt": 1
-    },
-    "cash_flow": {
-      "status": "success",
-      "rows": 3465,
-      "attempt": 1
-    }
-  },
-  "fundamental_status": "available_not_scored",
+  "fundamental_status": "cache_scored",
+  "fundamental_cache_max_age_days": 14,
   "fundamental_cache_symbols": 100,
-  "fundamental_symbols_refreshed": 100,
+  "fundamental_symbols_refreshed": 0,
   "successful_symbols": 100,
   "failed_symbols": [],
   "records_added": 100
