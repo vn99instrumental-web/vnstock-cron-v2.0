@@ -309,7 +309,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - vnstock6_daily_maintenance.yml runs at 16:15 ICT on weekdays. It evaluates matured outcomes, rebuilds full IC/analysis serving, commits the derived data and revalidates Vercel without calling a market or fundamental source.
 - vnstock6_fundamental_refresh.yml runs at 09:15 ICT on Sundays. It refreshes SSI reference membership and FHSC statements, calculates vnstock_quant.fa ratios/growth, validates secret-free artifacts and commits the cache.
 - A failed symbol refresh preserves the last successful cache entry. Entries older than 14 days are excluded from Fundamental/Growth with weight renormalization and the reason fundamental_cache_stale.
-- The candidate workflow proves the separated fundamental path with three symbols before running the native market/scoring path.
+- The candidate workflow probes the separated fundamental path with three symbols before market/scoring. It may report `PASS_DEGRADED` only after verifying unavailable fundamental/growth factors are excluded and weights renormalized; the weekly workflow remains the hard freshness gate.
 - Local verification: Python compile PASS; six focused unit tests PASS after retries around the known intermittent Windows native process crash; git diff --check PASS. Security review found no committed secret, client exposure or new authorization boundary.
 - The production bootstrap run 43338517181 was still in progress while this change was prepared. First scheduled daily/weekly runs remain operational checks after merge.
 - Current focused backlog is docs/VNSTOCK6_TASKS.md.
