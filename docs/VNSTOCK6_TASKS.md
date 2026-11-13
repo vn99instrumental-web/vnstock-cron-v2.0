@@ -24,9 +24,9 @@ Updated: 2026-11-13
 Bootstrap evidence: production run 43338517181 refreshed FHSC and vnstock_quant factors for 100/100 symbols and published commit fe613b7a; candidate run 43350815066 passed with SSI 100/100, FHSC sample 3/3 and availability-aware scoring.
 
 - [ ] Confirm the first weekly fundamental workflow completes within its 180-minute timeout.
-- [ ] Confirm fundamental-factors.json and fundamental-status.json are committed without secret fields.
+- [x] Confirm fundamental-factors.json and fundamental-status.json are committed without secret fields (daily run 43353614220, commit 92008e54).
 - [x] Confirm the next intraday run consumes the refreshed cache and publishes v6.2-quant (run 43350792238).
-- [ ] Confirm the first daily maintenance run publishes outcomes, IC and analysis and revalidates Vercel.
+- [x] Confirm the first daily maintenance run publishes outcomes, IC and analysis and revalidates Vercel (run 43353614220).
 - [ ] Verify the authenticated Gen 6 dashboard after the first v6.2 production publish.
 
 ## Migration and quality gates
