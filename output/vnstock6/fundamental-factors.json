@@ -1,0 +1,4006 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-13T02:10:58.317283+00:00",
+  "source": "FHSC",
+  "calculation_engine": "vnstock_quant",
+  "calculation_version": "1.0.0",
+  "symbols": {
+    "ACB": {
+      "fundamental": -0.2119087599481756,
+      "growth": 0.39083219622346377,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.16234444866839245,
+        "RT_PRT_ROA": 0.015224858322628545,
+        "RT_LEV_DE": 9.617692985151145
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4757,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1608,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3082,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:41:25.704947+00:00"
+    },
+    "ANV": {
+      "fundamental": 0.5860348049535978,
+      "growth": -0.42911101261477347,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.20790325443185909,
+        "RT_PRT_ROA": 0.12573814125849123,
+        "RT_PRT_GROSS_MARGIN": 0.1842386481095575,
+        "RT_PRT_NET_MARGIN": 0.09894956593541493,
+        "RT_LQD_CR": 1.642370789805687,
+        "RT_LEV_DE": 0.663203032456235
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:42:26.919514+00:00"
+    },
+    "BAF": {
+      "fundamental": -0.24746138139023552,
+      "growth": 0.3874953821861371,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.02164881922414017,
+        "RT_PRT_ROA": 0.007288728074971983,
+        "RT_PRT_GROSS_MARGIN": 0.13004248311551378,
+        "RT_PRT_NET_MARGIN": 0.012637286298852702,
+        "RT_LQD_CR": 1.0075007465113621,
+        "RT_LEV_DE": 2.235683157607899
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 2574,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 528,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 990,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:42:56.008815+00:00"
+    },
+    "BCM": {
+      "fundamental": 0.49602663576156175,
+      "growth": 0.7718604842423034,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.09475813550016539,
+        "RT_PRT_ROA": 0.0339325806117757,
+        "RT_PRT_GROSS_MARGIN": 0.647956632788409,
+        "RT_PRT_NET_MARGIN": 0.53984845943634,
+        "RT_LQD_CR": 2.0153067320534555,
+        "RT_LEV_DE": 1.7570775196183925
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4095,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 840,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1575,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:43:36.189064+00:00"
+    },
+    "BID": {
+      "fundamental": -0.19192298687661935,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.1808595702683268,
+        "RT_PRT_ROA": 0.010146712339837058,
+        "RT_LEV_DE": 16.206544653301975
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4189,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1416,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2714,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:44:41.145398+00:00"
+    },
+    "BMP": {
+      "fundamental": 0.9798047442603227,
+      "growth": -0.2688686382338237,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.4144386123738429,
+        "RT_PRT_ROA": 0.3502253261275393,
+        "RT_PRT_GROSS_MARGIN": 0.4522069068817944,
+        "RT_PRT_NET_MARGIN": 0.2265427462618093,
+        "RT_LQD_CR": 5.578552198540983,
+        "RT_LEV_DE": 0.18175730165709655
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:45:44.513869+00:00"
+    },
+    "BSI": {
+      "fundamental": 0.26606859355911266,
+      "growth": -0.9380638405313477,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.08321156768142034,
+        "RT_PRT_ROA": 0.02545999923386776,
+        "RT_PRT_GROSS_MARGIN": 0.5875929285998346,
+        "RT_PRT_NET_MARGIN": 0.17497112861400063,
+        "RT_LQD_CR": 1.3983873177771764,
+        "RT_LEV_DE": 2.3996655832229803
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 9450,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 5040,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 6363,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:46:55.991068+00:00"
+    },
+    "BSR": {
+      "fundamental": 0.7209225710538529,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.3893513305735689,
+        "RT_PRT_ROA": 0.26778593788750144,
+        "RT_PRT_GROSS_MARGIN": 0.1568633101436777,
+        "RT_PRT_NET_MARGIN": 0.13854374791970328,
+        "RT_LQD_CR": 2.9803184338133004,
+        "RT_LEV_DE": 0.43831420057442294
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3861,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 792,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1485,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:47:42.164962+00:00"
+    },
+    "BVH": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 9656,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T00:48:29.269886+00:00"
+    },
+    "BWE": {
+      "fundamental": 0.6409563006265449,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.1900617586917986,
+        "RT_PRT_ROA": 0.07811165922489312,
+        "RT_PRT_GROSS_MARGIN": 0.43644568142086465,
+        "RT_PRT_NET_MARGIN": 0.2511811212234975,
+        "RT_LQD_CR": 1.2773050908954482,
+        "RT_LEV_DE": 1.1500621280890009
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4563,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 936,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1755,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:49:14.959774+00:00"
+    },
+    "CII": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {},
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T00:49:29.630062+00:00"
+    },
+    "CMG": {
+      "fundamental": 0.12932751079647492,
+      "growth": 0.16042452735567325,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.11942024782147678,
+        "RT_PRT_ROA": 0.03713235194069537,
+        "RT_PRT_GROSS_MARGIN": 0.18182776893401484,
+        "RT_PRT_NET_MARGIN": 0.05118262648079687,
+        "RT_LQD_CR": 1.3490499491608172,
+        "RT_LEV_DE": 1.5903542820878152
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 7839,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1608,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3015,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:50:44.968598+00:00"
+    },
+    "CTD": {
+      "fundamental": -0.22941673090653092,
+      "growth": 0.5720571734753794,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.08301901905518855,
+        "RT_PRT_ROA": 0.021471057040378848,
+        "RT_PRT_GROSS_MARGIN": 0.044180829185545,
+        "RT_PRT_NET_MARGIN": 0.020940383783386512,
+        "RT_LQD_CR": 1.3269920658900651,
+        "RT_LEV_DE": 3.1131481852398823
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:51:45.152911+00:00"
+    },
+    "CTG": {
+      "fundamental": -0.08751016765223985,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2193675415596546,
+        "RT_PRT_ROA": 0.014668204264979985,
+        "RT_LEV_DE": 13.228119634335256
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4757,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1608,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3082,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:53:01.409634+00:00"
+    },
+    "CTR": {
+      "fundamental": 0.05471968646724338,
+      "growth": 0.3033508322341323,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.3048878612881158,
+        "RT_PRT_ROA": 0.07372796504734838,
+        "RT_PRT_GROSS_MARGIN": 0.0672720322012612,
+        "RT_PRT_NET_MARGIN": 0.041338039656681314,
+        "RT_LQD_CR": 1.170376829195352,
+        "RT_LEV_DE": 3.315893055099004
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:54:00.525454+00:00"
+    },
+    "CTS": {
+      "fundamental": -0.006492759081637471,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.03879145975971295,
+        "RT_PRT_ROA": 0.00903360037660825,
+        "RT_PRT_GROSS_MARGIN": 0.5509540968502337,
+        "RT_PRT_NET_MARGIN": 0.07333094258493969,
+        "RT_LQD_CR": 1.3141030780088876,
+        "RT_LEV_DE": 2.9576934792559997
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 8850,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 4720,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 5959,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:55:05.545676+00:00"
+    },
+    "DBC": {
+      "fundamental": 0.22033114217050884,
+      "growth": -0.37739618342224057,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.11992762287130662,
+        "RT_PRT_ROA": 0.05957117390892346,
+        "RT_PRT_GROSS_MARGIN": 0.1477026307191535,
+        "RT_PRT_NET_MARGIN": 0.06268780875011414,
+        "RT_LQD_CR": 1.360973291253145,
+        "RT_LEV_DE": 1.1253092686665813
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:56:09.706726+00:00"
+    },
+    "DCM": {
+      "fundamental": 0.7509102113777528,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2384127137507057,
+        "RT_PRT_ROA": 0.13898064144652802,
+        "RT_PRT_GROSS_MARGIN": 0.2649673941215994,
+        "RT_PRT_NET_MARGIN": 0.12397120052773768,
+        "RT_LQD_CR": 2.38090297500318,
+        "RT_LEV_DE": 0.671324467607198
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5499,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1128,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2115,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:57:04.701803+00:00"
+    },
+    "DGW": {
+      "fundamental": 0.15892490274053847,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2674422728877325,
+        "RT_PRT_ROA": 0.08270458549280879,
+        "RT_PRT_GROSS_MARGIN": 0.09660664929766674,
+        "RT_PRT_NET_MARGIN": 0.027328180352494885,
+        "RT_LQD_CR": 1.3326371970314135,
+        "RT_LEV_DE": 2.509764348183388
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5499,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1128,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2115,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:57:59.707633+00:00"
+    },
+    "DIG": {
+      "fundamental": 0.32852989743703437,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.0610387470903807,
+        "RT_PRT_ROA": 0.031813507886501675,
+        "RT_PRT_GROSS_MARGIN": 0.19856688550787172,
+        "RT_PRT_NET_MARGIN": 0.1301475806585499,
+        "RT_LQD_CR": 1.982248344840537,
+        "RT_LEV_DE": 0.953871303735939
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T00:59:00.841292+00:00"
+    },
+    "DPM": {
+      "fundamental": 0.5100890045524163,
+      "growth": -0.28588290065731226,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.13818090970720306,
+        "RT_PRT_ROA": 0.08664102335651311,
+        "RT_PRT_GROSS_MARGIN": 0.19130846523465808,
+        "RT_PRT_NET_MARGIN": 0.07956741490457697,
+        "RT_LQD_CR": 2.296109707693053,
+        "RT_LEV_DE": 0.5965521844886219
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:00:00.837435+00:00"
+    },
+    "DSE": {
+      "fundamental": 0.08492439321975392,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.02818759182726545,
+        "RT_PRT_ROA": 0.009405345071619444,
+        "RT_PRT_GROSS_MARGIN": 0.3001339477473874,
+        "RT_PRT_NET_MARGIN": 0.08347500403052599,
+        "RT_LQD_CR": 1.5411555862673505,
+        "RT_LEV_DE": 1.8786937055783437
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6450,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 3440,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 4343,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:00:53.574779+00:00"
+    },
+    "DXG": {
+      "fundamental": 0.2896771722740303,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.008021913313661717,
+        "RT_PRT_ROA": 0.0029105706969470837,
+        "RT_PRT_GROSS_MARGIN": 0.4752903254746741,
+        "RT_PRT_NET_MARGIN": 0.07845272225097505,
+        "RT_LQD_CR": 2.2326914589182687,
+        "RT_LEV_DE": 0.9497250057478529
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:01:55.170747+00:00"
+    },
+    "EIB": {
+      "fundamental": -0.6169810295384909,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.007244058606124534,
+        "RT_PRT_ROA": 0.0007277216541624319,
+        "RT_LEV_DE": 8.067925159835259
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4899,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1656,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3082,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:03:11.413898+00:00"
+    },
+    "EVF": {
+      "fundamental": -0.37445898057733995,
+      "growth": 0.3991662365193136,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.09662257248628378,
+        "RT_PRT_ROA": 0.011264472668753732,
+        "RT_LEV_DE": 7.995678312732496
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3053,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1032,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1978,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:04:00.482893+00:00"
+    },
+    "FPT": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:05:01.130221+00:00"
+    },
+    "FRT": {
+      "fundamental": 0.08122821712623884,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2910661328279585,
+        "RT_PRT_ROA": 0.050538379277814086,
+        "RT_PRT_GROSS_MARGIN": 0.19829632952149748,
+        "RT_PRT_NET_MARGIN": 0.0274200118253573,
+        "RT_LQD_CR": 1.1879874981963852,
+        "RT_LEV_DE": 3.6805290490599663
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4563,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 936,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1755,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:05:46.291369+00:00"
+    },
+    "FTS": {
+      "fundamental": 0.3585571298284489,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.0900402607132977,
+        "RT_PRT_ROA": 0.02912183823913875,
+        "RT_PRT_GROSS_MARGIN": 0.443510987986179,
+        "RT_PRT_NET_MARGIN": 0.30217295570614067,
+        "RT_LQD_CR": 1.4668971353466127,
+        "RT_LEV_DE": 2.0572686086807077
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 9450,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 5040,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 6363,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:07:00.001242+00:00"
+    },
+    "GAS": {
+      "fundamental": 0.6383176370553131,
+      "growth": 0.725174735766076,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.21252763902019955,
+        "RT_PRT_ROA": 0.1495285549483535,
+        "RT_PRT_GROSS_MARGIN": 0.13619044477969597,
+        "RT_PRT_NET_MARGIN": 0.09098785268085549,
+        "RT_LQD_CR": 3.3660285676509303,
+        "RT_LEV_DE": 0.4074388521909087
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:08:04.153007+00:00"
+    },
+    "GEE": {
+      "fundamental": 0.5022834240689685,
+      "growth": 0.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.3219121291545402,
+        "RT_PRT_ROA": 0.14032322437322622,
+        "RT_PRT_GROSS_MARGIN": 0.1482226595164083,
+        "RT_PRT_NET_MARGIN": 0.08142854124323202,
+        "RT_LQD_CR": 1.6039687325968695,
+        "RT_LEV_DE": 1.1890236518053572
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 2223,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 456,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 855,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:08:29.128543+00:00"
+    },
+    "GEX": {
+      "fundamental": 0.07293259059854502,
+      "growth": 0.75874153890451,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.05182061806224255,
+        "RT_PRT_ROA": 0.012094159090904907,
+        "RT_PRT_GROSS_MARGIN": 0.20478737059845403,
+        "RT_PRT_NET_MARGIN": 0.06611367751491305,
+        "RT_LQD_CR": 1.4422457978023338,
+        "RT_LEV_DE": 1.3793080436333427
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:09:30.590999+00:00"
+    },
+    "GMD": {
+      "fundamental": 0.9219717404478597,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.19694732675939539,
+        "RT_PRT_ROA": 0.12892623305705297,
+        "RT_PRT_GROSS_MARGIN": 0.43305157517513676,
+        "RT_PRT_NET_MARGIN": 0.46296084060161613,
+        "RT_LQD_CR": 2.378900642918885,
+        "RT_LEV_DE": 0.37172760356321616
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:10:29.984852+00:00"
+    },
+    "GVR": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3627,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:10:51.458773+00:00"
+    },
+    "HAG": {
+      "fundamental": 0.7442924611930085,
+      "growth": 0.19138400700733227,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2218408838082795,
+        "RT_PRT_ROA": 0.12022022794753906,
+        "RT_PRT_GROSS_MARGIN": 0.38955849801477055,
+        "RT_PRT_NET_MARGIN": 0.5315542614094028,
+        "RT_LQD_CR": 1.0086621928273483,
+        "RT_LEV_DE": 0.6701209646753643
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:11:55.876916+00:00"
+    },
+    "HCM": {
+      "fundamental": 0.34272037573192543,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.08126047899216225,
+        "RT_PRT_ROA": 0.02756147069144548,
+        "RT_PRT_GROSS_MARGIN": 0.3719305141814217,
+        "RT_PRT_NET_MARGIN": 0.2208452578639571,
+        "RT_LQD_CR": 1.502361462922739,
+        "RT_LEV_DE": 1.9675242632715353
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 10650,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 5680,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 7171,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:13:15.902618+00:00"
+    },
+    "HDB": {
+      "fundamental": -0.06181305805997931,
+      "growth": 0.2809906347160185,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.22314392918056491,
+        "RT_PRT_ROA": 0.018821437169303686,
+        "RT_LEV_DE": 11.119347817032086
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3053,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1032,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1978,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:14:06.170065+00:00"
+    },
+    "HDG": {
+      "fundamental": 0.6318707100025033,
+      "growth": -0.8228024103287175,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.1174074427597145,
+        "RT_PRT_ROA": 0.05605270251417277,
+        "RT_PRT_GROSS_MARGIN": 0.7012689543203775,
+        "RT_PRT_NET_MARGIN": 0.3899989288175116,
+        "RT_LQD_CR": 1.657108479499042,
+        "RT_LEV_DE": 0.661388928963918
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:15:13.911821+00:00"
+    },
+    "HHV": {
+      "fundamental": 0.1475732935835025,
+      "growth": 0.939725669461871,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.06108544518349343,
+        "RT_PRT_ROA": 0.016680935249243325,
+        "RT_PRT_GROSS_MARGIN": 0.4476038673167533,
+        "RT_PRT_NET_MARGIN": 0.1897326377646113,
+        "RT_LQD_CR": 0.6600904423379969,
+        "RT_LEV_DE": 2.1204243866598325
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3159,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 648,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1215,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:15:49.014066+00:00"
+    },
+    "HPG": {
+      "fundamental": 0.46559609400341556,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.19689785484582514,
+        "RT_PRT_ROA": 0.10169057575783036,
+        "RT_PRT_GROSS_MARGIN": 0.1717343616372609,
+        "RT_PRT_NET_MARGIN": 0.12766989542503893,
+        "RT_LQD_CR": 1.1101343340452532,
+        "RT_LEV_DE": 0.8951186230286656
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:16:49.027035+00:00"
+    },
+    "HSG": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 7956,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1632,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:17:47.181532+00:00"
+    },
+    "HT1": {
+      "fundamental": 0.09565571499065216,
+      "growth": 0.8029628187001174,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.07591428588537465,
+        "RT_PRT_ROA": 0.049282485165651535,
+        "RT_PRT_GROSS_MARGIN": 0.13650554006512902,
+        "RT_PRT_NET_MARGIN": 0.04855411305649445,
+        "RT_LQD_CR": 0.7502540877147308,
+        "RT_LEV_DE": 0.48974352332165816
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6318,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1296,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2430,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:18:53.000401+00:00"
+    },
+    "KBC": {
+      "fundamental": 0.448446308462908,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.0694886724110418,
+        "RT_PRT_ROA": 0.02397508487291773,
+        "RT_PRT_GROSS_MARGIN": 0.4694535298958811,
+        "RT_PRT_NET_MARGIN": 0.272580034543323,
+        "RT_LQD_CR": 4.522174118591374,
+        "RT_LEV_DE": 1.7459027893114536
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:19:52.520237+00:00"
+    },
+    "KDC": {
+      "fundamental": 0.20431450941627305,
+      "growth": 0.6162011347558969,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.1152150275221856,
+        "RT_PRT_ROA": 0.05512961545167321,
+        "RT_PRT_GROSS_MARGIN": 0.19920898606847853,
+        "RT_PRT_NET_MARGIN": 0.08319421897879496,
+        "RT_LQD_CR": 1.049231093823697,
+        "RT_LEV_DE": 1.1855427271286378
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:20:53.752102+00:00"
+    },
+    "KDH": {
+      "fundamental": 0.5787224960007785,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.09086779962061975,
+        "RT_PRT_ROA": 0.04332055213191916,
+        "RT_PRT_GROSS_MARGIN": 0.6751537078422275,
+        "RT_PRT_NET_MARGIN": 0.9017966050256963,
+        "RT_LQD_CR": 7.198587424768497,
+        "RT_LEV_DE": 1.1499358846726755
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:21:52.899221+00:00"
+    },
+    "KOS": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4563,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:22:26.936688+00:00"
+    },
+    "LPB": {
+      "fundamental": -0.04426177642251983,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2596425725545566,
+        "RT_PRT_ROA": 0.019377173658595242,
+        "RT_LEV_DE": 13.899182018828716
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3337,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1128,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2162,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:23:22.751447+00:00"
+    },
+    "MBB": {
+      "fundamental": -0.08411524034581341,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.21248979278641938,
+        "RT_PRT_ROA": 0.01915111949758112,
+        "RT_LEV_DE": 10.196779868270816
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4473,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1512,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2898,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:24:32.757341+00:00"
+    },
+    "MCH": {
+      "fundamental": 0.7719287707489947,
+      "growth": 0.6087114366019755,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.4029313575427076,
+        "RT_PRT_ROA": 0.21486185143917855,
+        "RT_PRT_GROSS_MARGIN": 0.4553645333013232,
+        "RT_PRT_NET_MARGIN": 0.21769860172266187,
+        "RT_LQD_CR": 1.1961317235963032,
+        "RT_LEV_DE": 0.8468386486535033
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:25:32.759496+00:00"
+    },
+    "MSB": {
+      "fundamental": -0.2627944563581818,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.14037665060331733,
+        "RT_PRT_ROA": 0.01472845015226712,
+        "RT_LEV_DE": 8.389407526659012
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3053,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1032,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1886,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:26:23.978432+00:00"
+    },
+    "MSN": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:26:54.802412+00:00"
+    },
+    "MWG": {
+      "fundamental": 0.5765369017770349,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2965360412328361,
+        "RT_PRT_ROA": 0.11760758280120823,
+        "RT_PRT_GROSS_MARGIN": 0.2140188601464845,
+        "RT_PRT_NET_MARGIN": 0.0616215400373027,
+        "RT_LQD_CR": 1.825438963394772,
+        "RT_LEV_DE": 1.0496548903507776
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:27:59.193228+00:00"
+    },
+    "NAB": {
+      "fundamental": -0.16002207008875136,
+      "growth": 0.9214796140980273,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.19301346561913996,
+        "RT_PRT_ROA": 0.011320854848491692,
+        "RT_LEV_DE": 15.433028403076108
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4189,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1416,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2714,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:29:05.389338+00:00"
+    },
+    "NKG": {
+      "fundamental": -0.14341556708115394,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.03172891806542685,
+        "RT_PRT_ROA": 0.013713748555320102,
+        "RT_PRT_GROSS_MARGIN": 0.06795394022348,
+        "RT_PRT_NET_MARGIN": 0.015128902046329806,
+        "RT_LQD_CR": 1.2747549846150315,
+        "RT_LEV_DE": 1.573807208523631
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:30:05.462337+00:00"
+    },
+    "NLG": {
+      "fundamental": 0.4986898786994541,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.037630680723770994,
+        "RT_PRT_ROA": 0.01823451874372666,
+        "RT_PRT_GROSS_MARGIN": 0.4170593160989039,
+        "RT_PRT_NET_MARGIN": 0.1840940753209345,
+        "RT_LQD_CR": 2.5532172634186447,
+        "RT_LEV_DE": 0.7084358785968428
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:31:05.468952+00:00"
+    },
+    "NT2": {
+      "fundamental": 0.5804424418162656,
+      "growth": 0.3866948983273788,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.25859687042311785,
+        "RT_PRT_ROA": 0.1326051360866583,
+        "RT_PRT_GROSS_MARGIN": 0.14943694178004782,
+        "RT_PRT_NET_MARGIN": 0.13283452069865703,
+        "RT_LQD_CR": 1.687275408354039,
+        "RT_LEV_DE": 1.1318979938515255
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6318,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1296,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2430,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:32:10.160058+00:00"
+    },
+    "NVL": {
+      "fundamental": 0.38912743956481677,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.13099054217424633,
+        "RT_PRT_ROA": 0.02435864784331434,
+        "RT_PRT_GROSS_MARGIN": 0.5567808353462305,
+        "RT_PRT_NET_MARGIN": 0.5562553412459026,
+        "RT_LQD_CR": 2.1425274868215145,
+        "RT_LEV_DE": 2.901983112721256
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4797,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 984,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1845,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:32:59.231023+00:00"
+    },
+    "OCB": {
+      "fundamental": -0.2968136423620341,
+      "growth": 0.2798601679953787,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.128061717145034,
+        "RT_PRT_ROA": 0.013131810022427004,
+        "RT_LEV_DE": 8.798745726402675
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 2769,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 936,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1794,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:33:44.322799+00:00"
+    },
+    "PAN": {
+      "fundamental": 0.6014818121635918,
+      "growth": 0.07937819720012973,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2227332305951865,
+        "RT_PRT_ROA": 0.0769748348287768,
+        "RT_PRT_GROSS_MARGIN": 0.21119734953577568,
+        "RT_PRT_NET_MARGIN": 0.1146306290787306,
+        "RT_LQD_CR": 1.9032995301318978,
+        "RT_LEV_DE": 0.7632138327189109
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:34:44.324208+00:00"
+    },
+    "PC1": {
+      "fundamental": 0.30863031809827607,
+      "growth": 0.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.17877064296281503,
+        "RT_PRT_ROA": 0.04726614640118386,
+        "RT_PRT_GROSS_MARGIN": 0.2149067084758943,
+        "RT_PRT_NET_MARGIN": 0.12196166136857324,
+        "RT_LQD_CR": 1.3863169768014592,
+        "RT_LEV_DE": 1.7223061415091505
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6318,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1296,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2430,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:35:44.323701+00:00"
+    },
+    "PDR": {
+      "fundamental": 0.3022650745167536,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.04289243932973215,
+        "RT_PRT_ROA": 0.017791812894946864,
+        "RT_PRT_GROSS_MARGIN": 0.731887376141652,
+        "RT_PRT_NET_MARGIN": 1.0049312622771063,
+        "RT_LQD_CR": 1.5662829309230168,
+        "RT_LEV_DE": 2.029059610811318
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:36:45.049359+00:00"
+    },
+    "PHR": {
+      "fundamental": 0.8509591188789346,
+      "growth": 0.6330502898110919,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.24658018332154613,
+        "RT_PRT_ROA": 0.16331975777760674,
+        "RT_PRT_GROSS_MARGIN": 0.2528871258518764,
+        "RT_PRT_NET_MARGIN": 0.5530978400236304,
+        "RT_LQD_CR": 4.4914546400217095,
+        "RT_LEV_DE": 0.45869068520084794
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:37:51.015776+00:00"
+    },
+    "PLX": {
+      "fundamental": -0.1143782086093021,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.14583847373845477,
+        "RT_PRT_ROA": 0.03947064867499912,
+        "RT_PRT_GROSS_MARGIN": 0.05122712851753104,
+        "RT_PRT_NET_MARGIN": 0.009753377168822836,
+        "RT_LQD_CR": 1.0705943541917886,
+        "RT_LEV_DE": 2.4761513516055977
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2385,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:38:50.082196+00:00"
+    },
+    "PNJ": {
+      "fundamental": 0.41439531502152965,
+      "growth": -0.7804531677056767,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.12447939272769776,
+        "RT_PRT_ROA": 0.08285220014343596,
+        "RT_PRT_GROSS_MARGIN": 0.13661438752240174,
+        "RT_PRT_NET_MARGIN": 0.03989410012424758,
+        "RT_LQD_CR": 2.6271901972767386,
+        "RT_LEV_DE": 0.5248421711495211
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:39:51.730776+00:00"
+    },
+    "POW": {
+      "fundamental": 0.37870271605480527,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.17866444823672759,
+        "RT_PRT_ROA": 0.0701716162503342,
+        "RT_PRT_GROSS_MARGIN": 0.16988100475791815,
+        "RT_PRT_NET_MARGIN": 0.13246580324437682,
+        "RT_LQD_CR": 1.3828605133215737,
+        "RT_LEV_DE": 1.3497726735414326
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4446,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 912,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1710,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:40:37.037022+00:00"
+    },
+    "PVD": {
+      "fundamental": 0.1789698030143636,
+      "growth": 0.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.05301392542517845,
+        "RT_PRT_ROA": 0.030765193215518488,
+        "RT_PRT_GROSS_MARGIN": 0.16198478369306982,
+        "RT_PRT_NET_MARGIN": 0.06715986060771142,
+        "RT_LQD_CR": 1.5761876915534265,
+        "RT_LEV_DE": 0.7415472454791567
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:41:36.733643+00:00"
+    },
+    "PVT": {
+      "fundamental": 0.45310799802563967,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.16619599270106836,
+        "RT_PRT_ROA": 0.0673470702533022,
+        "RT_PRT_GROSS_MARGIN": 0.1546617572616444,
+        "RT_PRT_NET_MARGIN": 0.09700136365488131,
+        "RT_LQD_CR": 1.9058683540128827,
+        "RT_LEV_DE": 0.8410322231673466
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:42:37.925662+00:00"
+    },
+    "REE": {
+      "fundamental": 0.6994264798971813,
+      "growth": 0.7452656591472548,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.12760923662031343,
+        "RT_PRT_ROA": 0.06619318965662185,
+        "RT_PRT_GROSS_MARGIN": 0.3705331873833488,
+        "RT_PRT_NET_MARGIN": 0.30930691489328316,
+        "RT_LQD_CR": 2.0752778549765196,
+        "RT_LEV_DE": 0.6830754774902553
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:43:39.740347+00:00"
+    },
+    "SAB": {
+      "fundamental": 0.9217059514668673,
+      "growth": -0.11101043345361106,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.22181618539456555,
+        "RT_PRT_ROA": 0.14854306017885263,
+        "RT_PRT_GROSS_MARGIN": 0.3799978602093215,
+        "RT_PRT_NET_MARGIN": 0.18163065925040905,
+        "RT_LQD_CR": 3.1919921732731518,
+        "RT_LEV_DE": 0.31910204450386953
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5967,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1224,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2295,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:44:39.857230+00:00"
+    },
+    "SBT": {
+      "fundamental": -0.12709610291827364,
+      "growth": 0.06360319634841072,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.06744559684878446,
+        "RT_PRT_ROA": 0.020804518957609413,
+        "RT_PRT_GROSS_MARGIN": 0.09144687699031716,
+        "RT_PRT_NET_MARGIN": 0.027718378404417657,
+        "RT_LQD_CR": 1.3103489163246782,
+        "RT_LEV_DE": 2.2372940456805805
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:45:39.879522+00:00"
+    },
+    "SHB": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5041,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1704,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:46:46.240734+00:00"
+    },
+    "SIP": {
+      "fundamental": 0.3339963824836827,
+      "growth": 0.11737730751417796,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2710323368225976,
+        "RT_PRT_ROA": 0.04690141740745557,
+        "RT_PRT_GROSS_MARGIN": 0.15472788372320845,
+        "RT_PRT_NET_MARGIN": 0.16606985636241017,
+        "RT_LQD_CR": 2.8227773543662935,
+        "RT_LEV_DE": 4.435352974251
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3627,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 744,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1395,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:47:29.350958+00:00"
+    },
+    "SJS": {
+      "fundamental": 0.9136696813140546,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.4110706661855884,
+        "RT_PRT_ROA": 0.1968765468080935,
+        "RT_PRT_GROSS_MARGIN": 0.7331059507835824,
+        "RT_PRT_NET_MARGIN": 0.5543714773146818,
+        "RT_LQD_CR": 2.3522283473556413,
+        "RT_LEV_DE": 0.7769728681735083
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2205,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:48:29.348258+00:00"
+    },
+    "SSB": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {},
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:48:40.695736+00:00"
+    },
+    "SSI": {
+      "fundamental": 0.5288009701683999,
+      "growth": -0.9504148332777769,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.11777056955429181,
+        "RT_PRT_ROA": 0.04717344251393344,
+        "RT_PRT_GROSS_MARGIN": 0.6686632017827504,
+        "RT_PRT_NET_MARGIN": 0.33574565355824265,
+        "RT_LQD_CR": 1.6291832648225102,
+        "RT_LEV_DE": 1.384273908397336
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 8250,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 4400,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 5555,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:49:42.767007+00:00"
+    },
+    "STB": {
+      "fundamental": -0.5746809793292192,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.024573393003522133,
+        "RT_PRT_ROA": 0.0016374220257755925,
+        "RT_LEV_DE": 15.486642525811183
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5325,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1800,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2944,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:51:04.799526+00:00"
+    },
+    "TAL": {
+      "fundamental": 0.5226620571893099,
+      "growth": -0.7385520697444585,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.1529604625376055,
+        "RT_PRT_ROA": 0.04540512569662119,
+        "RT_PRT_GROSS_MARGIN": 0.37870555054450733,
+        "RT_PRT_NET_MARGIN": 0.22053504115113204,
+        "RT_LQD_CR": 2.1144658701114456,
+        "RT_LEV_DE": 2.186725520750957
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 1287,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 264,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 495,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:51:24.785360+00:00"
+    },
+    "TCB": {
+      "fundamental": -0.20184509571029052,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.15223604593062195,
+        "RT_PRT_ROA": 0.023031285866531893,
+        "RT_LEV_DE": 5.680185790499069
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4047,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1368,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2576,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:52:29.792240+00:00"
+    },
+    "TCH": {
+      "fundamental": 0.6152999068416939,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.06817758774511289,
+        "RT_PRT_ROA": 0.036411994758372764,
+        "RT_PRT_GROSS_MARGIN": 0.3982865485548532,
+        "RT_PRT_NET_MARGIN": 0.3400117514647127,
+        "RT_LQD_CR": 2.8936686688278073,
+        "RT_LEV_DE": 0.4540209089244919
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5031,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1032,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1935,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:53:20.140084+00:00"
+    },
+    "TCX": {
+      "fundamental": 0.6916760984262983,
+      "growth": 0.31705698245865044,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.13615002606638502,
+        "RT_PRT_ROA": 0.06782368376641565,
+        "RT_PRT_GROSS_MARGIN": 0.8777852669412985,
+        "RT_PRT_NET_MARGIN": 0.4632830936610831,
+        "RT_LQD_CR": 2.1369951844386583,
+        "RT_LEV_DE": 1.04560944544746
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6450,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 3440,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 4343,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:54:09.899341+00:00"
+    },
+    "TPB": {
+      "fundamental": -0.19217144190360622,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.17095008271367437,
+        "RT_PRT_ROA": 0.015372143162508177,
+        "RT_LEV_DE": 10.442099900765452
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 3337,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1128,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2162,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:55:06.446121+00:00"
+    },
+    "VCB": {
+      "fundamental": -0.18350019380285829,
+      "growth": 0.00689952183539333,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.1734362432291878,
+        "RT_PRT_ROA": 0.016127290431747182,
+        "RT_LEV_DE": 9.57060537943819
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5041,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1704,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3082,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:56:25.827641+00:00"
+    },
+    "VCG": {
+      "fundamental": 0.1304768671358568,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.07407704770385617,
+        "RT_PRT_ROA": 0.02891997221968135,
+        "RT_PRT_GROSS_MARGIN": 0.1316117660445027,
+        "RT_PRT_NET_MARGIN": 0.07222372434970238,
+        "RT_LQD_CR": 1.5717406798308429,
+        "RT_LEV_DE": 1.2157470114451803
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:57:25.824360+00:00"
+    },
+    "VCI": {
+      "fundamental": 0.4786133677889109,
+      "growth": -0.5030523881723656,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.080768984123173,
+        "RT_PRT_ROA": 0.03658896036773322,
+        "RT_PRT_GROSS_MARGIN": 0.5992000701854134,
+        "RT_PRT_NET_MARGIN": 0.25892602024027084,
+        "RT_LQD_CR": 1.7067497124830768,
+        "RT_LEV_DE": 1.383837106751145
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 8250,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 4400,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 5555,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:58:25.931639+00:00"
+    },
+    "VCK": {
+      "fundamental": 0.7902446928370678,
+      "growth": -0.8272508203716944,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.13901574791578422,
+        "RT_PRT_ROA": 0.08566838215355269,
+        "RT_PRT_GROSS_MARGIN": 0.6748999310223215,
+        "RT_PRT_NET_MARGIN": 0.4562327027473717,
+        "RT_LQD_CR": 3.9660042994644127,
+        "RT_LEV_DE": 0.521737409003345
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6450,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 3440,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 4343,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T01:59:18.443049+00:00"
+    },
+    "VGC": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {},
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T01:59:28.219157+00:00"
+    },
+    "VHC": {
+      "fundamental": 0.5382607509510974,
+      "growth": -0.5889326020423178,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.12806166038154926,
+        "RT_PRT_ROA": 0.08950193438727228,
+        "RT_PRT_GROSS_MARGIN": 0.16967516759741388,
+        "RT_PRT_NET_MARGIN": 0.10616196504427357,
+        "RT_LQD_CR": 2.5120464303970325,
+        "RT_LEV_DE": 0.4316017710441902
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2385,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:00:32.942506+00:00"
+    },
+    "VHM": {
+      "fundamental": 0.5139374097381785,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.37649949754573947,
+        "RT_PRT_ROA": 0.09624339486834964,
+        "RT_PRT_GROSS_MARGIN": 0.5025478193108786,
+        "RT_PRT_NET_MARGIN": 0.33823093891492595,
+        "RT_LQD_CR": 1.2555820225747005,
+        "RT_LEV_DE": 3.350980408994032
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4095,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 840,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1575,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:01:13.054881+00:00"
+    },
+    "VIB": {
+      "fundamental": -0.22585913384464726,
+      "growth": 0.7395668732721745,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.15945024151085904,
+        "RT_PRT_ROA": 0.013420345738159836,
+        "RT_LEV_DE": 11.04817843953719
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4118,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1392,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2668,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:02:18.937525+00:00"
+    },
+    "VIC": {
+      "fundamental": 0.1700274787507666,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.2606028228375355,
+        "RT_PRT_ROA": 0.03292383911472277,
+        "RT_PRT_GROSS_MARGIN": 0.26599295974749054,
+        "RT_PRT_NET_MARGIN": 0.08820301012822845,
+        "RT_LQD_CR": 1.2649583103924134,
+        "RT_LEV_DE": 5.85179734887271
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:03:19.002422+00:00"
+    },
+    "VIX": {
+      "fundamental": 0.633791910578633,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.061681843504926746,
+        "RT_PRT_ROA": 0.0471052016875397,
+        "RT_PRT_GROSS_MARGIN": 0.3632344195746015,
+        "RT_PRT_NET_MARGIN": 0.2341789470076574,
+        "RT_LQD_CR": 6.334478379852659,
+        "RT_LEV_DE": 0.212820288930548
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 10050,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 5360,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 6565,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:04:34.028696+00:00"
+    },
+    "VJC": {
+      "fundamental": -0.25227945321976997,
+      "growth": 0.6749813383895837,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.08510717058105689,
+        "RT_PRT_ROA": 0.015076587060531844,
+        "RT_PRT_GROSS_MARGIN": 0.07831431141100594,
+        "RT_PRT_NET_MARGIN": 0.021501152275041038,
+        "RT_LQD_CR": 1.1155532110733888,
+        "RT_LEV_DE": 4.748281505497129
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4563,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 936,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1755,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:05:22.475687+00:00"
+    },
+    "VND": {
+      "fundamental": 0.5921210856594951,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.09816332042988682,
+        "RT_PRT_ROA": 0.043042319707079876,
+        "RT_PRT_GROSS_MARGIN": 0.6480065835282313,
+        "RT_PRT_NET_MARGIN": 0.30788882558954783,
+        "RT_LQD_CR": 2.046464001229959,
+        "RT_LEV_DE": 1.0970869278711604
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 10050,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 5360,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 6767,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:06:38.839424+00:00"
+    },
+    "VNM": {
+      "fundamental": 0.9009689970041638,
+      "growth": 0.5381959480603316,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.351073548909834,
+        "RT_PRT_ROA": 0.20349892816968343,
+        "RT_PRT_GROSS_MARGIN": 0.42026644504947763,
+        "RT_PRT_NET_MARGIN": 0.16216859136270756,
+        "RT_LQD_CR": 2.1135516115203705,
+        "RT_LEV_DE": 0.5129649405896025
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:07:38.200289+00:00"
+    },
+    "VPB": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
+      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
+      "ratios": {},
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4118,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "NetworkError",
+        "code": "VNSTOCK_SOURCE_NETWORK",
+        "action": null
+      },
+      "refreshed_at": "2026-11-13T02:08:09.786392+00:00"
+    },
+    "VPI": {
+      "fundamental": 0.3201848678411977,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.057225190734568325,
+        "RT_PRT_ROA": 0.019520252328785067,
+        "RT_PRT_GROSS_MARGIN": 0.3880571281075375,
+        "RT_PRT_NET_MARGIN": 0.14401925405644722,
+        "RT_LQD_CR": 1.8873209439045266,
+        "RT_LEV_DE": 1.8936095530061117
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4095,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 840,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1575,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:08:49.857641+00:00"
+    },
+    "VPL": {
+      "fundamental": 0.32390409474495596,
+      "growth": 1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.08435600716746106,
+        "RT_PRT_ROA": 0.03287980311935336,
+        "RT_PRT_GROSS_MARGIN": 0.362063332804428,
+        "RT_PRT_NET_MARGIN": 0.20347707532264922,
+        "RT_LQD_CR": 1.2327715261186458,
+        "RT_LEV_DE": 1.8039568134624187
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 819,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 168,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 315,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:09:04.844783+00:00"
+    },
+    "VPX": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
+      "growth_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
+      "ratios": {},
+      "statements": {},
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "RateLimitError",
+        "code": "VNSTOCK_SOURCE_RATE_LIMITED",
+        "action": "Chờ rồi gọi lại; giảm số mã mỗi lần"
+      },
+      "refreshed_at": "2026-11-13T02:09:09.797061+00:00"
+    },
+    "VRE": {
+      "fundamental": null,
+      "growth": null,
+      "fundamental_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
+      "growth_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
+      "ratios": {},
+      "statements": {},
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "error": {
+        "type": "RateLimitError",
+        "code": "VNSTOCK_SOURCE_RATE_LIMITED",
+        "action": "Chờ rồi gọi lại; giảm số mã mỗi lần"
+      },
+      "refreshed_at": "2026-11-13T02:09:11.463631+00:00"
+    },
+    "VSC": {
+      "fundamental": 0.24188467178092496,
+      "growth": -0.2857537808523434,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.046896052838635766,
+        "RT_PRT_ROA": 0.017326941958838663,
+        "RT_PRT_GROSS_MARGIN": 0.40737914692781024,
+        "RT_PRT_NET_MARGIN": 0.14466216960643347,
+        "RT_LQD_CR": 1.0769662356563967,
+        "RT_LEV_DE": 1.3164496936351877
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:10:13.070366+00:00"
+    },
+    "VTP": {
+      "fundamental": -0.0564091827793639,
+      "growth": 0.8429809697009478,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.18006814633899362,
+        "RT_PRT_ROA": 0.04724624122672515,
+        "RT_PRT_GROSS_MARGIN": 0.059817307320281496,
+        "RT_PRT_NET_MARGIN": 0.016998713835410354,
+        "RT_LQD_CR": 1.1360555539118407,
+        "RT_LEV_DE": 2.6647054445488614
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4563,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 936,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1755,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "engine": "vnstock_quant.fa",
+      "version": "1.0.0",
+      "refreshed_at": "2026-11-13T02:10:57.913075+00:00"
+    }
+  }
+}
