@@ -204,17 +204,27 @@ def normalize_ohlcv(frame: pd.DataFrame, symbol: str, market_source: str) -> lis
     required = {name: lowered.get(name) for name in ("open", "high", "low", "close", "volume")}
     if time_column is None or any(column is None for column in required.values()):
         raise ValueError(f"SSI OHLC schema unsupported for {symbol}: {list(data.columns)}")
+    data["_parsed_time"] = pd.to_datetime(data[time_column], errors="coerce")
+    data = data.dropna(subset=["_parsed_time"]).sort_values("_parsed_time")
     rows: dict[str, dict[str, Any]] = {}
     for _, source in data.iterrows():
-        parsed = pd.to_datetime(source[time_column], errors="coerce")
-        if pd.isna(parsed):
-            continue
+        parsed = source["_parsed_time"]
         day = parsed.date().isoformat()
-        row = {"symbol": symbol, "date": day, "market_source": market_source.upper(), "pipeline_generation": 6}
-        for name, column in required.items():
-            row[name] = finite(source[column])
-        if all(row[name] is not None for name in ("open", "high", "low", "close")):
-            rows[day] = row
+        values = {name: finite(source[column]) for name, column in required.items()}
+        if any(values[name] is None for name in ("open", "high", "low", "close")):
+            continue
+        row = rows.get(day)
+        if row is None:
+            rows[day] = {
+                "symbol": symbol, "date": day, "market_source": market_source.upper(),
+                "pipeline_generation": 6, **values,
+            }
+            continue
+        row["high"] = max(float(row["high"]), float(values["high"]))
+        row["low"] = min(float(row["low"]), float(values["low"]))
+        row["close"] = values["close"]
+        if values["volume"] is not None:
+            row["volume"] = float(row.get("volume") or 0) + float(values["volume"])
     return [rows[key] for key in sorted(rows)]
 
 
@@ -305,8 +315,9 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     return len(existing) - before
 
 
-def run_native(config: dict[str, Any], force: bool) -> None:
-    today = date.today()
+def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> None:
+    now = datetime.now(ICT)
+    today = now.date()
     if today.isoformat() < config["cutover_date"] and not force:
         raise RuntimeError("VNStock6 cutover date has not been reached")
     source_config = config["sources"]
@@ -314,7 +325,6 @@ def run_native(config: dict[str, Any], force: bool) -> None:
     market_sources = [source_config["market"]["primary"], source_config["market"]["fallback"]]
     fundamental_source = source_config["fundamental"]
     universe = list(config["universe"])
-    now = datetime.now(ICT)
     predictions: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
@@ -332,8 +342,18 @@ def run_native(config: dict[str, Any], force: bool) -> None:
         for market_source in market_sources:
             try:
                 start = market_fetch_start(symbol, today, int(config["history_days"]))
-                frame = Market(market_source).equity(symbol).ohlcv(start=start)
-                merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))
+                equity = Market(market_source).equity(symbol)
+                frame = equity.ohlcv(start=start, interval="1D", compat="v6")
+                incoming = normalize_ohlcv(frame, symbol, market_source)
+                if intraday:
+                    live = equity.ohlcv(
+                        start=today.isoformat(), end=now.isoformat(), interval="5m", compat="v6"
+                    )
+                    live_rows = normalize_ohlcv(live, symbol, market_source)
+                    if not any(row["date"] == today.isoformat() for row in live_rows):
+                        raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
+                    incoming.extend(live_rows)
+                merged = merge_ohlcv(symbol, incoming)
                 predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), factors, config["scoring"]["weights"]))
                 source_counts[market_source.upper()] += 1
                 break
@@ -388,12 +408,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=("run", "evaluate", "fundamentals"))
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--intraday", action="store_true")
     parser.add_argument("--fundamental-limit", type=int)
     parser.add_argument("--stale-only", action="store_true")
     args = parser.parse_args()
     config = load_config()
     if args.command == "run":
-        run_native(config, args.force)
+        run_native(config, args.force, args.intraday)
     elif args.command == "fundamentals":
         refresh_fundamental_cache(config, args.fundamental_limit, args.stale_only)
     else:

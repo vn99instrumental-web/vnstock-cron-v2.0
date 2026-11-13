@@ -4,11 +4,33 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
+import pandas as pd
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import vnstock6_native_pipeline as pipeline
 
 
 class PipelineCadenceTest(unittest.TestCase):
+    def test_intraday_bars_are_aggregated_into_current_daily_candle(self):
+        frame = pd.DataFrame(
+            {
+                "time": ["2026-11-13 09:00:00", "2026-11-13 09:05:00"],
+                "open": [100, 102],
+                "high": [103, 106],
+                "low": [99, 101],
+                "close": [102, 105],
+                "volume": [1000, 1500],
+            }
+        )
+        rows = pipeline.normalize_ohlcv(frame, "FPT", "ssi")
+        self.assertEqual(
+            rows,
+            [{
+                "symbol": "FPT", "date": "2026-11-13", "market_source": "SSI",
+                "pipeline_generation": 6, "open": 100.0, "high": 106.0,
+                "low": 99.0, "close": 105.0, "volume": 2500.0,
+            }],
+        )
     def test_market_fetch_start_uses_recent_correction_window(self):
         with patch.object(Path, "exists", return_value=True), patch.object(
             Path, "read_text", return_value='[{"date":"2026-11-10"}]'

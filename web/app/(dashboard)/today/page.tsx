@@ -5,6 +5,7 @@ import { getLatestVersionRuns } from "@/lib/dashboard-data";
 import { createCachedPublicClient } from "@/lib/supabase/cached-public";
 import { dateTimeVN, hmVN } from "@/lib/format";
 import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
+import { REVIEW_VERSIONS, type ReviewVersion } from "@/lib/scoring-versions";
 import { servingForSource } from "@/lib/data-source/vnstock6-serving";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 
@@ -29,15 +30,18 @@ export default async function TodayPage() {
   const requestedSource = await getDashboardDataSource();
   const metadata = await getLatestVersionRuns("today-compare-metadata", requestedSource);
   if (metadata.error) {
-    return <><PageHeader title="Hôm nay" desc="Đối chiếu tín hiệu v4.17–v4.19." /><QueryErrorState hint="Không đọc được metadata scoring version từ Supabase." /></>;
+    return <><PageHeader title="Hôm nay" desc={requestedSource === "vnstock6" ? "Tín hiệu native v6.2." : "Đối chiếu tín hiệu v4.17–v4.19."} /><QueryErrorState hint="Không đọc được metadata scoring version từ nguồn đã chọn." /></>;
   }
 
-  const versionDates = Object.fromEntries(TODAY_COMPARE_VERSIONS.flatMap((version) => {
+  const activeVersions: readonly ReviewVersion[] = metadata.source === "vnstock6"
+    ? REVIEW_VERSIONS.filter((version) => version.startsWith("v6.") && metadata.byVersion[version])
+    : TODAY_COMPARE_VERSIONS;
+  const versionDates = Object.fromEntries(activeVersions.flatMap((version) => {
     const date = metadata.versionDates[version];
     return date ? [[version, date]] : [];
   })) as Record<string, string>;
 
-  const signalResponses = await Promise.all(TODAY_COMPARE_VERSIONS.map(async (version) => {
+  const signalResponses = await Promise.all(activeVersions.map(async (version) => {
     const signalDate = versionDates[version];
     if (!signalDate) return { version, data: [] as TodaySignal[], error: null };
     if (metadata.source !== "supabase") {
@@ -55,7 +59,7 @@ export default async function TodayPage() {
     return { version, data: (response.data ?? []) as TodaySignal[], error: response.error };
   }));  const failed = signalResponses.find((response) => response.error);
   if (failed) {
-    return <><PageHeader title="Hôm nay" desc="Đối chiếu tín hiệu v4.17–v4.19." /><QueryErrorState hint={`Không đọc được tín hiệu ${failed.version} từ Supabase.`} /></>;
+    return <><PageHeader title="Hôm nay" desc={requestedSource === "vnstock6" ? "Tín hiệu native v6.2." : "Đối chiếu tín hiệu v4.17–v4.19."} /><QueryErrorState hint={`Không đọc được tín hiệu ${failed.version} từ nguồn đã chọn.`} /></>;
   }
 
   const signals = signalResponses.flatMap((response) => response.data);
@@ -67,7 +71,7 @@ export default async function TodayPage() {
   for (const signal of signals) {
     const price = signal.price == null || signal.price === "" ? NaN : Number(signal.price);
     if (!Number.isFinite(price) || price <= 0) continue;
-    const versionOrder = TODAY_COMPARE_VERSIONS.indexOf(signal.scoring_version as (typeof TODAY_COMPARE_VERSIONS)[number]);
+    const versionOrder = activeVersions.indexOf(signal.scoring_version as ReviewVersion);
     if (versionOrder < 0) continue;
     const snapTime = signal.snap_time ?? "";
     const previous = latestPrices.get(signal.symbol);
@@ -135,7 +139,7 @@ export default async function TodayPage() {
     : await baseClient.from("v4_ohlc").select("date, synced_at").order("date", { ascending: false }).limit(1).maybeSingle();
   const ohlcRow = ohlc as { date?: string; synced_at?: string } | null;
   const statusItems: DataStatusItem[] = [
-    ...TODAY_COMPARE_VERSIONS.map((version) => {
+    ...activeVersions.map((version) => {
       const run = metadata.byVersion[version];
       return {
         label: `Run ${version === "v4.19-shadow" ? "v4.19" : version}`,
@@ -148,7 +152,7 @@ export default async function TodayPage() {
   ];
 
   const symbolCount = new Set(signals.map((signal) => signal.symbol)).size;
-  const latestTimes = TODAY_COMPARE_VERSIONS.flatMap((version) => {
+  const latestTimes = activeVersions.flatMap((version) => {
     const run = metadata.byVersion[version];
     return run ? [`${version === "v4.19-shadow" ? "v4.19" : version} · ${versionDates[version]} · cập nhật ${hmVN(run.started_at)}`] : [];
   });
@@ -157,7 +161,7 @@ export default async function TodayPage() {
     <>
       <PageHeader title="Hôm nay" desc={`${symbolCount} mã hợp nhất · ${latestTimes.join(" · ")} (giờ VN)`} />
       <DataStatusPanel items={statusItems} />
-      {signals.length ? <TodayBoard signals={signals} versionDates={versionDates} priceStats={priceStats} /> : <EmptyState title="Chưa có dữ liệu cho ba version" hint="Cần ít nhất một run v4.17, v4.18 hoặc v4.19." />}
+      {signals.length ? <TodayBoard signals={signals} versions={activeVersions} versionDates={versionDates} priceStats={priceStats} /> : <EmptyState title="Chưa có dữ liệu cho nguồn đã chọn" hint="Cần ít nhất một run scoring hợp lệ cho nguồn đã chọn." />}
     </>
   );
 }

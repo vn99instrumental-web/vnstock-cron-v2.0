@@ -4,7 +4,7 @@ import { Fragment, useMemo, useState } from "react";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, fmtPct, hmVN, signClass, fmtBil } from "@/lib/format";
 import { DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
-import { TODAY_COMPARE_VERSIONS } from "@/lib/today-compare";
+import { versionLabel } from "@/lib/scoring-versions";
 
 export interface TodayPriceStat {
   price: number;
@@ -113,12 +113,7 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
     </div>
   );
 }
-type TodayCompareVersion = (typeof TODAY_COMPARE_VERSIONS)[number];
-const VERSION_LABELS: Record<TodayCompareVersion, string> = {
-  "v4.17": "v4.17",
-  "v4.18": "v4.18",
-  "v4.19-shadow": "v4.19",
-};
+type TodayCompareVersion = string;
 
 type VersionGroup = Group & { version: TodayCompareVersion };
 type CompareRow = { symbol: string; byVersion: Partial<Record<TodayCompareVersion, VersionGroup>> };
@@ -134,7 +129,7 @@ function cellTone(decision: string | null | undefined): string {
   return "border-[var(--color-border)] bg-[var(--color-bg)]";
 }
 
-export function TodayBoard({ signals, versionDates, priceStats }: { signals: TodaySignal[]; versionDates: Record<string, string>; priceStats: Record<string, TodayPriceStat> }) {
+export function TodayBoard({ signals, versions, versionDates, priceStats }: { signals: TodaySignal[]; versions: readonly string[]; versionDates: Record<string, string>; priceStats: Record<string, TodayPriceStat> }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [signalMode, setSignalMode] = useState<SignalMode>("both");
   const [hideThin, setHideThin] = useState(false);
@@ -147,7 +142,7 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
   const groups = useMemo<VersionGroup[]>(() => {
     const by = new Map<string, Snap[]>();
     for (const signal of signals) {
-      if (!TODAY_COMPARE_VERSIONS.includes(signal.scoring_version as TodayCompareVersion)) continue;
+      if (!versions.includes(signal.scoring_version as TodayCompareVersion)) continue;
       const key = `${signal.scoring_version}:${signal.symbol}`;
       const snaps = by.get(key) ?? [];
       snaps.push({
@@ -191,14 +186,14 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
       });
     }
     return result;
-  }, [signals]);
+  }, [signals, versions]);
 
   // Use the newest snapshot carrying a valid ADTV across all three versions.
   // At identical timestamps prefer the newer scoring version (v4.19 → v4.18 → v4.17).
   const liquidityBySymbol = useMemo(() => {
     const latest = new Map<string, { adtv: number; time: string; versionOrder: number }>();
     for (const group of groups) {
-      const versionOrder = TODAY_COMPARE_VERSIONS.indexOf(group.version);
+      const versionOrder = versions.indexOf(group.version);
       for (const snap of group.snaps) {
         const adtv = num(snap.breakdown.adtv_bil);
         if (adtv == null || adtv < 0) continue;
@@ -210,7 +205,7 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
       }
     }
     return new Map([...latest.entries()].map(([symbol, value]) => [symbol, value.adtv]));
-  }, [groups]);
+  }, [groups, versions]);
   const parsedThreshold = Number(liquidityThreshold);
   const minLiquidity = liquidityThreshold.trim() !== "" && Number.isFinite(parsedThreshold) && parsedThreshold >= 0
     ? parsedThreshold : 10;
@@ -225,11 +220,11 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
     const query = q.trim().toUpperCase();
     const result = [...bySymbol.values()].filter((row) => {
       if (query && !row.symbol.includes(query)) return false;
-      const hasAllVersions = TODAY_COMPARE_VERSIONS.every((version) => row.byVersion[version]);
+      const hasAllVersions = versions.every((version) => row.byVersion[version]);
       if (commonOnly && !hasAllVersions) return false;
       if (signalMode !== "all") {
         const matches = (version: TodayCompareVersion) => matchesSignalMode(row.byVersion[version]?.latest.decision, signalMode);
-        if (commonOnly ? !TODAY_COMPARE_VERSIONS.every(matches) : !TODAY_COMPARE_VERSIONS.some(matches)) return false;
+        if (commonOnly ? !versions.every(matches) : !versions.some(matches)) return false;
       }
       const adtv = liquidityBySymbol.get(row.symbol);
       if (hideThin && adtv != null && adtv < minLiquidity) return false;
@@ -252,17 +247,17 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
         return comparison || a.symbol.localeCompare(b.symbol);
       }
       if (sortKey === "buy") {
-        const aBuy = TODAY_COMPARE_VERSIONS.reduce((sum, version) => sum + (a.byVersion[version]?.nBuy ?? 0), 0);
-        const bBuy = TODAY_COMPARE_VERSIONS.reduce((sum, version) => sum + (b.byVersion[version]?.nBuy ?? 0), 0);
-        return bBuy - aBuy || Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(a.byVersion[version])));
+        const aBuy = versions.reduce((sum, version) => sum + (a.byVersion[version]?.nBuy ?? 0), 0);
+        const bBuy = versions.reduce((sum, version) => sum + (b.byVersion[version]?.nBuy ?? 0), 0);
+        return bBuy - aBuy || Math.max(...versions.map((version) => latestScore(b.byVersion[version]))) - Math.max(...versions.map((version) => latestScore(a.byVersion[version])));
       }
       if (sortKey === "delta") {
-        return Math.max(...TODAY_COMPARE_VERSIONS.map((version) => scoreDelta(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => scoreDelta(a.byVersion[version])));
+        return Math.max(...versions.map((version) => scoreDelta(b.byVersion[version]))) - Math.max(...versions.map((version) => scoreDelta(a.byVersion[version])));
       }
-      return Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(b.byVersion[version]))) - Math.max(...TODAY_COMPARE_VERSIONS.map((version) => latestScore(a.byVersion[version])));
+      return Math.max(...versions.map((version) => latestScore(b.byVersion[version]))) - Math.max(...versions.map((version) => latestScore(a.byVersion[version])));
     });
     return result;
-  }, [groups, q, commonOnly, signalMode, hideThin, minLiquidity, liquidityBySymbol, priceStats, sortKey]);
+  }, [groups, q, commonOnly, signalMode, hideThin, minLiquidity, liquidityBySymbol, priceStats, sortKey, versions]);
 
   const totalSymbols = new Set(groups.map((group) => group.symbol)).size;
   const commonSymbols = useMemo(() => {
@@ -272,13 +267,13 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
       versions.add(group.version);
       versionsBySymbol.set(group.symbol, versions);
     }
-    return [...versionsBySymbol.values()].filter((versions) => versions.size === TODAY_COMPARE_VERSIONS.length).length;
-  }, [groups]);
+    return [...versionsBySymbol.values()].filter((symbolVersions) => symbolVersions.size === versions.length).length;
+  }, [groups, versions]);
   const sameDecision = useMemo(() => rows.filter((row) => {
-    const decisions = TODAY_COMPARE_VERSIONS.map((version) => row.byVersion[version]?.latest.decision);
+    const decisions = versions.map((version) => row.byVersion[version]?.latest.decision);
     return decisions.every(Boolean) && new Set(decisions).size === 1;
-  }).length, [rows]);
-  const versionStats = TODAY_COMPARE_VERSIONS.map((version) => {
+  }).length, [rows, versions]);
+  const versionStats = versions.map((version) => {
     const versionGroups = groups.filter((group) => group.version === version);
     return {
       version,
@@ -327,15 +322,15 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
       <details className="card group overflow-hidden">
         <summary className="touch-target flex cursor-pointer list-none flex-wrap items-center gap-2 px-3 py-2 text-xs [&::-webkit-details-marker]:hidden">
           <span aria-hidden className="text-[var(--color-muted)] transition-transform group-open:rotate-90">▸</span>
-          <span className="font-semibold">Thống kê so sánh 3 scoring version</span>
+          <span className="font-semibold">Thống kê nguồn đang chọn</span>
           <span className="text-[10px] text-[var(--color-muted)]">mặc định đóng</span>
           <span className="ml-auto text-[10px] text-[var(--color-muted)]">mở / đóng</span>
         </summary>
         <div className="border-t border-[var(--color-border)] p-2.5">
           <InsightStrip metrics={[
-            ...versionStats.map((stat) => ({ value: `${stat.currentBuy}/${stat.symbols}`, label: `${VERSION_LABELS[stat.version]} BUY`, detail: `${stat.snapshots} snapshot`, tone: stat.currentBuy ? "positive" as const : "default" as const })),
-            { value: commonSymbols, label: "Có ở cả 3", detail: `${totalSymbols} mã hợp nhất` },
-            { value: sameDecision, label: "Đồng thuận 3 version", detail: "trên tập đang lọc" },
+            ...versionStats.map((stat) => ({ value: `${stat.currentBuy}/${stat.symbols}`, label: `${versionLabel(stat.version)} BUY`, detail: `${stat.snapshots} snapshot`, tone: stat.currentBuy ? "positive" as const : "default" as const })),
+            { value: commonSymbols, label: `Có ở đủ ${versions.length}`, detail: `${totalSymbols} mã hợp nhất` },
+            { value: sameDecision, label: `Đồng thuận ${versions.length} version`, detail: "trên tập đang lọc" },
           ]} />
         </div>
       </details>
@@ -362,7 +357,7 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
           <option value="buy">Chỉ BUY</option>
           <option value="all">Tất cả tín hiệu</option>
         </select>
-        <label title="Khi bật, cả ba version đều phải có tín hiệu đúng với bộ lọc đã chọn." className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs font-medium text-[var(--color-ink)]"><input type="checkbox" checked={commonOnly} onChange={(event) => setCommonOnly(event.target.checked)} className="h-4 w-4" />Có ở cả 3</label>
+        <label title={`Khi bật, cả ${versions.length} version đều phải có tín hiệu đúng với bộ lọc đã chọn.`} className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs font-medium text-[var(--color-ink)]"><input type="checkbox" checked={commonOnly} onChange={(event) => setCommonOnly(event.target.checked)} className="h-4 w-4" />{`Có ở cả ${versions.length}`}</label>
         <label className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs text-[var(--color-muted)]">
           <input type="checkbox" checked={hideThin} onChange={(event) => setHideThin(event.target.checked)} className="h-4 w-4" />
           Ẩn thanh khoản thấp
@@ -389,7 +384,7 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
             <thead className="sticky top-0 z-10 bg-[var(--color-surface)] text-left">
               <tr className="border-b border-[var(--color-border)] text-[var(--color-muted)]">
                 <th className="w-20 px-3 py-2 font-medium">Mã</th>
-                {TODAY_COMPARE_VERSIONS.map((version) => <th key={version} className="px-2 py-2 font-medium"><span className="font-mono font-semibold text-[var(--color-ink)]">{VERSION_LABELS[version]}</span><span className="ml-2 text-[10px]">{versionDates[version] ?? "chưa có run"}</span></th>)}
+                {versions.map((version) => <th key={version} className="px-2 py-2 font-medium"><span className="font-mono font-semibold text-[var(--color-ink)]">{versionLabel(version)}</span><span className="ml-2 text-[10px]">{versionDates[version] ?? "chưa có run"}</span></th>)}
               </tr>
             </thead>
             <tbody>
@@ -412,12 +407,12 @@ export function TodayBoard({ signals, versionDates, priceStats }: { signals: Tod
                             : liquidityBySymbol.get(row.symbol)!.toLocaleString("vi-VN", { maximumFractionDigits: 1 }) + " tỷ"}
                         </div>
                       </td>
-                      {TODAY_COMPARE_VERSIONS.map((version) => <td key={version} className="px-2 py-2">{renderVersionCell(row, version)}</td>)}
+                      {versions.map((version) => <td key={version} className="px-2 py-2">{renderVersionCell(row, version)}</td>)}
                     </tr>
                     {isExpanded && expanded ? (
                       <tr className="border-b border-[var(--color-border)] bg-black/[0.015] dark:bg-white/[0.025]">
-                        <td colSpan={4} className="px-3 py-3">
-                          <div className="mb-2 flex flex-wrap items-center gap-2"><span className="font-semibold">{expanded.symbol} · {VERSION_LABELS[expanded.version]}</span><span className="text-[var(--color-muted)]">{expanded.nSnap} snapshot trong ngày</span><button type="button" onClick={() => setOpenKey(null)} className="ml-auto text-[11px] text-[var(--color-accent)]">Đóng</button></div>
+                        <td colSpan={versions.length + 1} className="px-3 py-3">
+                          <div className="mb-2 flex flex-wrap items-center gap-2"><span className="font-semibold">{expanded.symbol} · {versionLabel(expanded.version)}</span><span className="text-[var(--color-muted)]">{expanded.nSnap} snapshot trong ngày</span><button type="button" onClick={() => setOpenKey(null)} className="ml-auto text-[11px] text-[var(--color-accent)]">Đóng</button></div>
                           <div className="overflow-x-auto">
                             <table className="w-full min-w-[720px] text-xs">
                               <thead className="text-left text-[11px] text-[var(--color-muted)]"><tr><th className="py-1">Giờ</th><th className="py-1">Quyết định</th><th className="py-1 text-right">Score</th><th className="py-1 text-right">Giá</th><th className="py-1 text-right">Entry/SL/TP</th><th className="py-1 text-right">NN lũy kế</th></tr></thead>

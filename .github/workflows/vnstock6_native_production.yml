@@ -55,7 +55,11 @@ jobs:
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
+          run_args=()
+          if [ "${{ inputs.mode }}" = "intraday" ]; then
+            run_args+=(--intraday)
+          fi
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${run_args[@]}"
           if [ "${{ inputs.mode }}" != "intraday" ]; then
             ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
           fi

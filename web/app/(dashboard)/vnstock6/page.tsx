@@ -105,13 +105,15 @@ export default async function Vnstock6Page() {
   const current = data.current;
   const preview = data.preview;
   const comparison = data.comparison;
+  const activeGeneratedAt = dashboard.mode === "native" ? dashboard.generated_at : data.generated_at;
+  const activeRunUrl = dashboard.mode === "native" ? dashboard.flow.run_url : data.run.url;
   return (
     <div className="space-y-3">
       <PageHeader
         title="Đối chiếu thế hệ 6"
-        desc={`Read-only · cập nhật ${timestamp(data.generated_at)}`}
+        desc={`Read-only · dữ liệu ${dashboard.mode} cập nhật ${timestamp(activeGeneratedAt)} · snapshot đối chiếu ${timestamp(data.generated_at)}`}
         actions={(
-          <a className="rounded-md border border-[var(--color-border)] px-2.5 py-1 text-[11px] font-semibold hover:bg-black/5 dark:hover:bg-white/5" href={data.run.url} target="_blank" rel="noreferrer">
+          <a className="rounded-md border border-[var(--color-border)] px-2.5 py-1 text-[11px] font-semibold hover:bg-black/5 dark:hover:bg-white/5" href={activeRunUrl} target="_blank" rel="noreferrer">
             Xem GitHub run ↗
           </a>
         )}
@@ -181,7 +183,9 @@ export default async function Vnstock6Page() {
           ))}
         </div>
         <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
-          Tất cả tab hiện đọc cùng contract. Ở chế độ bridge, signals/scoring vẫn từ GitHub production và chỉ được lọc theo {integer(dashboard.symbols.length)} mã SSI; market ingest và scoring Gen 6 native chưa được đánh dấu hoàn tất.
+          {dashboard.mode === "native"
+            ? `Tất cả tab hiện đọc release Gen 6 native độc lập, gồm ${integer(dashboard.symbols.length)} mã SSI.`
+            : `Tất cả tab hiện đọc cùng contract bridge: signals/scoring từ GitHub production và lọc theo ${integer(dashboard.symbols.length)} mã SSI.`}
         </p>
       </section>
 
