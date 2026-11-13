@@ -37,6 +37,11 @@ def main() -> None:
         raise RuntimeError("Candidate contains rows not calculated by pinned vnstock_quant")
     if invalid_scoring:
         raise RuntimeError("Candidate contains rows without availability-aware scoring provenance")
+    fundamental_scored = sum(row.get("fundamental_status") == "scored" for row in rows)
+    if int(status.get("fundamental_cache_symbols", 0)) < 3:
+        raise RuntimeError("Candidate did not refresh the required FHSC sample")
+    if fundamental_scored < 1:
+        raise RuntimeError("Candidate did not calculate any fundamental factor with vnstock_quant")
     excluded_counts = {}
     for row in rows:
         for factor in row.get("excluded_factors", []):
@@ -47,8 +52,7 @@ def main() -> None:
         "cutover_date": config["cutover_date"], "universe_size": status["universe_size"],
         "successful_symbols": status["successful_symbols"], "serving_rows": len(rows),
         "failed_symbol_count": len(status["failed_symbols"]), "excluded_factor_counts": excluded_counts,
-        "fundamental_scored_rows": sum(row.get("fundamental_status") == "scored" for row in rows),
-        "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
+        "fundamental_scored_rows": fundamental_scored,        "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
     }
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -49,3 +49,11 @@ Promotion requires final package/version checks, account/device reuse, SSI and F
 ## Availability-aware scoring
 
 `v6.2-quant` follows the production factor contract but is not numerically labelled as v4.18/v4.19. EMA, RSI, ATR and OBV are calculated by `vnstock_quant.ta`; FHSC statements feed `vnstock_quant.fa` ratios and quarterly year-over-year growth. Each row records `factor_status`, `included_factors`, `excluded_factors`, `available_weight` and `missing_data_policy=exclude_and_renormalize`. A factor with incomplete inputs is marked with its reason and excluded from both numerator and denominator, so an unavailable source never becomes a fabricated zero.
+
+## Fundamental refresh policy
+
+FHSC throttles statement reads, so fundamentals are not re-downloaded during each of the five intraday runs. The production cache is `output/vnstock6/fundamental-factors.json` and carries source, calculation version, refresh time, ratios and statement quality counts per symbol.
+
+- Candidate refreshes three symbols to prove the live FHSC and `vnstock_quant.fa` path, then validates at least one scored fundamental row.
+- Daily and weekly production modes refresh the full configured universe and may run for up to 180 minutes.
+- Intraday mode reads the last committed cache. A missing symbol is marked `fundamental_cache_unavailable` and both fundamental factors are excluded and renormalized; stale or missing data is never replaced by zero.

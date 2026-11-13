@@ -27,8 +27,8 @@ CONFIG_PATH = ROOT / "config" / "vnstock6.json"
 PRED_ROOT = ROOT / "output" / "history" / "vnstock6" / "predictions"
 OUTCOME_ROOT = ROOT / "output" / "history" / "vnstock6" / "outcomes"
 OHLC_ROOT = ROOT / "output" / "ohlc"
+FUNDAMENTAL_CACHE = ROOT / "output" / "vnstock6" / "fundamental-factors.json"
 ICT = timezone(timedelta(hours=7))
-
 
 def load_config() -> dict[str, Any]:
     value = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
@@ -59,6 +59,27 @@ def finite(value: Any) -> float | None:
         return number if math.isfinite(number) else None
     except (TypeError, ValueError):
         return None
+
+
+def load_fundamental_cache(source: str) -> dict[str, Any]:
+    if not FUNDAMENTAL_CACHE.exists():
+        return {}
+    value = json.loads(FUNDAMENTAL_CACHE.read_text(encoding="utf-8"))
+    if str(value.get("source", "")).lower() != source.lower():
+        return {}
+    return dict(value.get("symbols") or {})
+
+
+def save_fundamental_cache(source: str, factors: dict[str, Any]) -> None:
+    FUNDAMENTAL_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source": source.upper(), "calculation_engine": "vnstock_quant",
+        "calculation_version": "1.0.0", "symbols": factors,
+    }
+    FUNDAMENTAL_CACHE.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def normalize_ohlcv(frame: pd.DataFrame, symbol: str, market_source: str) -> list[dict[str, Any]]:
@@ -169,7 +190,7 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     return len(existing) - before
 
 
-def run_native(config: dict[str, Any], force: bool) -> None:
+def run_native(config: dict[str, Any], force: bool, refresh_fundamentals: bool, fundamental_limit: int | None) -> None:
     today = date.today()
     if today.isoformat() < config["cutover_date"] and not force:
         raise RuntimeError("VNStock6 cutover date has not been reached")
@@ -198,10 +219,22 @@ def run_native(config: dict[str, Any], force: bool) -> None:
                 else:
                     time.sleep(attempt)
     fundamental_status = "available_not_scored" if all(item["status"] == "success" for item in fundamental_checks.values()) else "degraded"
-    for symbol in universe:
+    factor_cache = load_fundamental_cache(fundamental_source)
+    refreshed = 0
+    for index, symbol in enumerate(universe):
         attempts = []
-        factors = fundamental_factors(symbol, fundamental_source)
-        for market_source in market_sources:
+        should_refresh = refresh_fundamentals and (fundamental_limit is None or index < fundamental_limit)
+        if should_refresh:
+            factors = fundamental_factors(symbol, fundamental_source)
+            factors["refreshed_at"] = datetime.now(timezone.utc).isoformat()
+            factor_cache[symbol] = factors
+            refreshed += 1
+        else:
+            factors = factor_cache.get(symbol) or {
+                "fundamental": None, "growth": None, "ratios": {}, "statements": {},
+                "fundamental_reason": "fundamental_cache_unavailable", "growth_reason": "fundamental_cache_unavailable",
+                "engine": "vnstock_quant.fa", "version": "1.0.0",
+            }        for market_source in market_sources:
             try:
                 frame = Market(market_source).equity(symbol).ohlcv(start=start)
                 merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))
@@ -212,6 +245,8 @@ def run_native(config: dict[str, Any], force: bool) -> None:
                 attempts.append({"source": market_source.upper(), "type": type(exc).__name__, "code": getattr(exc, "code", None)})
         else:
             errors.append({"symbol": symbol, "attempts": attempts})
+    if refreshed:
+        save_fundamental_cache(fundamental_source, factor_cache)
     if len(predictions) < int(config["minimum_coverage"]):
         raise RuntimeError(f"VNStock6 coverage {len(predictions)}/{len(universe)} below minimum; errors={errors[:10]}")
     partition = PRED_ROOT / f"{predictions[0]['signal_date']}.jsonl"
@@ -221,6 +256,8 @@ def run_native(config: dict[str, Any], force: bool) -> None:
         "scoring_version": config["scoring_version"], "universe_size": len(universe),
         "sources": {"reference": reference_source.upper(), "market_counts": source_counts, "fundamental": fundamental_source.upper()},
         "fundamental_checks": fundamental_checks, "fundamental_status": fundamental_status,
+        "fundamental_cache_symbols": len(factor_cache),
+        "fundamental_symbols_refreshed": refreshed,
         "successful_symbols": len(predictions), "failed_symbols": errors, "records_added": added,
     }
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"
@@ -257,9 +294,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=("run", "evaluate"))
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--refresh-fundamentals", action="store_true")
+    parser.add_argument("--fundamental-limit", type=int)
     args = parser.parse_args()
     config = load_config()
-    run_native(config, args.force) if args.command == "run" else evaluate(config)
+    run_native(config, args.force, args.refresh_fundamentals, args.fundamental_limit) if args.command == "run" else evaluate(config)
 
 
 if __name__ == "__main__":

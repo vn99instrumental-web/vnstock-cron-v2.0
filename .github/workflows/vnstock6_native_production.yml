@@ -23,7 +23,7 @@ permissions:
 jobs:
   produce:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 180
     env:
       HOME: /home/runner
       DO_NOT_TRACK: "1"
@@ -55,7 +55,9 @@ jobs:
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
+          fundamental_args=()
+          if [ "${{ inputs.mode }}" != "intraday" ]; then fundamental_args+=(--refresh-fundamentals); fi
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${fundamental_args[@]}"
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
           if [ "${{ inputs.mode }}" = "intraday" ]; then
             ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --versions v6.2-quant

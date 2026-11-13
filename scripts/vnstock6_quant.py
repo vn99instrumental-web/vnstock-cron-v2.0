@@ -56,7 +56,7 @@ def fundamental_factors(symbol: str, source: str) -> dict[str,Any]:
         for name in ("balance_sheet","income_statement","cash_flow"):
             frame=getattr(equity,name)(period="quarter",format="long",compat="v5")
             frames.append(frame)
-            statements[name]={"status":"success","rows":len(frame),"schema_changes":list(frame.attrs.get("schema_changes",[])),"identities":frame.attrs.get("identities",[])}
+            statements[name]={"status":"success","rows":len(frame),"schema_changes":list(frame.attrs.get("schema_changes",[])),"identity_issue_count":len(frame.attrs.get("identities",[]))}
         table=fa.ratios(fa.Dataset.from_frames({symbol:frames}),ids=list(RATIO_IDS),period="quarter",format="long")
         ratios={}
         if table is not None and not table.empty:
