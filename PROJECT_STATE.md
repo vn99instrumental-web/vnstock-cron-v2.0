@@ -311,5 +311,5 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - A failed symbol refresh preserves the last successful cache entry. Entries older than 14 days are excluded from Fundamental/Growth with weight renormalization and the reason fundamental_cache_stale.
 - The candidate workflow probes the separated fundamental path with three symbols before market/scoring. It may report `PASS_DEGRADED` only after verifying unavailable fundamental/growth factors are excluded and weights renormalized; the weekly workflow remains the hard freshness gate.
 - Local verification: Python compile PASS; six focused unit tests PASS after retries around the known intermittent Windows native process crash; git diff --check PASS. Security review found no committed secret, client exposure or new authorization boundary.
-- The production bootstrap run 43338517181 was still in progress while this change was prepared. First scheduled daily/weekly runs remain operational checks after merge.
-- Current focused backlog is docs/VNSTOCK6_TASKS.md.
+- Production bootstrap run 43338517181 succeeded and published commit fe613b7a: FHSC/vnstock_quant cache 100/100, v6.2-quant serving 100/100 and 300 matured outcomes. The first post-split intraday run 43350792238 also succeeded without a BCTC refresh.
+- Candidate run 43350815066 passed on Linux: SSI OHLCV 100/100, FHSC refresh sample 3/3, 174 fundamental/growth scored rows and 26 availability exclusions. First scheduled daily/weekly runs and authenticated dashboard review remain operational checks in docs/VNSTOCK6_TASKS.md.
