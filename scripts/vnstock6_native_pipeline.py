@@ -75,11 +75,89 @@ def save_fundamental_cache(source: str, factors: dict[str, Any]) -> None:
     payload = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": source.upper(), "calculation_engine": "vnstock_quant",
-        "calculation_version": "1.0.0", "symbols": factors,
+        "calculation_version": "1.0.0", "symbols": dict(sorted(factors.items())),
     }
     FUNDAMENTAL_CACHE.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+
+
+def market_fetch_start(symbol: str, today: date, history_days: int) -> str:
+    """Bootstrap full history once, then refetch only a correction window."""
+    path = OHLC_ROOT / f"{symbol}.json"
+    if path.exists():
+        try:
+            rows = json.loads(path.read_text(encoding="utf-8"))
+            latest = max(date.fromisoformat(str(row["date"])[:10]) for row in rows if row.get("date"))
+            return (latest - timedelta(days=14)).isoformat()
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            pass
+    return (today - timedelta(days=history_days)).isoformat()
+
+
+def cache_entry_is_fresh(entry: dict[str, Any], max_age_days: int) -> bool:
+    refreshed_at = entry.get("refreshed_at")
+    if not refreshed_at:
+        return False
+    try:
+        refreshed = datetime.fromisoformat(str(refreshed_at).replace("Z", "+00:00"))
+        if refreshed.tzinfo is None:
+            refreshed = refreshed.replace(tzinfo=timezone.utc)
+        return datetime.now(timezone.utc) - refreshed <= timedelta(days=max_age_days)
+    except (TypeError, ValueError):
+        return False
+
+
+def refresh_fundamental_cache(config: dict[str, Any], limit: int | None = None) -> dict[str, Any]:
+    """Refresh slow-moving FHSC statements without fetching market prices."""
+    source_config = config["sources"]
+    reference_source = source_config["reference"]
+    fundamental_source = source_config["fundamental"]
+    reference = Reference(reference_source).equity.list()
+    available = {str(value).upper() for value in reference["symbol"].dropna()}
+    universe = [symbol for symbol in config["universe"] if symbol in available]
+    selected = universe if limit is None else universe[:limit]
+    factor_cache = load_fundamental_cache(fundamental_source)
+    results: dict[str, Any] = {}
+
+    for symbol in selected:
+        previous = factor_cache.get(symbol)
+        last_result: dict[str, Any] | None = None
+        for attempt in range(1, 4):
+            last_result = fundamental_factors(symbol, fundamental_source)
+            if not last_result.get("error"):
+                last_result["refreshed_at"] = datetime.now(timezone.utc).isoformat()
+                factor_cache[symbol] = last_result
+                results[symbol] = {"status": "success", "attempt": attempt}
+                break
+            if attempt < 3:
+                time.sleep(attempt)
+        else:
+            results[symbol] = {
+                "status": "failed_preserved" if previous else "failed",
+                "attempt": 3,
+                "type": (last_result or {}).get("error", {}).get("type"),
+                "code": (last_result or {}).get("error", {}).get("code"),
+            }
+
+    save_fundamental_cache(fundamental_source, factor_cache)
+    counts = {
+        "success": sum(item["status"] == "success" for item in results.values()),
+        "failed": sum(item["status"] == "failed" for item in results.values()),
+        "failed_preserved": sum(item["status"] == "failed_preserved" for item in results.values()),
+    }
+    status = {
+        "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
+        "reference_source": reference_source.upper(), "fundamental_source": fundamental_source.upper(),
+        "configured_symbols": len(config["universe"]), "reference_symbols_available": len(universe),
+        "symbols_requested": len(selected), "cache_symbols": len(factor_cache),
+        "counts": counts, "symbols": results,
+    }
+    status_path = ROOT / "output" / "vnstock6" / "fundamental-status.json"
+    status_path.parent.mkdir(parents=True, exist_ok=True)
+    status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"VNStock6 fundamentals: {counts['success']}/{len(selected)} refreshed, {counts['failed']} failed")
+    return status
 
 
 def normalize_ohlcv(frame: pd.DataFrame, symbol: str, market_source: str) -> list[dict[str, Any]]:
@@ -190,7 +268,7 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     return len(existing) - before
 
 
-def run_native(config: dict[str, Any], force: bool, refresh_fundamentals: bool, fundamental_limit: int | None) -> None:
+def run_native(config: dict[str, Any], force: bool) -> None:
     today = date.today()
     if today.isoformat() < config["cutover_date"] and not force:
         raise RuntimeError("VNStock6 cutover date has not been reached")
@@ -198,45 +276,25 @@ def run_native(config: dict[str, Any], force: bool, refresh_fundamentals: bool, 
     reference_source = source_config["reference"]
     market_sources = [source_config["market"]["primary"], source_config["market"]["fallback"]]
     fundamental_source = source_config["fundamental"]
-    reference = Reference(reference_source).equity.list()
-    available = {str(value).upper() for value in reference["symbol"].dropna()}
-    universe = [symbol for symbol in config["universe"] if symbol in available]
-    start = (today - timedelta(days=int(config["history_days"]))).isoformat()
+    universe = list(config["universe"])
     now = datetime.now(ICT)
     predictions: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
-    fundamental_checks = {}
-    for statement in ("balance_sheet", "income_statement", "cash_flow"):
-        for attempt in range(1, 4):
-            try:
-                frame = getattr(Fundamental(fundamental_source).equity("FPT"), statement)()
-                fundamental_checks[statement] = {"status": "success", "rows": int(len(frame)), "attempt": attempt}
-                break
-            except Exception as exc:
-                if attempt == 3:
-                    fundamental_checks[statement] = {"status": "error", "type": type(exc).__name__, "code": getattr(exc, "code", None), "attempt": attempt}
-                else:
-                    time.sleep(attempt)
-    fundamental_status = "available_not_scored" if all(item["status"] == "success" for item in fundamental_checks.values()) else "degraded"
     factor_cache = load_fundamental_cache(fundamental_source)
-    refreshed = 0
-    for index, symbol in enumerate(universe):
+    max_age_days = int((config.get("fundamental_refresh") or {}).get("max_age_days", 14))
+    for symbol in universe:
         attempts = []
-        should_refresh = refresh_fundamentals and (fundamental_limit is None or index < fundamental_limit)
-        if should_refresh:
-            factors = fundamental_factors(symbol, fundamental_source)
-            factors["refreshed_at"] = datetime.now(timezone.utc).isoformat()
-            factor_cache[symbol] = factors
-            refreshed += 1
-        else:
-            factors = factor_cache.get(symbol) or {
-                "fundamental": None, "growth": None, "ratios": {}, "statements": {},
-                "fundamental_reason": "fundamental_cache_unavailable", "growth_reason": "fundamental_cache_unavailable",
-                "engine": "vnstock_quant.fa", "version": "1.0.0",
-            }
+        cached = factor_cache.get(symbol)
+        factors = cached if cached and cache_entry_is_fresh(cached, max_age_days) else {
+            "fundamental": None, "growth": None, "ratios": {}, "statements": {},
+            "fundamental_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
+            "growth_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
+            "engine": "vnstock_quant.fa", "version": "1.0.0",
+        }
         for market_source in market_sources:
             try:
+                start = market_fetch_start(symbol, today, int(config["history_days"]))
                 frame = Market(market_source).equity(symbol).ohlcv(start=start)
                 merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))
                 predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), factors, config["scoring"]["weights"]))
@@ -246,8 +304,6 @@ def run_native(config: dict[str, Any], force: bool, refresh_fundamentals: bool, 
                 attempts.append({"source": market_source.upper(), "type": type(exc).__name__, "code": getattr(exc, "code", None)})
         else:
             errors.append({"symbol": symbol, "attempts": attempts})
-    if refreshed:
-        save_fundamental_cache(fundamental_source, factor_cache)
     if len(predictions) < int(config["minimum_coverage"]):
         raise RuntimeError(f"VNStock6 coverage {len(predictions)}/{len(universe)} below minimum; errors={errors[:10]}")
     partition = PRED_ROOT / f"{predictions[0]['signal_date']}.jsonl"
@@ -256,9 +312,9 @@ def run_native(config: dict[str, Any], force: bool, refresh_fundamentals: bool, 
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "scoring_version": config["scoring_version"], "universe_size": len(universe),
         "sources": {"reference": reference_source.upper(), "market_counts": source_counts, "fundamental": fundamental_source.upper()},
-        "fundamental_checks": fundamental_checks, "fundamental_status": fundamental_status,
+        "fundamental_status": "cache_scored", "fundamental_cache_max_age_days": max_age_days,
         "fundamental_cache_symbols": len(factor_cache),
-        "fundamental_symbols_refreshed": refreshed,
+        "fundamental_symbols_refreshed": 0,
         "successful_symbols": len(predictions), "failed_symbols": errors, "records_added": added,
     }
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"
@@ -293,13 +349,17 @@ def evaluate(config: dict[str, Any]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("run", "evaluate"))
+    parser.add_argument("command", choices=("run", "evaluate", "fundamentals"))
     parser.add_argument("--force", action="store_true")
-    parser.add_argument("--refresh-fundamentals", action="store_true")
     parser.add_argument("--fundamental-limit", type=int)
     args = parser.parse_args()
     config = load_config()
-    run_native(config, args.force, args.refresh_fundamentals, args.fundamental_limit) if args.command == "run" else evaluate(config)
+    if args.command == "run":
+        run_native(config, args.force)
+    elif args.command == "fundamentals":
+        refresh_fundamental_cache(config, args.fundamental_limit)
+    else:
+        evaluate(config)
 
 
 if __name__ == "__main__":

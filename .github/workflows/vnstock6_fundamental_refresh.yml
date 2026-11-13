@@ -1,0 +1,71 @@
+name: VNStock 6 weekly fundamentals
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Optional number of configured symbols to refresh; 0 means all
+        type: number
+        default: 0
+  schedule:
+    - cron: "15 2 * * 0"
+
+concurrency:
+  group: vnstock-main-writer
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
+      - name: Ensure generation 6 environment
+        run: |
+          test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
+          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
+      - name: Refresh FHSC statements and calculated factors
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
+          REFRESH_LIMIT: ${{ inputs.limit || 0 }}
+        run: |
+          test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
+          test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          args=()
+          if [ "$REFRESH_LIMIT" -gt 0 ]; then args+=(--fundamental-limit "$REFRESH_LIMIT"); fi
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals "${args[@]}"
+      - name: Validate secret-free cache
+        run: ~/.venv_6x/bin/python scripts/validate_vnstock6_fundamentals.py
+      - name: Publish fundamental cache
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- output/vnstock6/fundamental-factors.json output/vnstock6/fundamental-status.json
+          git diff --cached --quiet && exit 0
+          git commit -m "data: refresh vnstock6 fundamentals"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          exit 1

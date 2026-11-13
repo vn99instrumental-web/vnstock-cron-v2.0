@@ -1,0 +1,68 @@
+name: VNStock 6 daily analytics maintenance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 9 * * 1-5"
+
+concurrency:
+  group: vnstock-main-writer
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
+      - name: Ensure generation 6 environment
+        run: |
+          test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
+          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
+      - name: Evaluate outcomes and rebuild analytics
+        run: |
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
+          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.2-quant
+          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --output comparison/daily-maintenance-summary.json
+      - name: Publish analytics and serving
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- output/history/vnstock6/outcomes output/vnstock6-preview/dashboard.json output/serving/vnstock6
+          git diff --cached --quiet && exit 0
+          git commit -m "data: maintain vnstock6 daily analytics"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          exit 1
+      - name: Revalidate Vercel dashboard cache
+        env:
+          DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          test -n "$DASHBOARD_REVALIDATE_SECRET"
+          curl --fail --silent --show-error --retry 3 --retry-all-errors \
+            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+            -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"

@@ -10,6 +10,10 @@
     "scoring_version":  "v6.2-quant",
     "cutover_date":  "2026-11-10",
     "history_days":  500,
+    "fundamental_refresh":  {
+                                 "cadence":  "weekly",
+                                 "max_age_days":  14
+                             },
     "minimum_coverage":  80,
     "universe":  [
                      "ACB",

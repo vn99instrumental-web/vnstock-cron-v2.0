@@ -9,6 +9,8 @@ Pipeline thu thập/chấm điểm cổ phiếu Việt Nam và dashboard Next.js
 - Dashboard: `web/`
 - Database schema: `supabase/migrations/`
 - Trạng thái dự án: `PROJECT_STATE.md`
+- Gen 6 operations: docs/vnstock6-flow.md
+- Gen 6 focused backlog: docs/VNSTOCK6_TASKS.md
 
 Dashboard production: <https://trading-snapshot-dl.vercel.app>
 

@@ -299,3 +299,17 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Availability-aware candidate run `43178700815` passed. Production run `43179238229` passed and published data commit `845cbce2` with 100/100 symbols and zero failed symbols.
 - The serving release contains 100 `v6.1-availability` rows. All rows declare `exclude_and_renormalize`; fundamental and growth were unavailable for scoring and explicitly excluded from all 100 rows.
 - Vercel commit status is successful and `/vnstock6` responds, but anonymous requests redirect to `/login`; authenticated rendered-data verification remains a separate owner-session smoke test.
+
+## Gen 6 data cadence split 2026-11-13
+
+- Gen 6 now has three serialized writer cadences under the shared vnstock-main-writer concurrency group.
+- The existing n8n workflow remains responsible for five weekday intraday dispatches. Intraday reads only market OHLCV, calculates technical/scoring output, publishes serving data and revalidates Vercel.
+- Existing OHLC history is merged from a 14-day correction window; the 500-day request is used only when a symbol has no local history.
+- Intraday no longer calls FHSC balance sheet, income statement or cash flow endpoints and no longer evaluates every historical outcome five times per day.
+- vnstock6_daily_maintenance.yml runs at 16:15 ICT on weekdays. It evaluates matured outcomes, rebuilds full IC/analysis serving, commits the derived data and revalidates Vercel without calling a market or fundamental source.
+- vnstock6_fundamental_refresh.yml runs at 09:15 ICT on Sundays. It refreshes SSI reference membership and FHSC statements, calculates vnstock_quant.fa ratios/growth, validates secret-free artifacts and commits the cache.
+- A failed symbol refresh preserves the last successful cache entry. Entries older than 14 days are excluded from Fundamental/Growth with weight renormalization and the reason fundamental_cache_stale.
+- The candidate workflow proves the separated fundamental path with three symbols before running the native market/scoring path.
+- Local verification: Python compile PASS; six focused unit tests PASS after retries around the known intermittent Windows native process crash; git diff --check PASS. Security review found no committed secret, client exposure or new authorization boundary.
+- The production bootstrap run 43338517181 was still in progress while this change was prepared. First scheduled daily/weekly runs remain operational checks after merge.
+- Current focused backlog is docs/VNSTOCK6_TASKS.md.

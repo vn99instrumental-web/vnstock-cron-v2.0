@@ -62,7 +62,8 @@ jobs:
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
           force=()
           if [ "${{ inputs.force }}" = "true" ]; then force+=(--force); fi
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${force[@]}" --refresh-fundamentals --fundamental-limit 3
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --fundamental-limit 3
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${force[@]}"
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
           ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.2-quant
           ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
