@@ -46,7 +46,7 @@ jobs:
       - name: Install pinned generation 6
         run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
       - name: Verify scoring calculations
-        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant
+        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_pipeline
       - name: Build and validate native candidate
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
@@ -65,7 +65,7 @@ jobs:
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --fundamental-limit 3
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${force[@]}"
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
-          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.2-quant
+          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.4.19-shadow v6.4.18 v6.4.17
           ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
             --run-id "${{ github.run_id }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

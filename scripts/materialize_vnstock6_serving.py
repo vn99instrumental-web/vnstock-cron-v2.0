@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Any
 ROOT=Path(__file__).resolve().parent.parent
 CONFIG=json.loads((ROOT/"config/vnstock6.json").read_text(encoding="utf-8"))
-VERSION=str(CONFIG["scoring_version"])
+VERSIONS=list(CONFIG.get("scoring_versions") or [CONFIG["scoring_version"]])
+PRIMARY=str(CONFIG["scoring_version"] )
 SOURCE=ROOT/"output/serving/current"
 TARGET=ROOT/"output/serving/vnstock6/current"
 def read(path: Path, default: Any=None) -> Any:
@@ -14,22 +15,24 @@ def read(path: Path, default: Any=None) -> Any:
 def write(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True,exist_ok=True); path.write_text(json.dumps(value,ensure_ascii=False,separators=(",",":"))+"\n",encoding="utf-8")
 def only_version(rows: list[dict[str,Any]]) -> list[dict[str,Any]]:
-    return [row for row in rows if row.get("scoring_version",row.get("config_version"))==VERSION]
+    return [row for row in rows if row.get("scoring_version",row.get("config_version")) in VERSIONS]
 def main() -> None:
     parser=argparse.ArgumentParser(); parser.add_argument("--run-id",required=True); parser.add_argument("--run-url",required=True); args=parser.parse_args()
-    required=[SOURCE/section/f"{VERSION}.json" for section in ("today","buy","history","analysis")]
+    required=[SOURCE/section/f"{version}.json" for section in ("today","buy","history","analysis") for version in VERSIONS]
     missing=[str(path.relative_to(ROOT)) for path in required if not path.exists()]
     if missing: raise RuntimeError(f"Missing Gen6 serving datasets: {missing}")
     if TARGET.parent.exists(): shutil.rmtree(TARGET.parent)
     for section in ("today","buy","history","analysis"):
         (TARGET/section).mkdir(parents=True,exist_ok=True)
-        shutil.copy2(SOURCE/section/f"{VERSION}.json",TARGET/section/f"{VERSION}.json")
-    charts=SOURCE/"charts"/VERSION
-    if not charts.exists(): raise RuntimeError("Missing Gen6 charts")
-    shutil.copytree(charts,TARGET/"charts"/VERSION)
+        for version in VERSIONS:
+            shutil.copy2(SOURCE/section/f"{version}.json",TARGET/section/f"{version}.json")
+    for version in VERSIONS:
+        charts=SOURCE/"charts"/version
+        if not charts.exists(): raise RuntimeError(f"Missing Gen6 charts for {version}")
+        shutil.copytree(charts,TARGET/"charts"/version)
     metadata=read(SOURCE/"metadata.json",{})
-    metadata["runs"]={VERSION:(metadata.get("runs") or {}).get(VERSION)}
-    metadata["coverage"]={VERSION:(metadata.get("coverage") or {}).get(VERSION)}
+    metadata["runs"]={version:(metadata.get("runs") or {}).get(version) for version in VERSIONS}
+    metadata["coverage"]={version:(metadata.get("coverage") or {}).get(version) for version in VERSIONS}
     metadata["source_provenance"]="vnstock6-native"
     metadata["generation"]=6
     metadata["sources"]={"reference":"SSI","market_primary":"SSI","market_fallback":"FHSC","fundamental":"FHSC"}
@@ -44,7 +47,7 @@ def main() -> None:
         body=path.read_bytes(); datasets.append({"path":path.relative_to(TARGET).as_posix(),"bytes":len(body),"sha256":hashlib.sha256(body).hexdigest()})
     generated=datetime.now(timezone.utc).isoformat()
     write(TARGET/"manifest.json",{"schema_version":2,"release_id":metadata.get("release_id"),"generated_at_utc":generated,"source_provenance":"vnstock6-native","quality":{"status":"PASS","checks":["native_generation","source_provenance","dataset_sha256"]},"datasets":datasets})
-    today=read(TARGET/"today"/f"{VERSION}.json",{}); symbols=sorted({str(row["symbol"]) for row in today.get("signals",[]) if row.get("symbol")})
+    today=read(TARGET/"today"/f"{PRIMARY}.json",{}); symbols=sorted({str(row["symbol"]) for row in today.get("signals",[]) if row.get("symbol")})
     dashboard={"schema_version":1,"mode":"native","generated_at":generated,"source":"SSI","sources":{"reference":"SSI","market_primary":"SSI","market_fallback":"FHSC","fundamental":"FHSC"},"package_version":"6.0.0","oapi_version":"0.1.1","quant_version":"1.0.0","upstream":None,"symbols":symbols,"capabilities":{name:"native" for name in ("metadata","today","buy","history","history_detail","analysis","ic","chart")},"flow":{"run_id":args.run_id,"run_url":args.run_url,"stages":[{"name":name,"status":"success","mode":"native"} for name in ("authenticate","reference","market_ingest","fundamental_ingest","scoring","serving")]}}
     write(ROOT/"output/vnstock6-preview/dashboard.json",dashboard)
     print(f"VNStock6 native serving: {len(symbols)} symbols, {len(datasets)} datasets")

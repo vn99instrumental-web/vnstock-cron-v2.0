@@ -21,6 +21,9 @@ from vnstock.errors import VnstockError
 
 from vnstock6_scoring import availability_score
 from vnstock6_quant import fundamental_factors, technical_indicators
+from vnstock6_v4_scoring import (
+    PROFILES, classify_regime, factor_values, indicator_snapshot, score_profile, signal_values,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "vnstock6.json"
@@ -28,6 +31,7 @@ PRED_ROOT = ROOT / "output" / "history" / "vnstock6" / "predictions"
 OUTCOME_ROOT = ROOT / "output" / "history" / "vnstock6" / "outcomes"
 OHLC_ROOT = ROOT / "output" / "ohlc"
 FUNDAMENTAL_CACHE = ROOT / "output" / "vnstock6" / "fundamental-factors.json"
+VNINDEX_PATH = ROOT / "output" / "market" / "vnindex.json"
 ICT = timezone(timedelta(hours=7))
 
 def load_config() -> dict[str, Any]:
@@ -300,6 +304,66 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
     }
 
 
+def score_v4_profiles(
+    symbol: str, rows: list[dict[str, Any]], versions: list[str], snap_time: str,
+    fundamentals: dict[str, Any], index_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    frame = pd.DataFrame(rows).sort_values("date")
+    if len(frame) < 50:
+        raise ValueError(f"Insufficient OHLC history for {symbol}: {len(frame)}")
+    latest = frame.iloc[-1]
+    quant = technical_indicators(frame)
+    current = finite(latest["close"])
+    signal_date = str(latest["date"])
+    regime_info = classify_regime(index_rows, signal_date)
+    indicators = indicator_snapshot(frame, quant, regime_info.get("return_20d"))
+    signals = signal_values(indicators, fundamentals, regime_info["regime"])
+    factors = factor_values(signals)
+    output: list[dict[str, Any]] = []
+    for version in versions:
+        scored = score_profile(version, factors, regime_info["regime"])
+        raw_id = f"6|{latest.get('market_source')}|{symbol}|{signal_date}|{snap_time}|{version}"
+        is_buy = scored["decision"] in {"BUY", "STRONG BUY"}
+        levels = {key: indicators.get(key) if is_buy else None for key in ("entry", "stop", "tp1", "tp2")}
+        ratios = fundamentals.get("ratios") or {}
+        output.append({
+            "pred_id": f"v6_{hashlib.sha256(raw_id.encode()).hexdigest()[:24]}",
+            "symbol": symbol, "signal_date": signal_date, "snap_time": snap_time,
+            "scoring_version": version, "price": current,
+            "pipeline_generation": 6, "reference_source": "SSI",
+            "market_source": str(latest.get("market_source") or "UNKNOWN"),
+            "fundamental_source": "FHSC", "data_origin": "native",
+            "flow": "vnstock6_native_v4_profiles", "universe_variant": "vn100-hose",
+            "registry_version": 3, "gate_version": 7,
+            "regime_as_of": regime_info.get("as_of"), "regime_method": regime_info.get("reason"),
+            **indicators, **levels, **signals, **scored,
+            "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
+            "ratio_roe": ratios.get("RT_PRT_ROE"), "ratio_roa": ratios.get("RT_PRT_ROA"),
+            "ratio_gross_margin": ratios.get("RT_PRT_GROSS_MARGIN"), "ratio_net_margin": ratios.get("RT_PRT_NET_MARGIN"),
+            "ratio_current": ratios.get("RT_LQD_CR"), "ratio_debt_equity": ratios.get("RT_LEV_DE"),
+            "fundamental_status": "scored" if fundamentals.get("fundamental") is not None else "excluded",
+            "quant_indicators": quant, "fundamental_metrics": fundamentals,
+            "calculation_engine": "vnstock_quant+gen6_v4_profiles", "calculation_version": "1.1.0",
+            "scoring_reference": "vnstock-v4.17-v4.18-v4.19-factor-architecture",
+        })
+    return output
+
+
+def update_vnindex(market_source: str, today: date) -> list[dict[str, Any]]:
+    existing = json.loads(VNINDEX_PATH.read_text(encoding="utf-8")) if VNINDEX_PATH.exists() else []
+    start = (today - timedelta(days=550)).isoformat()
+    if existing:
+        start = (date.fromisoformat(str(existing[-1]["date"])[:10]) - timedelta(days=14)).isoformat()
+    frame = Market(market_source).index("VNINDEX").ohlcv(start=start, interval="1D", compat="v6")
+    incoming = normalize_ohlcv(frame, "VNINDEX", market_source)
+    merged = {str(row["date"]): row for row in existing if row.get("date")}
+    merged.update({row["date"]: row for row in incoming})
+    rows = [merged[key] for key in sorted(merged)][-900:]
+    VNINDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
+    VNINDEX_PATH.write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    return rows
+
+
 def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     existing: dict[str, dict[str, Any]] = {}
     if path.exists():
@@ -329,6 +393,11 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
+    versions = list(config.get("scoring_versions") or [config["scoring_version"]])
+    unknown_versions = [version for version in versions if version not in PROFILES]
+    if unknown_versions:
+        raise ValueError(f"Unsupported Gen6 scoring profiles: {unknown_versions}")
+    index_rows = update_vnindex(reference_source, today)
     max_age_days = fundamental_ttl_days(config, now)
     for symbol in universe:
         attempts = []
@@ -354,25 +423,27 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
                         raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
                     incoming.extend(live_rows)
                 merged = merge_ohlcv(symbol, incoming)
-                predictions.append(score(symbol, merged, config["scoring_version"], now.strftime("%H:%M"), factors, config["scoring"]["weights"]))
+                predictions.extend(score_v4_profiles(symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows))
                 source_counts[market_source.upper()] += 1
                 break
             except Exception as exc:
                 attempts.append({"source": market_source.upper(), "type": type(exc).__name__, "code": getattr(exc, "code", None)})
         else:
             errors.append({"symbol": symbol, "attempts": attempts})
-    if len(predictions) < int(config["minimum_coverage"]):
-        raise RuntimeError(f"VNStock6 coverage {len(predictions)}/{len(universe)} below minimum; errors={errors[:10]}")
+    successful_symbols = len({row["symbol"] for row in predictions})
+    if successful_symbols < int(config["minimum_coverage"]):
+        raise RuntimeError(f"VNStock6 coverage {successful_symbols}/{len(universe)} below minimum; errors={errors[:10]}")
     partition = PRED_ROOT / f"{predictions[0]['signal_date']}.jsonl"
     added = append_jsonl(partition, predictions, "pred_id")
     status = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
-        "scoring_version": config["scoring_version"], "universe_size": len(universe),
+        "scoring_version": config["scoring_version"], "scoring_versions": versions, "universe_size": len(universe),
         "sources": {"reference": reference_source.upper(), "market_counts": source_counts, "fundamental": fundamental_source.upper()},
         "fundamental_status": "cache_scored", "fundamental_cache_max_age_days": max_age_days,
         "fundamental_cache_symbols": len(factor_cache),
         "fundamental_symbols_refreshed": 0,
-        "successful_symbols": len(predictions), "failed_symbols": errors, "records_added": added,
+        "successful_symbols": successful_symbols, "prediction_rows": len(predictions),
+        "vnindex_rows": len(index_rows), "failed_symbols": errors, "records_added": added,
     }
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
@@ -392,6 +463,7 @@ def evaluate(config: dict[str, Any]) -> None:
         if not entry or not later:
             continue
         row = {"pred_id": prediction["pred_id"], "symbol": prediction["symbol"], "scoring_version": config["scoring_version"], "lens": "trade", "pipeline_generation": 6, "market_source": prediction.get("market_source"), "n_bars": len(later), "eval_date": later[-1]["date"]}
+        row["scoring_version"] = prediction["scoring_version"]
         for horizon in (1, 3, 5, 10):
             row[f"ret_{horizon}d"] = round((float(later[horizon - 1]["close"]) / entry - 1) * 100, 6) if len(later) >= horizon else None
         outcomes.append(row)

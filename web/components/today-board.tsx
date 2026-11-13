@@ -85,31 +85,52 @@ function matchesSignalMode(decision: string | null | undefined, mode: SignalMode
 
 function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) {
   const groups = factorGroupViews(breakdown);
+  const metrics: Array<[string, string, string?]> = [
+    ["rsi_14", "RSI 14"], ["atr_14", "ATR 14"], ["atr_pct", "ATR %", "%"],
+    ["macd", "MACD"], ["macd_signal", "MACD signal"], ["macd_histogram", "MACD hist"],
+    ["willr_14", "Williams %R"], ["stoch_k", "Stochastic %K"], ["cmf", "CMF"],
+    ["bb_position", "Bollinger %B"], ["vol_ma_ratio", "Volume/TB", "x"],
+    ["adtv_bil", "ADTV", " tỷ"], ["obv", "OBV"],
+    ["ratio_roe", "ROE"], ["ratio_roa", "ROA"],
+    ["ratio_gross_margin", "Gross margin"], ["ratio_net_margin", "Net margin"],
+    ["ratio_current", "Current ratio"], ["ratio_debt_equity", "D/E"],
+  ];
   return (
-    <div className="grid gap-1.5 py-2 lg:grid-cols-2">
-      {groups.map((g) => (
-        <div key={g.key} className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold">{g.label}</span>
-            <span className="tabular text-[10px] font-semibold" style={{ color: DIR_COLOR[g.dir] }}>
-              {g.rawTotal > 0 ? "+" : ""}{g.rawTotal}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
-            </span>
-            <span className="ml-auto text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
+    <div className="space-y-2 py-2">
+      <div className="grid gap-1.5 lg:grid-cols-2">
+        {groups.map((g) => (
+          <div key={g.key} className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold">{g.label}</span>
+              <span className="tabular text-[10px] font-semibold" style={{ color: DIR_COLOR[g.dir] }}>
+                {g.rawTotal > 0 ? "+" : ""}{g.rawTotal}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
+              </span>
+              <span className="ml-auto text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
+            </div>
+            {g.members.length ? (
+              <ul className="mt-1 space-y-1">
+                {g.members.map((m) => (
+                  <li key={m.key} className="flex flex-wrap items-start gap-x-1.5 text-[11px] leading-tight">
+                    <span className="tabular w-10 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>{m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span></span>
+                    <span className="font-medium">{m.name}</span>
+                    <span className="text-[var(--color-muted)]">— {m.text}</span>
+                    {m.raw ? <span className="ml-auto rounded bg-black/5 px-1 text-[10px] tabular dark:bg-white/10">{m.raw}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Không có chỉ báo khả dụng ở snapshot này.</p>}
           </div>
-          {g.members.length ? (
-            <ul className="mt-1 space-y-1">
-              {g.members.map((m) => (
-                <li key={m.key} className="flex flex-wrap items-start gap-x-1.5 text-[11px] leading-tight">
-                  <span className="tabular w-10 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>{m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span></span>
-                  <span className="font-medium">{m.name}</span>
-                  <span className="text-[var(--color-muted)]">— {m.text}</span>
-                  {m.raw ? <span className="ml-auto rounded bg-black/5 px-1 text-[10px] tabular dark:bg-white/10">{m.raw}</span> : null}
-                </li>
-              ))}
-            </ul>
-          ) : <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Không có chỉ báo nổi bật ở snapshot này.</p>}
-        </div>
-      ))}
+        ))}
+      </div>
+      <section className="rounded-md border border-[var(--color-border)] bg-black/[0.015] p-2 dark:bg-white/[0.02]" aria-label="Chỉ báo tự tính">
+        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--color-muted)]">Chỉ báo tự tính · vnstock_quant / OHLCV</p>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-4 lg:grid-cols-6">
+          {metrics.map(([key, label, suffix]) => {
+            const value = num(breakdown[key]);
+            return <div key={key} className="flex min-w-0 items-baseline justify-between gap-2 border-b border-[var(--color-border)]/50 py-1 text-[10px]"><dt className="truncate text-[var(--color-muted)]">{label}</dt><dd className="shrink-0 font-mono tabular font-semibold">{value == null ? "—" : `${value.toLocaleString("vi-VN", { maximumFractionDigits: 3 })}${suffix ?? ""}`}</dd></div>;
+          })}
+        </dl>
+      </section>
     </div>
   );
 }
