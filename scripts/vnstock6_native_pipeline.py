@@ -234,7 +234,8 @@ def run_native(config: dict[str, Any], force: bool, refresh_fundamentals: bool, 
                 "fundamental": None, "growth": None, "ratios": {}, "statements": {},
                 "fundamental_reason": "fundamental_cache_unavailable", "growth_reason": "fundamental_cache_unavailable",
                 "engine": "vnstock_quant.fa", "version": "1.0.0",
-            }        for market_source in market_sources:
+            }
+        for market_source in market_sources:
             try:
                 frame = Market(market_source).equity(symbol).ohlcv(start=start)
                 merged = merge_ohlcv(symbol, normalize_ohlcv(frame, symbol, market_source))

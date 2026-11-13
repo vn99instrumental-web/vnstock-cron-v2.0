@@ -37,8 +37,7 @@ def _clip(value: float) -> float:
 def _growth(frames: list[pd.DataFrame], codes: tuple[str,...]) -> float | None:
     chunks=[]
     for frame in frames:
-        column="line_code" if "line_code" in frame else "id" if "id" in frame else None
-        if column and "period" in frame and "value" in frame:
+        column="id" if "id" in frame else "line_code" if "line_code" in frame else None        if column and "period" in frame and "value" in frame:
             chunks.append(frame[frame[column].astype(str).isin(codes)][["period","value"]])
     if not chunks: return None
     values=pd.concat(chunks).drop_duplicates("period",keep="last").sort_values("period")
