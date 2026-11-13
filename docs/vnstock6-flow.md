@@ -64,6 +64,6 @@ Promotion requires final package/version checks, account/device reuse, SSI and F
 FHSC throttles statement reads, so fundamentals are not re-downloaded during each of the five intraday runs. The production cache is `output/vnstock6/fundamental-factors.json` and carries source, calculation version, refresh time, ratios and statement quality counts per symbol.
 
 - Candidate refreshes three symbols through the dedicated fundamental command. It reports `PASS_DEGRADED` when FHSC is unavailable only if fundamental and growth factors are explicitly excluded; the dedicated weekly workflow remains the hard freshness gate.
-- The weekly workflow refreshes the full configured universe and may run for up to 180 minutes. A failed refresh preserves the prior cache entry and records a secret-free failure status.
+- Daily maintenance checks the legacy cron v2.0 TTL before analytics: 3 days in earnings months (1, 2, 4, 5, 7, 8, 10, 11), otherwise 30 days. It refreshes only stale or missing symbols. The weekly workflow remains a full-universe safety net.
 - Intraday mode never calls the three statement endpoints. It reads the last committed cache and refetches only the recent OHLCV correction window.
-- A missing cache entry is marked fundamental_cache_unavailable; an entry older than 14 days is marked fundamental_cache_stale. Both fundamental factors are excluded and the available weights are renormalized, never replaced by zero.
+- A missing cache entry is marked fundamental_cache_unavailable; an entry older than the active 3/30-day TTL is marked fundamental_cache_stale. Refresh failures preserve last-known-good data, while unusable entries are excluded and available weights are renormalized, never replaced by zero.

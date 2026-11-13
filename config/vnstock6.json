@@ -11,8 +11,10 @@
     "cutover_date":  "2026-11-10",
     "history_days":  500,
     "fundamental_refresh":  {
-                                 "cadence":  "weekly",
-                                 "max_age_days":  14
+                                 "cadence":  "daily_ttl_with_weekly_full_refresh",
+                                 "max_age_days":  30,
+                                 "earnings_max_age_days":  3,
+                                 "earnings_months":  [1, 2, 4, 5, 7, 8, 10, 11]
                              },
     "minimum_coverage":  80,
     "universe":  [

@@ -108,18 +108,50 @@ def cache_entry_is_fresh(entry: dict[str, Any], max_age_days: int) -> bool:
         return False
 
 
-def refresh_fundamental_cache(config: dict[str, Any], limit: int | None = None) -> dict[str, Any]:
-    """Refresh slow-moving FHSC statements without fetching market prices."""
+def fundamental_ttl_days(config: dict[str, Any], now: datetime | None = None) -> int:
+    """Match the legacy cron v2.0 finance cadence: 3d in earnings months, else 30d."""
+    refresh = config.get("fundamental_refresh") or {}
+    current = now or datetime.now(ICT)
+    earnings_months = {int(value) for value in refresh.get("earnings_months", [])}
+    if current.month in earnings_months:
+        return int(refresh.get("earnings_max_age_days", 3))
+    return int(refresh.get("max_age_days", 30))
+
+
+def stale_fundamental_symbols(
+    config: dict[str, Any], cache: dict[str, Any], now: datetime | None = None
+) -> list[str]:
+    ttl_days = fundamental_ttl_days(config, now)
+    return [
+        symbol for symbol in config["universe"]
+        if not cache_entry_is_fresh(cache.get(symbol) or {}, ttl_days)
+    ]
+
+
+def refresh_fundamental_cache(
+    config: dict[str, Any], limit: int | None = None, stale_only: bool = False
+) -> dict[str, Any]:
+    """Refresh all FHSC statements, or only stale/missing symbols for daily maintenance."""
     source_config = config["sources"]
     reference_source = source_config["reference"]
     fundamental_source = source_config["fundamental"]
-    reference = Reference(reference_source).equity.list()
-    available = {str(value).upper() for value in reference["symbol"].dropna()}
-    universe = [symbol for symbol in config["universe"] if symbol in available]
-    selected = universe if limit is None else universe[:limit]
     factor_cache = load_fundamental_cache(fundamental_source)
-    results: dict[str, Any] = {}
+    ttl_days = fundamental_ttl_days(config)
+    configured = (
+        stale_fundamental_symbols(config, factor_cache)
+        if stale_only else list(config["universe"])
+    )
 
+    if stale_only:
+        universe = list(config["universe"])
+        selected = configured if limit is None else configured[:limit]
+    else:
+        reference = Reference(reference_source).equity.list()
+        available = {str(value).upper() for value in reference["symbol"].dropna()}
+        universe = [symbol for symbol in config["universe"] if symbol in available]
+        selected = universe if limit is None else universe[:limit]
+
+    results: dict[str, Any] = {}
     for symbol in selected:
         previous = factor_cache.get(symbol)
         last_result: dict[str, Any] | None = None
@@ -140,25 +172,30 @@ def refresh_fundamental_cache(config: dict[str, Any], limit: int | None = None) 
                 "code": (last_result or {}).get("error", {}).get("code"),
             }
 
-    save_fundamental_cache(fundamental_source, factor_cache)
+    if selected:
+        save_fundamental_cache(fundamental_source, factor_cache)
     counts = {
         "success": sum(item["status"] == "success" for item in results.values()),
         "failed": sum(item["status"] == "failed" for item in results.values()),
         "failed_preserved": sum(item["status"] == "failed_preserved" for item in results.values()),
+        "skipped_fresh": len(config["universe"]) - len(configured) if stale_only else 0,
     }
     status = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "reference_source": reference_source.upper(), "fundamental_source": fundamental_source.upper(),
         "configured_symbols": len(config["universe"]), "reference_symbols_available": len(universe),
         "symbols_requested": len(selected), "cache_symbols": len(factor_cache),
+        "stale_only": stale_only, "ttl_days": ttl_days,
         "counts": counts, "symbols": results,
     }
     status_path = ROOT / "output" / "vnstock6" / "fundamental-status.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
     status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"VNStock6 fundamentals: {counts['success']}/{len(selected)} refreshed, {counts['failed']} failed")
+    print(
+        f"VNStock6 fundamentals: {counts['success']}/{len(selected)} refreshed, "
+        f"{counts['failed']} failed, {counts['failed_preserved']} preserved, ttl={ttl_days}d"
+    )
     return status
-
 
 def normalize_ohlcv(frame: pd.DataFrame, symbol: str, market_source: str) -> list[dict[str, Any]]:
     data = frame.reset_index()
@@ -282,7 +319,7 @@ def run_native(config: dict[str, Any], force: bool) -> None:
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
-    max_age_days = int((config.get("fundamental_refresh") or {}).get("max_age_days", 14))
+    max_age_days = fundamental_ttl_days(config, now)
     for symbol in universe:
         attempts = []
         cached = factor_cache.get(symbol)
@@ -352,12 +389,13 @@ def main() -> None:
     parser.add_argument("command", choices=("run", "evaluate", "fundamentals"))
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--fundamental-limit", type=int)
+    parser.add_argument("--stale-only", action="store_true")
     args = parser.parse_args()
     config = load_config()
     if args.command == "run":
         run_native(config, args.force)
     elif args.command == "fundamentals":
-        refresh_fundamental_cache(config, args.fundamental_limit)
+        refresh_fundamental_cache(config, args.fundamental_limit, args.stale_only)
     else:
         evaluate(config)
 

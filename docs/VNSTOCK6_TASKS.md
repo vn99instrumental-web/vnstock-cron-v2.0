@@ -14,9 +14,10 @@ Updated: 2026-11-13
 - [x] Intraday fetches only market data and reuses the committed fundamental cache.
 - [x] Existing OHLC files use a 14-day correction window instead of refetching 500 days five times per day.
 - [x] Daily outcomes and full analytics run separately at 16:15 ICT on weekdays.
+- [x] Daily maintenance applies the legacy adaptive fundamental TTL (3 days in earnings months, 30 days otherwise) and refreshes only stale/missing symbols.
 - [x] SSI reference and FHSC statements refresh separately at 09:15 ICT on Sundays.
 - [x] A failed weekly statement refresh preserves the last successful symbol cache.
-- [x] Fundamental cache entries older than 14 days fail closed and are excluded from scoring.
+- [x] Fundamental cache entries older than the active 3/30-day TTL fail closed and are excluded from scoring.
 
 ## Operational checks after merge
 

@@ -42,8 +42,8 @@ def main() -> None:
     refresh_path = ROOT / "output/vnstock6/fundamental-status.json"
     refresh_status = json.loads(refresh_path.read_text(encoding="utf-8")) if refresh_path.exists() else {}
     refresh_counts = refresh_status.get("counts", {})
-    refresh_success = int(refresh_counts.get("success", 0))
-    degraded = refresh_success == 0 or fundamental_scored == 0 or growth_scored == 0
+    degraded = fundamental_scored == 0 or growth_scored == 0
+    refresh_state = "not_recorded" if not refresh_status else ("degraded" if degraded else "success")
     if degraded:
         unsafe = [
             row for row in rows
@@ -64,7 +64,7 @@ def main() -> None:
         "failed_symbol_count": len(status["failed_symbols"]), "excluded_factor_counts": excluded_counts,
         "fundamental_scored_rows": fundamental_scored,
         "growth_scored_rows": growth_scored,
-        "fundamental_refresh": {"status": "degraded" if degraded else "success", "counts": refresh_counts},
+        "fundamental_refresh": {"status": refresh_state, "counts": refresh_counts},
         "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
     }
     output = Path(args.output)

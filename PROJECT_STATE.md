@@ -306,10 +306,18 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - The existing n8n workflow remains responsible for five weekday intraday dispatches. Intraday reads only market OHLCV, calculates technical/scoring output, publishes serving data and revalidates Vercel.
 - Existing OHLC history is merged from a 14-day correction window; the 500-day request is used only when a symbol has no local history.
 - Intraday no longer calls FHSC balance sheet, income statement or cash flow endpoints and no longer evaluates every historical outcome five times per day.
-- vnstock6_daily_maintenance.yml runs at 16:15 ICT on weekdays. It evaluates matured outcomes, rebuilds full IC/analysis serving, commits the derived data and revalidates Vercel without calling a market or fundamental source.
+- vnstock6_daily_maintenance.yml runs at 16:15 ICT on weekdays. Before outcomes/IC/analysis, it checks the legacy adaptive BCTC TTL (3 days in earnings months, otherwise 30 days), refreshes only stale/missing FHSC symbols, preserves last-known-good entries on failure, then commits and revalidates Vercel.
 - vnstock6_fundamental_refresh.yml runs at 09:15 ICT on Sundays. It refreshes SSI reference membership and FHSC statements, calculates vnstock_quant.fa ratios/growth, validates secret-free artifacts and commits the cache.
-- A failed symbol refresh preserves the last successful cache entry. Entries older than 14 days are excluded from Fundamental/Growth with weight renormalization and the reason fundamental_cache_stale.
+- A failed symbol refresh preserves the last successful cache entry. Entries older than the active 3/30-day TTL are excluded from Fundamental/Growth with weight renormalization and the reason fundamental_cache_stale.
 - The candidate workflow probes the separated fundamental path with three symbols before market/scoring. It may report `PASS_DEGRADED` only after verifying unavailable fundamental/growth factors are excluded and weights renormalized; the weekly workflow remains the hard freshness gate.
 - Local verification: Python compile PASS; six focused unit tests PASS after retries around the known intermittent Windows native process crash; git diff --check PASS. Security review found no committed secret, client exposure or new authorization boundary.
 - Production bootstrap run 43338517181 succeeded and published commit fe613b7a: FHSC/vnstock_quant cache 100/100, v6.2-quant serving 100/100 and 300 matured outcomes. The first post-split intraday run 43350792238 also succeeded without a BCTC refresh.
 - Candidate run 43350815066 passed on Linux: SSI OHLCV 100/100, FHSC refresh sample 3/3, 174 fundamental/growth scored rows and 26 availability exclusions. First scheduled daily/weekly runs and authenticated dashboard review remain operational checks in docs/VNSTOCK6_TASKS.md.
+
+## Gen 6 adaptive slow-data refresh fix 2026-11-13
+
+- Five n8n intraday triggers remain OHLCV-only so a slow FHSC refresh cannot block or collapse the market-session cadence.
+- Daily maintenance at 16:15 ICT now runs fundamentals --stale-only: fresh cache makes zero source calls; only stale/missing symbols fetch BCTC and recalculate vnstock_quant.fa.
+- The TTL matches cron v2.0: 3 days in earnings months 1/2/4/5/7/8/10/11, 30 days otherwise. Sunday weekly remains a full refresh safety net.
+- Candidate validation no longer treats an absent refresh-status file as a data failure when serving rows contain valid calculated factors. Missing/stale factors still must be excluded and weights renormalized.
+- Local verification: Python compile, JSON parse, nine focused tests and git diff check passed. Security review found secrets remain GitHub server-side only and status/cache artifacts contain no credential values.

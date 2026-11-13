@@ -32,6 +32,77 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertFalse(pipeline.cache_entry_is_fresh(stale, 14))
         self.assertFalse(pipeline.cache_entry_is_fresh({}, 14))
 
+    def test_fundamental_ttl_matches_legacy_earnings_cadence(self):
+        config = {
+            "fundamental_refresh": {
+                "max_age_days": 30,
+                "earnings_max_age_days": 3,
+                "earnings_months": [1, 2, 4],
+            }
+        }
+        self.assertEqual(
+            pipeline.fundamental_ttl_days(
+                config, datetime(2026, 2, 10, tzinfo=timezone.utc)
+            ),
+            3,
+        )
+        self.assertEqual(
+            pipeline.fundamental_ttl_days(
+                config, datetime(2026, 3, 10, tzinfo=timezone.utc)
+            ),
+            30,
+        )
+
+    def test_stale_fundamentals_select_only_expired_symbols(self):
+        config = {
+            "universe": ["FPT", "SSI"],
+            "fundamental_refresh": {
+                "max_age_days": 30,
+                "earnings_max_age_days": 3,
+                "earnings_months": [11],
+            },
+        }
+        cache = {
+            "FPT": {"refreshed_at": datetime.now(timezone.utc).isoformat()},
+            "SSI": {
+                "refreshed_at": (
+                    datetime.now(timezone.utc) - timedelta(days=4)
+                ).isoformat()
+            },
+        }
+        self.assertEqual(
+            pipeline.stale_fundamental_symbols(
+                config, cache, datetime(2026, 11, 13, tzinfo=timezone.utc)
+            ),
+            ["SSI"],
+        )
+    def test_stale_only_skips_source_calls_when_cache_is_fresh(self):
+        config = {
+            "sources": {"reference": "ssi", "fundamental": "fhsc"},
+            "universe": ["FPT", "SSI"],
+            "fundamental_refresh": {
+                "max_age_days": 30,
+                "earnings_max_age_days": 3,
+                "earnings_months": [11],
+            },
+        }
+        fresh = {
+            symbol: {"refreshed_at": datetime.now(timezone.utc).isoformat()}
+            for symbol in config["universe"]
+        }
+        with patch.object(
+            pipeline, "load_fundamental_cache", return_value=fresh
+        ), patch.object(
+            pipeline, "fundamental_factors"
+        ) as fetch, patch.object(
+            Path, "mkdir"
+        ), patch.object(
+            Path, "write_text"
+        ):
+            status = pipeline.refresh_fundamental_cache(config, stale_only=True)
+        fetch.assert_not_called()
+        self.assertEqual(status["symbols_requested"], 0)
+        self.assertEqual(status["counts"]["skipped_fresh"], 2)
 
 if __name__ == "__main__":
     unittest.main()
