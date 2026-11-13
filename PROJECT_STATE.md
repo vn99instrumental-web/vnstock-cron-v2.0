@@ -295,7 +295,7 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - `vnstock6_native_production.yml` is the only Gen 6 writer entry point for n8n. The documented cadence is five weekday triggers in `Asia/Ho_Chi_Minh`: 09:15, 10:30, 11:30, 13:45 and 14:50.
 - Every successful run fetches SSI with FHSC fallback, publishes the isolated Gen 6 Git/serving release and revalidates Vercel. Intraday runs keep derived work incremental; daily/weekly modes rebuild full IC/analysis.
 - Active scorer is `v6.1-availability`, adapted from the production factor contract. Missing factor inputs are recorded per symbol and excluded with weight renormalization; they are never silently treated as zero. Fundamental and growth remain excluded until per-symbol FHSC normalization exists.
-- n8n workflow `AAUC60oWWlwKunaR` (`VNStock Gen6 intraday`) is published and active with the five documented weekday schedules and `Asia/Ho_Chi_Minh`. It dispatches production through the stored `GitHub account` credential; no token is embedded in its two nodes.
+- n8n workflow `AAUC60oWWlwKunaR` (`VNStock Gen6 · All production schedules`) is published and active in `Asia/Ho_Chi_Minh`. Published version `5571a74b-b3d9-4dc4-b944-770e7de85b33` has three schedule triggers and six nodes: five weekday intraday times, weekday daily maintenance at 16:15, and Sunday slow-source refresh at 09:15. All dispatches use the stored `GitHub account` credential; no token is embedded in workflow nodes.
 - Availability-aware candidate run `43178700815` passed. Production run `43179238229` passed and published data commit `845cbce2` with 100/100 symbols and zero failed symbols.
 - The serving release contains 100 `v6.1-availability` rows. All rows declare `exclude_and_renormalize`; fundamental and growth were unavailable for scoring and explicitly excluded from all 100 rows.
 - Vercel commit status is successful and `/vnstock6` responds, but anonymous requests redirect to `/login`; authenticated rendered-data verification remains a separate owner-session smoke test.
@@ -303,11 +303,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 ## Gen 6 data cadence split 2026-11-13
 
 - Gen 6 now has three serialized writer cadences under the shared vnstock-main-writer concurrency group.
-- The existing n8n workflow remains responsible for five weekday intraday dispatches. Intraday reads only market OHLCV, calculates technical/scoring output, publishes serving data and revalidates Vercel.
+- The n8n workflow is responsible for all production schedules. Its five weekday intraday dispatches read only market OHLCV, calculates technical/scoring output, publishes serving data and revalidates Vercel.
 - Existing OHLC history is merged from a 14-day correction window; the 500-day request is used only when a symbol has no local history.
 - Intraday no longer calls FHSC balance sheet, income statement or cash flow endpoints and no longer evaluates every historical outcome five times per day.
-- vnstock6_daily_maintenance.yml runs at 16:15 ICT on weekdays. Before outcomes/IC/analysis, it checks the legacy adaptive BCTC TTL (3 days in earnings months, otherwise 30 days), refreshes only stale/missing FHSC symbols, preserves last-known-good entries on failure, then commits and revalidates Vercel.
-- vnstock6_fundamental_refresh.yml runs at 09:15 ICT on Sundays. It refreshes SSI reference membership and FHSC statements, calculates vnstock_quant.fa ratios/growth, validates secret-free artifacts and commits the cache.
+- n8n dispatches vnstock6_daily_maintenance.yml at 16:15 ICT on weekdays. Before outcomes/IC/analysis, it checks the legacy adaptive BCTC TTL (3 days in earnings months, otherwise 30 days), refreshes only stale/missing FHSC symbols, preserves last-known-good entries on failure, then commits and revalidates Vercel.
+- n8n dispatches vnstock6_fundamental_refresh.yml at 09:15 ICT on Sundays. It refreshes SSI reference membership and FHSC statements, calculates vnstock_quant.fa ratios/growth, validates secret-free artifacts and commits the cache.
 - A failed symbol refresh preserves the last successful cache entry. Entries older than the active 3/30-day TTL are excluded from Fundamental/Growth with weight renormalization and the reason fundamental_cache_stale.
 - The candidate workflow probes the separated fundamental path with three symbols before market/scoring. It may report `PASS_DEGRADED` only after verifying unavailable fundamental/growth factors are excluded and weights renormalized; the weekly workflow remains the hard freshness gate.
 - Local verification: Python compile PASS; six focused unit tests PASS after retries around the known intermittent Windows native process crash; git diff --check PASS. Security review found no committed secret, client exposure or new authorization boundary.
@@ -321,3 +321,9 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - The TTL matches cron v2.0: 3 days in earnings months 1/2/4/5/7/8/10/11, 30 days otherwise. Sunday weekly remains a full refresh safety net.
 - Candidate validation no longer treats an absent refresh-status file as a data failure when serving rows contain valid calculated factors. Missing/stale factors still must be excluded and weights renormalized.
 - Verification passed: Python compile, JSON parse, nine focused tests and git diff check; GitHub daily run 43353614220 used the fresh-cache path (0/0 FHSC calls), updated 300 outcomes, published commit 92008e54 and revalidated Vercel. Candidate run 43353569643 refreshed FHSC 3/3, ingested SSI OHLCV 100/100 and returned PASS. Security review found secrets remain GitHub server-side only and status/cache artifacts contain no credential values.
+
+## Gen 6 n8n schedule cutover 2026-11-13
+
+- n8n workflow `AAUC60oWWlwKunaR` is the single schedule owner. Active version `5571a74b-b3d9-4dc4-b944-770e7de85b33` contains three schedule triggers and six nodes in `Asia/Ho_Chi_Minh`.
+- GitHub workflows `vnstock6_daily_maintenance.yml` and `vnstock6_fundamental_refresh.yml` are workflow-dispatch-only. Their native GitHub cron schedules were removed to prevent duplicate writers.
+- All dispatch nodes use the existing n8n GitHub credential. Repository files and workflow JSON contain no API key or token value.

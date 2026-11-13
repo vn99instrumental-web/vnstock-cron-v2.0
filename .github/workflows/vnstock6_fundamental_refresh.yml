@@ -7,8 +7,6 @@ on:
         description: Optional number of configured symbols to refresh; 0 means all
         type: number
         default: 0
-  schedule:
-    - cron: "15 2 * * 0"
 
 concurrency:
   group: vnstock-main-writer

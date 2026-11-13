@@ -2,8 +2,6 @@ name: VNStock 6 daily analytics maintenance
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "15 9 * * 1-5"
 
 concurrency:
   group: vnstock-main-writer

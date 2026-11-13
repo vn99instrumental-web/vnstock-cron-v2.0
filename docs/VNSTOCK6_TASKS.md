@@ -10,7 +10,7 @@ Updated: 2026-11-13
 - [x] Balance sheet, income statement and cash flow feed vnstock_quant.fa ratios and growth.
 - [x] Missing factors are excluded and available weights are renormalized.
 - [x] Native Git ledger and isolated serving root feed all dashboard tabs.
-- [x] The existing n8n workflow keeps five weekday intraday dispatches.
+- [x] The n8n workflow owns all five weekday intraday dispatches plus daily and weekly dispatches.
 - [x] Intraday fetches only market data and reuses the committed fundamental cache.
 - [x] Existing OHLC files use a 14-day correction window instead of refetching 500 days five times per day.
 - [x] Daily outcomes and full analytics run separately at 16:15 ICT on weekdays.
@@ -39,6 +39,6 @@ Bootstrap evidence: production run 43338517181 refreshed FHSC and vnstock_quant 
 
 ## Cadence ownership
 
-- n8n owns the five intraday dispatches.
-- GitHub Actions owns daily derived-data maintenance and weekly slow-source refresh.
+- n8n owns all schedules: five intraday dispatches, weekday daily maintenance and Sunday slow-source refresh.
+- GitHub Actions workflows are dispatch-only executors and contain no independent cron schedule.
 - All writers share vnstock-main-writer so Git commits are serialized.

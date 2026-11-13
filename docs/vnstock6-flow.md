@@ -29,9 +29,11 @@ Historical generation 4/5 prediction ledgers are immutable. Generation 6 writes 
 - `output/serving/vnstock6/current`.
 
 Each native signal records `pipeline_generation`, `reference_source`, `market_source`, `fundamental_source`, `fundamental_status`, `data_origin`, `calculation_engine`, `calculation_version`, technical indicator output, factor availability and excluded-factor reasons.
-## n8n handoff: five intraday runs
+## n8n schedule ownership
 
-Use one active n8n Schedule Trigger in timezone `Asia/Ho_Chi_Minh`, weekdays only, with five local trigger times: `09:15`, `10:30`, `11:30`, `13:45` and `14:50`. Each trigger sends the same authenticated GitHub REST request:
+The active n8n workflow owns all Gen 6 schedules in timezone `Asia/Ho_Chi_Minh`: five weekday intraday dispatches at `09:15`, `10:30`, `11:30`, `13:45` and `14:50`, weekday daily maintenance at `16:15`, and the full slow-source refresh at `09:15` on Sunday. GitHub Actions workflows are dispatch-only executors and contain no `schedule` trigger.
+
+Each intraday trigger sends this authenticated GitHub REST request:
 
 - method: `POST`;
 - URL: `https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/vnstock6_native_production.yml/dispatches`;
@@ -49,7 +51,7 @@ The workflow concurrency group vnstock-main-writer queues overlapping calls. An 
 | Weekdays at 16:15 ICT | vnstock6_daily_maintenance.yml | none | matured outcomes, full IC/analysis, full serving and Vercel revalidation |
 | Sundays at 09:15 ICT | vnstock6_fundamental_refresh.yml | SSI reference plus FHSC balance sheet, income statement and cash flow | vnstock_quant.fa ratios/growth and the committed fundamental cache |
 
-All three writers share vnstock-main-writer; overlapping jobs queue instead of writing Git concurrently. The daily and weekly schedules are GitHub Actions schedules, while the existing five intraday triggers remain in n8n. Do not run the legacy writer concurrently.
+All three writers share vnstock-main-writer; overlapping jobs queue instead of writing Git concurrently. n8n is the single schedule owner, while GitHub Actions performs the dispatched work. Do not run the legacy writer concurrently.
 
 ## Promotion gates
 
