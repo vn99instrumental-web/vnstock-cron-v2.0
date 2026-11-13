@@ -1,7 +1,12 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-13T07:52:04.392225+00:00",
-  "scoring_version": "v6.2-quant",
+  "generated_at": "2026-11-13T09:37:17.196430+00:00",
+  "scoring_version": "v6.4.18",
+  "scoring_versions": [
+    "v6.4.19-shadow",
+    "v6.4.18",
+    "v6.4.17"
+  ],
   "universe_size": 100,
   "sources": {
     "reference": "SSI",
@@ -16,6 +21,8 @@
   "fundamental_cache_symbols": 100,
   "fundamental_symbols_refreshed": 0,
   "successful_symbols": 100,
+  "prediction_rows": 300,
+  "vnindex_rows": 380,
   "failed_symbols": [],
-  "records_added": 100
+  "records_added": 300
 }
