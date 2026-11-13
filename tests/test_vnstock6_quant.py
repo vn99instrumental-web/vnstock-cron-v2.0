@@ -16,7 +16,7 @@ class QuantIndicatorsTest(unittest.TestCase):
         result=technical_indicators(frame)
         self.assertEqual(result["engine"],"vnstock_quant.ta")
         self.assertEqual(result["version"],"1.0.0")
-        for key in ("ema20","ema50","ema200","rsi14","atr14","obv"):
+        for key in ("ema20","ema50","ema200","rsi14","atr14","obv","adx14","supertrend"):
             self.assertIsNotNone(result[key],key)
         self.assertEqual(result["errors"],{})
 

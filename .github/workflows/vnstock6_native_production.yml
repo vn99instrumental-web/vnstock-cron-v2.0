@@ -43,7 +43,7 @@ jobs:
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
       - name: Verify scoring calculations
-        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_pipeline
+        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_market_factors tests.test_vnstock6_pipeline
       - name: Build and validate native release
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}

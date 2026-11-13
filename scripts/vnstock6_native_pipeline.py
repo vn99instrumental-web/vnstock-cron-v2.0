@@ -21,6 +21,7 @@ from vnstock.errors import VnstockError
 
 from vnstock6_scoring import availability_score
 from vnstock6_quant import fundamental_factors, technical_indicators
+from vnstock6_market_factors import fetch_symbol as fetch_market_factors
 from vnstock6_v4_scoring import (
     PROFILES, classify_regime, factor_values, indicator_snapshot, score_profile, signal_values,
 )
@@ -31,6 +32,7 @@ PRED_ROOT = ROOT / "output" / "history" / "vnstock6" / "predictions"
 OUTCOME_ROOT = ROOT / "output" / "history" / "vnstock6" / "outcomes"
 OHLC_ROOT = ROOT / "output" / "ohlc"
 FUNDAMENTAL_CACHE = ROOT / "output" / "vnstock6" / "fundamental-factors.json"
+MARKET_FACTOR_CACHE = ROOT / "output" / "vnstock6" / "market-factors.json"
 VNINDEX_PATH = ROOT / "output" / "market" / "vnindex.json"
 ICT = timezone(timedelta(hours=7))
 
@@ -79,7 +81,7 @@ def save_fundamental_cache(source: str, factors: dict[str, Any]) -> None:
     payload = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": source.upper(), "calculation_engine": "vnstock_quant",
-        "calculation_version": "1.0.0", "symbols": dict(sorted(factors.items())),
+        "calculation_version": "1.1.0", "symbols": dict(sorted(factors.items())),
     }
     FUNDAMENTAL_CACHE.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
@@ -146,12 +148,16 @@ def refresh_fundamental_cache(
         if stale_only else list(config["universe"])
     )
 
+    reference = Reference(reference_source).equity.list() if configured else pd.DataFrame()
+    symbol_column = next((column for column in reference.columns if str(column).lower() == "symbol"), None)
+    industry_column = next((column for column in reference.columns if str(column).lower() in {"industry", "industry_name", "icb_name3", "icb_name2"}), None)
+    industry_map = {str(row[symbol_column]).upper(): str(row[industry_column]) for _, row in reference.iterrows()} if symbol_column and industry_column else {}
     if stale_only:
         universe = list(config["universe"])
         selected = configured if limit is None else configured[:limit]
     else:
-        reference = Reference(reference_source).equity.list()
-        available = {str(value).upper() for value in reference["symbol"].dropna()}
+        if symbol_column is None: raise ValueError("SSI reference schema missing symbol column")
+        available = {str(value).upper() for value in reference[symbol_column].dropna()}
         universe = [symbol for symbol in config["universe"] if symbol in available]
         selected = universe if limit is None else universe[:limit]
 
@@ -160,7 +166,7 @@ def refresh_fundamental_cache(
         previous = factor_cache.get(symbol)
         last_result: dict[str, Any] | None = None
         for attempt in range(1, 4):
-            last_result = fundamental_factors(symbol, fundamental_source)
+            last_result = fundamental_factors(symbol, fundamental_source, industry_map.get(symbol))
             if not last_result.get("error"):
                 last_result["refreshed_at"] = datetime.now(timezone.utc).isoformat()
                 factor_cache[symbol] = last_result
@@ -306,7 +312,7 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
 
 def score_v4_profiles(
     symbol: str, rows: list[dict[str, Any]], versions: list[str], snap_time: str,
-    fundamentals: dict[str, Any], index_rows: list[dict[str, Any]],
+    fundamentals: dict[str, Any], index_rows: list[dict[str, Any]], market_factors: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     frame = pd.DataFrame(rows).sort_values("date")
     if len(frame) < 50:
@@ -317,11 +323,12 @@ def score_v4_profiles(
     signal_date = str(latest["date"])
     regime_info = classify_regime(index_rows, signal_date)
     indicators = indicator_snapshot(frame, quant, regime_info.get("return_20d"))
-    signals = signal_values(indicators, fundamentals, regime_info["regime"])
-    factors = factor_values(signals)
+    signals = signal_values(indicators, fundamentals, regime_info["regime"], market_factors)
     output: list[dict[str, Any]] = []
     for version in versions:
-        scored = score_profile(version, factors, regime_info["regime"])
+        factors = factor_values(signals, PROFILES[version]["extras"], "trade")
+        hold_factors = factor_values(signals, PROFILES[version]["extras"], "hold")
+        scored = score_profile(version, factors, regime_info["regime"], hold_factors)
         raw_id = f"6|{latest.get('market_source')}|{symbol}|{signal_date}|{snap_time}|{version}"
         is_buy = scored["decision"] in {"BUY", "STRONG BUY"}
         levels = {key: indicators.get(key) if is_buy else None for key in ("entry", "stop", "tp1", "tp2")}
@@ -337,6 +344,7 @@ def score_v4_profiles(
             "registry_version": 3, "gate_version": 7,
             "regime_as_of": regime_info.get("as_of"), "regime_method": regime_info.get("reason"),
             **indicators, **levels, **signals, **scored,
+            "market_factor_provenance": {key: (market_factors or {}).get(key) for key in ("source", "refreshed_at", "errors", "raw")},
             "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
             "ratio_roe": ratios.get("RT_PRT_ROE"), "ratio_roa": ratios.get("RT_PRT_ROA"),
             "ratio_gross_margin": ratios.get("RT_PRT_GROSS_MARGIN"), "ratio_net_margin": ratios.get("RT_PRT_NET_MARGIN"),
@@ -393,6 +401,7 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
+    market_factor_cache = json.loads(MARKET_FACTOR_CACHE.read_text(encoding="utf-8")).get("symbols", {}) if MARKET_FACTOR_CACHE.exists() else {}
     versions = list(config.get("scoring_versions") or [config["scoring_version"]])
     unknown_versions = [version for version in versions if version not in PROFILES]
     if unknown_versions:
@@ -403,11 +412,21 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
         attempts = []
         cached = factor_cache.get(symbol)
         factors = cached if cached and cache_entry_is_fresh(cached, max_age_days) else {
-            "fundamental": None, "growth": None, "ratios": {}, "statements": {},
+            "fundamental": None, "growth": None, "cash_flow": None, "ratios": {}, "statements": {},
             "fundamental_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
             "growth_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
+            "cash_flow_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
             "engine": "vnstock_quant.fa", "version": "1.0.0",
         }
+        previous_market = market_factor_cache.get(symbol) or {}
+        try:
+            current_market = fetch_market_factors(symbol, today, intraday)
+            for key in ("s_ff_net", "s_of_phasefix", "s_prop_5d", "s_insider"):
+                if current_market.get(key) is None and previous_market.get(key) is not None: current_market[key] = previous_market[key]
+            market_factor_cache[symbol] = current_market
+        except Exception as exc:
+            current_market = dict(previous_market)
+            current_market.setdefault("errors", {})["collector"] = {"type": type(exc).__name__, "code": getattr(exc, "code", None), "action": getattr(exc, "action", None)}
         for market_source in market_sources:
             try:
                 start = market_fetch_start(symbol, today, int(config["history_days"]))
@@ -423,13 +442,15 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
                         raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
                     incoming.extend(live_rows)
                 merged = merge_ohlcv(symbol, incoming)
-                predictions.extend(score_v4_profiles(symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows))
+                predictions.extend(score_v4_profiles(symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows, current_market))
                 source_counts[market_source.upper()] += 1
                 break
             except Exception as exc:
                 attempts.append({"source": market_source.upper(), "type": type(exc).__name__, "code": getattr(exc, "code", None)})
         else:
             errors.append({"symbol": symbol, "attempts": attempts})
+    MARKET_FACTOR_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    MARKET_FACTOR_CACHE.write_text(json.dumps({"schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(), "symbols": market_factor_cache}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     successful_symbols = len({row["symbol"] for row in predictions})
     if successful_symbols < int(config["minimum_coverage"]):
         raise RuntimeError(f"VNStock6 coverage {successful_symbols}/{len(universe)} below minimum; errors={errors[:10]}")

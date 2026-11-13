@@ -69,3 +69,8 @@ FHSC throttles statement reads, so fundamentals are not re-downloaded during eac
 - Daily maintenance checks the legacy cron v2.0 TTL before analytics: 3 days in earnings months (1, 2, 4, 5, 7, 8, 10, 11), otherwise 30 days. It refreshes only stale or missing symbols. The weekly workflow remains a full-universe safety net.
 - Intraday mode never calls the three statement endpoints. It reads the last committed cache and refetches only the recent OHLCV correction window.
 - A missing cache entry is marked fundamental_cache_unavailable; an entry older than the active 3/30-day TTL is marked fundamental_cache_stale. Refresh failures preserve last-known-good data, while unusable entries are excluded and available weights are renormalized, never replaced by zero.
+
+
+## Indicator upgrade (2026-11-13)
+
+Gen 6 now publishes ADX(14), Supertrend(10,3), cash-flow core and cached FHSC foreign, proprietary, insider, active-flow and three-level order-book inputs. `vnstock_quant.ta` Community returns `QUANT_TIER_REQUIRED` for ADX/Supertrend, so the pipeline records an auditable `local_wilder_reference` implementation. Active buy/sell is observed but not substituted for legacy `of_phasefix`; exact phase-adjusted parity remains pending. Order-book history can only accumulate from the first stored snapshot.

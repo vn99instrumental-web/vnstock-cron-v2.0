@@ -101,7 +101,7 @@ def indicator_snapshot(frame: pd.DataFrame, quant: dict[str, Any], index_return2
     tp1 = finite(price + 2 * atr14) if price and atr14 else None
     tp2 = finite(price + 3 * atr14) if price and atr14 else None
     return {
-        "ema20": finite(quant.get("ema20")), "ema50": finite(quant.get("ema50")), "ema200": ema200,
+        "ema20": finite(quant.get("ema20")), "ema50": finite(quant.get("ema50")), "ema200": ema200, "adx": finite(quant.get("adx14")), "supertrend": finite(quant.get("supertrend")),
         "rsi_14": finite(quant.get("rsi14")), "atr_14": atr14,
         "atr_pct": finite(atr14 / price * 100) if atr14 and price else None, "obv": obv,
         "macd": macd, "macd_signal": macd_signal,
@@ -144,7 +144,22 @@ def classify_regime(index_rows: list[dict[str, Any]], signal_date: str) -> dict[
             "reason": "prior_close_only"}
 
 
-def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str) -> dict[str, float | None]:
+def _depth_wall(market: dict[str,Any], price: float | None) -> float | None:
+    rows=((market.get("raw") or {}).get("order_book") or [])
+    if not rows or not price: return None
+    normalized={str(key).lower().replace(" ","_"):value for key,value in rows[-1].items()}; avg=finite((market.get("raw") or {}).get("average_trade_size"))
+    if not avg: return None
+    bid=ask=0.0
+    for i in (1,2,3):
+        bp=finite(normalized.get(f"bid_price_{i}")); bv=finite(normalized.get(f"bid_volume_{i}")); ap=finite(normalized.get(f"ask_price_{i}")); av=finite(normalized.get(f"ask_volume_{i}"))
+        if bp and bp>price*10: bp/=1000
+        if ap and ap>price*10: ap/=1000
+        if bp and bv and price*.98<=bp<=price*1.02: bid=max(bid,bv)
+        if ap and av and price*.98<=ap<=price*1.02: ask=max(ask,av)
+    def band(value): return 3 if value/avg>=250 else 2 if value/avg>=100 else 1 if value/avg>=40 else 0
+    return float(max(-3,min(3,band(bid)-band(ask))))
+def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str, market: dict[str, Any] | None = None) -> dict[str, float | None]:
+    market = market or {}
     willr, bb, overext, relative = ind.get("willr_14"), ind.get("bb_position"), ind.get("price_vs_ema200_pct"), ind.get("relative_return_20d")
     pos52, vol_ratio = ind.get("position_52w"), ind.get("vol_ma_ratio")
     values: dict[str, float | None] = {
@@ -154,31 +169,30 @@ def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str)
         "s_rs_reversal": None if relative is None else round(_clip(-relative / 10) * 4, 4),
         "s_deep_dd": None if pos52 is None else (4 if pos52 < .2 else 0),
         "s_dist_52w": None if pos52 is None else (4 if pos52 >= .8 else 2 if pos52 >= .65 else 0),
+        "s_trend_st": None if ind.get("supertrend") is None or ind.get("adx") is None or ind.get("entry") is None else ((4 if ind["adx"] >= 25 else 1 if ind["adx"] < 18 else 2) * (1 if ind["entry"] > ind["supertrend"] else -1)),
         "s_vol_ratio_h": None if vol_ratio is None else (3 if vol_ratio >= 1.5 else -3 if vol_ratio < .5 else 0),
-        "s_ff_net": None, "s_of_phasefix": None, "s_prop_5d": None, "s_insider": None,
+        "s_ff_net": finite(market.get("s_ff_net")), "s_of_phasefix": finite(market.get("s_of_phasefix")), "s_prop_5d": finite(market.get("s_prop_5d")), "s_insider": finite(market.get("s_insider")),
+        "s_depth_wall": _depth_wall(market, finite(ind.get("entry"))),
         "s_fund_core": None if fundamental.get("fundamental") is None else round(float(fundamental["fundamental"]) * 8, 4),
-        "s_cf_core": None,
+        "s_cf_core": None if fundamental.get("cash_flow") is None else round(float(fundamental["cash_flow"]) * 3, 4),
         "s_growth_core": None if fundamental.get("growth") is None else round(float(fundamental["growth"]) * 5, 4),
         "s_mkt_context": {"UPTREND": 2, "RECOVERY": 1, "SIDEWAYS": 0, "DOWNTREND": -1, "DEEP_DOWN": -2}.get(regime),
     }
     return values
 
 
-def factor_values(signals: dict[str, float | None]) -> dict[str, float | None]:
-    def normalized(keys: tuple[str, ...], cap: float) -> float | None:
-        vals = [signals.get(key) for key in keys]
-        if any(value is None for value in vals):
-            return None
-        return _clip(sum(float(value) for value in vals) / cap)
-    return {
-        "mean_reversion": normalized(("s_willr_mr", "s_bb_mr", "s_overext_ema", "s_rs_reversal", "s_deep_dd"), 22),
-        "breakout": normalized(("s_dist_52w",), 4),
-        "flow": normalized(("s_ff_net", "s_of_phasefix", "s_prop_5d", "s_insider"), 15),
-        "fundamental": normalized(("s_fund_core",), 8),
-        "growth": normalized(("s_growth_core",), 5),
-        "context": normalized(("s_mkt_context",), 2),
-    }
-
+def factor_values(signals: dict[str, float | None], include_extras: bool = True, horizon: str = "trade") -> dict[str, float | None]:
+    def normalized(keys, cap):
+        vals=[signals.get(key) for key in keys]
+        if any(value is None for value in vals): return None
+        return _clip(sum(float(value) for value in vals)/cap)
+    def available_normalized(spans):
+        present={key:signals.get(key) for key in spans if signals.get(key) is not None}
+        if not present: return None
+        return _clip(sum(float(value) for value in present.values())/sum(spans[key] for key in present))
+    flow_spans={"s_ff_net":6,"s_of_phasefix":4,"s_prop_5d":3,"s_insider":2}
+    if include_extras and horizon=="trade": flow_spans["s_depth_wall"]=3
+    return {"mean_reversion":normalized(("s_willr_mr","s_bb_mr","s_overext_ema","s_rs_reversal","s_deep_dd"),22),"breakout":normalized(("s_dist_52w","s_trend_st"),8) if include_extras else normalized(("s_dist_52w",),4),"flow":available_normalized(flow_spans),"fundamental":available_normalized({"s_fund_core":8,"s_cf_core":3}) if include_extras else normalized(("s_fund_core",),8),"growth":normalized(("s_growth_core",),5),"context":normalized(("s_mkt_context",),2)}
 
 def _decision(score: float) -> str:
     if score >= 50: return "STRONG BUY"
@@ -188,13 +202,14 @@ def _decision(score: float) -> str:
     return "STRONG SELL"
 
 
-def score_profile(version: str, factors: dict[str, float | None], regime: str) -> dict[str, Any]:
+def score_profile(version: str, factors: dict[str, float | None], regime: str, hold_factors: dict[str, float | None] | None = None) -> dict[str, Any]:
     profile = PROFILES[version]
+    hold_factors = hold_factors or factors
     gate_index = REGIMES.index(regime if regime in REGIMES else "UNKNOWN")
     gates = {name: GATES[name][gate_index] for name in factors}
 
-    def calculate(weights: dict[str, float], extras: bool) -> tuple[float, dict[str, float], float, int]:
-        included = {name: value for name, value in factors.items() if value is not None and weights[name] > 0 and gates[name] > 0}
+    def calculate(values: dict[str, float | None], weights: dict[str, float], extras: bool) -> tuple[float, dict[str, float], float, int]:
+        included = {name: value for name, value in values.items() if value is not None and weights[name] > 0 and gates[name] > 0}
         available = sum(weights[name] * gates[name] for name in included)
         if available <= 0:
             raise ValueError(f"No available scoring factors for {version}")
@@ -204,8 +219,8 @@ def score_profile(version: str, factors: dict[str, float | None], regime: str) -
         bonus = (5 if raw > 0 else -5) if extras and aligned >= 3 else 0
         return round(_clip(raw + bonus, -100, 100), 2), contributions, available, aligned
 
-    trade, contributions, available, aligned = calculate(profile["weights"], profile["extras"])
-    hold, hold_contributions, hold_available, _ = calculate(HOLD_WEIGHTS, False)
+    trade, contributions, available, aligned = calculate(factors, profile["weights"], profile["extras"])
+    hold, hold_contributions, hold_available, _ = calculate(hold_factors, HOLD_WEIGHTS, False)
     status = {
         name: {"included": value is not None, "value": value, "configured_weight": profile["weights"][name],
                "gate": gates[name], "reason": None if value is not None else "source_unavailable"}
@@ -221,6 +236,6 @@ def score_profile(version: str, factors: dict[str, float | None], regime: str) -
         "hold_available_weight": round(hold_available, 6), "missing_data_policy": "exclude_and_renormalize",
         "n_supergroups_aligned": aligned, "confluence_bonus": (5 if trade > 0 else -5) if profile["extras"] and aligned >= 3 else 0,
         **{f"trade_{name}_norm": value for name, value in factors.items()},
-        **{f"hold_{name}_norm": value for name, value in factors.items()},
+        **{f"hold_{name}_norm": value for name, value in hold_factors.items()},
         "factor_contributions": contributions, "hold_factor_contributions": hold_contributions,
     }

@@ -27,7 +27,7 @@ class Gen6V4ScoringTest(unittest.TestCase):
         })
         self.quant = {
             "ema20": 124.0, "ema50": 122.0, "ema200": 115.0,
-            "rsi14": 60.0, "atr14": 2.0, "obv": 1_000.0,
+            "rsi14": 60.0, "atr14": 2.0, "obv": 1_000.0, "adx14": 26.0, "supertrend": 120.0,
         }
 
     def test_indicator_snapshot_surfaces_computable_technical_fields(self):

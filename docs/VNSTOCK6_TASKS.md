@@ -19,6 +19,10 @@ Updated: 2026-11-13
 - [x] A failed weekly statement refresh preserves the last successful symbol cache.
 - [x] Fundamental cache entries older than the active 3/30-day TTL fail closed and are excluded from scoring.
 
+- [x] Add ADX(14), Supertrend(10,3), FHSC flow/depth collectors and last-known-good cache.
+- [x] Add foreign, proprietary, insider, depth-wall and cash-flow signals when inputs are present.
+- [ ] Complete exact `of_phasefix` from persisted five-minute volume snapshots and accumulate order-book history.
+
 ## Operational checks after merge
 
 Bootstrap evidence: production run 43338517181 refreshed FHSC and vnstock_quant factors for 100/100 symbols and published commit fe613b7a; candidate run 43350815066 passed with SSI 100/100, FHSC sample 3/3 and availability-aware scoring.
