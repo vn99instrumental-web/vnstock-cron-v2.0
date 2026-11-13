@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-13T02:10:58.317283+00:00",
+  "generated_at": "2026-11-13T10:44:25.495383+00:00",
   "source": "FHSC",
   "calculation_engine": "vnstock_quant",
   "calculation_version": "1.0.0",
@@ -43,7 +43,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:41:25.704947+00:00"
+      "refreshed_at": "2026-11-13T09:40:01.082974+00:00"
     },
     "ANV": {
       "fundamental": 0.5860348049535978,
@@ -86,7 +86,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:42:26.919514+00:00"
+      "refreshed_at": "2026-11-13T09:41:01.885081+00:00"
     },
     "BAF": {
       "fundamental": -0.24746138139023552,
@@ -129,7 +129,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:42:56.008815+00:00"
+      "refreshed_at": "2026-11-13T09:41:31.059233+00:00"
     },
     "BCM": {
       "fundamental": 0.49602663576156175,
@@ -172,7 +172,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:43:36.189064+00:00"
+      "refreshed_at": "2026-11-13T09:42:11.079872+00:00"
     },
     "BID": {
       "fundamental": -0.19192298687661935,
@@ -212,7 +212,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:44:41.145398+00:00"
+      "refreshed_at": "2026-11-13T09:43:16.066272+00:00"
     },
     "BMP": {
       "fundamental": 0.9798047442603227,
@@ -255,7 +255,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:45:44.513869+00:00"
+      "refreshed_at": "2026-11-13T09:44:16.058657+00:00"
     },
     "BSI": {
       "fundamental": 0.26606859355911266,
@@ -298,7 +298,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:46:55.991068+00:00"
+      "refreshed_at": "2026-11-13T09:45:26.081139+00:00"
     },
     "BSR": {
       "fundamental": 0.7209225710538529,
@@ -341,14 +341,19 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:47:42.164962+00:00"
+      "refreshed_at": "2026-11-13T09:46:06.852287+00:00"
     },
     "BVH": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": -0.35597471424188076,
+      "growth": 0.24679150220252666,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.13323277382001353,
+        "RT_PRT_ROA": 0.011088524798020015,
+        "RT_LQD_CR": 0.4576094242571367,
+        "RT_LEV_DE": 10.203073109679153
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -357,16 +362,27 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 4686,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3124,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T00:48:29.269886+00:00"
+      "refreshed_at": "2026-11-13T09:47:26.071486+00:00"
     },
     "BWE": {
       "fundamental": 0.6409563006265449,
@@ -409,23 +425,50 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:49:14.959774+00:00"
+      "refreshed_at": "2026-11-13T09:48:11.057158+00:00"
     },
     "CII": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
-      "statements": {},
+      "fundamental": 0.05556350760957133,
+      "growth": 0.26110363271310977,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.011192362297209166,
+        "RT_PRT_ROA": 0.002576003240405218,
+        "RT_PRT_GROSS_MARGIN": 0.5732974199493688,
+        "RT_PRT_NET_MARGIN": 0.08182071172935179,
+        "RT_LQD_CR": 1.5231205842660136,
+        "RT_LEV_DE": 2.400540108936086
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6435,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T00:49:29.630062+00:00"
+      "refreshed_at": "2026-11-13T09:49:11.055646+00:00"
     },
     "CMG": {
       "fundamental": 0.12932751079647492,
@@ -468,7 +511,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:50:44.968598+00:00"
+      "refreshed_at": "2026-11-13T09:50:26.060379+00:00"
     },
     "CTD": {
       "fundamental": -0.22941673090653092,
@@ -511,7 +554,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:51:45.152911+00:00"
+      "refreshed_at": "2026-11-13T09:51:26.850533+00:00"
     },
     "CTG": {
       "fundamental": -0.08751016765223985,
@@ -551,7 +594,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:53:01.409634+00:00"
+      "refreshed_at": "2026-11-13T09:52:41.056910+00:00"
     },
     "CTR": {
       "fundamental": 0.05471968646724338,
@@ -594,7 +637,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:54:00.525454+00:00"
+      "refreshed_at": "2026-11-13T09:53:41.058339+00:00"
     },
     "CTS": {
       "fundamental": -0.006492759081637471,
@@ -637,7 +680,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:55:05.545676+00:00"
+      "refreshed_at": "2026-11-13T09:54:46.076358+00:00"
     },
     "DBC": {
       "fundamental": 0.22033114217050884,
@@ -680,7 +723,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:56:09.706726+00:00"
+      "refreshed_at": "2026-11-13T09:55:46.057229+00:00"
     },
     "DCM": {
       "fundamental": 0.7509102113777528,
@@ -723,7 +766,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:57:04.701803+00:00"
+      "refreshed_at": "2026-11-13T09:56:41.987356+00:00"
     },
     "DGW": {
       "fundamental": 0.15892490274053847,
@@ -766,7 +809,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:57:59.707633+00:00"
+      "refreshed_at": "2026-11-13T09:57:36.056790+00:00"
     },
     "DIG": {
       "fundamental": 0.32852989743703437,
@@ -809,7 +852,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T00:59:00.841292+00:00"
+      "refreshed_at": "2026-11-13T09:58:36.073382+00:00"
     },
     "DPM": {
       "fundamental": 0.5100890045524163,
@@ -852,7 +895,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:00:00.837435+00:00"
+      "refreshed_at": "2026-11-13T09:59:36.070861+00:00"
     },
     "DSE": {
       "fundamental": 0.08492439321975392,
@@ -895,7 +938,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:00:53.574779+00:00"
+      "refreshed_at": "2026-11-13T10:00:26.082110+00:00"
     },
     "DXG": {
       "fundamental": 0.2896771722740303,
@@ -938,7 +981,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:01:55.170747+00:00"
+      "refreshed_at": "2026-11-13T10:01:26.059618+00:00"
     },
     "EIB": {
       "fundamental": -0.6169810295384909,
@@ -978,7 +1021,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:03:11.413898+00:00"
+      "refreshed_at": "2026-11-13T10:02:42.013189+00:00"
     },
     "EVF": {
       "fundamental": -0.37445898057733995,
@@ -1018,14 +1061,21 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:04:00.482893+00:00"
+      "refreshed_at": "2026-11-13T10:03:31.056044+00:00"
     },
     "FPT": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": 0.7927449841654841,
+      "growth": -0.5198170353322684,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.26018217238739716,
+        "RT_PRT_ROA": 0.13464538109992485,
+        "RT_PRT_GROSS_MARGIN": 0.32924271144468287,
+        "RT_PRT_NET_MARGIN": 0.17878415381583249,
+        "RT_LQD_CR": 1.654606682554345,
+        "RT_LEV_DE": 0.710502973168582
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -1042,16 +1092,19 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:05:01.130221+00:00"
+      "refreshed_at": "2026-11-13T10:04:31.054603+00:00"
     },
     "FRT": {
       "fundamental": 0.08122821712623884,
@@ -1094,7 +1147,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:05:46.291369+00:00"
+      "refreshed_at": "2026-11-13T10:05:16.050902+00:00"
     },
     "FTS": {
       "fundamental": 0.3585571298284489,
@@ -1137,7 +1190,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:07:00.001242+00:00"
+      "refreshed_at": "2026-11-13T10:06:26.075981+00:00"
     },
     "GAS": {
       "fundamental": 0.6383176370553131,
@@ -1180,7 +1233,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:08:04.153007+00:00"
+      "refreshed_at": "2026-11-13T10:07:26.057147+00:00"
     },
     "GEE": {
       "fundamental": 0.5022834240689685,
@@ -1223,7 +1276,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:08:29.128543+00:00"
+      "refreshed_at": "2026-11-13T10:07:51.046138+00:00"
     },
     "GEX": {
       "fundamental": 0.07293259059854502,
@@ -1266,7 +1319,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:09:30.590999+00:00"
+      "refreshed_at": "2026-11-13T10:08:51.844249+00:00"
     },
     "GMD": {
       "fundamental": 0.9219717404478597,
@@ -1309,7 +1362,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:10:29.984852+00:00"
+      "refreshed_at": "2026-11-13T10:09:51.061613+00:00"
     },
     "GVR": {
       "fundamental": null,
@@ -3119,7 +3172,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:52:29.792240+00:00"
+      "refreshed_at": "2026-11-13T10:20:47.321091+00:00"
     },
     "TCH": {
       "fundamental": 0.6152999068416939,
@@ -3162,7 +3215,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:53:20.140084+00:00"
+      "refreshed_at": "2026-11-13T10:21:35.912171+00:00"
     },
     "TCX": {
       "fundamental": 0.6916760984262983,
@@ -3205,7 +3258,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:54:09.899341+00:00"
+      "refreshed_at": "2026-11-13T10:22:25.954880+00:00"
     },
     "TPB": {
       "fundamental": -0.19217144190360622,
@@ -3245,7 +3298,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:55:06.446121+00:00"
+      "refreshed_at": "2026-11-13T10:23:22.743245+00:00"
     },
     "VCB": {
       "fundamental": -0.18350019380285829,
@@ -3285,7 +3338,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:56:25.827641+00:00"
+      "refreshed_at": "2026-11-13T10:24:47.141224+00:00"
     },
     "VCG": {
       "fundamental": 0.1304768671358568,
@@ -3328,7 +3381,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:57:25.824360+00:00"
+      "refreshed_at": "2026-11-13T10:25:48.108259+00:00"
     },
     "VCI": {
       "fundamental": 0.4786133677889109,
@@ -3371,7 +3424,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:58:25.931639+00:00"
+      "refreshed_at": "2026-11-13T10:26:47.150020+00:00"
     },
     "VCK": {
       "fundamental": 0.7902446928370678,
@@ -3414,23 +3467,50 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:59:18.443049+00:00"
+      "refreshed_at": "2026-11-13T10:27:37.142965+00:00"
     },
     "VGC": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
-      "statements": {},
+      "fundamental": 0.6087932986175094,
+      "growth": 0.8323264642810715,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.20616495500672036,
+        "RT_PRT_ROA": 0.06672606266822899,
+        "RT_PRT_GROSS_MARGIN": 0.3070431417318367,
+        "RT_PRT_NET_MARGIN": 0.1552439829881726,
+        "RT_LQD_CR": 1.8208678156708709,
+        "RT_LEV_DE": 1.1971239413179655
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 5499,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1128,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2115,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:59:28.219157+00:00"
+      "refreshed_at": "2026-11-13T10:28:33.317345+00:00"
     },
     "VHC": {
       "fundamental": 0.5382607509510974,
@@ -3473,7 +3553,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:00:32.942506+00:00"
+      "refreshed_at": "2026-11-13T10:30:38.562765+00:00"
     },
     "VHM": {
       "fundamental": 0.5139374097381785,
@@ -3516,7 +3596,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:01:13.054881+00:00"
+      "refreshed_at": "2026-11-13T10:31:19.343993+00:00"
     },
     "VIB": {
       "fundamental": -0.22585913384464726,
@@ -3556,7 +3636,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:02:18.937525+00:00"
+      "refreshed_at": "2026-11-13T10:32:23.563805+00:00"
     },
     "VIC": {
       "fundamental": 0.1700274787507666,
@@ -3599,7 +3679,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:03:19.002422+00:00"
+      "refreshed_at": "2026-11-13T10:33:23.559835+00:00"
     },
     "VIX": {
       "fundamental": 0.633791910578633,
@@ -3642,7 +3722,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:04:34.028696+00:00"
+      "refreshed_at": "2026-11-13T10:34:38.584461+00:00"
     },
     "VJC": {
       "fundamental": -0.25227945321976997,
@@ -3685,7 +3765,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:05:22.475687+00:00"
+      "refreshed_at": "2026-11-13T10:35:23.563040+00:00"
     },
     "VND": {
       "fundamental": 0.5921210856594951,
@@ -3728,7 +3808,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:06:38.839424+00:00"
+      "refreshed_at": "2026-11-13T10:36:39.369365+00:00"
     },
     "VNM": {
       "fundamental": 0.9009689970041638,
@@ -3771,14 +3851,18 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:07:38.200289+00:00"
+      "refreshed_at": "2026-11-13T10:37:41.884928+00:00"
     },
     "VPB": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": -0.18004707495960526,
+      "growth": 0.8143544507360865,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.16452190578071346,
+        "RT_PRT_ROA": 0.021710352259980893,
+        "RT_LEV_DE": 7.05078339997909
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -3787,16 +3871,27 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1392,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2530,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T02:08:09.786392+00:00"
+      "refreshed_at": "2026-11-13T10:38:55.226781+00:00"
     },
     "VPI": {
       "fundamental": 0.3201848678411977,
@@ -3839,7 +3934,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:08:49.857641+00:00"
+      "refreshed_at": "2026-11-13T10:39:36.074441+00:00"
     },
     "VPL": {
       "fundamental": 0.32390409474495596,
@@ -3882,39 +3977,93 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:09:04.844783+00:00"
+      "refreshed_at": "2026-11-13T10:39:50.228560+00:00"
     },
     "VPX": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
-      "growth_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
-      "ratios": {},
-      "statements": {},
+      "fundamental": 0.5454992814904255,
+      "growth": -1.0,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.10837670085769242,
+        "RT_PRT_ROA": 0.04683026904067913,
+        "RT_PRT_GROSS_MARGIN": 0.6122408026514187,
+        "RT_PRT_NET_MARGIN": 0.2918773729094577,
+        "RT_LQD_CR": 1.7375916238999867,
+        "RT_LEV_DE": 1.2962284555258088
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 6450,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 3440,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 4343,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "RateLimitError",
-        "code": "VNSTOCK_SOURCE_RATE_LIMITED",
-        "action": "Chờ rồi gọi lại; giảm số mã mỗi lần"
-      },
-      "refreshed_at": "2026-11-13T02:09:09.797061+00:00"
+      "refreshed_at": "2026-11-13T10:40:40.263776+00:00"
     },
     "VRE": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
-      "growth_reason": "VNSTOCK_SOURCE_RATE_LIMITED",
-      "ratios": {},
-      "statements": {},
+      "fundamental": 0.8847283335302345,
+      "growth": 0.3207208427245196,
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.14904201139025994,
+        "RT_PRT_ROA": 0.11954367983225944,
+        "RT_PRT_GROSS_MARGIN": 0.5435516735618632,
+        "RT_PRT_NET_MARGIN": 0.7906774633502583,
+        "RT_LQD_CR": 2.3505068772368056,
+        "RT_LEV_DE": 0.22786511213048913
+      },
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 4446,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 912,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1710,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "error": {
-        "type": "RateLimitError",
-        "code": "VNSTOCK_SOURCE_RATE_LIMITED",
-        "action": "Chờ rồi gọi lại; giảm số mã mỗi lần"
-      },
-      "refreshed_at": "2026-11-13T02:09:11.463631+00:00"
+      "refreshed_at": "2026-11-13T10:41:25.224891+00:00"
     },
     "VSC": {
       "fundamental": 0.24188467178092496,
@@ -3957,7 +4106,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:10:13.070366+00:00"
+      "refreshed_at": "2026-11-13T10:43:41.304504+00:00"
     },
     "VTP": {
       "fundamental": -0.0564091827793639,
@@ -4000,7 +4149,7 @@
       },
       "engine": "vnstock_quant.fa",
       "version": "1.0.0",
-      "refreshed_at": "2026-11-13T02:10:57.913075+00:00"
+      "refreshed_at": "2026-11-13T10:44:25.495326+00:00"
     }
   }
 }

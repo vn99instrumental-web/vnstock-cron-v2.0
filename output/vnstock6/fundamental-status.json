@@ -1,19 +1,508 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-13T08:06:03.705184+00:00",
+  "generated_at": "2026-11-13T10:44:25.498104+00:00",
   "reference_source": "SSI",
   "fundamental_source": "FHSC",
   "configured_symbols": 100,
   "reference_symbols_available": 100,
-  "symbols_requested": 0,
+  "symbols_requested": 100,
   "cache_symbols": 100,
-  "stale_only": true,
+  "stale_only": false,
   "ttl_days": 3,
   "counts": {
-    "success": 0,
+    "success": 56,
     "failed": 0,
-    "failed_preserved": 0,
-    "skipped_fresh": 100
+    "failed_preserved": 44,
+    "skipped_fresh": 0
   },
-  "symbols": {}
+  "symbols": {
+    "ACB": {
+      "status": "success",
+      "attempt": 1
+    },
+    "ANV": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BAF": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BCM": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BID": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BMP": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BSI": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BSR": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BVH": {
+      "status": "success",
+      "attempt": 1
+    },
+    "BWE": {
+      "status": "success",
+      "attempt": 1
+    },
+    "CII": {
+      "status": "success",
+      "attempt": 1
+    },
+    "CMG": {
+      "status": "success",
+      "attempt": 1
+    },
+    "CTD": {
+      "status": "success",
+      "attempt": 1
+    },
+    "CTG": {
+      "status": "success",
+      "attempt": 1
+    },
+    "CTR": {
+      "status": "success",
+      "attempt": 1
+    },
+    "CTS": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DBC": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DCM": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DGW": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DIG": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DPM": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DSE": {
+      "status": "success",
+      "attempt": 1
+    },
+    "DXG": {
+      "status": "success",
+      "attempt": 1
+    },
+    "EIB": {
+      "status": "success",
+      "attempt": 1
+    },
+    "EVF": {
+      "status": "success",
+      "attempt": 1
+    },
+    "FPT": {
+      "status": "success",
+      "attempt": 1
+    },
+    "FRT": {
+      "status": "success",
+      "attempt": 1
+    },
+    "FTS": {
+      "status": "success",
+      "attempt": 1
+    },
+    "GAS": {
+      "status": "success",
+      "attempt": 1
+    },
+    "GEE": {
+      "status": "success",
+      "attempt": 1
+    },
+    "GEX": {
+      "status": "success",
+      "attempt": 1
+    },
+    "GMD": {
+      "status": "success",
+      "attempt": 1
+    },
+    "GVR": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HAG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HCM": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HDB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HDG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HHV": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HPG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HSG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "HT1": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "KBC": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "KDC": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "KDH": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "KOS": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "LPB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "MBB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "MCH": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "MSB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "MSN": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "MWG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "NAB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "NKG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "NLG": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "NT2": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "NVL": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "OCB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PAN": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PC1": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PDR": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PHR": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PLX": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PNJ": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "POW": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PVD": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "PVT": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "REE": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SAB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SBT": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SHB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SIP": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SJS": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SSB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "SSI": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "STB": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "TAL": {
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+    },
+    "TCB": {
+      "status": "success",
+      "attempt": 3
+    },
+    "TCH": {
+      "status": "success",
+      "attempt": 1
+    },
+    "TCX": {
+      "status": "success",
+      "attempt": 1
+    },
+    "TPB": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VCB": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VCG": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VCI": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VCK": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VGC": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VHC": {
+      "status": "success",
+      "attempt": 3
+    },
+    "VHM": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VIB": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VIC": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VIX": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VJC": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VND": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VNM": {
+      "status": "success",
+      "attempt": 2
+    },
+    "VPB": {
+      "status": "success",
+      "attempt": 2
+    },
+    "VPI": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VPL": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VPX": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VRE": {
+      "status": "success",
+      "attempt": 1
+    },
+    "VSC": {
+      "status": "success",
+      "attempt": 3
+    },
+    "VTP": {
+      "status": "success",
+      "attempt": 1
+    }
+  }
 }
