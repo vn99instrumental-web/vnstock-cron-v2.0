@@ -53,7 +53,7 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertTrue(pipeline.cache_entry_is_fresh(fresh, 14))
         self.assertFalse(pipeline.cache_entry_is_fresh(stale, 14))
         self.assertFalse(pipeline.cache_entry_is_fresh({}, 14))
-        self.assertFalse(pipeline.cache_entry_is_fresh({"version": "1.0.0", "refreshed_at": fresh["refreshed_at"]}, 14))
+        self.assertTrue(pipeline.cache_entry_is_fresh({"version": "1.0.0", "refreshed_at": fresh["refreshed_at"]}, 14))
 
     def test_fundamental_ttl_matches_legacy_earnings_cadence(self):
         config = {
@@ -100,6 +100,43 @@ class PipelineCadenceTest(unittest.TestCase):
             ),
             ["SSI"],
         )
+    def test_daily_check_preserves_unchanged_factors(self):
+        config = {
+            "sources": {"reference": "ssi", "fundamental": "fhsc"},
+            "universe": ["FPT"],
+            "fundamental_refresh": {
+                "max_age_days": 30,
+                "earnings_max_age_days": 3,
+                "earnings_months": [11],
+            },
+        }
+        previous = {
+            "version": "1.1.0", "statement_signature": "same",
+            "refreshed_at": datetime.now(timezone.utc).isoformat(),
+            "fundamental": 0.4, "growth": 0.2,
+        }
+        reference = pd.DataFrame({"symbol": ["FPT"], "industry": ["Technology"]})
+        unchanged = {
+            "unchanged": True, "statement_signature": "same",
+            "statements": {"balance_sheet": {"status": "success"}},
+        }
+        with patch.object(pipeline, "load_fundamental_cache", return_value={"FPT": previous}), patch.object(
+            pipeline, "Reference"
+        ) as reference_factory, patch.object(
+            pipeline, "fundamental_factors", return_value=unchanged
+        ) as fetch, patch.object(
+            pipeline, "save_fundamental_cache"
+        ) as save, patch.object(Path, "mkdir"), patch.object(Path, "write_text"):
+            reference_factory.return_value.equity.list.return_value = reference
+            status = pipeline.refresh_fundamental_cache(config, check_updates=True)
+        self.assertEqual(status["counts"]["unchanged"], 1)
+        self.assertEqual(status["counts"]["updated"], 0)
+        self.assertEqual(fetch.call_args.kwargs["known_signature"], "same")
+        saved = save.call_args.args[1]["FPT"]
+        self.assertEqual(saved["fundamental"], 0.4)
+        self.assertEqual(saved["growth"], 0.2)
+        self.assertIn("checked_at", saved)
+
     def test_stale_only_skips_source_calls_when_cache_is_fresh(self):
         config = {
             "sources": {"reference": "ssi", "fundamental": "fhsc"},

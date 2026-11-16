@@ -12,9 +12,8 @@ class ServingProjectionTests(unittest.TestCase):
     def test_preserves_gen6_indicators_at_serving_boundary(self):
         expected = {
             "adx": 26.0, "supertrend": 95.0, "s_trend_st": 4.0,
-            "s_ff_net": 2.0, "s_of_phasefix": None, "s_prop_5d": 1.0,
-            "s_insider": 0.0, "s_depth_wall": None, "s_cf_core": 1.5,
-            "market_factor_provenance": {"source": "FHSC"},
+            "s_ff_net": None, "s_of_phasefix": None, "s_prop_5d": None,
+            "s_insider": None, "s_depth_wall": None, "s_cf_core": 1.5,
         }
         row = {
             "symbol": "FPT", "scoring_version": "v6.4.18",

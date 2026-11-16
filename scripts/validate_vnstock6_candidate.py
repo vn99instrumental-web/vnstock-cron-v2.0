@@ -41,7 +41,7 @@ def main() -> None:
     if low_coverage:
         raise RuntimeError(f"Serving coverage is too low: {low_coverage}")
     rows = [row for profile_rows in rows_by_version.values() for row in profile_rows]
-    invalid = [row for row in rows if row.get("market_source") not in {"SSI", "FHSC"} or row.get("pipeline_generation") != 6]
+    invalid = [row for row in rows if row.get("market_source") != "SSI" or row.get("pipeline_generation") != 6]
     if invalid:
         raise RuntimeError("Candidate contains rows without native SSI generation provenance")
     invalid_scoring = [row for row in rows if row.get("missing_data_policy") != "exclude_and_renormalize" or not isinstance(row.get("factor_status"), dict) or not isinstance(row.get("excluded_factors"), list) or not row.get("included_factors")]
@@ -65,7 +65,7 @@ def main() -> None:
         ]
         if unsafe:
             raise RuntimeError("Unavailable fundamentals were included in candidate scoring")
-    indicator_coverage = {key: sum(row.get(key) is not None for row in rows) for key in ("adx", "supertrend", "s_ff_net", "s_prop_5d", "s_insider", "s_depth_wall", "s_cf_core")}
+    indicator_coverage = {key: sum(row.get(key) is not None for row in rows) for key in ("adx", "supertrend", "s_trend_st", "s_cf_core")}
     if indicator_coverage["adx"] < int(config["minimum_coverage"]) * len(versions) or indicator_coverage["supertrend"] < int(config["minimum_coverage"]) * len(versions):
         raise RuntimeError(f"Derived technical indicator coverage is too low: {indicator_coverage}")
     excluded_counts = {}

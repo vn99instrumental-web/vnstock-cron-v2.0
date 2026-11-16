@@ -32,7 +32,7 @@ jobs:
         run: |
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
-      - name: Refresh stale slow-moving data
+      - name: Check FHSC statements and calculate the daily close
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
@@ -43,7 +43,8 @@ jobs:
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --stale-only
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --check-updates
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
       - name: Evaluate outcomes and rebuild analytics
         run: |
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
@@ -59,7 +60,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- output/history/vnstock6/outcomes output/vnstock6/fundamental-factors.json output/vnstock6/fundamental-status.json output/vnstock6-preview/dashboard.json output/serving/vnstock6
+          git add -- output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6 output/vnstock6-preview/dashboard.json output/serving/vnstock6
           git diff --cached --quiet && exit 0
           git commit -m "data: maintain vnstock6 daily analytics"
           for attempt in 1 2 3 4 5; do

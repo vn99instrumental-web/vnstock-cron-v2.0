@@ -1,5 +1,6 @@
 """Vnstock Quant calculations for the generation-6 production pipeline."""
 from __future__ import annotations
+import hashlib
 import math
 import unicodedata
 from typing import Any
@@ -56,10 +57,27 @@ def _is_financial_industry(industry: str | None) -> bool:
     sector=unicodedata.normalize("NFKD",str(industry or "")).encode("ascii","ignore").decode().lower()
     return any(term in sector for term in ("ngan hang","chung khoan","bao hiem","dich vu tai chinh","bank","securities","insurance","financial services"))
 
+def _statement_signature(frames: list[pd.DataFrame]) -> str:
+    """Hash only period/line/value statement content, independent of row order."""
+    digest=hashlib.sha256()
+    for name,frame in zip(("balance_sheet","income_statement","cash_flow"),frames):
+        columns=[column for column in ("period","id","line_code","value") if column in frame]
+        if not columns:
+            columns=sorted(str(column) for column in frame.columns)
+        stable=frame[columns].copy()
+        for column in columns:
+            stable[column]=stable[column].astype(str)
+        stable=stable.sort_values(columns).reset_index(drop=True)
+        digest.update(name.encode("utf-8"))
+        digest.update(stable.to_json(orient="records",force_ascii=False).encode("utf-8"))
+    return digest.hexdigest()
+
+
 def _growth(frames: list[pd.DataFrame], codes: tuple[str,...]) -> float | None:
     chunks=[]
     for frame in frames:
-        column="id" if "id" in frame else "line_code" if "line_code" in frame else None        if column and "period" in frame and "value" in frame:
+        column="id" if "id" in frame else "line_code" if "line_code" in frame else None
+        if column and "period" in frame and "value" in frame:
             chunks.append(frame[frame[column].astype(str).isin(codes)][["period","value"]])
     if not chunks: return None
     values=pd.concat(chunks).drop_duplicates("period",keep="last").sort_values("period")
@@ -70,7 +88,10 @@ def _growth(frames: list[pd.DataFrame], codes: tuple[str,...]) -> float | None:
     if current is None or prior in (None,0): return None
     return current/abs(prior)-(1 if prior>0 else -1)
 
-def fundamental_factors(symbol: str, source: str, industry: str | None = None) -> dict[str,Any]:
+def fundamental_factors(
+    symbol: str, source: str, industry: str | None = None,
+    known_signature: str | None = None,
+) -> dict[str,Any]:
     frames=[]; statements={}
     try:
         equity=Fundamental(source).equity(symbol)
@@ -78,6 +99,9 @@ def fundamental_factors(symbol: str, source: str, industry: str | None = None) -
             frame=getattr(equity,name)(period="quarter",format="long",compat="v5")
             frames.append(frame)
             statements[name]={"status":"success","rows":len(frame),"schema_changes":list(frame.attrs.get("schema_changes",[])),"identity_issue_count":len(frame.attrs.get("identities",[]))}
+        statement_signature=_statement_signature(frames)
+        if known_signature and statement_signature==known_signature:
+            return {"unchanged":True,"statement_signature":statement_signature,"statements":statements,"engine":"vnstock_quant.fa","version":"1.1.0"}
         table=fa.ratios(fa.Dataset.from_frames({symbol:frames}),ids=list(RATIO_IDS),period="quarter",format="long")
         ratios={}
         if table is not None and not table.empty:
@@ -103,7 +127,7 @@ def fundamental_factors(symbol: str, source: str, industry: str | None = None) -
         if industry and not financial and cfo is not None: cf_parts.append(5 if cfo>0 else -10)
         if industry and not financial and cf_quality is not None: cf_parts.append(5 if cf_quality>1 else -5 if cf_quality<.5 else 0)
         cf_score=max(-10,min(10,sum(cf_parts))) if cf_parts else None
-        return {"fundamental":sum(parts)/len(parts) if parts else None,"growth":sum(_clip(v/.25) for v in growth_values)/len(growth_values) if growth_values else None,"cash_flow":None if cf_score is None else cf_score/10,"cash_flow_score":cf_score,"cash_flow_operating":cfo,"cash_flow_quality":cf_quality,"industry":industry,"fundamental_reason":None if parts else "vnstock_quant_no_usable_ratios","growth_reason":None if growth_values else "insufficient_quarterly_growth_history","cash_flow_reason":None if cf_score is not None else "sector_cash_flow_excluded" if financial else "industry_unavailable" if not industry else "vnstock_quant_no_usable_cash_flow","ratios":ratios,"statements":statements,"engine":"vnstock_quant.fa","version":"1.1.0"}
+        return {"fundamental":sum(parts)/len(parts) if parts else None,"growth":sum(_clip(v/.25) for v in growth_values)/len(growth_values) if growth_values else None,"cash_flow":None if cf_score is None else cf_score/10,"cash_flow_score":cf_score,"cash_flow_operating":cfo,"cash_flow_quality":cf_quality,"industry":industry,"fundamental_reason":None if parts else "vnstock_quant_no_usable_ratios","growth_reason":None if growth_values else "insufficient_quarterly_growth_history","cash_flow_reason":None if cf_score is not None else "sector_cash_flow_excluded" if financial else "industry_unavailable" if not industry else "vnstock_quant_no_usable_cash_flow","ratios":ratios,"statements":statements,"statement_signature":statement_signature,"engine":"vnstock_quant.fa","version":"1.1.0"}
     except Exception as exc:
         reason=getattr(exc,"code",None) or type(exc).__name__
         return {"fundamental":None,"growth":None,"cash_flow":None,"fundamental_reason":reason,"growth_reason":reason,"cash_flow_reason":reason,"ratios":{},"statements":statements,"engine":"vnstock_quant.fa","version":"1.1.0","error":{"type":type(exc).__name__,"code":getattr(exc,"code",None),"action":getattr(exc,"action",None)}}

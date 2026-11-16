@@ -5,7 +5,7 @@ Updated: 2026-11-13
 ## Completed
 
 - [x] Final Gen 6 packages are pinned in an isolated GitHub Actions environment.
-- [x] SSI is the explicit reference and primary OHLCV source; FHSC is the market fallback and fundamental source.
+- [x] SSI is the only reference/OHLCV source; FHSC is restricted to missing BCTC data.
 - [x] Technical indicators use vnstock_quant.ta.
 - [x] Balance sheet, income statement and cash flow feed vnstock_quant.fa ratios and growth.
 - [x] Missing factors are excluded and available weights are renormalized.
@@ -14,14 +14,14 @@ Updated: 2026-11-13
 - [x] Intraday fetches only market data and reuses the committed fundamental cache.
 - [x] Existing OHLC files use a 14-day correction window instead of refetching 500 days five times per day.
 - [x] Daily outcomes and full analytics run separately at 16:15 ICT on weekdays.
-- [x] Daily maintenance applies the legacy adaptive fundamental TTL (3 days in earnings months, 30 days otherwise) and refreshes only stale/missing symbols.
+- [x] Daily post-market maintenance checks BCTC signatures for every symbol and recalculates only changed statements before the closing score.
 - [x] SSI reference and FHSC statements refresh separately at 09:15 ICT on Sundays.
 - [x] A failed weekly statement refresh preserves the last successful symbol cache.
 - [x] Fundamental cache entries older than the active 3/30-day TTL fail closed and are excluded from scoring.
 
-- [x] Add ADX(14), Supertrend(10,3), FHSC flow/depth collectors and last-known-good cache.
-- [x] Add foreign, proprietary, insider, depth-wall and cash-flow signals when inputs are present.
-- [ ] Complete exact `of_phasefix` from persisted five-minute volume snapshots and accumulate order-book history.
+- [x] Add ADX(14), Supertrend(10,3), `s_trend_st` and BCTC cash-flow fields to ledger and dashboard serving.
+- [x] Add the cash-flow signal when FHSC BCTC inputs are present; leave unsupported market-flow fields explicitly excluded.
+- [ ] Source foreign/proprietary/insider/order-flow/depth from SSI only if SSI documentation and API support are approved; do not substitute FHSC market endpoints.
 
 ## Operational checks after merge
 

@@ -62,6 +62,11 @@ export function signalName(key: string): string {
 // Tên tiếng Việt cho MỌI biến số trong breakdown (dùng ở trang Phân tích tương quan).
 export const VAR_NAME: Record<string, string> = {
   ...SIGNAL_NAME,
+  adx: "ADX (14)",
+  supertrend: "Supertrend (10,3)",
+  cash_flow_operating: "Operating cash flow",
+  cash_flow_quality: "Operating cash flow / net profit",
+  cash_flow_score: "Cash-flow score",
   trade_mean_reversion_norm: "Nhóm Hồi phục (trade)",
   trade_breakout_norm: "Nhóm Bứt phá (trade)",
   trade_flow_norm: "Nhóm Dòng tiền (trade)",
@@ -201,6 +206,20 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       return parts.length ? parts.join(" · ") : undefined;
     }
     // ── Flow ──
+    case "s_trend_st": {
+      const adx = g("adx"), supertrend = g("supertrend");
+      const parts: string[] = [];
+      if (adx != null) parts.push(`ADX ${adx.toFixed(1)}`);
+      if (supertrend != null) parts.push(`Supertrend ${supertrend.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}`);
+      return parts.length ? parts.join(" · ") : undefined;
+    }
+    case "s_cf_core": {
+      const cfo = g("cash_flow_operating"), quality = g("cash_flow_quality");
+      const parts: string[] = [];
+      if (cfo != null) parts.push(`CFO ${vndShort(cfo)}`);
+      if (quality != null) parts.push(`CFO/LNST ${quality.toFixed(2)}x`);
+      return parts.length ? parts.join(" · ") : undefined;
+    }
     case "s_ff_net": {
       const net = g("ff_intra_net"), ratio = g("ff_intra_ratio");
       if (net == null) return undefined;

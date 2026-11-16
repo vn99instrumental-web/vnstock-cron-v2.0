@@ -35,7 +35,7 @@ def main() -> None:
     metadata["coverage"]={version:(metadata.get("coverage") or {}).get(version) for version in VERSIONS}
     metadata["source_provenance"]="vnstock6-native"
     metadata["generation"]=6
-    metadata["sources"]={"reference":"SSI","market_primary":"SSI","market_fallback":"FHSC","fundamental":"FHSC"}
+    metadata["sources"]={"reference":"SSI","market_primary":"SSI","market_fallback":None,"fundamental":"FHSC"}
     write(TARGET/"metadata.json",metadata)
     ic=read(SOURCE/"ic.json",{"schema_version":1,"metrics":[],"indicators":[],"factor_versions":[],"marginal":[],"industry":[],"industry_errors":{}})
     for key in ("metrics","indicators","factor_versions","marginal","industry"):
@@ -48,7 +48,7 @@ def main() -> None:
     generated=datetime.now(timezone.utc).isoformat()
     write(TARGET/"manifest.json",{"schema_version":2,"release_id":metadata.get("release_id"),"generated_at_utc":generated,"source_provenance":"vnstock6-native","quality":{"status":"PASS","checks":["native_generation","source_provenance","dataset_sha256"]},"datasets":datasets})
     today=read(TARGET/"today"/f"{PRIMARY}.json",{}); symbols=sorted({str(row["symbol"]) for row in today.get("signals",[]) if row.get("symbol")})
-    dashboard={"schema_version":1,"mode":"native","generated_at":generated,"source":"SSI","sources":{"reference":"SSI","market_primary":"SSI","market_fallback":"FHSC","fundamental":"FHSC"},"package_version":"6.0.0","oapi_version":"0.1.1","quant_version":"1.0.0","upstream":None,"symbols":symbols,"capabilities":{name:"native" for name in ("metadata","today","buy","history","history_detail","analysis","ic","chart")},"flow":{"run_id":args.run_id,"run_url":args.run_url,"stages":[{"name":name,"status":"success","mode":"native"} for name in ("authenticate","reference","market_ingest","fundamental_ingest","scoring","serving")]}}
+    dashboard={"schema_version":1,"mode":"native","generated_at":generated,"source":"SSI","sources":{"reference":"SSI","market_primary":"SSI","market_fallback":None,"fundamental":"FHSC"},"package_version":"6.0.0","oapi_version":"0.1.1","quant_version":"1.0.0","upstream":None,"symbols":symbols,"capabilities":{name:"native" for name in ("metadata","today","buy","history","history_detail","analysis","ic","chart")},"flow":{"run_id":args.run_id,"run_url":args.run_url,"stages":[{"name":name,"status":"success","mode":"native"} for name in ("authenticate","reference","market_ingest","fundamental_ingest","scoring","serving")]}}
     write(ROOT/"output/vnstock6-preview/dashboard.json",dashboard)
     print(f"VNStock6 native serving: {len(symbols)} symbols, {len(datasets)} datasets")
 if __name__=="__main__": main()
