@@ -1,15 +1,21 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-13T10:44:25.495383+00:00",
+  "generated_at": "2026-11-16T09:52:00.964500+00:00",
   "source": "FHSC",
   "calculation_engine": "vnstock_quant",
-  "calculation_version": "1.0.0",
+  "calculation_version": "1.1.0",
   "symbols": {
     "ACB": {
       "fundamental": -0.2119087599481756,
       "growth": 0.39083219622346377,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -3317232000000.0,
+      "cash_flow_quality": -0.7059687322628982,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.16234444866839245,
         "RT_PRT_ROA": 0.015224858322628545,
@@ -41,15 +47,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "327e48e033c3d0531a17b3dd9e3aa4a39f8b3c960106dac81d43ee5de8247116",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:40:01.082974+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:20:51.024856+00:00",
+      "refreshed_at": "2026-11-16T08:20:51.024856+00:00"
     },
     "ANV": {
       "fundamental": 0.5860348049535978,
       "growth": -0.42911101261477347,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 173170094444.0,
+      "cash_flow_quality": 0.8379634420656413,
+      "industry": "Nuôi trồng nông & hải sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.20790325443185909,
         "RT_PRT_ROA": 0.12573814125849123,
@@ -84,15 +98,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "3db078172570dba00198da8907ad3cffe4a01d56bf7d8f99f70cee8bba77ef38",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:41:01.885081+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:19:54.365578+00:00",
+      "refreshed_at": "2026-11-16T08:19:54.365578+00:00"
     },
     "BAF": {
       "fundamental": -0.24746138139023552,
       "growth": 0.3874953821861371,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 152634593266.0,
+      "cash_flow_quality": 7.200236375396571,
+      "industry": "Nuôi trồng nông & hải sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.02164881922414017,
         "RT_PRT_ROA": 0.007288728074971983,
@@ -127,15 +149,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "ec68fd71db0b121ccbf8c3c2562ccd0ca9e1859c981e7a9f91962195e35261b1",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:41:31.059233+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:17:46.023500+00:00",
+      "refreshed_at": "2026-11-16T08:17:46.023500+00:00"
     },
     "BCM": {
       "fundamental": 0.49602663576156175,
       "growth": 0.7718604842423034,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -450954985332.0,
+      "cash_flow_quality": -0.7783812536341291,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.09475813550016539,
         "RT_PRT_ROA": 0.0339325806117757,
@@ -170,15 +200,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "c7a2eae8a6b62cab0df3dda0f906eb678f85b82a36c509ddbb4b846186294e89",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:42:11.079872+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:18:30.505018+00:00",
+      "refreshed_at": "2026-11-16T08:18:30.505018+00:00"
     },
     "BID": {
       "fundamental": -0.19192298687661935,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -19191844000000.0,
+      "cash_flow_quality": -2.264995003681591,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.1808595702683268,
         "RT_PRT_ROA": 0.010146712339837058,
@@ -210,15 +248,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "6e2df2f51c9cfe093119673f4eb01d823f0e5e46cd471f3c5c93a24b839a31d3",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:43:16.066272+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:22:06.020501+00:00",
+      "refreshed_at": "2026-11-16T08:22:06.020501+00:00"
     },
     "BMP": {
       "fundamental": 0.9798047442603227,
       "growth": -0.2688686382338237,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 520266755752.0,
+      "cash_flow_quality": 1.629205792073337,
+      "industry": "Vật liệu xây dựng & Nội thất",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.4144386123738429,
         "RT_PRT_ROA": 0.3502253261275393,
@@ -253,15 +299,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "05c7188fd822d8a9ffd74a7109dfe373d8f5432c0da6d73148ea5d1557f445e0",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:44:16.058657+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:22:29.359241+00:00",
+      "refreshed_at": "2026-11-16T08:22:29.359241+00:00"
     },
     "BSI": {
       "fundamental": 0.26606859355911266,
       "growth": -0.9380638405313477,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -388944390021.0,
+      "cash_flow_quality": -2.3568165974078887,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.08321156768142034,
         "RT_PRT_ROA": 0.02545999923386776,
@@ -296,15 +350,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "8bf8ec79c7dc54c0af30c70a6d1bf738468dbf9f8d4eaf97858683dd61272cc0",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:45:26.081139+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:24:32.732066+00:00",
+      "refreshed_at": "2026-11-16T08:24:32.732066+00:00"
     },
     "BSR": {
       "fundamental": 0.7209225710538529,
       "growth": 1.0,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 7689621149975.0,
+      "cash_flow_quality": 0.8573553841241006,
+      "industry": "Sản xuất và Khai thác dầu khí",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.3893513305735689,
         "RT_PRT_ROA": 0.26778593788750144,
@@ -339,15 +401,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "a909049a6033d580825d2c5dcfab14df3edac5923e032a73f8ae856859557475",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:46:06.852287+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:23:32.142490+00:00",
+      "refreshed_at": "2026-11-16T08:23:32.142490+00:00"
     },
     "BVH": {
       "fundamental": -0.35597471424188076,
       "growth": 0.24679150220252666,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 3229906065799.0,
+      "cash_flow_quality": 3.8689131502079928,
+      "industry": "Bảo hiểm nhân thọ",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.13323277382001353,
         "RT_PRT_ROA": 0.011088524798020015,
@@ -380,15 +450,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "b3168199187134909adff5f44cb656b156c000295c82785c9c1d69e10918b7a5",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:47:26.071486+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:27:24.382704+00:00",
+      "refreshed_at": "2026-11-16T08:27:24.382704+00:00"
     },
     "BWE": {
       "fundamental": 0.6409563006265449,
       "growth": 1.0,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 354891781489.0,
+      "cash_flow_quality": 0.8698062926695193,
+      "industry": "Nước",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.1900617586917986,
         "RT_PRT_ROA": 0.07811165922489312,
@@ -423,15 +501,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "c8fe099729d54fc7989dbb3d93aa4ebf2757480fb523d494a534f6320181c1cd",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:48:11.057158+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:25:27.683252+00:00",
+      "refreshed_at": "2026-11-16T08:25:27.683252+00:00"
     },
     "CII": {
       "fundamental": 0.05556350760957133,
       "growth": 0.26110363271310977,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -692080752781.0,
+      "cash_flow_quality": -14.003284970187543,
+      "industry": "Xây dựng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.011192362297209166,
         "RT_PRT_ROA": 0.002576003240405218,
@@ -466,15 +552,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "d852085815801c997602e32d3fb450ccdfb351b864904ad57484bfcff3c4bf23",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:49:11.055646+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:27:36.066887+00:00",
+      "refreshed_at": "2026-11-16T08:27:36.066887+00:00"
     },
     "CMG": {
       "fundamental": 0.12932751079647492,
       "growth": 0.16042452735567325,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 117024526565.0,
+      "cash_flow_quality": 0.9939310801406747,
+      "industry": "Dịch vụ Máy tính",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.11942024782147678,
         "RT_PRT_ROA": 0.03713235194069537,
@@ -509,15 +603,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "be23b37a0e301045f80b819614a9cc086240f8282d962c1ef9bda9d07301f076",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:50:26.060379+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:29:32.700473+00:00",
+      "refreshed_at": "2026-11-16T08:29:32.700473+00:00"
     },
     "CTD": {
       "fundamental": -0.22941673090653092,
       "growth": 0.5720571734753794,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -774526262199.0,
+      "cash_flow_quality": -2.5357714732182517,
+      "industry": "Xây dựng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.08301901905518855,
         "RT_PRT_ROA": 0.021471057040378848,
@@ -552,15 +654,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "e2a4f0cc6f41ddcdc873e1161180b96fe6c00c8e7aa1faf5cd8e3d48e604e508",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:51:26.850533+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:29:28.864656+00:00",
+      "refreshed_at": "2026-11-16T08:29:28.864656+00:00"
     },
     "CTG": {
       "fundamental": -0.08751016765223985,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -17526748000000.0,
+      "cash_flow_quality": -1.6122054362100826,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.2193675415596546,
         "RT_PRT_ROA": 0.014668204264979985,
@@ -592,15 +702,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "5078a158c7aeb403028d52bd247ddd752291f83fb43fe14684da23e5901010f2",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:52:41.056910+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:32:24.532816+00:00",
+      "refreshed_at": "2026-11-16T08:32:24.532816+00:00"
     },
     "CTR": {
       "fundamental": 0.05471968646724338,
       "growth": 0.3033508322341323,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 398413609528.0,
+      "cash_flow_quality": 2.17224328780594,
+      "industry": "Xây dựng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.3048878612881158,
         "RT_PRT_ROA": 0.07372796504734838,
@@ -635,15 +753,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "fcd38a7c63341989c56379510346654464bae33e2d957f4eabe75e45cea5fa7d",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:53:41.058339+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:32:47.862299+00:00",
+      "refreshed_at": "2026-11-16T08:32:47.862299+00:00"
     },
     "CTS": {
       "fundamental": -0.006492759081637471,
       "growth": -1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 379619477893.0,
+      "cash_flow_quality": 76.26980296171783,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.03879145975971295,
         "RT_PRT_ROA": 0.00903360037660825,
@@ -678,15 +804,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "2fa4a17277aeb181dac2653db02bf1ead320b6c34e5fe5b649ff6e8610f0b16a",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:54:46.076358+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:33:44.562710+00:00",
+      "refreshed_at": "2026-11-16T08:33:44.562710+00:00"
     },
     "DBC": {
       "fundamental": 0.22033114217050884,
       "growth": -0.37739618342224057,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 1188786580825.0,
+      "cash_flow_quality": 5.938921404063808,
+      "industry": "Nuôi trồng nông & hải sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.11992762287130662,
         "RT_PRT_ROA": 0.05957117390892346,
@@ -721,15 +855,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "281f18522ee3e5732b54a15262061de551ce1f0f124196153209dc39122399e7",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:55:46.057229+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:34:30.672018+00:00",
+      "refreshed_at": "2026-11-16T08:34:30.672018+00:00"
     },
     "DCM": {
       "fundamental": 0.7509102113777528,
       "growth": 1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 2173831102424.0,
+      "cash_flow_quality": 5.028456074587292,
+      "industry": "Sản phẩm hóa dầu, Nông dược & Hóa chất khác",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2384127137507057,
         "RT_PRT_ROA": 0.13898064144652802,
@@ -764,15 +906,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "80cc26028c1ba18885c6ab6d87432b191e0a77898e4f9fcaf1e703b4b46f3428",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:56:41.987356+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:36:04.530067+00:00",
+      "refreshed_at": "2026-11-16T08:36:04.530067+00:00"
     },
     "DGW": {
       "fundamental": 0.15892490274053847,
       "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -1272759879032.0,
+      "cash_flow_quality": -4.576328003283478,
+      "industry": "Phân phối hàng chuyên dụng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2674422728877325,
         "RT_PRT_ROA": 0.08270458549280879,
@@ -807,15 +957,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "55e103b77fc98f1419e3b82dc6f175a675e9b1151a1fc56445440ee48a41b277",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:57:36.056790+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:36:29.010713+00:00",
+      "refreshed_at": "2026-11-16T08:36:29.010713+00:00"
     },
     "DIG": {
       "fundamental": 0.32852989743703437,
       "growth": -1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -219741579993.0,
+      "cash_flow_quality": -3.1774183935218603,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.0610387470903807,
         "RT_PRT_ROA": 0.031813507886501675,
@@ -850,15 +1008,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "3ab714699d199d781d3889696cb46d46b3a5e4b83a80cef9262a94da9568d91f",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:58:36.073382+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:40:39.690730+00:00",
+      "refreshed_at": "2026-11-16T08:40:39.690730+00:00"
     },
     "DPM": {
       "fundamental": 0.5100890045524163,
       "growth": -0.28588290065731226,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 1200197147612.0,
+      "cash_flow_quality": 26.70782638871065,
+      "industry": "Sản phẩm hóa dầu, Nông dược & Hóa chất khác",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.13818090970720306,
         "RT_PRT_ROA": 0.08664102335651311,
@@ -893,15 +1059,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "f244024775af00bfefdcb95c0a2222a7a05170a498421bb6ce4d186eb051dffa",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T09:59:36.070861+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:38:33.028991+00:00",
+      "refreshed_at": "2026-11-16T08:38:33.028991+00:00"
     },
     "DSE": {
       "fundamental": 0.08492439321975392,
       "growth": -1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -770424343336.0,
+      "cash_flow_quality": -18.062573433112878,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.02818759182726545,
         "RT_PRT_ROA": 0.009405345071619444,
@@ -936,15 +1110,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "cdb60f88e6b92a938951c608fb2a1587e827b1520c1ffc6992335e283482c53d",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:00:26.082110+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:39:23.037217+00:00",
+      "refreshed_at": "2026-11-16T08:39:23.037217+00:00"
     },
     "DXG": {
       "fundamental": 0.2896771722740303,
       "growth": -1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -448219854172.0,
+      "cash_flow_quality": -139.86329956983235,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.008021913313661717,
         "RT_PRT_ROA": 0.0029105706969470837,
@@ -979,15 +1161,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "5af92374a86ae5a5c121bc36ccc6d9c91ba36079230f53440a52ee49ea752947",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:01:26.059618+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:40:17.403746+00:00",
+      "refreshed_at": "2026-11-16T08:40:17.403746+00:00"
     },
     "EIB": {
       "fundamental": -0.6169810295384909,
       "growth": -1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 8218127000000.0,
+      "cash_flow_quality": 57.06953375647561,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.007244058606124534,
         "RT_PRT_ROA": 0.0007277216541624319,
@@ -1019,15 +1209,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "9d65bdd346e6774faccb7139aabe9096ef60a69c1366d9b2ea953ae7abf0890c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:02:42.013189+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:45:24.193330+00:00",
+      "refreshed_at": "2026-11-16T08:45:24.193330+00:00"
     },
     "EVF": {
       "fundamental": -0.37445898057733995,
       "growth": 0.3991662365193136,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 1842667000000.0,
+      "cash_flow_quality": 6.601820038335453,
+      "industry": "Tài chính cá nhân",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.09662257248628378,
         "RT_PRT_ROA": 0.011264472668753732,
@@ -1059,15 +1257,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "a632291b4b42e2ddf6d7ba13953e89b43b5c784ee51b04ea99cb6a70009c3f1d",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:03:31.056044+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:42:43.011875+00:00",
+      "refreshed_at": "2026-11-16T08:42:43.011875+00:00"
     },
     "FPT": {
       "fundamental": 0.7927449841654841,
       "growth": -0.5198170353322684,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 2097643895402.0,
+      "cash_flow_quality": 0.768560983109442,
+      "industry": "Phần mềm",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.26018217238739716,
         "RT_PRT_ROA": 0.13464538109992485,
@@ -1102,15 +1308,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "934d31644c266077254e61b2cc67724d26f1490f41a4961416aaf08fbe78687e",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:04:31.054603+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:44:14.695009+00:00",
+      "refreshed_at": "2026-11-16T08:44:14.695009+00:00"
     },
     "FRT": {
       "fundamental": 0.08122821712623884,
       "growth": 1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 1246119942811.0,
+      "cash_flow_quality": 2.2288772623520585,
+      "industry": "Phân phối hàng chuyên dụng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2910661328279585,
         "RT_PRT_ROA": 0.050538379277814086,
@@ -1145,15 +1359,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "6d56b5a5e1d8dfc058a9a975845d2d9affef69d39bbd4b2ec8c69a3927eca21c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:05:16.050902+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:43:39.681569+00:00",
+      "refreshed_at": "2026-11-16T08:43:39.681569+00:00"
     },
     "FTS": {
       "fundamental": 0.3585571298284489,
       "growth": -1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -730783169207.0,
+      "cash_flow_quality": -20.39645653403887,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.0900402607132977,
         "RT_PRT_ROA": 0.02912183823913875,
@@ -1188,15 +1410,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "650f19b3a9f96e35a63d40cbea4a9b42e510b08fe94f437ee8dd0c9f45366641",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:06:26.075981+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:47:21.396652+00:00",
+      "refreshed_at": "2026-11-16T08:47:21.396652+00:00"
     },
     "GAS": {
       "fundamental": 0.6383176370553131,
       "growth": 0.725174735766076,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 5615341019294.0,
+      "cash_flow_quality": 1.2290157288075154,
+      "industry": "Phân phối xăng dầu & khí đốt",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.21252763902019955,
         "RT_PRT_ROA": 0.1495285549483535,
@@ -1231,15 +1461,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "4a9e0ce9439a00dba8b3febdfa81297c29164f56b77536fd971c06d372dee67c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:07:26.057147+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:47:39.691541+00:00",
+      "refreshed_at": "2026-11-16T08:47:39.691541+00:00"
     },
     "GEE": {
       "fundamental": 0.5022834240689685,
       "growth": 0.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 2664831353061.0,
+      "cash_flow_quality": 3.3046247816047827,
+      "industry": "Thiết bị điện",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.3219121291545402,
         "RT_PRT_ROA": 0.14032322437322622,
@@ -1274,15 +1512,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "19376798899641c9ac33f408427c3e3fe750f0b86a63679ae3b6990b698934d0",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:07:51.046138+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:46:34.379590+00:00",
+      "refreshed_at": "2026-11-16T08:46:34.379590+00:00"
     },
     "GEX": {
       "fundamental": 0.07293259059854502,
       "growth": 0.75874153890451,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 2378037675726.0,
+      "cash_flow_quality": 2.6951116377711863,
+      "industry": "Thiết bị điện",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.05182061806224255,
         "RT_PRT_ROA": 0.012094159090904907,
@@ -1317,15 +1563,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "bb286e3ffe8389e55080d5ca7ae7cd5ebf681d33416dae32eebc6b11e54aaea3",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:08:51.844249+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:49:24.718124+00:00",
+      "refreshed_at": "2026-11-16T08:49:24.718124+00:00"
     },
     "GMD": {
       "fundamental": 0.9219717404478597,
       "growth": 1.0,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 496787314495.0,
+      "cash_flow_quality": 0.8473152559603223,
+      "industry": "Kho bãi, hậu cần và bảo dưỡng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.19694732675939539,
         "RT_PRT_ROA": 0.12892623305705297,
@@ -1360,16 +1614,31 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "222dbcd2cbaed58938097df859014dffc44ef4edd571157260e553cc3423b5a4",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:09:51.061613+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:53:48.027585+00:00",
+      "refreshed_at": "2026-11-16T08:53:48.027585+00:00"
     },
     "GVR": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": 0.7629766498078144,
+      "growth": 0.5456222296934703,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 4129629731444.0,
+      "cash_flow_quality": 1.122520658304728,
+      "industry": "Nhựa, cao su & sợi",
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "cash_flow_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.14290053766768018,
+        "RT_PRT_ROA": 0.0951860216749408,
+        "RT_PRT_GROSS_MARGIN": 0.296937304032499,
+        "RT_PRT_NET_MARGIN": 0.2823978154129429,
+        "RT_LQD_CR": 4.023717369574375,
+        "RT_LEV_DE": 0.3660772590066065
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -1378,22 +1647,41 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 744,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1395,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
+      "statement_signature": "3a0c0bea6e49af6b908c04ef2c30dca9c4c34b1ab6b4fdd5d54a189cbb9ce45c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:10:51.458773+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:50:01.345075+00:00",
+      "refreshed_at": "2026-11-16T08:50:01.345075+00:00"
     },
     "HAG": {
       "fundamental": 0.7442924611930085,
       "growth": 0.19138400700733227,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 134730362000.0,
+      "cash_flow_quality": 0.28645443270193965,
+      "industry": "Nuôi trồng nông & hải sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2218408838082795,
         "RT_PRT_ROA": 0.12022022794753906,
@@ -1428,15 +1716,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "c9be900f3f0d73b37add3d52f6bdaa8ce71deeb0c67fcfead2b2df56343461a6",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:11:55.876916+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:51:45.863875+00:00",
+      "refreshed_at": "2026-11-16T08:51:45.863875+00:00"
     },
     "HCM": {
       "fundamental": 0.34272037573192543,
       "growth": -1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 6064382795768.0,
+      "cash_flow_quality": 20.403568157085065,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.08126047899216225,
         "RT_PRT_ROA": 0.02756147069144548,
@@ -1471,15 +1767,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "6d25d8d4606ab453ed7e0a187672aa3af590e22935df7e4a1083cf89da8a0437",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:13:15.902618+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:54:36.413343+00:00",
+      "refreshed_at": "2026-11-16T08:54:36.413343+00:00"
     },
     "HDB": {
       "fundamental": -0.06181305805997931,
       "growth": 0.2809906347160185,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 20277550000000.0,
+      "cash_flow_quality": 4.987499000780928,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.22314392918056491,
         "RT_PRT_ROA": 0.018821437169303686,
@@ -1511,15 +1815,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "cfff74f5ea16f962f9ed5010b72b313c99a87c889fc7326142589220c95987e0",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:14:06.170065+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:53:24.670779+00:00",
+      "refreshed_at": "2026-11-16T08:53:24.670779+00:00"
     },
     "HDG": {
       "fundamental": 0.6318707100025033,
       "growth": -0.8228024103287175,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 202435361511.0,
+      "cash_flow_quality": 0.8878844387591933,
+      "industry": "Sản xuất & Phân phối Điện",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.1174074427597145,
         "RT_PRT_ROA": 0.05605270251417277,
@@ -1554,15 +1866,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "f3f94d70b5650036ffa586010dd8bb117fca421bc7c1515face70b8706bfe325",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:15:13.911821+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:55:46.358788+00:00",
+      "refreshed_at": "2026-11-16T08:55:46.358788+00:00"
     },
     "HHV": {
       "fundamental": 0.1475732935835025,
       "growth": 0.939725669461871,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 186951668944.0,
+      "cash_flow_quality": 0.8784121829446868,
+      "industry": "Xây dựng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.06108544518349343,
         "RT_PRT_ROA": 0.016680935249243325,
@@ -1597,15 +1917,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "51573318b306a80040dd33ea365af65c8d2a7d275f5a5eec5fdf6001f28de93a",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:15:49.014066+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:55:44.672625+00:00",
+      "refreshed_at": "2026-11-16T08:55:44.672625+00:00"
     },
     "HPG": {
       "fundamental": 0.46559609400341556,
       "growth": 1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 8294632187118.0,
+      "cash_flow_quality": 1.0035293525730002,
+      "industry": "Thép và sản phẩm thép",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.19689785484582514,
         "RT_PRT_ROA": 0.10169057575783036,
@@ -1640,16 +1968,31 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "57b32afcc20ff293ad4c59bea4e5de24f9899df8e7f1beb410b5e9353b57b5e1",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:16:49.027035+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:57:49.473071+00:00",
+      "refreshed_at": "2026-11-16T08:57:49.473071+00:00"
     },
     "HSG": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": 0.022728867754807185,
+      "growth": -0.014694047688860401,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 731737878603.0,
+      "cash_flow_quality": 13.160666243003758,
+      "industry": "Thép và sản phẩm thép",
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "cash_flow_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.05353239013652178,
+        "RT_PRT_ROA": 0.027915547106163206,
+        "RT_PRT_GROSS_MARGIN": 0.12629972609249904,
+        "RT_PRT_NET_MARGIN": 0.01652790762469002,
+        "RT_LQD_CR": 1.2553796689888832,
+        "RT_LEV_DE": 0.8978275360977324
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -1666,22 +2009,33 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2880,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
+      "statement_signature": "a107cd54c57a68d44251c886b48fa5911959da375bfe78feb903d101727d808e",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:17:47.181532+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:02:48.032005+00:00",
+      "refreshed_at": "2026-11-16T09:02:48.032005+00:00"
     },
     "HT1": {
       "fundamental": 0.09565571499065216,
       "growth": 0.8029628187001174,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 789453549610.0,
+      "cash_flow_quality": 5.711309110529606,
+      "industry": "Vật liệu xây dựng & Nội thất",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.07591428588537465,
         "RT_PRT_ROA": 0.049282485165651535,
@@ -1716,15 +2070,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "931d59c09e2b78f54475ec251992fe43c65a665e07ce046c3a7bc2e586f9065c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:18:53.000401+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:59:43.025945+00:00",
+      "refreshed_at": "2026-11-16T08:59:43.025945+00:00"
     },
     "KBC": {
       "fundamental": 0.448446308462908,
       "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -29874137738.0,
+      "cash_flow_quality": -0.031874713852780956,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.0694886724110418,
         "RT_PRT_ROA": 0.02397508487291773,
@@ -1759,15 +2121,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "e894826d7e7c3beafff4d85345cc6081dc1b7db35fce0b47abda19760adc3cb5",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:19:52.520237+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T08:59:44.696218+00:00",
+      "refreshed_at": "2026-11-16T08:59:44.696218+00:00"
     },
     "KDC": {
       "fundamental": 0.20431450941627305,
       "growth": 0.6162011347558969,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 74172350819.0,
+      "cash_flow_quality": 0.34099593429100217,
+      "industry": "Thực phẩm",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.1152150275221856,
         "RT_PRT_ROA": 0.05512961545167321,
@@ -1802,15 +2172,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "fb04124add17030946a12bbd0d51eeba33b7d7845fa3a837c6b5a68d5d676890",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:20:53.752102+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:01:53.024893+00:00",
+      "refreshed_at": "2026-11-16T09:01:53.024893+00:00"
     },
     "KDH": {
       "fundamental": 0.5787224960007785,
       "growth": -1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 1949334701000.0,
+      "cash_flow_quality": 11.548640303185246,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.09086779962061975,
         "RT_PRT_ROA": 0.04332055213191916,
@@ -1845,16 +2223,31 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "94e41e4ed1bb3cf54a1e446fbd905f7e35252ed78c522e4a4849b00e807d739f",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:21:52.899221+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:03:56.629114+00:00",
+      "refreshed_at": "2026-11-16T09:03:56.629114+00:00"
     },
     "KOS": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": 0.011321353257222536,
+      "growth": -1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 43447796201.0,
+      "cash_flow_quality": 146.18709985118676,
+      "industry": "Bất động sản",
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "cash_flow_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.00714030981313413,
+        "RT_PRT_ROA": 0.0033321008912032264,
+        "RT_PRT_GROSS_MARGIN": 0.12900603794365786,
+        "RT_PRT_NET_MARGIN": 0.01211561277309051,
+        "RT_LQD_CR": 2.2181076445310506,
+        "RT_LEV_DE": 1.1646801659192512
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -1863,22 +2256,41 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 936,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1755,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
+      "statement_signature": "72179e272387105dd8fdd2a87c41c7ad39f775b9472952a3bc011e426893260d",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:22:26.936688+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:02:44.729615+00:00",
+      "refreshed_at": "2026-11-16T09:02:44.729615+00:00"
     },
     "LPB": {
       "fundamental": -0.04426177642251983,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 9860587000000.0,
+      "cash_flow_quality": 2.7686262563016895,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.2596425725545566,
         "RT_PRT_ROA": 0.019377173658595242,
@@ -1910,15 +2322,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "26b2bb8940b2318b95a03408c823512c01434eff7bb29edfeb1695cdf915e722",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:23:22.751447+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:05:37.120369+00:00",
+      "refreshed_at": "2026-11-16T09:05:37.120369+00:00"
     },
     "MBB": {
       "fundamental": -0.08411524034581341,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -12063094000000.0,
+      "cash_flow_quality": -1.4618613253015407,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.21248979278641938,
         "RT_PRT_ROA": 0.01915111949758112,
@@ -1950,15 +2370,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "fe189956e9eed83c21aeec7dace5158fe8e4a485b6990a801327ccf578bbbe0d",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:24:32.757341+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:07:22.657740+00:00",
+      "refreshed_at": "2026-11-16T09:07:22.657740+00:00"
     },
     "MCH": {
       "fundamental": 0.7719287707489947,
       "growth": 0.6087114366019755,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 2654817999091.0,
+      "cash_flow_quality": 1.3698764758105102,
+      "industry": "Thực phẩm",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.4029313575427076,
         "RT_PRT_ROA": 0.21486185143917855,
@@ -1993,15 +2421,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "8ba65b60307945f7988dade9e02463e9e202d4b36179c6f337629c42f2fb529b",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:25:32.759496+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:06:52.131661+00:00",
+      "refreshed_at": "2026-11-16T09:06:52.131661+00:00"
     },
     "MSB": {
       "fundamental": -0.2627944563581818,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -1634602000000.0,
+      "cash_flow_quality": -0.9911466326461933,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.14037665060331733,
         "RT_PRT_ROA": 0.01472845015226712,
@@ -2033,16 +2469,31 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "0ad11a24013a66053a12944e0672d25956d5d063c4848015f3451dcd9d20f6b3",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:26:23.978432+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:07:16.758894+00:00",
+      "refreshed_at": "2026-11-16T09:07:16.758894+00:00"
     },
     "MSN": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": 0.3562012069710689,
+      "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -756971000000.0,
+      "cash_flow_quality": -0.16629521585264934,
+      "industry": "Thực phẩm",
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "cash_flow_reason": null,
+      "ratios": {
+        "RT_PRT_ROE": 0.24453974060339562,
+        "RT_PRT_ROA": 0.06884775156372548,
+        "RT_PRT_GROSS_MARGIN": 0.3069715641081259,
+        "RT_PRT_NET_MARGIN": 0.11232032181894931,
+        "RT_LQD_CR": 0.8089610714079848,
+        "RT_LEV_DE": 1.8010586890304587
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -2051,22 +2502,41 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 1320,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 2475,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
+      "statement_signature": "72f7feb2d6e03cabc854f485c25703a0eba0e3f31b92373f9a883ccc48019aba",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:26:54.802412+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:09:38.259561+00:00",
+      "refreshed_at": "2026-11-16T09:09:38.259561+00:00"
     },
     "MWG": {
       "fundamental": 0.5765369017770349,
       "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -531282181152.0,
+      "cash_flow_quality": -0.15088381774999757,
+      "industry": "Phân phối hàng chuyên dụng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2965360412328361,
         "RT_PRT_ROA": 0.11760758280120823,
@@ -2101,15 +2571,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "3cbbdae3faee0c9280fda475d5c893ed8fdb412ce9342d6a46079eeec8d84999",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:27:59.193228+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:10:52.131421+00:00",
+      "refreshed_at": "2026-11-16T09:10:52.131421+00:00"
     },
     "NAB": {
       "fundamental": -0.16002207008875136,
       "growth": 0.9214796140980273,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -5773981000000.0,
+      "cash_flow_quality": -4.550232398328687,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.19301346561913996,
         "RT_PRT_ROA": 0.011320854848491692,
@@ -2141,15 +2619,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "e3bab8d56ff1f7732977c6339081e193f311fc53ddfbf33a37603b76ec6446ae",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:29:05.389338+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:11:35.469444+00:00",
+      "refreshed_at": "2026-11-16T09:11:35.469444+00:00"
     },
     "NKG": {
       "fundamental": -0.14341556708115394,
       "growth": 1.0,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 26261318107.0,
+      "cash_flow_quality": 0.2057089024158235,
+      "industry": "Thép và sản phẩm thép",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.03172891806542685,
         "RT_PRT_ROA": 0.013713748555320102,
@@ -2184,15 +2670,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "5037019022fa3eaa03ae4eae4101099c55a3b61ccda26cec29e65e90a570fb77",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:30:05.462337+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:11:20.461176+00:00",
+      "refreshed_at": "2026-11-16T09:11:20.461176+00:00"
     },
     "NLG": {
       "fundamental": 0.4986898786994541,
       "growth": -1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -365093596918.0,
+      "cash_flow_quality": -68.18750198421453,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.037630680723770994,
         "RT_PRT_ROA": 0.01823451874372666,
@@ -2227,15 +2721,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "b2063a65770a1310f0b64051a28cdcac5aaedc7ff45347e32dfdc44bb888e88b",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:31:05.468952+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:13:33.798056+00:00",
+      "refreshed_at": "2026-11-16T09:13:33.798056+00:00"
     },
     "NT2": {
       "fundamental": 0.5804424418162656,
       "growth": 0.3866948983273788,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -25494999101.0,
+      "cash_flow_quality": -0.08283921717411281,
+      "industry": "Sản xuất & Phân phối Điện",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.25859687042311785,
         "RT_PRT_ROA": 0.1326051360866583,
@@ -2270,15 +2772,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "fd906ed6cb7303184c574fe026b1c620b599b273747e52465c44dc8ae209fb3b",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:32:10.160058+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:14:52.141934+00:00",
+      "refreshed_at": "2026-11-16T09:14:52.141934+00:00"
     },
     "NVL": {
       "fundamental": 0.38912743956481677,
       "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -1752184990555.0,
+      "cash_flow_quality": -1.5896117765552382,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.13099054217424633,
         "RT_PRT_ROA": 0.02435864784331434,
@@ -2313,15 +2823,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "0085c109ab28895d02952be0bfb0e40e849625a0ca9cf5f6e7de7d953cc33ccd",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:32:59.231023+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:14:42.121931+00:00",
+      "refreshed_at": "2026-11-16T09:14:42.121931+00:00"
     },
     "OCB": {
       "fundamental": -0.2968136423620341,
       "growth": 0.2798601679953787,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 16543775115647.0,
+      "cash_flow_quality": 12.591795948456404,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.128061717145034,
         "RT_PRT_ROA": 0.013131810022427004,
@@ -2353,15 +2871,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "8a9dc478e4f7bb8bc9f5bd38d4849e77d9b862c9fe78165009ff7f7c9ebb0d1a",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:33:44.322799+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:14:37.117704+00:00",
+      "refreshed_at": "2026-11-16T09:14:37.117704+00:00"
     },
     "PAN": {
       "fundamental": 0.6014818121635918,
       "growth": 0.07937819720012973,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 640227851723.0,
+      "cash_flow_quality": 1.9069348455816446,
+      "industry": "Thực phẩm",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2227332305951865,
         "RT_PRT_ROA": 0.0769748348287768,
@@ -2396,15 +2922,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "83f2afd0fbb6167eaae68b8166ad1a90e0130e031bea1b876d3298d58152b086",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:34:44.324208+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:17:35.641257+00:00",
+      "refreshed_at": "2026-11-16T09:17:35.641257+00:00"
     },
     "PC1": {
       "fundamental": 0.30863031809827607,
       "growth": 0.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 545789131826.0,
+      "cash_flow_quality": 2.6269033541793703,
+      "industry": "Xây dựng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.17877064296281503,
         "RT_PRT_ROA": 0.04726614640118386,
@@ -2439,15 +2973,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "321e545c31f4bbf60e4a118aed6e09640da5eca7e8e776be76f78953f36b95ba",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:35:44.323701+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:18:37.135317+00:00",
+      "refreshed_at": "2026-11-16T09:18:37.135317+00:00"
     },
     "PDR": {
       "fundamental": 0.3022650745167536,
       "growth": -1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 2425052389393.0,
+      "cash_flow_quality": 176.94806389268706,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.04289243932973215,
         "RT_PRT_ROA": 0.017791812894946864,
@@ -2482,15 +3024,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "caa45ed1a2025ad866a616dcad1021ca15249c473cdfd9bb1d3d4f233d9b5a8e",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:36:45.049359+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:18:40.463395+00:00",
+      "refreshed_at": "2026-11-16T09:18:40.463395+00:00"
     },
     "PHR": {
       "fundamental": 0.8509591188789346,
       "growth": 0.6330502898110919,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 46138922328.0,
+      "cash_flow_quality": 0.1065201253242307,
+      "industry": "Nhựa, cao su & sợi",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.24658018332154613,
         "RT_PRT_ROA": 0.16331975777760674,
@@ -2525,15 +3075,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "9868bf2cbe3be352aeefc7025526173a6cdba98ac59d8305ab18d8efdf683271",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:37:51.015776+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:20:32.132227+00:00",
+      "refreshed_at": "2026-11-16T09:20:32.132227+00:00"
     },
     "PLX": {
       "fundamental": -0.1143782086093021,
       "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -3432488607178.0,
+      "cash_flow_quality": -2.5181549895180733,
+      "industry": "Sản xuất và Khai thác dầu khí",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.14583847373845477,
         "RT_PRT_ROA": 0.03947064867499912,
@@ -2568,15 +3126,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "407caf4c9fad9564d438644adc48855afbe5682d18dfcca1796c4e1043328441",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:38:50.082196+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:21:35.467683+00:00",
+      "refreshed_at": "2026-11-16T09:21:35.467683+00:00"
     },
     "PNJ": {
       "fundamental": 0.41439531502152965,
       "growth": -0.7804531677056767,
+      "cash_flow": -0.5,
+      "cash_flow_score": -5,
+      "cash_flow_operating": -2874069796635.0,
+      "cash_flow_quality": 11.145812770996226,
+      "industry": "Hàng cá nhân",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.12447939272769776,
         "RT_PRT_ROA": 0.08285220014343596,
@@ -2611,15 +3177,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "cf12bccc868edaf08819b285d59a3992cffca090b322394d06fd689dbd31e75c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:39:51.730776+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:22:38.507042+00:00",
+      "refreshed_at": "2026-11-16T09:22:38.507042+00:00"
     },
     "POW": {
       "fundamental": 0.37870271605480527,
       "growth": 1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 5682459515064.0,
+      "cash_flow_quality": 2.741023096957765,
+      "industry": "Sản xuất & Phân phối Điện",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.17866444823672759,
         "RT_PRT_ROA": 0.0701716162503342,
@@ -2654,15 +3228,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "ed36850ee99df98b7dcc19017d1b2dad54796484ce1e733289244374e52176ed",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:40:37.037022+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:21:40.455126+00:00",
+      "refreshed_at": "2026-11-16T09:21:40.455126+00:00"
     },
     "PVD": {
       "fundamental": 0.1789698030143636,
       "growth": 0.0,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 28356172637.0,
+      "cash_flow_quality": 0.3469248728380686,
+      "industry": "Thiết bị và Dịch vụ Dầu khí",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.05301392542517845,
         "RT_PRT_ROA": 0.030765193215518488,
@@ -2697,15 +3279,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "0aeb9aef7abf5016b1b5a723bdbd35d4ec2c3a8c2b33abe96e32e3aa10248b34",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:41:36.733643+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:26:27.488152+00:00",
+      "refreshed_at": "2026-11-16T09:26:27.488152+00:00"
     },
     "PVT": {
       "fundamental": 0.45310799802563967,
       "growth": 1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 947190281936.0,
+      "cash_flow_quality": 1.935592496173321,
+      "industry": "Vận tải Thủy",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.16619599270106836,
         "RT_PRT_ROA": 0.0673470702533022,
@@ -2740,15 +3330,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "74bd80074c6794d2e60383282224e4af343a7fe338ef42ef46b875211f46969e",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:42:37.925662+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:25:35.465605+00:00",
+      "refreshed_at": "2026-11-16T09:25:35.465605+00:00"
     },
     "REE": {
       "fundamental": 0.6994264798971813,
       "growth": 0.7452656591472548,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 649636461799.0,
+      "cash_flow_quality": 0.7015805781172902,
+      "industry": "Sản xuất & Phân phối Điện",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.12760923662031343,
         "RT_PRT_ROA": 0.06619318965662185,
@@ -2783,15 +3381,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "c75e74c40c41d95cd9c479e6c064cf6217bed28f09a6b7cc09cbf301f213d1b8",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:43:39.740347+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:25:40.465217+00:00",
+      "refreshed_at": "2026-11-16T09:25:40.465217+00:00"
     },
     "SAB": {
       "fundamental": 0.9217059514668673,
       "growth": -0.11101043345361106,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 2439764683664.0,
+      "cash_flow_quality": 1.918328008114688,
+      "industry": "Sản xuất bia",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.22181618539456555,
         "RT_PRT_ROA": 0.14854306017885263,
@@ -2826,15 +3432,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "2023791e3b6d0e0148f6cf4c442d688d883b9f9e9a0655fbbf625107e1e5269f",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:44:39.857230+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:26:37.130797+00:00",
+      "refreshed_at": "2026-11-16T09:26:37.130797+00:00"
     },
     "SBT": {
       "fundamental": -0.12709610291827364,
       "growth": 0.06360319634841072,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -385030365537.0,
+      "cash_flow_quality": -2.4856658728187897,
+      "industry": "Thực phẩm",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.06744559684878446,
         "RT_PRT_ROA": 0.020804518957609413,
@@ -2869,16 +3483,28 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "69413d61e35772bafa590fe0b5bdfcb5d1aeab0e3ac1e109bf28588addc98913",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:45:39.879522+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:29:33.797070+00:00",
+      "refreshed_at": "2026-11-16T09:29:33.797070+00:00"
     },
     "SHB": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
+      "fundamental": -0.16346196666012158,
+      "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 236426000000.0,
+      "cash_flow_quality": 0.05740090389197969,
+      "industry": "Ngân hàng",
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
+      "ratios": {
+        "RT_PRT_ROE": 0.18558914252206313,
+        "RT_PRT_ROA": 0.014454918656470488,
+        "RT_LEV_DE": 11.544265607406986
+      },
       "statements": {
         "balance_sheet": {
           "status": "success",
@@ -2895,22 +3521,33 @@
             "SCH-A02"
           ],
           "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 3082,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
         }
       },
+      "statement_signature": "a11ad8d70e107be6adf1521108cc08a7b0a8670b1fc80a9b735b71ab02878b36",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
-      },
-      "refreshed_at": "2026-11-13T01:46:46.240734+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:32:48.797728+00:00",
+      "refreshed_at": "2026-11-16T09:32:48.797728+00:00"
     },
     "SIP": {
       "fundamental": 0.3339963824836827,
       "growth": 0.11737730751417796,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -462221259276.0,
+      "cash_flow_quality": -1.2448856090798197,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.2710323368225976,
         "RT_PRT_ROA": 0.04690141740745557,
@@ -2945,15 +3582,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "98e316b63fa8adf866ac6532bab290782c366c934a45d687ba72a8ebf94f9d09",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:47:29.350958+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:29:07.320115+00:00",
+      "refreshed_at": "2026-11-16T09:29:07.320115+00:00"
     },
     "SJS": {
       "fundamental": 0.9136696813140546,
       "growth": 1.0,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
+      "cash_flow_operating": 870543504996.0,
+      "cash_flow_quality": 0.8600032680078751,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.4110706661855884,
         "RT_PRT_ROA": 0.1968765468080935,
@@ -2988,31 +3633,71 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "1b21cb4def61d299c9474ff91db1785adb4f9010cf5d2e4704c9e0f691cf90be",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:48:29.348258+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:30:37.157291+00:00",
+      "refreshed_at": "2026-11-16T09:30:37.157291+00:00"
     },
     "SSB": {
-      "fundamental": null,
-      "growth": null,
-      "fundamental_reason": "VNSTOCK_SOURCE_NETWORK",
-      "growth_reason": "VNSTOCK_SOURCE_NETWORK",
-      "ratios": {},
-      "statements": {},
-      "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "error": {
-        "type": "NetworkError",
-        "code": "VNSTOCK_SOURCE_NETWORK",
-        "action": null
+      "fundamental": -0.43023159518581533,
+      "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -5317031000000.0,
+      "cash_flow_quality": -5.054360917479507,
+      "industry": "Ngân hàng",
+      "fundamental_reason": null,
+      "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
+      "ratios": {
+        "RT_PRT_ROE": 0.07789230745827144,
+        "RT_PRT_ROA": 0.007868519844326216,
+        "RT_LEV_DE": 8.928088784999511
       },
-      "refreshed_at": "2026-11-13T01:48:40.695736+00:00"
+      "statements": {
+        "balance_sheet": {
+          "status": "success",
+          "rows": 2911,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "income_statement": {
+          "status": "success",
+          "rows": 984,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        },
+        "cash_flow": {
+          "status": "success",
+          "rows": 1886,
+          "schema_changes": [
+            "SCH-A02"
+          ],
+          "identity_issue_count": 4
+        }
+      },
+      "statement_signature": "82518968dfec52be4c965653c04c99edde690254074ef09f6439b6e16b44f225",
+      "engine": "vnstock_quant.fa",
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:32:25.449632+00:00",
+      "refreshed_at": "2026-11-16T09:32:25.449632+00:00"
     },
     "SSI": {
       "fundamental": 0.5288009701683999,
       "growth": -0.9504148332777769,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 5217434967873.0,
+      "cash_flow_quality": 4.637757264271319,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.11777056955429181,
         "RT_PRT_ROA": 0.04717344251393344,
@@ -3047,15 +3732,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "e3a915aa25353061f106ad93ae5f77f8a79b5bb21f8eeee4df51c281c6a2df30",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:49:42.767007+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:33:33.827722+00:00",
+      "refreshed_at": "2026-11-16T09:33:33.827722+00:00"
     },
     "STB": {
       "fundamental": -0.5746809793292192,
       "growth": -1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 58864230000000.0,
+      "cash_flow_quality": 43.7105641866454,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.024573393003522133,
         "RT_PRT_ROA": 0.0016374220257755925,
@@ -3087,15 +3780,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "e79dc571422f7c685747dec8c88f11e1b3535943892acae2b3aa321a3deeb659",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:51:04.799526+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:35:58.898827+00:00",
+      "refreshed_at": "2026-11-16T09:35:58.898827+00:00"
     },
     "TAL": {
       "fundamental": 0.5226620571893099,
       "growth": -0.7385520697444585,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -3721488340175.0,
+      "cash_flow_quality": -18.969827279111385,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.1529604625376055,
         "RT_PRT_ROA": 0.04540512569662119,
@@ -3130,15 +3831,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "02b4d67631a69bd69be393a75c4df8348e71b3160002a71387686b24210577d0",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T01:51:24.785360+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:33:45.434593+00:00",
+      "refreshed_at": "2026-11-16T09:33:45.434593+00:00"
     },
     "TCB": {
       "fundamental": -0.20184509571029052,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 7494854000000.0,
+      "cash_flow_quality": 0.8989560871487436,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.15223604593062195,
         "RT_PRT_ROA": 0.023031285866531893,
@@ -3170,15 +3879,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "ff2adf59fd73b5039636d4783dd0244102da1ce9a6dfaf0b63d6f900ff5916a4",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:20:47.321091+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:37:08.787084+00:00",
+      "refreshed_at": "2026-11-16T09:37:08.787084+00:00"
     },
     "TCH": {
       "fundamental": 0.6152999068416939,
       "growth": 1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -1482628256623.0,
+      "cash_flow_quality": -1.9754118713770166,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.06817758774511289,
         "RT_PRT_ROA": 0.036411994758372764,
@@ -3213,15 +3930,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "c6a7c031822a11d932bd366f03e55fa9c33d2db9ab7909d0d6d17353e6aa989f",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:21:35.912171+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:36:53.791499+00:00",
+      "refreshed_at": "2026-11-16T09:36:53.791499+00:00"
     },
     "TCX": {
       "fundamental": 0.6916760984262983,
       "growth": 0.31705698245865044,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 3768085085711.0,
+      "cash_flow_quality": 2.155783515420812,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.13615002606638502,
         "RT_PRT_ROA": 0.06782368376641565,
@@ -3256,15 +3981,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "55749884900d1fb99782974df955cd45b30deeb5259b463343c7b6023748127c",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:22:25.954880+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:37:05.476188+00:00",
+      "refreshed_at": "2026-11-16T09:37:05.476188+00:00"
     },
     "TPB": {
       "fundamental": -0.19217144190360622,
       "growth": 1.0,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 39535763000000.0,
+      "cash_flow_quality": 16.81513532871073,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.17095008271367437,
         "RT_PRT_ROA": 0.015372143162508177,
@@ -3296,15 +4029,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "9dcc512f5f11e63f2ac823af7117dcf57a08bdd8d10e7544ed2c9099a29e559f",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:23:22.743245+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:39:37.124911+00:00",
+      "refreshed_at": "2026-11-16T09:39:37.124911+00:00"
     },
     "VCB": {
       "fundamental": -0.18350019380285829,
       "growth": 0.00689952183539333,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -49547932000000.0,
+      "cash_flow_quality": -5.480286349447153,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.1734362432291878,
         "RT_PRT_ROA": 0.016127290431747182,
@@ -3336,15 +4077,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "a537e11a9159dbdc555e91f55633ae9ef7294587794d169cb794cab57df13f5e",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:24:47.141224+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:42:13.797414+00:00",
+      "refreshed_at": "2026-11-16T09:42:13.797414+00:00"
     },
     "VCG": {
       "fundamental": 0.1304768671358568,
       "growth": -1.0,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -177301937323.0,
+      "cash_flow_quality": -0.47782794073010126,
+      "industry": "Xây dựng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.07407704770385617,
         "RT_PRT_ROA": 0.02891997221968135,
@@ -3379,15 +4128,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "78cbf1d1c5f1b0f507a87ebb41c0b64a9b2436dba6ee0f9b2d1d67c4faeb5bc9",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:25:48.108259+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:41:04.988025+00:00",
+      "refreshed_at": "2026-11-16T09:41:04.988025+00:00"
     },
     "VCI": {
       "fundamental": 0.4786133677889109,
       "growth": -0.5030523881723656,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -1645363936165.0,
+      "cash_flow_quality": -4.478307907046849,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.080768984123173,
         "RT_PRT_ROA": 0.03658896036773322,
@@ -3422,15 +4179,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "c7cfcc65c26b337f0b507e3b430a92ecaf3494eb8091db27b4007e721ac43531",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:26:47.150020+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:41:12.153235+00:00",
+      "refreshed_at": "2026-11-16T09:41:12.153235+00:00"
     },
     "VCK": {
       "fundamental": 0.7902446928370678,
       "growth": -0.8272508203716944,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": 1098341230849.0,
+      "cash_flow_quality": 1.229218059455922,
+      "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.13901574791578422,
         "RT_PRT_ROA": 0.08566838215355269,
@@ -3465,15 +4230,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "8ee239853c1393b30ff487792a8939b04717ae5e7e5ed158eb83ae80873321c5",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:27:37.142965+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:42:55.475135+00:00",
+      "refreshed_at": "2026-11-16T09:42:55.475135+00:00"
     },
     "VGC": {
       "fundamental": 0.6087932986175094,
       "growth": 0.8323264642810715,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 97674397249.0,
+      "cash_flow_quality": 0.15855140151305322,
+      "industry": "Vật liệu xây dựng & Nội thất",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.20616495500672036,
         "RT_PRT_ROA": 0.06672606266822899,
@@ -3508,15 +4281,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "a1c5b5056ce63ac82b16a6feb9dd83c4063f9bfee2209b5205be452e660d51c8",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:28:33.317345+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:44:43.791856+00:00",
+      "refreshed_at": "2026-11-16T09:44:43.791856+00:00"
     },
     "VHC": {
       "fundamental": 0.5382607509510974,
       "growth": -0.5889326020423178,
+      "cash_flow": 0.0,
+      "cash_flow_score": 0,
+      "cash_flow_operating": 55367985681.0,
+      "cash_flow_quality": 0.24144705885144044,
+      "industry": "Nuôi trồng nông & hải sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.12806166038154926,
         "RT_PRT_ROA": 0.08950193438727228,
@@ -3551,15 +4332,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "fb94b3125c63289ef6d575e4531ccabc31a88aa7785a2e59d2b1a0cfaed1fc5e",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:30:38.562765+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:45:10.461049+00:00",
+      "refreshed_at": "2026-11-16T09:45:10.461049+00:00"
     },
     "VHM": {
       "fundamental": 0.5139374097381785,
       "growth": 1.0,
+      "cash_flow": 1.0,
+      "cash_flow_score": 10,
+      "cash_flow_operating": 92493627000000.0,
+      "cash_flow_quality": 4.017791877941064,
+      "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.37649949754573947,
         "RT_PRT_ROA": 0.09624339486834964,
@@ -3594,15 +4383,23 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "159909533359620bf49a0ca0e48670a598de8408c3e2f688c062fc0d0de737d1",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:31:19.343993+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:47:28.781337+00:00",
+      "refreshed_at": "2026-11-16T09:47:28.781337+00:00"
     },
     "VIB": {
       "fundamental": -0.22585913384464726,
       "growth": 0.7395668732721745,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": -10213255000000.0,
+      "cash_flow_quality": -5.305939823531123,
+      "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": "sector_cash_flow_excluded",
       "ratios": {
         "RT_PRT_ROE": 0.15945024151085904,
         "RT_PRT_ROA": 0.013420345738159836,
@@ -3634,9 +4431,11 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "e944b46cb43fbe4d1eb7ae314f4c2299f629ed9702bcdc9ef116f134d8dbb950",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:32:23.563805+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:47:20.600171+00:00",
+      "refreshed_at": "2026-11-16T09:47:20.600171+00:00"
     },
     "VIC": {
       "fundamental": 0.1700274787507666,
@@ -3727,8 +4526,14 @@
     "VJC": {
       "fundamental": -0.25227945321976997,
       "growth": 0.6749813383895837,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
+      "cash_flow_operating": -531450579515.0,
+      "cash_flow_quality": -1.5259870869180396,
+      "industry": "Dịch vụ hàng không",
       "fundamental_reason": null,
       "growth_reason": null,
+      "cash_flow_reason": null,
       "ratios": {
         "RT_PRT_ROE": 0.08510717058105689,
         "RT_PRT_ROA": 0.015076587060531844,
@@ -3763,9 +4568,11 @@
           "identity_issue_count": 4
         }
       },
+      "statement_signature": "39e3a94d0af09849b871201e6e26e75882c3d547e0e6d8b1a767d53386360d48",
       "engine": "vnstock_quant.fa",
-      "version": "1.0.0",
-      "refreshed_at": "2026-11-13T10:35:23.563040+00:00"
+      "version": "1.1.0",
+      "checked_at": "2026-11-16T09:50:22.119580+00:00",
+      "refreshed_at": "2026-11-16T09:50:22.119580+00:00"
     },
     "VND": {
       "fundamental": 0.5921210856594951,

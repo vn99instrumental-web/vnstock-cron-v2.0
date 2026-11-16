@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-13T10:44:25.498104+00:00",
+  "generated_at": "2026-11-16T09:52:00.969406+00:00",
   "reference_source": "SSI",
   "fundamental_source": "FHSC",
   "configured_symbols": 100,
@@ -8,501 +8,438 @@
   "symbols_requested": 100,
   "cache_symbols": 100,
   "stale_only": false,
+  "check_updates": true,
   "ttl_days": 3,
+  "max_workers": 4,
   "counts": {
-    "success": 56,
+    "updated": 89,
+    "unchanged": 0,
     "failed": 0,
-    "failed_preserved": 44,
+    "failed_preserved": 11,
     "skipped_fresh": 0
   },
   "symbols": {
     "ACB": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "ANV": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BAF": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BCM": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BID": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BMP": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BSI": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BSR": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BVH": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "BWE": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "CII": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "CMG": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "CTD": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "CTG": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "CTR": {
-      "status": "success",
-      "attempt": 1
+      "status": "updated",
+      "attempt": 2
     },
     "CTS": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "DBC": {
-      "status": "success",
-      "attempt": 1
+      "status": "updated",
+      "attempt": 2
     },
     "DCM": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "DGW": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "DIG": {
-      "status": "success",
-      "attempt": 1
+      "status": "updated",
+      "attempt": 2
     },
     "DPM": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "DSE": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "DXG": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "EIB": {
-      "status": "success",
-      "attempt": 1
+      "status": "updated",
+      "attempt": 2
     },
     "EVF": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "FPT": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "FRT": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "FTS": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "GAS": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "GEE": {
-      "status": "success",
-      "attempt": 1
+      "status": "updated",
+      "attempt": 2
     },
     "GEX": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "GMD": {
-      "status": "success",
-      "attempt": 1
+      "status": "updated",
+      "attempt": 2
     },
     "GVR": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HAG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HCM": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HDB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HDG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HHV": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HPG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "HSG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 2
     },
     "HT1": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "KBC": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "KDC": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "KDH": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "KOS": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "LPB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "MBB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "MCH": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "MSB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "MSN": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "MWG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "NAB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "NKG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "NLG": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "NT2": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "NVL": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "OCB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "PAN": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "PC1": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "PDR": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "PHR": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 2
     },
     "PLX": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "PNJ": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "POW": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "PVD": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 2
     },
     "PVT": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "REE": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "SAB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "SBT": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "SHB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 2
     },
     "SIP": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "SJS": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "SSB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "SSI": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "STB": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "TAL": {
-      "status": "failed_preserved",
-      "attempt": 3,
-      "type": "RateLimitError",
-      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
+      "status": "updated",
+      "attempt": 1
     },
     "TCB": {
-      "status": "success",
-      "attempt": 3
+      "status": "updated",
+      "attempt": 1
     },
     "TCH": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "TCX": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "TPB": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VCB": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VCG": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VCI": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VCK": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VGC": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VHC": {
-      "status": "success",
-      "attempt": 3
-    },
-    "VHM": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
+    "VHM": {
+      "status": "updated",
+      "attempt": 2
+    },
     "VIB": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VIC": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VIX": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VJC": {
-      "status": "success",
+      "status": "updated",
       "attempt": 1
     },
     "VND": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VNM": {
-      "status": "success",
-      "attempt": 2
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VPB": {
-      "status": "success",
-      "attempt": 2
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VPI": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VPL": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VPX": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VRE": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VSC": {
-      "status": "success",
-      "attempt": 3
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     },
     "VTP": {
-      "status": "success",
-      "attempt": 1
+      "status": "failed_preserved",
+      "attempt": 3,
+      "type": "RateLimitError",
+      "code": "VNSTOCK_SOURCE_RATE_LIMITED"
     }
   }
 }
