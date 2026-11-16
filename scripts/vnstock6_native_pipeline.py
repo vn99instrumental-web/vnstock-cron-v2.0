@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from vnstock.errors import VnstockError
 
 from vnstock6_scoring import availability_score
 from vnstock6_quant import fundamental_factors, technical_indicators
+from vnstock6_market_factors import collect_market_factors
 from vnstock6_v4_scoring import (
     PROFILES, classify_regime, factor_values, indicator_snapshot, score_profile, signal_values,
 )
@@ -38,14 +40,20 @@ def load_config() -> dict[str, Any]:
     value = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     sources_config = value.get("sources") or {}
     market_config = sources_config.get("market") or {}
+    indicator_config = value.get("market_indicators") or {}
     if (
         sources_config.get("reference") != "ssi"
         or market_config.get("primary") != "ssi"
         or market_config.get("fallback") is not None
         or sources_config.get("fundamental") != "fhsc"
+        or (indicator_config.get("foreign_flow") or {}).get("primary") != "ssi"
+        or (indicator_config.get("foreign_flow") or {}).get("fallback") != "fhsc"
+        or (indicator_config.get("trade_size") or {}).get("primary") != "ssi"
+        or (indicator_config.get("trade_size") or {}).get("fallback") != "fhsc"
+        or (indicator_config.get("order_book") or {}).get("primary") != "fhsc"
         or not value.get("universe")
     ):
-        raise ValueError("VNStock6 config must declare SSI reference/market and FHSC fundamental sources")
+        raise ValueError("VNStock6 config violates the approved SSI/FHSC endpoint contract")
     weights = (value.get("scoring") or {}).get("weights") or {}
     required = {"trend", "momentum", "breakout", "liquidity", "fundamental", "growth"}
     if set(weights) != required or abs(sum(float(item) for item in weights.values()) - 1.0) > 1e-9:
@@ -56,6 +64,10 @@ def load_config() -> dict[str, Any]:
         "fundamental.equity.balance_sheet": sources_config["fundamental"],
         "fundamental.equity.income_statement": sources_config["fundamental"],
         "fundamental.equity.cash_flow": sources_config["fundamental"],
+        "market.equity.foreign_flow": "ssi",
+        "market.equity.session_stats": "ssi",
+        "market.equity.active_session": "fhsc",
+        "market.equity.order_book": "fhsc",
     }
     for route, source in route_sources.items():
         readers = {str(item).lower() for item in sources.readers(route)}
@@ -178,8 +190,7 @@ def refresh_fundamental_cache(
         universe = [symbol for symbol in config["universe"] if symbol in available]
         selected = universe if limit is None else universe[:limit]
 
-    results: dict[str, Any] = {}
-    for symbol in selected:
+    def fetch_one(symbol: str) -> tuple[str, dict[str, Any], dict[str, Any] | None]:
         previous = factor_cache.get(symbol)
         last_result: dict[str, Any] | None = None
         for attempt in range(1, 4):
@@ -192,27 +203,34 @@ def refresh_fundamental_cache(
             if not last_result.get("error"):
                 checked_at = datetime.now(timezone.utc).isoformat()
                 if last_result.get("unchanged") and previous:
-                    previous = dict(previous)
-                    previous["checked_at"] = checked_at
-                    previous["statement_signature"] = last_result["statement_signature"]
-                    previous["statements"] = last_result["statements"]
-                    factor_cache[symbol] = previous
-                    results[symbol] = {"status": "unchanged", "attempt": attempt}
-                else:
-                    last_result["checked_at"] = checked_at
-                    last_result["refreshed_at"] = checked_at
-                    factor_cache[symbol] = last_result
-                    results[symbol] = {"status": "updated", "attempt": attempt}
-                break
+                    value = dict(previous)
+                    value["checked_at"] = checked_at
+                    value["statement_signature"] = last_result["statement_signature"]
+                    value["statements"] = last_result["statements"]
+                    return symbol, {"status": "unchanged", "attempt": attempt}, value
+                last_result["checked_at"] = checked_at
+                last_result["refreshed_at"] = checked_at
+                return symbol, {"status": "updated", "attempt": attempt}, last_result
             if attempt < 3:
                 time.sleep(attempt)
-        else:
-            results[symbol] = {
-                "status": "failed_preserved" if previous else "failed",
-                "attempt": 3,
-                "type": (last_result or {}).get("error", {}).get("type"),
-                "code": (last_result or {}).get("error", {}).get("code"),
-            }
+        return symbol, {
+            "status": "failed_preserved" if previous else "failed",
+            "attempt": 3,
+            "type": (last_result or {}).get("error", {}).get("type"),
+            "code": (last_result or {}).get("error", {}).get("code"),
+        }, previous
+
+    results: dict[str, Any] = {}
+    workers = max(1, min(
+        int((config.get("fundamental_refresh") or {}).get("max_workers", 1)),
+        len(selected) or 1,
+    ))
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="vnstock6-fundamental") as executor:
+        fetched = list(executor.map(fetch_one, selected))
+    for symbol, result, value in fetched:
+        results[symbol] = result
+        if value is not None:
+            factor_cache[symbol] = value
 
     if selected:
         save_fundamental_cache(fundamental_source, factor_cache)
@@ -229,6 +247,7 @@ def refresh_fundamental_cache(
         "configured_symbols": len(config["universe"]), "reference_symbols_available": len(universe),
         "symbols_requested": len(selected), "cache_symbols": len(factor_cache),
         "stale_only": stale_only, "check_updates": check_updates, "ttl_days": ttl_days,
+        "max_workers": workers,
         "counts": counts, "symbols": results,
     }
     status_path = ROOT / "output" / "vnstock6" / "fundamental-status.json"
@@ -346,6 +365,7 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
 def score_v4_profiles(
     symbol: str, rows: list[dict[str, Any]], versions: list[str], snap_time: str,
     fundamentals: dict[str, Any], index_rows: list[dict[str, Any]],
+    market: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     frame = pd.DataFrame(rows).sort_values("date")
     if len(frame) < 50:
@@ -356,7 +376,8 @@ def score_v4_profiles(
     signal_date = str(latest["date"])
     regime_info = classify_regime(index_rows, signal_date)
     indicators = indicator_snapshot(frame, quant, regime_info.get("return_20d"))
-    signals = signal_values(indicators, fundamentals, regime_info["regime"])
+    market = market or {}
+    signals = signal_values(indicators, fundamentals, regime_info["regime"], market)
     output: list[dict[str, Any]] = []
     for version in versions:
         factors = factor_values(signals, PROFILES[version]["extras"], "trade")
@@ -384,7 +405,8 @@ def score_v4_profiles(
             "cash_flow_operating": fundamentals.get("cash_flow_operating"),
             "cash_flow_quality": fundamentals.get("cash_flow_quality"),
             "cash_flow_score": fundamentals.get("cash_flow_score"),
-            "fundamental_status": "scored" if fundamentals.get("fundamental") is not None else "excluded",
+            "market_indicator_sources": market.get("endpoint_sources") or {},
+            "fundamental_status": ("stale_cache_scored" if fundamentals.get("cache_stale") else "scored") if fundamentals.get("fundamental") is not None else "excluded",
             "quant_indicators": quant, "fundamental_metrics": fundamentals,
             "calculation_engine": "vnstock_quant+gen6_v4_profiles", "calculation_version": "1.1.0",
             "scoring_reference": "vnstock-v4.17-v4.18-v4.19-factor-architecture",
@@ -429,8 +451,8 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
         raise RuntimeError("VNStock6 cutover date has not been reached")
     source_config = config["sources"]
     reference_source = source_config["reference"]
-    # Approved source contract: SSI is the only market source. FHSC is reserved
-    # for financial statements in post-market and weekly workflows.
+    # Approved source contract: SSI remains the only OHLCV source. FHSC is used
+    # only for BCTC plus the explicitly approved foreign/order-book fallbacks.
     market_sources = [source_config["market"]["primary"]]
     fundamental_source = source_config["fundamental"]
     universe = list(config["universe"])
@@ -438,6 +460,9 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
+    market_factors = collect_market_factors(
+        universe, today, int((config.get("market_indicators") or {}).get("max_workers", 4))
+    )
     versions = list(config.get("scoring_versions") or [config["scoring_version"]])
     unknown_versions = [version for version in versions if version not in PROFILES]
     if unknown_versions:
@@ -447,13 +472,18 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
     for symbol in universe:
         attempts = []
         cached = factor_cache.get(symbol)
-        factors = cached if cached and cache_entry_is_fresh(cached, max_age_days) else {
-            "fundamental": None, "growth": None, "cash_flow": None, "ratios": {}, "statements": {},
-            "fundamental_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
-            "growth_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
-            "cash_flow_reason": "fundamental_cache_stale" if cached else "fundamental_cache_unavailable",
-            "engine": "vnstock_quant.fa", "version": "1.0.0",
-        }
+        if cached:
+            factors = dict(cached)
+            factors["cache_stale"] = not cache_entry_is_fresh(cached, max_age_days)
+        else:
+            factors = {
+                "fundamental": None, "growth": None, "cash_flow": None,
+                "ratios": {}, "statements": {}, "cache_stale": False,
+                "fundamental_reason": "fundamental_cache_unavailable",
+                "growth_reason": "fundamental_cache_unavailable",
+                "cash_flow_reason": "fundamental_cache_unavailable",
+                "engine": "vnstock_quant.fa", "version": "1.0.0",
+            }
 
         for market_source in market_sources:
             try:
@@ -470,7 +500,10 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
                         raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
                     incoming.extend(live_rows)
                 merged = merge_ohlcv(symbol, incoming)
-                predictions.extend(score_v4_profiles(symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows))
+                predictions.extend(score_v4_profiles(
+                    symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows,
+                    market_factors.get(symbol),
+                ))
                 source_counts[market_source.upper()] += 1
                 break
             except Exception as exc:
@@ -489,7 +522,19 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
         "sources": {"reference": reference_source.upper(), "market_counts": source_counts, "fundamental": fundamental_source.upper()},
         "fundamental_status": "cache_scored", "fundamental_cache_max_age_days": max_age_days,
         "fundamental_cache_symbols": len(factor_cache),
+        "fundamental_stale_cache_used": sum(
+            bool(value) and not cache_entry_is_fresh(value, max_age_days)
+            for value in factor_cache.values()
+        ),
         "fundamental_symbols_refreshed": 0,
+        "market_indicator_coverage": {
+            "s_ff_net": sum(value.get("s_ff_net") is not None for value in market_factors.values()),
+        },
+        "depth_input_coverage": sum(
+            bool((value.get("raw") or {}).get("order_book"))
+            and bool((value.get("raw") or {}).get("average_trade_size"))
+            for value in market_factors.values()
+        ),
         "successful_symbols": successful_symbols, "prediction_rows": len(predictions),
         "vnindex_rows": len(index_rows), "failed_symbols": errors, "records_added": added,
     }

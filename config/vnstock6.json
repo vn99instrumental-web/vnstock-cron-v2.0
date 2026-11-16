@@ -7,6 +7,20 @@
                                },
                     "fundamental":  "fhsc"
                 },
+    "market_indicators":  {
+                               "foreign_flow":  {
+                                                    "primary":  "ssi",
+                                                    "fallback":  "fhsc"
+                                                },
+                               "trade_size":  {
+                                                  "primary":  "ssi",
+                                                  "fallback":  "fhsc"
+                                              },
+                               "order_book":  {
+                                                  "primary":  "fhsc"
+                                              },
+                               "max_workers":  4
+                           },
     "scoring_version":  "v6.4.18",
     "scoring_versions":  [
                               "v6.4.19-shadow",
@@ -19,6 +33,7 @@
                                  "cadence":  "daily_ttl_with_weekly_full_refresh",
                                  "max_age_days":  30,
                                  "earnings_max_age_days":  3,
+                                 "max_workers":  4,
                                  "earnings_months":  [1, 2, 4, 5, 7, 8, 10, 11]
                              },
     "minimum_coverage":  80,

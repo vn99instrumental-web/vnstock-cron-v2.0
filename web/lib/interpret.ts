@@ -151,9 +151,9 @@ export interface GroupMemberView { key: string; name: string; score: number; spa
 function vndShort(v: number): string {
   const a = Math.abs(v);
   const s = v >= 0 ? "+" : "−";
-  if (a >= 1e9) return `${s}${(a / 1e9).toFixed(1)} tỷ`;
-  if (a >= 1e6) return `${s}${(a / 1e6).toFixed(0)} triệu`;
-  return `${s}${a.toFixed(0)}`;
+  if (a >= 1e9) return `${s}${(a / 1e9).toFixed(2)} tỷ`;
+  if (a >= 1e6) return `${s}${(a / 1e6).toFixed(2)} triệu`;
+  return `${s}${a.toFixed(2)}`;
 }
 
 /**
@@ -168,7 +168,7 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
     // ── Mean reversion ──
     case "s_willr_mr": {
       const wr = g("willr_14");
-      return wr != null ? `Williams %R ${wr.toFixed(0)}` : undefined;
+      return wr != null ? `Williams %R ${wr.toFixed(2)}` : undefined;
     }
     case "s_bb_mr": {
       const bb = g("bb_position");
@@ -178,39 +178,39 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       let d = g("price_vs_ema200_pct");
       const ema = g("ema200");
       if (d == null && price != null && ema != null && ema !== 0) d = ((price - ema) / ema) * 100;
-      return d != null ? `Giãn EMA200 ${d >= 0 ? "+" : ""}${d.toFixed(1)}%` : undefined;
+      return d != null ? `Giãn EMA200 ${d >= 0 ? "+" : ""}${d.toFixed(2)}%` : undefined;
     }
     case "s_rs_reversal": {
       const sr = g("return_20d"), vr = g("vnindex_return_20d");
       if (sr == null) return undefined;
       if (vr != null) {
         const rs = (1 + sr / 100) / (1 + vr / 100);
-        return `RS 20 phiên ${rs.toFixed(2)} (mã ${sr >= 0 ? "+" : ""}${sr.toFixed(0)}% vs VNI ${vr >= 0 ? "+" : ""}${vr.toFixed(0)}%)`;
+        return `RS 20 phiên ${rs.toFixed(2)} (mã ${sr >= 0 ? "+" : ""}${sr.toFixed(2)}% vs VNI ${vr >= 0 ? "+" : ""}${vr.toFixed(2)}%)`;
       }
-      return `Lợi nhuận 20 phiên ${sr >= 0 ? "+" : ""}${sr.toFixed(0)}%`;
+      return `Lợi nhuận 20 phiên ${sr >= 0 ? "+" : ""}${sr.toFixed(2)}%`;
     }
     case "s_deep_dd": {
       const lo = g("low_52w");
-      return price != null && lo != null && lo !== 0 ? `Trên đáy 52T +${(((price - lo) / lo) * 100).toFixed(0)}%` : undefined;
+      return price != null && lo != null && lo !== 0 ? `Trên đáy 52T +${(((price - lo) / lo) * 100).toFixed(2)}%` : undefined;
     }
     // ── Breakout ──
     case "s_dist_52w": {
       const hi = g("high_52w");
-      return price != null && hi != null && hi !== 0 ? `Cách đỉnh 52T ${(((price - hi) / hi) * 100).toFixed(0)}%` : undefined;
+      return price != null && hi != null && hi !== 0 ? `Cách đỉnh 52T ${(((price - hi) / hi) * 100).toFixed(2)}%` : undefined;
     }
     case "s_vol_ratio_h": {
       const vr = g("vol_ma_ratio"), adtv = g("adtv_bil");
       const parts: string[] = [];
       if (vr != null) parts.push(`KL ${vr.toFixed(2)}× TB`);
-      if (adtv != null) parts.push(`TK ${adtv.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} tỷ`);
+      if (adtv != null) parts.push(`TK ${adtv.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} tỷ`);
       return parts.length ? parts.join(" · ") : undefined;
     }
     // ── Flow ──
     case "s_trend_st": {
       const adx = g("adx"), supertrend = g("supertrend");
       const parts: string[] = [];
-      if (adx != null) parts.push(`ADX ${adx.toFixed(1)}`);
-      if (supertrend != null) parts.push(`Supertrend ${supertrend.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}`);
+      if (adx != null) parts.push(`ADX ${adx.toFixed(2)}`);
+      if (supertrend != null) parts.push(`Supertrend ${supertrend.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
       return parts.length ? parts.join(" · ") : undefined;
     }
     case "s_cf_core": {
@@ -223,7 +223,7 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
     case "s_ff_net": {
       const net = g("ff_intra_net"), ratio = g("ff_intra_ratio");
       if (net == null) return undefined;
-      return `KN ròng ${vndShort(net)}${ratio != null ? ` (${(ratio * 100).toFixed(1)}% GT)` : ""}`;
+      return `KN ròng ${vndShort(net)}${ratio != null ? ` (${(ratio * 100).toFixed(2)}% GT)` : ""}`;
     }
     case "s_of_phasefix": {
       const bp = g("of_bp_pts");
