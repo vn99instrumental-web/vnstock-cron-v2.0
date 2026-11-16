@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-16T09:58:10.317190+00:00",
+  "generated_at": "2026-11-16T10:21:20.498663+00:00",
   "scoring_version": "v6.4.18",
   "scoring_versions": [
     "v6.4.19-shadow",
@@ -18,12 +18,20 @@
   "fundamental_status": "cache_scored",
   "fundamental_cache_max_age_days": 3,
   "fundamental_cache_symbols": 100,
+  "cash_flow_overlay_symbols": 38,
+  "slow_market_cache_symbols": 100,
+  "slow_market_refreshed": false,
   "fundamental_stale_cache_used": 0,
   "fundamental_symbols_refreshed": 0,
   "market_indicator_coverage": {
-    "s_ff_net": 100
+    "s_ff_net": 100,
+    "s_of_phasefix": 100,
+    "s_prop_5d": 99,
+    "s_insider": 74,
+    "s_depth_wall": 46,
+    "s_cf_core": 100
   },
-  "depth_input_coverage": 54,
+  "depth_input_coverage": 46,
   "successful_symbols": 100,
   "prediction_rows": 300,
   "vnindex_rows": 378,
