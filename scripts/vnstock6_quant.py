@@ -1,6 +1,7 @@
 """Vnstock Quant calculations for the generation-6 production pipeline."""
 from __future__ import annotations
 import math
+import unicodedata
 from typing import Any
 import pandas as pd
 from vnstock import Fundamental
@@ -51,6 +52,10 @@ def technical_indicators(frame: pd.DataFrame) -> dict[str,Any]:
 def _clip(value: float) -> float:
     return max(-1.0,min(1.0,value))
 
+def _is_financial_industry(industry: str | None) -> bool:
+    sector=unicodedata.normalize("NFKD",str(industry or "")).encode("ascii","ignore").decode().lower()
+    return any(term in sector for term in ("ngan hang","chung khoan","bao hiem","bank","securities","insurance"))
+
 def _growth(frames: list[pd.DataFrame], codes: tuple[str,...]) -> float | None:
     chunks=[]
     for frame in frames:
@@ -94,7 +99,7 @@ def fundamental_factors(symbol: str, source: str, industry: str | None = None) -
             if "period" in rows: rows=rows.sort_values("period")
             values=pd.to_numeric(rows.get("value"),errors="coerce").dropna(); return finite(values.iloc[-1]) if not values.empty else None
         cfo=latest_line(cash,("CF_CASH_FLOW_FROM_OPERATING_ACTIVITIES","CF_NET_CASH_FLOWS_FROM_OPERATING_ACTIVITIES","CF_OPERATING")); net_profit=latest_line(income,("IS_NET_PROFIT_AFTER_TAX_OF_PARENT","IS_NET_PROFIT_AFTER_TAX")); cf_quality=finite(cfo/net_profit) if cfo is not None and net_profit not in (None,0) else None
-        sector=unicodedata.normalize("NFKD",str(industry or "")).encode("ascii","ignore").decode().lower(); financial=any(term in sector for term in ("ngan hang","chung khoan","bao hiem","bank","securities","insurance")); cf_parts=[]
+        financial=_is_financial_industry(industry); cf_parts=[]
         if industry and not financial and cfo is not None: cf_parts.append(5 if cfo>0 else -10)
         if industry and not financial and cf_quality is not None: cf_parts.append(5 if cf_quality>1 else -5 if cf_quality<.5 else 0)
         cf_score=max(-10,min(10,sum(cf_parts))) if cf_parts else None

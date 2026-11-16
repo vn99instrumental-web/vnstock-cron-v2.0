@@ -1,9 +1,15 @@
 import unittest
 import numpy as np
 import pandas as pd
-from scripts.vnstock6_quant import technical_indicators
+from scripts.vnstock6_quant import _is_financial_industry, technical_indicators
 
 class QuantIndicatorsTest(unittest.TestCase):
+    def test_financial_industry_detection_handles_vietnamese_accents(self):
+        self.assertTrue(_is_financial_industry("Ngân hàng"))
+        self.assertTrue(_is_financial_industry("Chứng khoán"))
+        self.assertTrue(_is_financial_industry("Insurance"))
+        self.assertFalse(_is_financial_industry("Công nghệ"))
+
     def test_pinned_quant_engine_calculates_baseline_indicators(self):
         size=260
         frame=pd.DataFrame({
