@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-16T03:59:41.149528+00:00",
+  "generated_at": "2026-11-16T07:26:12.631956+00:00",
   "scoring_version": "v6.4.18",
   "scoring_versions": [
     "v6.4.19-shadow",
@@ -18,7 +18,12 @@
   "fundamental_status": "cache_scored",
   "fundamental_cache_max_age_days": 3,
   "fundamental_cache_symbols": 100,
+  "fundamental_stale_cache_used": 44,
   "fundamental_symbols_refreshed": 0,
+  "market_indicator_coverage": {
+    "s_ff_net": 100
+  },
+  "depth_input_coverage": 100,
   "successful_symbols": 100,
   "prediction_rows": 300,
   "vnindex_rows": 377,
