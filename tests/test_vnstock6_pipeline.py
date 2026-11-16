@@ -113,6 +113,7 @@ class PipelineCadenceTest(unittest.TestCase):
         }
         previous = {
             "version": "1.1.0", "statement_signature": "same",
+            "latest_income_signature": "latest-same",
             "refreshed_at": datetime.now(timezone.utc).isoformat(),
             "fundamental": 0.4, "growth": 0.2,
         }
@@ -124,6 +125,9 @@ class PipelineCadenceTest(unittest.TestCase):
         with patch.object(pipeline, "load_fundamental_cache", return_value={"FPT": previous}), patch.object(
             pipeline, "Reference"
         ) as reference_factory, patch.object(
+            pipeline, "latest_income_statement_probe",
+            return_value={"signature": "latest-same", "period": "2026-Q3", "rows": 1},
+        ), patch.object(
             pipeline, "fundamental_factors", return_value=unchanged
         ) as fetch, patch.object(
             pipeline, "save_fundamental_cache"
@@ -132,7 +136,7 @@ class PipelineCadenceTest(unittest.TestCase):
             status = pipeline.refresh_fundamental_cache(config, check_updates=True)
         self.assertEqual(status["counts"]["unchanged"], 1)
         self.assertEqual(status["counts"]["updated"], 0)
-        self.assertEqual(fetch.call_args.kwargs["known_signature"], "same")
+        fetch.assert_not_called()
         saved = save.call_args.args[1]["FPT"]
         self.assertEqual(saved["fundamental"], 0.4)
         self.assertEqual(saved["growth"], 0.2)

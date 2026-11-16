@@ -22,6 +22,7 @@ from vnstock.errors import VnstockError
 
 from vnstock6_scoring import availability_score
 from vnstock6_quant import fundamental_factors, technical_indicators
+from vnstock6_fundamental_probe import latest_income_statement_probe
 from vnstock6_market_factors import collect_market_factors
 from vnstock6_v4_scoring import (
     PROFILES, classify_regime, factor_values, indicator_snapshot, score_profile, signal_values,
@@ -267,25 +268,57 @@ def refresh_fundamental_cache(
 
     def fetch_one(symbol: str) -> tuple[str, dict[str, Any], dict[str, Any] | None]:
         previous = factor_cache.get(symbol)
+        probe: dict[str, Any] | None = None
+        probe_attempt = 0
+        if check_updates:
+            for probe_attempt in range(1, 4):
+                probe = latest_income_statement_probe(symbol, fundamental_source)
+                if not probe.get("error"):
+                    break
+                if probe_attempt < 3:
+                    time.sleep(probe_attempt)
+            if probe and probe.get("error") and previous:
+                return symbol, {
+                    "status": "failed_preserved",
+                    "attempt": probe_attempt,
+                    "phase": "probe",
+                    "type": probe["error"].get("type"),
+                    "code": probe["error"].get("code"),
+                }, previous
+
+            if probe and not probe.get("error") and previous:
+                previous_probe = previous.get("latest_income_signature")
+                if previous_probe == probe["signature"]:
+                    value = dict(previous)
+                    value["checked_at"] = datetime.now(timezone.utc).isoformat()
+                    value["latest_income_signature"] = probe["signature"]
+                    value["latest_income_period"] = probe.get("period")
+                    return symbol, {
+                        "status": "unchanged",
+                        "attempt": probe_attempt,
+                        "phase": "probe",
+                    }, value
+
         last_result: dict[str, Any] | None = None
         for attempt in range(1, 4):
             last_result = fundamental_factors(
                 symbol,
                 fundamental_source,
                 industry_map.get(symbol),
-                known_signature=(previous or {}).get("statement_signature") if check_updates else None,
             )
             if not last_result.get("error"):
                 checked_at = datetime.now(timezone.utc).isoformat()
-                if last_result.get("unchanged") and previous:
-                    value = dict(previous)
-                    value["checked_at"] = checked_at
-                    value["statement_signature"] = last_result["statement_signature"]
-                    value["statements"] = last_result["statements"]
-                    return symbol, {"status": "unchanged", "attempt": attempt}, value
                 last_result["checked_at"] = checked_at
                 last_result["refreshed_at"] = checked_at
-                return symbol, {"status": "updated", "attempt": attempt}, last_result
+                if probe and not probe.get("error"):
+                    last_result["latest_income_signature"] = probe["signature"]
+                    last_result["latest_income_period"] = probe.get("period")
+                return symbol, {
+                    "status": "updated",
+                    "attempt": attempt,
+                    "phase": "materialize",
+                    "probe_attempt": probe_attempt if check_updates else 0,
+                }, last_result
             if attempt < 3:
                 time.sleep(attempt)
         return symbol, {
@@ -322,6 +355,7 @@ def refresh_fundamental_cache(
         "configured_symbols": len(config["universe"]), "reference_symbols_available": len(universe),
         "symbols_requested": len(selected), "cache_symbols": len(factor_cache),
         "stale_only": stale_only, "check_updates": check_updates, "ttl_days": ttl_days,
+        "update_detection": "fhsc_income_latest_limit_1" if check_updates else "full_materialize",
         "max_workers": workers,
         "counts": counts, "symbols": results,
     }
