@@ -1,0 +1,2461 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-16T01:33:45.752783+00:00",
+  "symbols": {
+    "ACB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:07.419246+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -120354938950.0,
+        "foreign_net_20d": -999680649000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -228119439000.0,
+        "proprietary_net_20d": 980421000.0,
+        "insider_buy_count": 7,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 9
+      }
+    },
+    "ANV": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:14.289945+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -17462160000.0,
+        "foreign_net_20d": -31100495200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 253435000.0,
+        "proprietary_net_20d": -417505000.0,
+        "insider_buy_count": 6,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 8
+      }
+    },
+    "BAF": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:19.756860+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -2477418650.0,
+        "foreign_net_20d": -72152934450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 43135000.0,
+        "proprietary_net_20d": 748075000.0,
+        "insider_buy_count": 22,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 22
+      }
+    },
+    "BCM": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:24.268545+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 3507569500.0,
+        "foreign_net_20d": 10435577000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 0.0,
+        "proprietary_net_20d": 0.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "BID": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:29.213473+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -95047950950.0,
+        "foreign_net_20d": -439956357800.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 1673559000.0,
+        "proprietary_net_20d": -70519000000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "BMP": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:34.213748+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -7567206800.0,
+        "foreign_net_20d": -75653868600.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 2315150000.0,
+        "proprietary_net_20d": 15802610000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "BSI": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:39.206616+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 544522500.0,
+        "foreign_net_20d": 3019902900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -2660000.0,
+        "proprietary_net_20d": -5510000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "BSR": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:44.198842+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -17212849250.0,
+        "foreign_net_20d": -233878793450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -1737150000.0,
+        "proprietary_net_20d": -9183215000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "BVH": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:50.445988+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 46781590000.0,
+        "foreign_net_20d": 240180648900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 119460000.0,
+        "proprietary_net_20d": 119440000.0,
+        "insider_buy_count": 2,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 3
+      }
+    },
+    "BWE": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:54.414297+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 428515000.0,
+        "foreign_net_20d": -3023242450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 0.0,
+        "proprietary_net_20d": 0.0,
+        "insider_buy_count": 36,
+        "insider_sell_count": 3,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 39
+      }
+    },
+    "CII": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:25:59.512280+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 44833077450.0,
+        "foreign_net_20d": 23041898250.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 1270955000.0,
+        "proprietary_net_20d": -6226115000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "CMG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:04.527096+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 0,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -8089510900.0,
+        "foreign_net_20d": -32051636900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 0.0,
+        "proprietary_net_20d": 526500000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 2
+      }
+    },
+    "CTD": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:09.398238+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -6234252300.0,
+        "foreign_net_20d": 52630391500.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -7404140000.0,
+        "proprietary_net_20d": -1950820000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 4,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 7
+      }
+    },
+    "CTG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:14.425557+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -32227308000.0,
+        "foreign_net_20d": 193639339750.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 203186315000.0,
+        "proprietary_net_20d": 16048920000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "CTR": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:19.948083+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -10669410400.0,
+        "foreign_net_20d": -17512084200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 6770000.0,
+        "proprietary_net_20d": -4064952000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "CTS": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:24.394018+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 8398898550.0,
+        "foreign_net_20d": 5698196000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 438215000.0,
+        "proprietary_net_20d": 746015000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "DBC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:29.399531+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -1918006500.0,
+        "foreign_net_20d": 2917781450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -442780000.0,
+        "proprietary_net_20d": 9349687000.0,
+        "insider_buy_count": 6,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 7
+      }
+    },
+    "DCM": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:34.432967+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 16992565550.0,
+        "foreign_net_20d": 144974846450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -2327635000.0,
+        "proprietary_net_20d": -3402195000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "DGW": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:39.391460+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 19688106200.0,
+        "foreign_net_20d": -12696152150.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 417825000.0,
+        "proprietary_net_20d": 758325000.0,
+        "insider_buy_count": 14,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 16
+      }
+    },
+    "DIG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:44.405616+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 626750320.0,
+        "foreign_net_20d": 41758544500.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 256061000.0,
+        "proprietary_net_20d": 3630772000.0,
+        "insider_buy_count": 14,
+        "insider_sell_count": 36,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 50
+      }
+    },
+    "DPM": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:49.460768+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -15366397700.0,
+        "foreign_net_20d": -34353681600.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -2095505000.0,
+        "proprietary_net_20d": 16640000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "DSE": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:54.704455+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -34606135000.0,
+        "foreign_net_20d": -86992320000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -252365000.0,
+        "proprietary_net_20d": -507280000.0,
+        "insider_buy_count": 8,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 14
+      }
+    },
+    "DXG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:26:59.388793+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -17796654500.0,
+        "foreign_net_20d": -64209498400.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -1941480000.0,
+        "proprietary_net_20d": -2853550000.0,
+        "insider_buy_count": 27,
+        "insider_sell_count": 30,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 57
+      }
+    },
+    "EIB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:06.110344+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 12610013350.0,
+        "foreign_net_20d": -68861471050.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -417945000.0,
+        "proprietary_net_20d": 2199255000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "EVF": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:11.068548+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 263990000.0,
+        "foreign_net_20d": -6307698450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 32070000.0,
+        "proprietary_net_20d": 316615000.0,
+        "insider_buy_count": 4,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 4
+      }
+    },
+    "FPT": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:16.080228+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -202208005700.0,
+        "foreign_net_20d": -1702444715850.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -20828320000.0,
+        "proprietary_net_20d": -138169005000.0,
+        "insider_buy_count": 11,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 12
+      }
+    },
+    "FRT": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:21.088700+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -208073036700.0,
+        "foreign_net_20d": 70794571000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -95976780000.0,
+        "proprietary_net_20d": -78090390000.0,
+        "insider_buy_count": 5,
+        "insider_sell_count": 3,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 8
+      }
+    },
+    "FTS": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:28.606649+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -5657655500.0,
+        "foreign_net_20d": -4449756850.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 1805000.0,
+        "proprietary_net_20d": 3850000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "GAS": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:33.575832+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 0,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 7204566900.0,
+        "foreign_net_20d": 1000217900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -11476390000.0,
+        "proprietary_net_20d": -81101902000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 2
+      }
+    },
+    "GEE": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:38.585876+00:00",
+      "errors": {
+        "foreign": {
+          "type": "NetworkError",
+          "code": "VNSTOCK_SOURCE_NETWORK",
+          "action": null
+        }
+      },
+      "s_ff_net": null,
+      "s_prop_5d": 0,
+      "s_insider": 0,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "proprietary_net_5d": -337610000.0,
+        "proprietary_net_20d": 283950000.0,
+        "insider_buy_count": 2,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 0,
+        "proprietary": 18,
+        "insider": 4
+      }
+    },
+    "GEX": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:43.566444+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -38249735150.0,
+        "foreign_net_20d": -255721556950.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 4951080000.0,
+        "proprietary_net_20d": -6768605000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "GMD": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:48.578990+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -103680961400.0,
+        "foreign_net_20d": -506137678550.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 37586320000.0,
+        "proprietary_net_20d": 98188510000.0,
+        "insider_buy_count": 16,
+        "insider_sell_count": 6,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 22
+      }
+    },
+    "GVR": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:54.114548+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -163730000.0,
+        "foreign_net_20d": -30667555000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 733005000.0,
+        "proprietary_net_20d": -2972590000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "HAG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:27:58.563120+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -7788568500.0,
+        "foreign_net_20d": -11372686000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 304895000.0,
+        "proprietary_net_20d": -379250000.0,
+        "insider_buy_count": 6,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 6
+      }
+    },
+    "HCM": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:04.363933+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 25982960700.0,
+        "foreign_net_20d": -7213744850.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -712970000.0,
+        "proprietary_net_20d": -366826000.0,
+        "insider_buy_count": 36,
+        "insider_sell_count": 9,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 45
+      }
+    },
+    "HDB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:08.558029+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -124431144850.0,
+        "foreign_net_20d": -328175537150.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 16713768000.0,
+        "proprietary_net_20d": 167996299000.0,
+        "insider_buy_count": 5,
+        "insider_sell_count": 4,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 10
+      }
+    },
+    "HDG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:13.573322+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -2009181600.0,
+        "foreign_net_20d": -2439833100.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -2987330000.0,
+        "proprietary_net_20d": -8631575000.0,
+        "insider_buy_count": 3,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 5
+      }
+    },
+    "HHV": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:18.571346+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -5061187440.0,
+        "foreign_net_20d": 1405153350.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 8505000.0,
+        "proprietary_net_20d": -29449506000.0,
+        "insider_buy_count": 7,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 9
+      }
+    },
+    "HPG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:23.573469+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 51012646900.0,
+        "foreign_net_20d": 400332757950.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 18797672000.0,
+        "proprietary_net_20d": -48353376000.0,
+        "insider_buy_count": 3,
+        "insider_sell_count": 5,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 8
+      }
+    },
+    "HSG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:28.577222+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 5043809600.0,
+        "foreign_net_20d": 11718772750.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -519805000.0,
+        "proprietary_net_20d": -6454849000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "HT1": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:33.549481+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -122800000.0,
+        "foreign_net_20d": -3901275000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 0.0,
+        "proprietary_net_20d": 0.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "KBC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:38.558502+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -2635621550.0,
+        "foreign_net_20d": 3245146200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 34098455000.0,
+        "proprietary_net_20d": -172214345000.0,
+        "insider_buy_count": 7,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 8
+      }
+    },
+    "KDC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:43.566038+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -802877800.0,
+        "foreign_net_20d": -231719107800.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 25230000.0,
+        "proprietary_net_20d": 35290000.0,
+        "insider_buy_count": 5,
+        "insider_sell_count": 8,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 13
+      }
+    },
+    "KDH": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:48.560485+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -56222632000.0,
+        "foreign_net_20d": 2618944850.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 20563620000.0,
+        "proprietary_net_20d": -4716280000.0,
+        "insider_buy_count": 39,
+        "insider_sell_count": 16,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 56
+      }
+    },
+    "KOS": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:28:55.275230+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 0.0,
+        "foreign_net_20d": 3874563560.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 0.0,
+        "proprietary_net_20d": 0.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 27,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 28
+      }
+    },
+    "LPB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:00.230026+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -202449300.0,
+        "foreign_net_20d": -153294439800.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -9432950000.0,
+        "proprietary_net_20d": -16832025000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "MBB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:05.222791+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 230123446850.0,
+        "foreign_net_20d": -421910481750.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 5040875000.0,
+        "proprietary_net_20d": 21519484000.0,
+        "insider_buy_count": 128,
+        "insider_sell_count": 6,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 138
+      }
+    },
+    "MCH": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:14.002835+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -46639939700.0,
+        "foreign_net_20d": -164333042600.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -37277510000.0,
+        "proprietary_net_20d": -61734990000.0,
+        "insider_buy_count": 10,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 10
+      }
+    },
+    "MSB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:18.577304+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -120001971850.0,
+        "foreign_net_20d": -460156303600.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -94870820000.0,
+        "proprietary_net_20d": -99458300000.0,
+        "insider_buy_count": 5,
+        "insider_sell_count": 15,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 20
+      }
+    },
+    "MSN": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:23.582185+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -30183592900.0,
+        "foreign_net_20d": 710619616400.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 51630120000.0,
+        "proprietary_net_20d": 132247390000.0,
+        "insider_buy_count": 7,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 9
+      }
+    },
+    "MWG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:29.105747+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 1459198900.0,
+        "foreign_net_20d": -3303306400.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 47336108000.0,
+        "proprietary_net_20d": 99567325000.0,
+        "insider_buy_count": 22,
+        "insider_sell_count": 12,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 37
+      }
+    },
+    "NAB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:33.588667+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 4430133450.0,
+        "foreign_net_20d": 20376460750.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 333990000.0,
+        "proprietary_net_20d": 1152400000.0,
+        "insider_buy_count": 23,
+        "insider_sell_count": 4,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 27
+      }
+    },
+    "NKG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:38.597234+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -714979800.0,
+        "foreign_net_20d": 27563162900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 7560000.0,
+        "proprietary_net_20d": -2623670000.0,
+        "insider_buy_count": 6,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 6
+      }
+    },
+    "NLG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:43.574247+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -25571015900.0,
+        "foreign_net_20d": -85958330800.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 427395000.0,
+        "proprietary_net_20d": 33736905000.0,
+        "insider_buy_count": 26,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 27
+      }
+    },
+    "NT2": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:48.605034+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 27451593000.0,
+        "foreign_net_20d": 93125698000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -19980290000.0,
+        "proprietary_net_20d": -21174470000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "NVL": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:53.563949+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -17688059850.0,
+        "foreign_net_20d": -34056096050.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 69305000.0,
+        "proprietary_net_20d": 775205000.0,
+        "insider_buy_count": 3,
+        "insider_sell_count": 19,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 22
+      }
+    },
+    "OCB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:29:58.576318+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 1960114000.0,
+        "foreign_net_20d": -108864987850.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 214834000.0,
+        "proprietary_net_20d": 112899000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 5,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 5
+      }
+    },
+    "PAN": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:03.601775+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 1,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -15105814700.0,
+        "foreign_net_20d": -77814051600.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 1695600000.0,
+        "proprietary_net_20d": 1036302000.0,
+        "insider_buy_count": 2,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 2
+      }
+    },
+    "PC1": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:08.589295+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -1706043750.0,
+        "foreign_net_20d": -13775489400.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 26135000.0,
+        "proprietary_net_20d": 22385000.0,
+        "insider_buy_count": 19,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 20
+      }
+    },
+    "PDR": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:13.575121+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 6531764650.0,
+        "foreign_net_20d": -7445556800.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 43709000.0,
+        "proprietary_net_20d": 666582000.0,
+        "insider_buy_count": 12,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 12
+      }
+    },
+    "PHR": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:19.941642+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -76730000.0,
+        "foreign_net_20d": -3394486900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -2170000.0,
+        "proprietary_net_20d": -610472000.0,
+        "insider_buy_count": 3,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 4
+      }
+    },
+    "PLX": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:25.159540+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -76158275000.0,
+        "foreign_net_20d": -70013935000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -2076350000.0,
+        "proprietary_net_20d": -8098470000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "PNJ": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:29.698958+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -84414008800.0,
+        "foreign_net_20d": -166412701050.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -4296495000.0,
+        "proprietary_net_20d": 1808600000.0,
+        "insider_buy_count": 43,
+        "insider_sell_count": 57,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 100
+      }
+    },
+    "POW": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:36.343857+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -19955476650.0,
+        "foreign_net_20d": 57736587100.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 39735000.0,
+        "proprietary_net_20d": 7180739000.0,
+        "insider_buy_count": 6,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 6
+      }
+    },
+    "PVD": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:41.833601+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 0,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -28405536200.0,
+        "foreign_net_20d": -17382676000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -258641000.0,
+        "proprietary_net_20d": -3674072000.0,
+        "insider_buy_count": 2,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 4
+      }
+    },
+    "PVT": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:46.313494+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 94986604200.0,
+        "foreign_net_20d": 27699602000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 27849925000.0,
+        "proprietary_net_20d": 97681135000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 3,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 4
+      }
+    },
+    "REE": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:51.294520+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 1,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -1141000300.0,
+        "foreign_net_20d": 848322150.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 1254815000.0,
+        "proprietary_net_20d": 67843477000.0,
+        "insider_buy_count": 27,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 28
+      }
+    },
+    "SAB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:30:56.317571+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -1090274000.0,
+        "foreign_net_20d": -27045900100.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 9378285000.0,
+        "proprietary_net_20d": 20485195000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "SBT": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:01.297346+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 7161223800.0,
+        "foreign_net_20d": -89874427200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -7829674000.0,
+        "proprietary_net_20d": -16227820000.0,
+        "insider_buy_count": 28,
+        "insider_sell_count": 9,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 37
+      }
+    },
+    "SHB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:06.342471+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 25300385600.0,
+        "foreign_net_20d": 226095652550.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 12007790000.0,
+        "proprietary_net_20d": 4802677000.0,
+        "insider_buy_count": 20,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 20
+      }
+    },
+    "SIP": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:11.313800+00:00",
+      "errors": {
+        "proprietary": {
+          "type": "NetworkError",
+          "code": "VNSTOCK_SOURCE_NETWORK",
+          "action": null
+        }
+      },
+      "s_ff_net": 0,
+      "s_prop_5d": null,
+      "s_insider": 0,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -1202091250.0,
+        "foreign_net_20d": -1924996350.0,
+        "foreign_intensity": 0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 0,
+        "insider": 2
+      }
+    },
+    "SJS": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:19.715515+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -78720000.0,
+        "foreign_net_20d": -315055200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 21950000.0,
+        "proprietary_net_20d": -27555860000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 9,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 9
+      }
+    },
+    "SSB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:24.351046+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 2589891900.0,
+        "foreign_net_20d": -9949996450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -1266466000.0,
+        "proprietary_net_20d": -2560650000.0,
+        "insider_buy_count": 58,
+        "insider_sell_count": 30,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 90
+      }
+    },
+    "SSI": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:30.430197+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -9874005100.0,
+        "foreign_net_20d": -122661743900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 11314381000.0,
+        "proprietary_net_20d": -75853839000.0,
+        "insider_buy_count": 31,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 31
+      }
+    },
+    "STB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:35.369926+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -93691908300.0,
+        "foreign_net_20d": -561218182900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 5033345000.0,
+        "proprietary_net_20d": -96515862000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "TAL": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:40.365251+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 354838150.0,
+        "foreign_net_20d": 979243150.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 253035000.0,
+        "proprietary_net_20d": 10810290000.0,
+        "insider_buy_count": 24,
+        "insider_sell_count": 6,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 30
+      }
+    },
+    "TCB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:45.363022+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -281932009100.0,
+        "foreign_net_20d": 837871465450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -226910695000.0,
+        "proprietary_net_20d": -397544325000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "TCH": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:50.353456+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -24711091700.0,
+        "foreign_net_20d": -7021444450.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 32325000.0,
+        "proprietary_net_20d": -1264875000.0,
+        "insider_buy_count": 10,
+        "insider_sell_count": 12,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 22
+      }
+    },
+    "TCX": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:31:55.890983+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -67633771750.0,
+        "foreign_net_20d": -256517200750.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -10095775000.0,
+        "proprietary_net_20d": -3202369000.0,
+        "insider_buy_count": 23,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 24
+      }
+    },
+    "TPB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:00.339556+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -10684630400.0,
+        "foreign_net_20d": -20425098550.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -3212758000.0,
+        "proprietary_net_20d": -15523675000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VCB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:05.345192+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -68757568000.0,
+        "foreign_net_20d": -875827857400.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -104792260000.0,
+        "proprietary_net_20d": -113435710000.0,
+        "insider_buy_count": 2,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 2
+      }
+    },
+    "VCG": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:10.348328+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -6058705100.0,
+        "foreign_net_20d": 10288940300.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -1666920000.0,
+        "proprietary_net_20d": -4275227000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VCI": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:15.340791+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -1,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -146844816450.0,
+        "foreign_net_20d": -222028841750.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -1272370000.0,
+        "proprietary_net_20d": -18659305000.0,
+        "insider_buy_count": 13,
+        "insider_sell_count": 6,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 19
+      }
+    },
+    "VCK": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:20.337401+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -1589721300.0,
+        "foreign_net_20d": -25189944000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 24835000.0,
+        "proprietary_net_20d": 244250000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VGC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:25.301596+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 1,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 1594605000.0,
+        "foreign_net_20d": -43724940000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 976630000.0,
+        "proprietary_net_20d": -6100830000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VHC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:30.694146+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -4096135000.0,
+        "foreign_net_20d": -10501276000.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 10340000.0,
+        "proprietary_net_20d": 20120000.0,
+        "insider_buy_count": 4,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 8
+      }
+    },
+    "VHM": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:35.341300+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": 0,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -152838994700.0,
+        "foreign_net_20d": -316648686200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 8669050000.0,
+        "proprietary_net_20d": -8260910000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 4
+      }
+    },
+    "VIB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:40.376290+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -834810800.0,
+        "foreign_net_20d": 206692307200.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -7357587000.0,
+        "proprietary_net_20d": 26065701000.0,
+        "insider_buy_count": 22,
+        "insider_sell_count": 5,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 28
+      }
+    },
+    "VIC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:45.359187+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 2,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -417367787500.0,
+        "foreign_net_20d": -549292164700.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 13782020000.0,
+        "proprietary_net_20d": -27754170000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 17
+      }
+    },
+    "VIX": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:50.367787+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": -2,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -213906896000.0,
+        "foreign_net_20d": 269834379150.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -3227605000.0,
+        "proprietary_net_20d": 274341650000.0,
+        "insider_buy_count": 7,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 7
+      }
+    },
+    "VJC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:32:55.345029+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -21544598400.0,
+        "foreign_net_20d": -122217107400.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 296172390000.0,
+        "proprietary_net_20d": 299880224000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 2,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 3
+      }
+    },
+    "VND": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:00.366472+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -87328886300.0,
+        "foreign_net_20d": 9436819550.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -128830000.0,
+        "proprietary_net_20d": -5676660000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VNM": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:05.374625+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -66413096100.0,
+        "foreign_net_20d": -115120126300.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 16707995000.0,
+        "proprietary_net_20d": 22856988000.0,
+        "insider_buy_count": 10,
+        "insider_sell_count": 6,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 16
+      }
+    },
+    "VPB": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:10.351534+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 3,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -96226811250.0,
+        "foreign_net_20d": -154360165900.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 765884969000.0,
+        "proprietary_net_20d": 1366851177000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "VPI": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:15.345363+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 17089651600.0,
+        "foreign_net_20d": -10423661700.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 44930000.0,
+        "proprietary_net_20d": 838130000.0,
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "VPL": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:20.352507+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 1,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 835570000.0,
+        "foreign_net_20d": -512201232300.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": -461980000.0,
+        "proprietary_net_20d": -1269909000.0,
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 1
+      }
+    },
+    "VPX": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:25.343577+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -899235650.0,
+        "foreign_net_20d": -37636849500.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 43570000.0,
+        "proprietary_net_20d": 59950000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VRE": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:30.299976+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": null,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": 16352405700.0,
+        "foreign_net_20d": 17347952550.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 349075000.0,
+        "proprietary_net_20d": -8397110000.0,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 0
+      }
+    },
+    "VSC": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:36.804587+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": -2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -7055920000.0,
+        "foreign_net_20d": -11316792100.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 9205000.0,
+        "proprietary_net_20d": 600520000.0,
+        "insider_buy_count": 3,
+        "insider_sell_count": 10,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 13
+      }
+    },
+    "VTP": {
+      "source": "FHSC",
+      "refreshed_at": "2026-11-16T01:33:41.315535+00:00",
+      "errors": {},
+      "s_ff_net": 0,
+      "s_prop_5d": 0,
+      "s_insider": 2,
+      "s_of_phasefix": null,
+      "s_depth_wall": null,
+      "raw": {
+        "foreign_net_5d": -4356551450.0,
+        "foreign_net_20d": -4586372550.0,
+        "foreign_intensity": 0,
+        "proprietary_net_5d": 9230000.0,
+        "proprietary_net_20d": -602340000.0,
+        "insider_buy_count": 5,
+        "insider_sell_count": 1,
+        "order_book": []
+      },
+      "endpoint_rows": {
+        "foreign": 24,
+        "proprietary": 18,
+        "insider": 6
+      }
+    }
+  }
+}
