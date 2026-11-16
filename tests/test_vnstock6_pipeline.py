@@ -48,11 +48,12 @@ class PipelineCadenceTest(unittest.TestCase):
             )
 
     def test_cache_freshness_requires_timestamp_within_limit(self):
-        fresh = {"refreshed_at": datetime.now(timezone.utc).isoformat()}
-        stale = {"refreshed_at": (datetime.now(timezone.utc) - timedelta(days=15)).isoformat()}
+        fresh = {"version": "1.1.0", "refreshed_at": datetime.now(timezone.utc).isoformat()}
+        stale = {"version": "1.1.0", "refreshed_at": (datetime.now(timezone.utc) - timedelta(days=15)).isoformat()}
         self.assertTrue(pipeline.cache_entry_is_fresh(fresh, 14))
         self.assertFalse(pipeline.cache_entry_is_fresh(stale, 14))
         self.assertFalse(pipeline.cache_entry_is_fresh({}, 14))
+        self.assertFalse(pipeline.cache_entry_is_fresh({"version": "1.0.0", "refreshed_at": fresh["refreshed_at"]}, 14))
 
     def test_fundamental_ttl_matches_legacy_earnings_cadence(self):
         config = {
@@ -85,8 +86,9 @@ class PipelineCadenceTest(unittest.TestCase):
             },
         }
         cache = {
-            "FPT": {"refreshed_at": datetime.now(timezone.utc).isoformat()},
+            "FPT": {"version": "1.1.0", "refreshed_at": datetime.now(timezone.utc).isoformat()},
             "SSI": {
+                "version": "1.1.0",
                 "refreshed_at": (
                     datetime.now(timezone.utc) - timedelta(days=4)
                 ).isoformat()
@@ -109,7 +111,7 @@ class PipelineCadenceTest(unittest.TestCase):
             },
         }
         fresh = {
-            symbol: {"refreshed_at": datetime.now(timezone.utc).isoformat()}
+            symbol: {"version": "1.1.0", "refreshed_at": datetime.now(timezone.utc).isoformat()}
             for symbol in config["universe"]
         }
         with patch.object(

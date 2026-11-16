@@ -102,6 +102,8 @@ def market_fetch_start(symbol: str, today: date, history_days: int) -> str:
 
 
 def cache_entry_is_fresh(entry: dict[str, Any], max_age_days: int) -> bool:
+    if entry.get("version") != "1.1.0":
+        return False
     refreshed_at = entry.get("refreshed_at")
     if not refreshed_at:
         return False
