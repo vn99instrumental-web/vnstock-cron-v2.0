@@ -7,6 +7,7 @@ class QuantIndicatorsTest(unittest.TestCase):
     def test_financial_industry_detection_handles_vietnamese_accents(self):
         self.assertTrue(_is_financial_industry("Ngân hàng"))
         self.assertTrue(_is_financial_industry("Chứng khoán"))
+        self.assertTrue(_is_financial_industry("Dịch vụ tài chính"))
         self.assertTrue(_is_financial_industry("Insurance"))
         self.assertFalse(_is_financial_industry("Công nghệ"))
 

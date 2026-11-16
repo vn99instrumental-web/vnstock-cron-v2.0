@@ -54,7 +54,7 @@ def _clip(value: float) -> float:
 
 def _is_financial_industry(industry: str | None) -> bool:
     sector=unicodedata.normalize("NFKD",str(industry or "")).encode("ascii","ignore").decode().lower()
-    return any(term in sector for term in ("ngan hang","chung khoan","bao hiem","bank","securities","insurance"))
+    return any(term in sector for term in ("ngan hang","chung khoan","bao hiem","dich vu tai chinh","bank","securities","insurance","financial services"))
 
 def _growth(frames: list[pd.DataFrame], codes: tuple[str,...]) -> float | None:
     chunks=[]

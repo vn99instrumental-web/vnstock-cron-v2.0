@@ -150,7 +150,7 @@ def refresh_fundamental_cache(
 
     reference = Reference(reference_source).equity.list() if configured else pd.DataFrame()
     symbol_column = next((column for column in reference.columns if str(column).lower() == "symbol"), None)
-    industry_column = next((column for column in reference.columns if str(column).lower() in {"industry", "industry_name", "icb_name3", "icb_name2"}), None)
+    industry_column = next((column for column in reference.columns if str(column).lower() in {"industry", "industry_name", "icb_name", "icb_name3", "icb_name2"}), None)
     industry_map = {str(row[symbol_column]).upper(): str(row[industry_column]) for _, row in reference.iterrows()} if symbol_column and industry_column else {}
     if stale_only:
         universe = list(config["universe"])
