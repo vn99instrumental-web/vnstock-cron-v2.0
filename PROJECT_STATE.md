@@ -171,3 +171,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - vnstock 6.0.0 documents and exposes `Market("fhsc").equity(...).insider_deal()`, but omits `market.equity.insider_deal` from `sources.readers()`. Config validation carries a narrowly scoped metadata exception for that route only.
 - Local verification: Python compile passed; 27 Gen6 unit tests passed; config/reader validation passed; cache-only full-universe scoring produced `s_cf_core` 100/100, `s_of_phasefix` 100/100, `s_prop_5d` 99/100, and `s_insider` 74/100.
 - Security review found no committed credential value, client-side secret exposure, new dependency, or broadened external-source boundary. Workflow continues to consume GitHub secrets only through server-side environment variables.
+
+## Gen6 parity production verification 2026-11-16
+
+- Daily maintenance run `43829682476` completed successfully and refreshed the committed Gen6 fundamental cache before the production rerun.
+- Workflow writer synchronization was fixed in commit `5d85011f`: queued daily/intraday jobs now sync the latest serialized `main` state, and production publishes `output/market/vnindex.json` with the rest of its ledger.
+- Production run `43846935042` completed successfully, published data commit `4e9aba3b`, and revalidated the Vercel dashboard cache.
+- Latest v6.4.18 snapshot is `2026-11-16 17:14` ICT for 100 symbols. Coverage is `s_cf_core` 100, `s_of_phasefix` 100, `s_prop_5d` 99, `s_insider` 74, `s_ff_net` 100, and `s_depth_wall` 46. Missing source values remain null and are excluded/renormalized.
+- Native status reports 38 cash-flow overlays, so 62 symbols use native Gen6 BCTC cash-flow values and 38 use the audited legacy finance cache fallback. Intraday did not fetch BCTC.
+- Browser interaction was not executed end-to-end: the in-app browser redirected to login and the already-authenticated Chrome tab could not expose DOM control. GitHub Actions publish/revalidation and committed serving data were verified directly.
