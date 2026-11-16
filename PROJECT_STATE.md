@@ -160,4 +160,4 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Weekly fundamentals remain a full-universe recalculation safety net.
 - Dashboard serving exposes ADX, Supertrend and BCTC cash-flow score/raw metrics; no credential value is stored in repository output.
 - Local verification: Python compile and 17 Gen6 unit tests passed; 7 Gen6 workflow YAML files parsed; ESLint, TypeScript and Next.js 15 production build passed in an isolated temporary dependency workspace.
-- Operational verification pending at this point: push the reviewed commit, run the SSI-only intraday workflow, and verify Git serving plus Vercel revalidation.
+- Operational verification completed: candidate run `43800525885` passed; SSI-only intraday run `43801166361` completed in 2m25s, published 100/100 symbols for 2026-11-16, and revalidated Vercel successfully. Latest v6.4.18 snapshot has ADX/Supertrend/`s_trend_st` for 100/100, cached fundamental/growth for 56/100, and no `s_cf_core` until the post-market BCTC check runs.
