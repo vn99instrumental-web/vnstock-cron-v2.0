@@ -8,6 +8,7 @@ from scripts.vnstock6_v4_scoring import (
     classify_regime,
     factor_values,
     indicator_snapshot,
+    order_flow_phase_score,
     score_profile,
     signal_values,
 )
@@ -37,7 +38,7 @@ class Gen6V4ScoringTest(unittest.TestCase):
             "macd_histogram", "willr_14", "stoch_k", "bb_mid",
             "bb_lower", "bb_upper", "bb_position", "cmf", "adtv_bil",
             "price_vs_ema200_pct", "relative_return_20d", "entry",
-            "stop", "tp1", "tp2",
+            "stop", "tp1", "tp2", "of_vol_spike_pct",
         ):
             self.assertIsNotNone(result[key], key)
 
@@ -49,7 +50,18 @@ class Gen6V4ScoringTest(unittest.TestCase):
         self.assertEqual(classify_regime(rows, signal_date), baseline)
         self.assertLess(baseline["as_of"], signal_date)
 
-    def test_unavailable_external_flow_is_explicitly_excluded(self):
+    def test_order_flow_phase_matches_cron2_thresholds(self):
+        self.assertEqual(order_flow_phase_score(0.0, "09:30"), 4.0)
+        self.assertEqual(order_flow_phase_score(0.0, "14:55"), 0.0)
+        self.assertEqual(order_flow_phase_score(0.0, "09:00"), 0.0)
+
+    def test_cash_flow_core_uses_cron2_integer_mapping(self):
+        signals = signal_values({}, {"cash_flow_score": 5}, "SIDEWAYS")
+        self.assertEqual(signals["s_cf_core"], 2)
+
+
+
+    def test_phase_flow_is_computable_when_external_flows_are_unavailable(self):
         indicators = indicator_snapshot(self.frame, self.quant, 3.0)
         signals = signal_values(
             indicators,
@@ -57,12 +69,13 @@ class Gen6V4ScoringTest(unittest.TestCase):
             "UPTREND",
         )
         factors = factor_values(signals)
-        self.assertIsNone(factors["flow"])
+        self.assertEqual(signals["s_of_phasefix"], 0.0)
+        for key in ("s_ff_net", "s_prop_5d", "s_insider"):
+            self.assertIsNone(signals[key])
+        self.assertEqual(factors["flow"], 0.0)
         for version in PROFILES:
             result = score_profile(version, factors, "UPTREND")
-            self.assertIn("flow", result["excluded_factors"])
-            self.assertEqual(result["factor_status"]["flow"]["reason"], "source_unavailable")
-            self.assertLess(result["available_weight"], 1.0)
+            self.assertIn("flow", result["included_factors"])
 
 
 if __name__ == "__main__":

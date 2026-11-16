@@ -2,7 +2,13 @@ import unittest
 from datetime import date
 from unittest.mock import patch
 
-from scripts.vnstock6_market_factors import average_trade_size, fetch_symbol, foreign_score
+from scripts.vnstock6_market_factors import (
+    average_trade_size,
+    fetch_symbol,
+    foreign_score,
+    insider_score,
+    proprietary_score,
+)
 
 
 class MarketFactorTest(unittest.TestCase):
@@ -14,6 +20,22 @@ class MarketFactorTest(unittest.TestCase):
         score, raw = foreign_score(rows)
         self.assertEqual(score, 4)
         self.assertGreater(raw["foreign_intensity"], 0.3)
+
+    def test_proprietary_flow_uses_existing_v4_bands(self):
+        rows = [{"net_value": 1_500_000_000.0} for _ in range(10)]
+        score, raw = proprietary_score(rows)
+        self.assertEqual(score, 2)
+        self.assertEqual(raw["proprietary_net_5d"], 7_500_000_000.0)
+
+    def test_insider_flow_uses_existing_v4_counts(self):
+        score, raw = insider_score([
+            {"transaction_type": "Mua"},
+            {"transaction_type": "buy"},
+            {"transaction_type": "sell"},
+        ])
+        self.assertEqual(score, 1)
+        self.assertEqual(raw, {"insider_buy_count": 2, "insider_sell_count": 1})
+
 
     def test_average_trade_size_uses_ssi_session_totals(self):
         rows = [{
@@ -65,6 +87,46 @@ class MarketFactorTest(unittest.TestCase):
         self.assertEqual(result["endpoint_sources"]["order_book"], "FHSC")
         self.assertEqual(result["s_ff_net"], 4)
         self.assertEqual(result["raw"]["average_trade_size"], 100)
+
+
+    def test_intraday_preserves_slow_cache_without_calling_slow_endpoints(self):
+        class Equity:
+            def foreign_flow(self, **kwargs): return [{"foreign_buy_value": 100, "foreign_sell_value": 20, "foreign_net_value": 80}] * 20
+            def session_stats(self, **kwargs): return [{"total_buy_trade_volume": 800, "total_sell_trade_volume": 200, "total_buy_trade": 8, "total_sell_trade": 2}]
+            def order_book(self, **kwargs): return []
+            def proprietary_flow(self, **kwargs): raise AssertionError("slow endpoint called during intraday")
+            def insider_deal(self, **kwargs): raise AssertionError("slow endpoint called during intraday")
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        cache = {
+            "s_prop_5d": -3, "s_insider": 2,
+            "raw": {"proprietary_net_5d": -6_000_000_000, "insider_buy_count": 3, "insider_sell_count": 0},
+        }
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol("FPT", date(2026, 11, 16), cache, refresh_slow=False)
+        self.assertEqual(result["s_prop_5d"], -3)
+        self.assertEqual(result["s_insider"], 2)
+        self.assertEqual(result["endpoint_sources"]["proprietary_flow"], "FHSC_CACHE")
+
+    def test_daily_refresh_replaces_slow_cache(self):
+        class Equity:
+            def foreign_flow(self, **kwargs): return []
+            def session_stats(self, **kwargs): return []
+            def active_session(self, **kwargs): return []
+            def order_book(self, **kwargs): return []
+            def proprietary_flow(self, **kwargs): return [{"net_value": 1_500_000_000.0}] * 10
+            def insider_deal(self, **kwargs): return [{"transaction_type": "Mua"}] * 3
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol("FPT", date(2026, 11, 16), {}, refresh_slow=True)
+        self.assertEqual(result["s_prop_5d"], 2)
+        self.assertEqual(result["s_insider"], 2)
+        self.assertEqual(result["endpoint_sources"]["proprietary_flow"], "FHSC")
 
 
 if __name__ == "__main__":

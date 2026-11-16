@@ -6,6 +6,7 @@ This project uses the Python library `vnstock` generation 6 final (`vnstock==6.0
 - Environment: `~/.venv_6x` (Windows `$HOME\.venv_6x`) unless noted here. Run code and commands with `~/.venv_6x/bin/python` and `~/.venv_6x/bin/vnstock`. Do not install vnstock into another Python.
 - At the start of a session: run `vnstock onboard` and follow it; `vnstock doctor` when something fails.
 - Every data call names a source: `Market("<nguồn>").equity("FPT").ohlcv(start=...)`, or `vnstock.sources.use(...)` once. Approved sources: SSI for reference/OHLCV and primary foreign/session statistics; FHSC for fundamentals (BCTC), foreign-flow fallback, and order book because Gen6 has no SSI order-book reader. Do not extend FHSC intraday use beyond those approved endpoints without explicit user approval.
+- Approved cadence clarification: FHSC `proprietary_flow` and `insider_deal` are refreshed only by post-market daily maintenance. Intraday may read their last-known-good cache but must not call either slow endpoint.
 - Keys: the user stores source keys with `vnstock keys set <nguồn>` and logs in with `vnstock login`, in their own terminal. Never ask for a key in chat, never put one in code or print it. `vnstock keys` shows which sources have one.
 - Look functions up before writing them: `vnstock tools`, `vnstock doc Market.equity.ohlcv`.
 - Ratios: compute with `vnstock_quant.fa`; `ratio()`, `Insights`, `Analytics`, `Macro` are not in this release.

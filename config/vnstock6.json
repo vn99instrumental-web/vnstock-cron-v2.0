@@ -19,6 +19,14 @@
                                "order_book":  {
                                                   "primary":  "fhsc"
                                               },
+                               "proprietary_flow":  {
+                                                         "primary":  "fhsc",
+                                                         "cadence":  "post_market_daily"
+                                                     },
+                               "insider_deal":  {
+                                                     "primary":  "fhsc",
+                                                     "cadence":  "post_market_daily"
+                                                 },
                                "max_workers":  4
                            },
     "scoring_version":  "v6.4.18",

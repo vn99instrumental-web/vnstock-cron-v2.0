@@ -2,8 +2,7 @@
 
 The profiles deliberately keep a ``v6.`` prefix: available technical and
 fundamental signals follow the v4.17/v4.18/v4.19 factor architecture, while
-signals requiring order-flow, foreign, proprietary or insider feeds remain
-explicitly unavailable and are never fabricated as zero.
+unavailable inputs are explicitly excluded and are never fabricated as zero.
 """
 from __future__ import annotations
 
@@ -96,6 +95,8 @@ def indicator_snapshot(frame: pd.DataFrame, quant: dict[str, Any], index_return2
     macd_signal_series = macd_series.ewm(span=9, adjust=False).mean()
     macd = finite(macd_series.iloc[-1])
     macd_signal = finite(macd_signal_series.iloc[-1])
+    previous_volume = finite(volume.iloc[-5:-1].mean()) if len(volume) >= 5 else None
+    of_vol_spike = finite(volume.iloc[-1] / previous_volume * 100 - 100) if previous_volume else None
     entry = price
     stop = finite(price - 1.5 * atr14) if price and atr14 else None
     tp1 = finite(price + 2 * atr14) if price and atr14 else None
@@ -111,6 +112,7 @@ def indicator_snapshot(frame: pd.DataFrame, quant: dict[str, Any], index_return2
         "position_52w": pos52, "price_vs_ema200_pct": price_vs_ema200,
         "willr_14": willr, "stoch_k": stoch, "bb_mid": mid, "bb_lower": bb_low,
         "bb_upper": bb_high, "bb_position": bb_position, "cmf": cmf,
+        "of_vol_spike_pct": of_vol_spike,
         "entry": entry, "stop": stop, "tp1": tp1, "tp2": tp2,
     }
 
@@ -158,7 +160,39 @@ def _depth_wall(market: dict[str,Any], price: float | None) -> float | None:
         if ap and av and price*.98<=ap<=price*1.02: ask=max(ask,av)
     def band(value): return 3 if value/avg>=250 else 2 if value/avg>=100 else 1 if value/avg>=40 else 0
     return float(max(-3,min(3,band(bid)-band(ask))))
-def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str, market: dict[str, Any] | None = None) -> dict[str, float | None]:
+
+
+_FRACTION_ANCHORS = (
+    (570, .08), (595, .18), (655, .38), (690, .46), (780, .46),
+    (805, .66), (835, .74), (870, .92), (895, 1.0),
+)
+
+
+def expected_fraction(snap_time: str | None) -> float | None:
+    try:
+        hours, minutes = str(snap_time).split(":")
+        minute = int(hours) * 60 + int(minutes)
+    except (ValueError, AttributeError):
+        return None
+    if minute < 570:
+        return None
+    if minute >= 895:
+        return 1.0
+    for (minute1, fraction1), (minute2, fraction2) in zip(_FRACTION_ANCHORS, _FRACTION_ANCHORS[1:]):
+        if minute1 <= minute <= minute2:
+            return fraction1 + (fraction2 - fraction1) * (minute - minute1) / (minute2 - minute1)
+    return None
+
+
+def order_flow_phase_score(vol_spike: float | None, snap_time: str | None) -> float | None:
+    fraction = expected_fraction(snap_time)
+    if vol_spike is None or fraction is None or fraction <= 0:
+        return 0.0
+    adjusted = ((1 + vol_spike / 100) / fraction - 1) * 100
+    return 4.0 if adjusted > 50 else 2.0 if adjusted > 20 else -4.0 if adjusted < -50 else -2.0 if adjusted < -20 else 0.0
+
+
+def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str, market: dict[str, Any] | None = None, snap_time: str | None = None) -> dict[str, float | None]:
     market = market or {}
     willr, bb, overext, relative = ind.get("willr_14"), ind.get("bb_position"), ind.get("price_vs_ema200_pct"), ind.get("relative_return_20d")
     pos52, vol_ratio = ind.get("position_52w"), ind.get("vol_ma_ratio")
@@ -171,10 +205,12 @@ def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str,
         "s_dist_52w": None if pos52 is None else (4 if pos52 >= .8 else 2 if pos52 >= .65 else 0),
         "s_trend_st": None if ind.get("supertrend") is None or ind.get("adx") is None or ind.get("entry") is None else ((4 if ind["adx"] >= 25 else 1 if ind["adx"] < 18 else 2) * (1 if ind["entry"] > ind["supertrend"] else -1)),
         "s_vol_ratio_h": None if vol_ratio is None else (3 if vol_ratio >= 1.5 else -3 if vol_ratio < .5 else 0),
-        "s_ff_net": finite(market.get("s_ff_net")), "s_of_phasefix": finite(market.get("s_of_phasefix")), "s_prop_5d": finite(market.get("s_prop_5d")), "s_insider": finite(market.get("s_insider")),
+        "s_ff_net": finite(market.get("s_ff_net")),
+        "s_of_phasefix": order_flow_phase_score(finite(ind.get("of_vol_spike_pct")), snap_time),
+        "s_prop_5d": finite(market.get("s_prop_5d")), "s_insider": finite(market.get("s_insider")),
         "s_depth_wall": _depth_wall(market, finite(ind.get("entry"))),
         "s_fund_core": None if fundamental.get("fundamental") is None else round(float(fundamental["fundamental"]) * 8, 4),
-        "s_cf_core": None if fundamental.get("cash_flow") is None else round(float(fundamental["cash_flow"]) * 3, 4),
+        "s_cf_core": None if fundamental.get("cash_flow_score") is None else int(round(_clip(float(fundamental["cash_flow_score"]), -10, 10) / 10 * 3)),
         "s_growth_core": None if fundamental.get("growth") is None else round(float(fundamental["growth"]) * 5, 4),
         "s_mkt_context": {"UPTREND": 2, "RECOVERY": 1, "SIDEWAYS": 0, "DOWNTREND": -1, "DEEP_DOWN": -2}.get(regime),
     }

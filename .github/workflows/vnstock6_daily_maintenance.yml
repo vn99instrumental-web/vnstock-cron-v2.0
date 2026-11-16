@@ -44,7 +44,7 @@ jobs:
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --check-updates
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --refresh-slow-market
       - name: Evaluate outcomes and rebuild analytics
         run: |
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate

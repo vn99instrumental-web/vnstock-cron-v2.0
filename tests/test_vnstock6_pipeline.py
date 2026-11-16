@@ -1,4 +1,5 @@
 import unittest
+import json
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -164,6 +165,28 @@ class PipelineCadenceTest(unittest.TestCase):
         fetch.assert_not_called()
         self.assertEqual(status["symbols_requested"], 0)
         self.assertEqual(status["counts"]["skipped_fresh"], 2)
+
+    def test_legacy_cash_flow_overlay_fills_only_missing_values(self):
+        payload = {
+            "generated_at": "2026-11-09T01:00:00+00:00",
+            "symbols": {
+                "FPT": {
+                    "fetched_at": "2026-11-09T01:00:00+00:00",
+                    "period": "2026-Q3",
+                    "finance_score": {"cashflow": 5},
+                    "cashflow": {"cf_operating": 120, "cf_quality": 1.2},
+                }
+            },
+        }
+        with patch.object(pipeline, "LEGACY_FINANCE_CACHE") as cache_path:
+            cache_path.exists.return_value = True
+            cache_path.read_text.return_value = json.dumps(payload)
+            factors, restored = pipeline.overlay_legacy_cash_flow({"FPT": {"fundamental": .4}}, ["FPT"])
+        self.assertEqual(restored, 1)
+        self.assertEqual(factors["FPT"]["cash_flow_score"], 5)
+        self.assertEqual(factors["FPT"]["cash_flow"], .5)
+        self.assertEqual(factors["FPT"]["cash_flow_source"], "legacy_finance_cache")
+
 
 if __name__ == "__main__":
     unittest.main()

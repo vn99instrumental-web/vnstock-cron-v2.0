@@ -33,6 +33,8 @@ PRED_ROOT = ROOT / "output" / "history" / "vnstock6" / "predictions"
 OUTCOME_ROOT = ROOT / "output" / "history" / "vnstock6" / "outcomes"
 OHLC_ROOT = ROOT / "output" / "ohlc"
 FUNDAMENTAL_CACHE = ROOT / "output" / "vnstock6" / "fundamental-factors.json"
+LEGACY_FINANCE_CACHE = ROOT / "output" / "finance" / "cache.json"
+MARKET_FACTOR_CACHE = ROOT / "output" / "vnstock6" / "market-factors.json"
 VNINDEX_PATH = ROOT / "output" / "market" / "vnindex.json"
 ICT = timezone(timedelta(hours=7))
 
@@ -51,6 +53,8 @@ def load_config() -> dict[str, Any]:
         or (indicator_config.get("trade_size") or {}).get("primary") != "ssi"
         or (indicator_config.get("trade_size") or {}).get("fallback") != "fhsc"
         or (indicator_config.get("order_book") or {}).get("primary") != "fhsc"
+        or (indicator_config.get("proprietary_flow") or {}).get("primary") != "fhsc"
+        or (indicator_config.get("insider_deal") or {}).get("primary") != "fhsc"
         or not value.get("universe")
     ):
         raise ValueError("VNStock6 config violates the approved SSI/FHSC endpoint contract")
@@ -68,10 +72,15 @@ def load_config() -> dict[str, Any]:
         "market.equity.session_stats": "ssi",
         "market.equity.active_session": "fhsc",
         "market.equity.order_book": "fhsc",
+        "market.equity.proprietary_flow": "fhsc",
+        "market.equity.insider_deal": "fhsc",
     }
+    # vnstock 6.0.0 exposes/documents this FHSC method but omits it from the
+    # sources.readers registry. Keep all other route checks strict.
+    documented_registry_gap = {"market.equity.insider_deal"}
     for route, source in route_sources.items():
         readers = {str(item).lower() for item in sources.readers(route)}
-        if source not in readers:
+        if source not in readers and route not in documented_registry_gap:
             raise ValueError(f"VNStock6 source {source} cannot read {route}")
     return value
 
@@ -91,6 +100,72 @@ def load_fundamental_cache(source: str) -> dict[str, Any]:
     if str(value.get("source", "")).lower() != source.lower():
         return {}
     return dict(value.get("symbols") or {})
+
+
+def overlay_legacy_cash_flow(factors: dict[str, Any], symbols: list[str]) -> tuple[dict[str, Any], int]:
+    """Fill only missing cash-flow factors from the current audited BCTC cache."""
+    output = {symbol: dict(value) for symbol, value in factors.items()}
+    if not LEGACY_FINANCE_CACHE.exists():
+        return output, 0
+    try:
+        payload = json.loads(LEGACY_FINANCE_CACHE.read_text(encoding="utf-8"))
+        legacy_symbols = payload.get("symbols") or {}
+    except (OSError, TypeError, json.JSONDecodeError):
+        return output, 0
+    restored = 0
+    for symbol in symbols:
+        target = dict(output.get(symbol) or {})
+        if finite(target.get("cash_flow_score")) is not None:
+            continue
+        legacy = legacy_symbols.get(symbol) or {}
+        score = finite((legacy.get("finance_score") or {}).get("cashflow"))
+        if score is None:
+            continue
+        score = max(-10.0, min(10.0, score))
+        cashflow = legacy.get("cashflow") or {}
+        cfo = finite(cashflow.get("cf_operating"))
+        quality = finite(cashflow.get("cf_quality"))
+        if quality is None:
+            profit = finite((legacy.get("income") or {}).get("net_profit_year"))
+            quality = cfo / profit if cfo is not None and profit else None
+        target.update({
+            "cash_flow": score / 10,
+            "cash_flow_score": int(score) if score.is_integer() else score,
+            "cash_flow_operating": cfo,
+            "cash_flow_quality": quality,
+            "cash_flow_reason": None,
+            "cash_flow_source": "legacy_finance_cache",
+            "cash_flow_period": legacy.get("period"),
+            "cash_flow_refreshed_at": legacy.get("fetched_at") or payload.get("generated_at"),
+        })
+        if not target.get("refreshed_at"):
+            target["refreshed_at"] = legacy.get("fetched_at") or payload.get("generated_at")
+        output[symbol] = target
+        restored += 1
+    return output, restored
+
+
+def load_market_factor_cache() -> dict[str, dict[str, Any]]:
+    if not MARKET_FACTOR_CACHE.exists():
+        return {}
+    try:
+        payload = json.loads(MARKET_FACTOR_CACHE.read_text(encoding="utf-8"))
+        return dict(payload.get("symbols") or {})
+    except (OSError, TypeError, json.JSONDecodeError):
+        return {}
+
+
+def save_market_factor_cache(factors: dict[str, Any]) -> None:
+    MARKET_FACTOR_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema_version": 2,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source": "SSI_FAST+FHSC_SLOW",
+        "symbols": dict(sorted(factors.items())),
+    }
+    MARKET_FACTOR_CACHE.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def save_fundamental_cache(source: str, factors: dict[str, Any]) -> None:
@@ -377,7 +452,7 @@ def score_v4_profiles(
     regime_info = classify_regime(index_rows, signal_date)
     indicators = indicator_snapshot(frame, quant, regime_info.get("return_20d"))
     market = market or {}
-    signals = signal_values(indicators, fundamentals, regime_info["regime"], market)
+    signals = signal_values(indicators, fundamentals, regime_info["regime"], market, snap_time)
     output: list[dict[str, Any]] = []
     for version in versions:
         factors = factor_values(signals, PROFILES[version]["extras"], "trade")
@@ -405,6 +480,8 @@ def score_v4_profiles(
             "cash_flow_operating": fundamentals.get("cash_flow_operating"),
             "cash_flow_quality": fundamentals.get("cash_flow_quality"),
             "cash_flow_score": fundamentals.get("cash_flow_score"),
+            "cash_flow_source": fundamentals.get("cash_flow_source") or "FHSC",
+            "cash_flow_period": fundamentals.get("cash_flow_period"),
             "market_indicator_sources": market.get("endpoint_sources") or {},
             "fundamental_status": ("stale_cache_scored" if fundamentals.get("cache_stale") else "scored") if fundamentals.get("fundamental") is not None else "excluded",
             "quant_indicators": quant, "fundamental_metrics": fundamentals,
@@ -444,15 +521,15 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     return len(existing) - before
 
 
-def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> None:
+def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refresh_slow_market: bool = False) -> None:
     now = datetime.now(ICT)
     today = now.date()
     if today.isoformat() < config["cutover_date"] and not force:
         raise RuntimeError("VNStock6 cutover date has not been reached")
     source_config = config["sources"]
     reference_source = source_config["reference"]
-    # Approved source contract: SSI remains the only OHLCV source. FHSC is used
-    # only for BCTC plus the explicitly approved foreign/order-book fallbacks.
+    # SSI remains the only OHLCV source. Slow FHSC proprietary/insider calls
+    # are daily-only; intraday consumes their last-known-good cache.
     market_sources = [source_config["market"]["primary"]]
     fundamental_source = source_config["fundamental"]
     universe = list(config["universe"])
@@ -460,9 +537,14 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
     errors: list[dict[str, Any]] = []
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
+    factor_cache, restored_cash_flow = overlay_legacy_cash_flow(factor_cache, universe)
+    market_cache = load_market_factor_cache()
     market_factors = collect_market_factors(
-        universe, today, int((config.get("market_indicators") or {}).get("max_workers", 4))
+        universe, today, int((config.get("market_indicators") or {}).get("max_workers", 4)),
+        slow_cache=market_cache, refresh_slow=refresh_slow_market,
     )
+    if refresh_slow_market:
+        save_market_factor_cache(market_factors)
     versions = list(config.get("scoring_versions") or [config["scoring_version"]])
     unknown_versions = [version for version in versions if version not in PROFILES]
     if unknown_versions:
@@ -516,20 +598,25 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False) -> N
         raise RuntimeError(f"VNStock6 coverage {successful_symbols}/{len(universe)} below minimum; errors={errors[:10]}")
     partition = PRED_ROOT / f"{predictions[0]['signal_date']}.jsonl"
     added = append_jsonl(partition, predictions, "pred_id")
+    primary_rows = [row for row in predictions if row.get("scoring_version") == config["scoring_version"]]
+    indicator_coverage = {
+        key: sum(row.get(key) is not None for row in primary_rows)
+        for key in ("s_ff_net", "s_of_phasefix", "s_prop_5d", "s_insider", "s_depth_wall", "s_cf_core")
+    }
     status = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "scoring_version": config["scoring_version"], "scoring_versions": versions, "universe_size": len(universe),
         "sources": {"reference": reference_source.upper(), "market_counts": source_counts, "fundamental": fundamental_source.upper()},
         "fundamental_status": "cache_scored", "fundamental_cache_max_age_days": max_age_days,
         "fundamental_cache_symbols": len(factor_cache),
+        "cash_flow_overlay_symbols": restored_cash_flow,
+        "slow_market_cache_symbols": len(market_cache), "slow_market_refreshed": refresh_slow_market,
         "fundamental_stale_cache_used": sum(
             bool(value) and not cache_entry_is_fresh(value, max_age_days)
             for value in factor_cache.values()
         ),
         "fundamental_symbols_refreshed": 0,
-        "market_indicator_coverage": {
-            "s_ff_net": sum(value.get("s_ff_net") is not None for value in market_factors.values()),
-        },
+        "market_indicator_coverage": indicator_coverage,
         "depth_input_coverage": sum(
             bool((value.get("raw") or {}).get("order_book"))
             and bool((value.get("raw") or {}).get("average_trade_size"))
@@ -574,13 +661,14 @@ def main() -> None:
     parser.add_argument("command", choices=("run", "evaluate", "fundamentals"))
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--intraday", action="store_true")
+    parser.add_argument("--refresh-slow-market", action="store_true")
     parser.add_argument("--fundamental-limit", type=int)
     parser.add_argument("--stale-only", action="store_true")
     parser.add_argument("--check-updates", action="store_true")
     args = parser.parse_args()
     config = load_config()
     if args.command == "run":
-        run_native(config, args.force, args.intraday)
+        run_native(config, args.force, args.intraday, args.refresh_slow_market)
     elif args.command == "fundamentals":
         refresh_fundamental_cache(
             config, args.fundamental_limit, args.stale_only, args.check_updates

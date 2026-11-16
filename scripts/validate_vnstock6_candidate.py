@@ -65,9 +65,14 @@ def main() -> None:
         ]
         if unsafe:
             raise RuntimeError("Unavailable fundamentals were included in candidate scoring")
-    indicator_coverage = {key: sum(row.get(key) is not None for row in rows) for key in ("adx", "supertrend", "s_trend_st", "s_cf_core")}
+    indicator_coverage = {
+        key: sum(row.get(key) is not None for row in rows)
+        for key in ("adx", "supertrend", "s_trend_st", "s_ff_net", "s_of_phasefix", "s_prop_5d", "s_insider", "s_depth_wall", "s_cf_core")
+    }
     if indicator_coverage["adx"] < int(config["minimum_coverage"]) * len(versions) or indicator_coverage["supertrend"] < int(config["minimum_coverage"]) * len(versions):
         raise RuntimeError(f"Derived technical indicator coverage is too low: {indicator_coverage}")
+    if indicator_coverage["s_cf_core"] < int(config["minimum_coverage"]) * len(versions):
+        raise RuntimeError(f"Cash-flow overlay coverage is too low: {indicator_coverage}")
     excluded_counts = {}
     for row in rows:
         for factor in row.get("excluded_factors", []):

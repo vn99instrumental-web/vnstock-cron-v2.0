@@ -161,3 +161,13 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Dashboard serving exposes ADX, Supertrend and BCTC cash-flow score/raw metrics; no credential value is stored in repository output.
 - Local verification: Python compile and 17 Gen6 unit tests passed; 7 Gen6 workflow YAML files parsed; ESLint, TypeScript and Next.js 15 production build passed in an isolated temporary dependency workspace.
 - Operational verification completed: candidate run `43800525885` passed; SSI-only intraday run `43801166361` completed in 2m25s, published 100/100 symbols for 2026-11-16, and revalidated Vercel successfully. Latest v6.4.18 snapshot has ADX/Supertrend/`s_trend_st` for 100/100, cached fundamental/growth for 56/100, and no `s_cf_core` until the post-market BCTC check runs.
+## Gen6 parity indicators and slow-data cadence 2026-11-16
+
+- Cron 2.0 registry comparison confirms the Gen6 production contract has 17 active signals. The four previously missing signals are `s_of_phasefix`, `s_prop_5d`, `s_insider`, and `s_cf_core`; the existing 13 formulas remain unchanged.
+- `s_cf_core` now restores from the current audited `output/finance/cache.json` only when the native Gen6 cash-flow value is absent. Intraday never fetches BCTC. Verified local coverage is 100/100 symbols.
+- `s_of_phasefix` uses SSI cumulative OHLCV and the exact cron 2.0 session-fraction anchors/bands. It adds no external intraday endpoint. Verified local coverage is 100/100.
+- `s_prop_5d` and `s_insider` reuse the existing cron 2.0 scoring bands. Intraday reads the last-known-good FHSC cache; only post-market daily maintenance calls `proprietary_flow` and `insider_deal`. Verified cached coverage is 99/100 and 74/100; missing values remain null and are excluded/renormalized.
+- Daily maintenance runs `run --refresh-slow-market`; the five intraday runs do not use that flag. Weekly BCTC remains a safety-net full refresh.
+- vnstock 6.0.0 documents and exposes `Market("fhsc").equity(...).insider_deal()`, but omits `market.equity.insider_deal` from `sources.readers()`. Config validation carries a narrowly scoped metadata exception for that route only.
+- Local verification: Python compile passed; 27 Gen6 unit tests passed; config/reader validation passed; cache-only full-universe scoring produced `s_cf_core` 100/100, `s_of_phasefix` 100/100, `s_prop_5d` 99/100, and `s_insider` 74/100.
+- Security review found no committed credential value, client-side secret exposure, new dependency, or broadened external-source boundary. Workflow continues to consume GitHub secrets only through server-side environment variables.
