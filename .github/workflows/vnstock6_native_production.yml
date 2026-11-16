@@ -58,8 +58,6 @@ jobs:
           run_args=()
           if [ "${{ inputs.mode }}" = "intraday" ]; then
             run_args+=(--intraday)
-          else
-            ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --stale-only
           fi
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${run_args[@]}"
           if [ "${{ inputs.mode }}" != "intraday" ]; then

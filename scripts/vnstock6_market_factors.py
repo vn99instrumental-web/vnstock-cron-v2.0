@@ -96,10 +96,12 @@ def fetch_symbol(symbol: str,today: date,intraday: bool=True) -> dict[str,Any]:
     equity=Market("fhsc").equity(symbol)
     start20=(today-timedelta(days=35)).isoformat(); start90=(today-timedelta(days=100)).isoformat(); end=today.isoformat()
     result={"source":"FHSC","refreshed_at":datetime.now(UTC).isoformat(),"errors":{}}
-    calls={"foreign":lambda:equity.foreign_flow(start=start20,end=end,interval="1D"),"proprietary":lambda:equity.proprietary_flow(start=start20,end=end),"insider":lambda:equity.insider_deal()}
+    calls={}
     if intraday:
         calls["active_flow"]=lambda:equity.active_session()
         calls["order_book"]=lambda:equity.order_book()
+    else:
+        calls={"foreign":lambda:equity.foreign_flow(start=start20,end=end,interval="1D"),"proprietary":lambda:equity.proprietary_flow(start=start20,end=end),"insider":lambda:equity.insider_deal()}
     for name,call in calls.items():
         try: result[name]=_records(call())
         except Exception as exc: result["errors"][name]={"type":type(exc).__name__,"code":getattr(exc,"code",None),"action":getattr(exc,"action",None)}
