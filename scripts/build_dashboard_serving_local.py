@@ -212,6 +212,9 @@ def _today_signal(row: dict[str, Any], previous_close: float | None) -> dict[str
         "missing_data_policy", "factor_status", "included_factors",
         "excluded_factors", "available_weight", "configured_weight",
         "fundamental_status", "calculation_engine", "calculation_version",
+        "adx", "supertrend", "s_trend_st", "s_ff_net", "s_of_phasefix",
+        "s_prop_5d", "s_insider", "s_depth_wall", "s_cf_core",
+        "market_factor_provenance",
     ):
         signal[key] = row.get(key)
     return signal
