@@ -85,6 +85,8 @@ class PipelineCadenceTest(unittest.TestCase):
             "fundamental": 0.4, "statement_signature": "same",
             "checked_at": "2026-11-16T01:00:00Z",
             "latest_income_signature": "probe-only",
+            "latest_statement_signature": "composite-probe-only",
+            "latest_statement_signatures": {"income-statement": "probe-only"},
             "statements": {"income": {"rows": 4, "fetched_at": "old"}},
         }
         after = {
@@ -153,7 +155,7 @@ class PipelineCadenceTest(unittest.TestCase):
         }
         previous = {
             "version": "1.1.0", "statement_signature": "same",
-            "latest_income_signature": "latest-same",
+            "latest_statement_signature": "latest-same",
             "refreshed_at": datetime.now(timezone.utc).isoformat(),
             "fundamental": 0.4, "growth": 0.2,
         }
@@ -165,8 +167,19 @@ class PipelineCadenceTest(unittest.TestCase):
         with patch.object(pipeline, "load_fundamental_cache", return_value={"FPT": previous}), patch.object(
             pipeline, "Reference"
         ) as reference_factory, patch.object(
-            pipeline, "latest_income_statement_probe",
-            return_value={"signature": "latest-same", "period": "2026-Q3", "rows": 1},
+            pipeline, "latest_statement_probe",
+            return_value={
+                "signature": "latest-same", "period": "2026-Q3", "rows": 3,
+                "request_count": 3,
+                "periods": {
+                    "income-statement": "2026-Q3", "balance-sheet": "2026-Q3",
+                    "cash-flow": "2026-Q3",
+                },
+                "statement_signatures": {
+                    "income-statement": "income-same", "balance-sheet": "balance-same",
+                    "cash-flow": "cash-same",
+                },
+            },
         ), patch.object(
             pipeline, "fundamental_factors", return_value=unchanged
         ) as fetch, patch.object(

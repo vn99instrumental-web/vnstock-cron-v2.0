@@ -26,6 +26,32 @@ def dashboard_value(row: dict[str, object], key: str) -> object:
     breakdown = row.get("breakdown")
     return breakdown.get(key) if isinstance(breakdown, dict) else None
 
+def fundamental_refresh_summary(
+    refresh_status: dict[str, object], run_id: str, degraded: bool,
+) -> dict[str, object]:
+    empty_counts = {
+        "updated": 0, "unchanged": 0, "failed": 0,
+        "failed_preserved": 0, "material_changed": 0, "skipped_fresh": 0,
+    }
+    source_run_id = str(refresh_status.get("run_id") or "")
+    belongs_to_run = bool(run_id) and source_run_id == str(run_id)
+    if not refresh_status:
+        state = "not_recorded"
+    elif belongs_to_run:
+        state = "degraded" if degraded else "success"
+    else:
+        state = "cache_reused"
+    return {
+        "status": state,
+        "counts": dict(refresh_status.get("counts") or {}) if belongs_to_run else empty_counts,
+        "update_detection": (
+            refresh_status.get("update_detection") if belongs_to_run else "cache_reused"
+        ),
+        "source_run_id": source_run_id or None,
+        "generated_at": refresh_status.get("generated_at"),
+        "last_refresh_counts": dict(refresh_status.get("counts") or {}),
+    }
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -71,9 +97,8 @@ def main() -> None:
     growth_scored = sum(bool((row.get("factor_status") or {}).get("growth", {}).get("included")) for row in rows)
     refresh_path = ROOT / "output/vnstock6/fundamental-status.json"
     refresh_status = json.loads(refresh_path.read_text(encoding="utf-8")) if refresh_path.exists() else {}
-    refresh_counts = refresh_status.get("counts", {})
     degraded = fundamental_scored == 0 or growth_scored == 0
-    refresh_state = "not_recorded" if not refresh_status else ("degraded" if degraded else "success")
+    refresh_summary = fundamental_refresh_summary(refresh_status, args.run_id, degraded)
     if degraded:
         unsafe = [
             row for row in rows
@@ -150,7 +175,7 @@ def main() -> None:
         "growth_scored_rows": growth_scored,
         "indicator_coverage": indicator_coverage,
         "data_quality": quality,
-        "fundamental_refresh": {"status": refresh_state, "counts": refresh_counts},
+        "fundamental_refresh": refresh_summary,
         "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
     }
     output = Path(args.output)

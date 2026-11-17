@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
@@ -22,7 +23,7 @@ from vnstock.errors import VnstockError
 
 from vnstock6_scoring import availability_score
 from vnstock6_quant import fundamental_factors, technical_indicators
-from vnstock6_fundamental_probe import latest_income_statement_probe
+from vnstock6_fundamental_probe import STATEMENT_TYPES, latest_statement_probe
 from vnstock6_market_factors import collect_market_factors
 from vnstock6_json_safe import dumps_json
 from vnstock6_v4_scoring import (
@@ -101,7 +102,8 @@ def finite(value: Any) -> float | None:
 
 _FUNDAMENTAL_VOLATILE_KEYS = frozenset({
     "checked_at", "refreshed_at", "fetched_at", "generated_at", "cache_stale",
-    "latest_income_signature", "latest_income_period",
+    "latest_income_signature", "latest_income_period", "latest_statement_signature",
+    "latest_statement_signatures", "latest_statement_periods",
 })
 
 
@@ -333,9 +335,11 @@ def refresh_fundamental_cache(
         previous = factor_cache.get(symbol)
         probe: dict[str, Any] | None = None
         probe_attempt = 0
+        probe_request_count = 0
         if check_updates:
             for probe_attempt in range(1, 4):
-                probe = latest_income_statement_probe(symbol, fundamental_source)
+                probe = latest_statement_probe(symbol, fundamental_source)
+                probe_request_count += int(probe.get("request_count", 0))
                 if not probe.get("error"):
                     break
                 if probe_attempt < 3:
@@ -345,21 +349,26 @@ def refresh_fundamental_cache(
                     "status": "failed_preserved",
                     "attempt": probe_attempt,
                     "phase": "probe",
+                    "probe_request_count": probe_request_count,
                     "type": probe["error"].get("type"),
                     "code": probe["error"].get("code"),
                 }, previous
 
             if probe and not probe.get("error") and previous:
-                previous_probe = previous.get("latest_income_signature")
+                previous_probe = previous.get("latest_statement_signature")
                 if previous_probe == probe["signature"]:
                     value = dict(previous)
                     value["checked_at"] = datetime.now(timezone.utc).isoformat()
-                    value["latest_income_signature"] = probe["signature"]
-                    value["latest_income_period"] = probe.get("period")
+                    value["latest_statement_signature"] = probe["signature"]
+                    value["latest_statement_signatures"] = probe["statement_signatures"]
+                    value["latest_statement_periods"] = probe["periods"]
+                    value["latest_income_signature"] = probe["statement_signatures"]["income-statement"]
+                    value["latest_income_period"] = probe["periods"]["income-statement"]
                     return symbol, {
                         "status": "unchanged",
                         "attempt": probe_attempt,
                         "phase": "probe",
+                        "probe_request_count": probe_request_count,
                         "material_changed": False,
                     }, value
 
@@ -375,8 +384,11 @@ def refresh_fundamental_cache(
                 last_result["checked_at"] = checked_at
                 last_result["refreshed_at"] = checked_at
                 if probe and not probe.get("error"):
-                    last_result["latest_income_signature"] = probe["signature"]
-                    last_result["latest_income_period"] = probe.get("period")
+                    last_result["latest_statement_signature"] = probe["signature"]
+                    last_result["latest_statement_signatures"] = probe["statement_signatures"]
+                    last_result["latest_statement_periods"] = probe["periods"]
+                    last_result["latest_income_signature"] = probe["statement_signatures"]["income-statement"]
+                    last_result["latest_income_period"] = probe["periods"]["income-statement"]
                 material_changed = (
                     fundamental_material_value(previous) != fundamental_material_value(last_result)
                 )
@@ -385,6 +397,7 @@ def refresh_fundamental_cache(
                     "attempt": attempt,
                     "phase": "materialize",
                     "probe_attempt": probe_attempt if check_updates else 0,
+                    "probe_request_count": probe_request_count,
                     "material_changed": material_changed,
                 }, last_result
             if attempt < 3:
@@ -395,6 +408,7 @@ def refresh_fundamental_cache(
             "type": (last_result or {}).get("error", {}).get("type"),
             "code": (last_result or {}).get("error", {}).get("code"),
             "material_changed": False,
+            "probe_request_count": probe_request_count,
         }, previous
 
     results: dict[str, Any] = {}
@@ -425,7 +439,12 @@ def refresh_fundamental_cache(
         "configured_symbols": len(config["universe"]), "reference_symbols_available": len(universe),
         "symbols_requested": len(selected), "cache_symbols": len(factor_cache),
         "stale_only": stale_only, "check_updates": check_updates, "ttl_days": ttl_days,
-        "update_detection": "fhsc_income_latest_limit_1" if check_updates else "full_materialize",
+        "run_id": os.environ.get("GITHUB_RUN_ID"),
+        "update_detection": "fhsc_latest_statements_limit_1" if check_updates else "full_materialize",
+        "probe_statement_types": list(STATEMENT_TYPES) if check_updates else [],
+        "probe_request_count": sum(
+            int(item.get("probe_request_count", 0)) for item in results.values()
+        ),
         "max_workers": workers,
         "counts": counts, "symbols": results,
     }
