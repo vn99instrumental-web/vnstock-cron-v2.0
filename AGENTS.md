@@ -15,3 +15,13 @@ This project uses the Python library `vnstock` generation 6 final (`vnstock==6.0
   `vnstock onboard` lists every skill this tier can read. A plain concept question or a one-line syntax lookup needs none.
 - Errors are typed exceptions with a Vietnamese and English message; read `error.code` and `error.action`.
 <!-- vnstock-guide:end -->
+
+## Stock-research technical source (effective 2026-11-17)
+
+For an end-user request to **analyze a Vietnamese stock ticker**, use the latest **Gen6** signals in this repository as the **technical reference**, not the old `output/v2f_signals_v4.json` or `output/v2f_trade_levels_v4.json`.
+
+- Read `output/vnstock6/native-status.json`, `output/serving/vnstock6/current/metadata.json` and the Gen6 manifest on **every** analysis. As of 2026-11-17, primary profile is `v6.4.18`. Use `v6.4.19-shadow` only for comparison; follow any later **verified** production change.
+- Prefer `today/<version>.json` for latest decisions, then same-version `history`/ledger if needed. `buy/<version>.json` includes **BUY signals only**, not all tickers/decisions. Do not conclude NEUTRAL/SELL from an absent BUY row.
+- Quote Gen6 score, decision, confidence, data date, generation time and 3–5 key indicators **without recomputing** score or mixing versions. Show missing/stale fundamentals and factor coverage if relevant. For no accessible Gen6 result, state this explicitly; do not silently substitute V4.
+- Keep technical/timing separate from financial statements, valuation and dated news. Never treat a Gen6 BUY/STRONG BUY as an independent investment recommendation.
+- Full checklist and canonical paths: [docs/STOCK_ANALYSIS_GEN6_SOURCE.md](docs/STOCK_ANALYSIS_GEN6_SOURCE.md). **This section governs research/reporting, not pipeline scoring or runtime changes.**
