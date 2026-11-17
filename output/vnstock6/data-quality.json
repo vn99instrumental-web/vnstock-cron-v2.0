@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-17T01:33:17.978850+00:00",
+  "generated_at": "2026-11-17T03:24:15.550926+00:00",
   "status": "PASS",
-  "rows": 1800,
+  "rows": 300,
   "minimum_required_rows": 240,
   "field_coverage": {
-    "price": 1800,
-    "adtv_bil": 1800,
-    "adtv_20d_bil": 600,
-    "ff_intra_net": 600,
-    "ff_intra_ratio": 600,
-    "rsi_14": 1800,
-    "position_52w": 1800,
-    "s_depth_wall": 1200
+    "price": 300,
+    "adtv_bil": 300,
+    "adtv_20d_bil": 300,
+    "ff_intra_net": 300,
+    "ff_intra_ratio": 249,
+    "rsi_14": 300,
+    "position_52w": 300,
+    "s_depth_wall": 255
   },
   "low_coverage": {},
   "invalid_values": [],
