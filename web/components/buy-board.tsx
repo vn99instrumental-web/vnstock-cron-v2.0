@@ -726,6 +726,15 @@ export function BuyBoard({
                         ) : (
                           <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Nhóm này không có chỉ báo nổi bật.</p>
                         )}
+                        {g.missing.length ? (
+                          <ul className="mt-1 border-t border-[var(--color-border)]/60 pt-1">
+                            {g.missing.map((m) => (
+                              <li key={m.key} className="text-[10px] leading-tight text-[var(--color-muted)]">
+                                <span className="font-medium text-[var(--color-ink)]">{m.name}</span> · loại khỏi điểm: {m.reason}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
                       </div>
                     ))}
                   </div>

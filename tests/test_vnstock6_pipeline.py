@@ -80,6 +80,22 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertFalse(pipeline.cache_entry_is_fresh({}, 14))
         self.assertTrue(pipeline.cache_entry_is_fresh({"version": "1.0.0", "refreshed_at": fresh["refreshed_at"]}, 14))
 
+    def test_fundamental_material_compare_ignores_refresh_metadata(self):
+        before = {
+            "fundamental": 0.4, "statement_signature": "same",
+            "checked_at": "2026-11-16T01:00:00Z",
+            "latest_income_signature": "probe-only",
+            "statements": {"income": {"rows": 4, "fetched_at": "old"}},
+        }
+        after = {
+            "fundamental": 0.4, "statement_signature": "same",
+            "checked_at": "2026-11-17T01:00:00Z",
+            "statements": {"income": {"rows": 4, "fetched_at": "new"}},
+        }
+        self.assertEqual(
+            pipeline.fundamental_material_value(before), pipeline.fundamental_material_value(after)
+        )
+
     def test_fundamental_ttl_matches_legacy_earnings_cadence(self):
         config = {
             "fundamental_refresh": {

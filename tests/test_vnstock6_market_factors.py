@@ -36,7 +36,13 @@ class MarketFactorTest(unittest.TestCase):
             {"transaction_type": "sell"},
         ])
         self.assertEqual(score, 1)
-        self.assertEqual(raw, {"insider_buy_count": 2, "insider_sell_count": 1})
+        self.assertEqual(raw["insider_buy_count"], 2)
+        self.assertEqual(raw["insider_sell_count"], 1)
+        self.assertEqual(raw["insider_row_count"], 3)
+        self.assertEqual(raw["insider_unclassified_count"], 0)
+
+    def test_unclassified_insider_rows_are_not_assumed_neutral(self):
+        self.assertIsNone(insider_score([{"transaction_type": "unknown"}])[0])
 
 
     def test_average_trade_size_uses_ssi_session_totals(self):
@@ -136,6 +142,8 @@ class MarketFactorTest(unittest.TestCase):
         self.assertEqual(result["s_prop_5d"], -3)
         self.assertEqual(result["s_insider"], 2)
         self.assertEqual(result["endpoint_sources"]["proprietary_flow"], "FHSC_CACHE")
+        self.assertEqual(result["proprietary_flow_status"], "available")
+        self.assertEqual(result["insider_deal_status"], "available")
 
     def test_daily_refresh_replaces_slow_cache(self):
         class Equity:
@@ -154,6 +162,28 @@ class MarketFactorTest(unittest.TestCase):
         self.assertEqual(result["s_prop_5d"], 2)
         self.assertEqual(result["s_insider"], 2)
         self.assertEqual(result["endpoint_sources"]["proprietary_flow"], "FHSC")
+        self.assertEqual(result["proprietary_flow_status"], "available")
+        self.assertEqual(result["insider_deal_status"], "available")
+
+    def test_empty_slow_responses_are_distinct_from_zero_and_preserve_cache(self):
+        class Equity:
+            def foreign_flow(self, **kwargs): return []
+            def proprietary_flow(self, **kwargs): return []
+            def insider_deal(self, **kwargs): return []
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        cache = {"s_prop_5d": 2, "s_insider": -1}
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol(
+                "FPT", date(2026, 11, 16), cache,
+                refresh_slow=True, fetch_depth=False, slow_retries=1,
+            )
+        self.assertEqual(result["s_prop_5d"], 2)
+        self.assertEqual(result["s_insider"], -1)
+        self.assertEqual(result["proprietary_flow_status"], "empty_response_unverified")
+        self.assertEqual(result["insider_deal_status"], "empty_response_unverified")
 
 
 if __name__ == "__main__":

@@ -99,6 +99,24 @@ def finite(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
 
+_FUNDAMENTAL_VOLATILE_KEYS = frozenset({
+    "checked_at", "refreshed_at", "fetched_at", "generated_at", "cache_stale",
+    "latest_income_signature", "latest_income_period",
+})
+
+
+def fundamental_material_value(value: Any) -> Any:
+    """Strip refresh metadata before deciding whether weekly BCTC changed."""
+    if isinstance(value, dict):
+        return {
+            key: fundamental_material_value(item)
+            for key, item in sorted(value.items())
+            if key not in _FUNDAMENTAL_VOLATILE_KEYS
+        }
+    if isinstance(value, list):
+        return [fundamental_material_value(item) for item in value]
+    return value
+
 
 def load_fundamental_cache(source: str) -> dict[str, Any]:
     if not FUNDAMENTAL_CACHE.exists():
@@ -342,6 +360,7 @@ def refresh_fundamental_cache(
                         "status": "unchanged",
                         "attempt": probe_attempt,
                         "phase": "probe",
+                        "material_changed": False,
                     }, value
 
         last_result: dict[str, Any] | None = None
@@ -358,11 +377,15 @@ def refresh_fundamental_cache(
                 if probe and not probe.get("error"):
                     last_result["latest_income_signature"] = probe["signature"]
                     last_result["latest_income_period"] = probe.get("period")
+                material_changed = (
+                    fundamental_material_value(previous) != fundamental_material_value(last_result)
+                )
                 return symbol, {
                     "status": "updated",
                     "attempt": attempt,
                     "phase": "materialize",
                     "probe_attempt": probe_attempt if check_updates else 0,
+                    "material_changed": material_changed,
                 }, last_result
             if attempt < 3:
                 time.sleep(attempt)
@@ -371,6 +394,7 @@ def refresh_fundamental_cache(
             "attempt": 3,
             "type": (last_result or {}).get("error", {}).get("type"),
             "code": (last_result or {}).get("error", {}).get("code"),
+            "material_changed": False,
         }, previous
 
     results: dict[str, Any] = {}
@@ -392,6 +416,7 @@ def refresh_fundamental_cache(
         "unchanged": sum(item["status"] == "unchanged" for item in results.values()),
         "failed": sum(item["status"] == "failed" for item in results.values()),
         "failed_preserved": sum(item["status"] == "failed_preserved" for item in results.values()),
+        "material_changed": sum(bool(item.get("material_changed")) for item in results.values()),
         "skipped_fresh": len(config["universe"]) - len(configured) if stale_only else 0,
     }
     status = {
@@ -409,7 +434,8 @@ def refresh_fundamental_cache(
     status_path.write_text(dumps_json(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(
         f"VNStock6 fundamentals: {counts['updated']} updated, {counts['unchanged']} unchanged, "
-        f"{counts['failed']} failed, {counts['failed_preserved']} preserved"
+        f"{counts['failed']} failed, {counts['failed_preserved']} preserved, "
+        f"{counts['material_changed']} materially changed"
     )
     return status
 
@@ -574,6 +600,27 @@ def score_v4_profiles(
             "foreign_net_20d": finite(market_raw.get("foreign_net_20d")),
             "foreign_as_of": market_raw.get("foreign_as_of") or signal_date,
             "foreign_source": (market.get("endpoint_sources") or {}).get("foreign_flow"),
+            "proprietary_net_5d": finite(market_raw.get("proprietary_net_5d")),
+            "proprietary_net_20d": finite(market_raw.get("proprietary_net_20d")),
+            "proprietary_row_count": finite(market_raw.get("proprietary_row_count")),
+            "proprietary_usable_rows": finite(market_raw.get("proprietary_usable_rows")),
+            "proprietary_as_of": market_raw.get("proprietary_as_of"),
+            "proprietary_source": (market.get("endpoint_sources") or {}).get("proprietary_flow"),
+            "proprietary_flow_status": market.get("proprietary_flow_status"),
+            "proprietary_flow_checked_at": market.get("proprietary_flow_checked_at"),
+            "proprietary_flow_refreshed_at": market.get("proprietary_flow_refreshed_at"),
+            "insider_buy_count": finite(market_raw.get("insider_buy_count")),
+            "insider_sell_count": finite(market_raw.get("insider_sell_count")),
+            "insider_row_count": finite(market_raw.get("insider_row_count")),
+            "insider_unclassified_count": finite(market_raw.get("insider_unclassified_count")),
+            "insider_as_of": market_raw.get("insider_as_of"),
+            "insider_source": (market.get("endpoint_sources") or {}).get("insider_deal"),
+            "insider_deal_status": market.get("insider_deal_status"),
+            "insider_deal_checked_at": market.get("insider_deal_checked_at"),
+            "insider_deal_refreshed_at": market.get("insider_deal_refreshed_at"),
+            "order_book_source": (market.get("endpoint_sources") or {}).get("order_book"),
+            "order_flow_source": "SSI_OHLCV_PHASE_VOLUME",
+            "order_flow_as_of": f"{signal_date} {snap_time}",
             "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
             "ratio_roe": ratios.get("RT_PRT_ROE"), "ratio_roa": ratios.get("RT_PRT_ROA"),
             "ratio_gross_margin": ratios.get("RT_PRT_GROSS_MARGIN"), "ratio_net_margin": ratios.get("RT_PRT_NET_MARGIN"),
@@ -583,6 +630,7 @@ def score_v4_profiles(
             "cash_flow_score": fundamentals.get("cash_flow_score"),
             "cash_flow_source": fundamentals.get("cash_flow_source") or "FHSC",
             "cash_flow_period": fundamentals.get("cash_flow_period"),
+            "cash_flow_refreshed_at": fundamentals.get("cash_flow_refreshed_at") or fundamentals.get("refreshed_at"),
             "market_indicator_sources": market.get("endpoint_sources") or {},
             "fundamental_status": ("stale_cache_scored" if fundamentals.get("cache_stale") else "scored") if fundamentals.get("fundamental") is not None else "excluded",
             "quant_indicators": quant, "fundamental_metrics": fundamentals,

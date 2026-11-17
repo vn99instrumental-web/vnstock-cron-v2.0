@@ -156,6 +156,29 @@ function vndShort(v: number): string {
   return `${s}${a.toFixed(2)}`;
 }
 
+function textValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function sourceStatusReason(key: string, b: Record<string, unknown>): string | undefined {
+  const statusKey = key === "s_prop_5d" ? "proprietary_flow_status"
+    : key === "s_insider" ? "insider_deal_status" : undefined;
+  if (!statusKey) return undefined;
+  const status = textValue(b[statusKey]);
+  switch (status) {
+    case "empty_response_unverified":
+      return "Ngu\u1ed3n tr\u1ea3 v\u1ec1 r\u1ed7ng; ch\u01b0a x\u00e1c nh\u1eadn l\u00e0 0 giao d\u1ecbch";
+    case "unclassified_response":
+      return "Ngu\u1ed3n c\u00f3 b\u1ea3n ghi nh\u01b0ng ch\u01b0a ph\u00e2n lo\u1ea1i \u0111\u01b0\u1ee3c";
+    case "source_error":
+      return "L\u1ed7i ngu\u1ed3n; kh\u00f4ng g\u00e1n gi\u00e1 tr\u1ecb 0";
+    case "not_available":
+      return "Ch\u01b0a c\u00f3 d\u1eef li\u1ec7u ngu\u1ed3n";
+    default:
+      return status ? `Tr\u1ea1ng th\u00e1i ngu\u1ed3n: ${status}` : undefined;
+  }
+}
+
 /**
  * Giá trị THÔ cập nhật đến snapshot ra tín hiệu, gắn kèm 1 số chỉ báo con.
  * Ledger chủ yếu lưu ĐIỂM; chỉ vài field thô có sẵn (thanh khoản, khối ngoại,
@@ -225,7 +248,30 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       if (net == null) return undefined;
       return `KN ròng ${vndShort(net)}${ratio != null ? ` (${(ratio * 100).toFixed(2)}% GT)` : ""}`;
     }
+    case "s_prop_5d": {
+      const net5 = g("proprietary_net_5d"), net20 = g("proprietary_net_20d");
+      const parts: string[] = [];
+      if (net5 != null) parts.push(`TD 5P ${vndShort(net5)}`);
+      if (net20 != null) parts.push(`20P ${vndShort(net20)}`);
+      if (textValue(b.proprietary_as_of)) parts.push(`as-of ${textValue(b.proprietary_as_of)}`);
+      return parts.length ? parts.join(" · ") : sourceStatusReason(key, b);
+    }
+    case "s_insider": {
+      const buy = g("insider_buy_count"), sell = g("insider_sell_count");
+      const parts: string[] = [];
+      if (buy != null || sell != null) parts.push(`B${buy ?? 0}/S${sell ?? 0}`);
+      if (textValue(b.insider_as_of)) parts.push(`as-of ${textValue(b.insider_as_of)}`);
+      if (textValue(b.insider_source)) parts.push(String(b.insider_source));
+      return parts.length ? parts.join(" · ") : sourceStatusReason(key, b);
+    }
+    case "s_depth_wall": {
+      const source = textValue(b.order_book_source);
+      return source ? `Order book ${source}` : undefined;
+    }
     case "s_of_phasefix": {
+      const spike = g("of_vol_spike_pct"), asOf = textValue(b.order_flow_as_of);
+      if (spike != null)
+        return `KL theo pha ${spike >= 0 ? "+" : ""}${spike.toFixed(2)}%${asOf ? ` · ${asOf}` : ""}`;
       const bp = g("of_bp_pts");
       return bp != null && bp !== 0 ? `Áp lực lệnh ${bp > 0 ? "+" : ""}${bp}` : undefined;
     }
@@ -233,9 +279,10 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       return undefined;
   }
 }
+export interface MissingGroupMemberView { key: string; name: string; reason: string }
 export interface FactorGroupView {
   key: string; label: string; desc: string; norm: number; dir: Dir;
-  rawTotal: number; spanTotal: number; members: GroupMemberView[];
+  rawTotal: number; spanTotal: number; members: GroupMemberView[]; missing: MissingGroupMemberView[];
 }
 
 /** Diễn giải 6 nhóm + chỉ báo thành viên (điểm, hướng, lý do) từ breakdown. */
@@ -243,10 +290,16 @@ export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] 
   return FACTOR_GROUPS.map((g) => {
     const norm = num(b[g.normKey]) ?? 0;
     const members: GroupMemberView[] = [];
+    const missing: MissingGroupMemberView[] = [];
     let rawTotal = 0, spanTotal = 0;
     for (const k of g.members) {
       const score = num(b[k]);
-      if (score == null) continue; // chỉ báo không có trong breakdown → bỏ
+      if (score == null) {
+        const meta = SIGNAL_META.find((s) => s.key === k);
+        const reason = sourceStatusReason(k, b);
+        if (reason) missing.push({ key: k, name: meta?.name ?? k, reason });
+        continue;
+      }
       const meta = SIGNAL_META.find((s) => s.key === k);
       const dir = dirOf(score);
       const span = SIGNAL_SPAN[k] ?? 0;
@@ -259,7 +312,7 @@ export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] 
       });
     }
     members.sort((a, z) => Math.abs(z.score) - Math.abs(a.score));
-    return { key: g.key, label: g.label, desc: g.desc, norm, dir: dirOf(norm), rawTotal, spanTotal, members };
+    return { key: g.key, label: g.label, desc: g.desc, norm, dir: dirOf(norm), rawTotal, spanTotal, members, missing };
   });
 }
 

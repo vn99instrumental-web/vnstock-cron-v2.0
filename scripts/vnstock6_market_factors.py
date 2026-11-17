@@ -54,6 +54,17 @@ def _net_value(row: dict[str, Any]) -> float | None:
     return buy - sell if buy is not None and sell is not None else None
 
 
+def _as_of(rows: list[dict[str, Any]]) -> str | None:
+    """Return source-provided date text without guessing endpoint semantics."""
+    if not rows:
+        return None
+    value = _value(
+        rows[-1], "time", "date", "trading_date", "deal_date",
+        "transaction_date", "public_date", "report_date",
+    )
+    return str(value)[:10] if value not in (None, "") else None
+
+
 def foreign_score(rows: list[dict[str, Any]]) -> tuple[float | None, dict[str, Any]]:
     """Match the v4 foreign 5/20-session bands, using actual daily values."""
     if not rows:
@@ -97,27 +108,43 @@ def proprietary_score(rows: list[dict[str, Any]]) -> tuple[float | None, dict[st
             net = buy - sell if buy is not None and sell is not None else None
         if net is not None:
             nets.append(net)
+    metadata: dict[str, Any] = {
+        "proprietary_row_count": len(rows),
+        "proprietary_usable_rows": len(nets),
+        "proprietary_as_of": _as_of(rows),
+    }
     if not nets:
-        return None, {}
+        return None, metadata
     net5, net20 = sum(nets[-5:]) / 1e9, sum(nets) / 1e9
     trend = (sum(nets[-5:]) / 5) - (sum(nets[-10:-5]) / 5) if len(nets) >= 10 else 0
     raw = 10 if net5 > 5 and net20 > 0 and trend > 0 else 5 if net5 > 2 else 2 if net5 > .5 else 0 if net5 > -.5 else -2 if net5 > -2 else -5 if net5 > -5 else -10
-    return round(raw / 10 * 3), {"proprietary_net_5d": sum(nets[-5:]), "proprietary_net_20d": sum(nets)}
+    return round(raw / 10 * 3), {
+        "proprietary_net_5d": sum(nets[-5:]), "proprietary_net_20d": sum(nets), **metadata,
+    }
 
 
 def insider_score(rows: list[dict[str, Any]]) -> tuple[float | None, dict[str, Any]]:
     if not rows:
         return None, {}
-    buy = sell = 0
+    buy = sell = unclassified = 0
     for row in rows:
         kind = str(_value(row, "transaction_type", "deal_type", "type") or "").lower()
         if any(word in kind for word in ("mua", "buy", "purchase", "acqui")):
             buy += 1
         elif any(word in kind for word in ("b\u00e1n", "ban", "sell", "dispos")):
             sell += 1
+        else:
+            unclassified += 1
+    metadata = {
+        "insider_buy_count": buy, "insider_sell_count": sell,
+        "insider_row_count": len(rows), "insider_unclassified_count": unclassified,
+        "insider_as_of": _as_of(rows),
+    }
+    if buy + sell == 0:
+        return None, metadata
     net = buy - sell
-    raw = 5 if net >= 3 else 3 if net >= 1 else 0 if net == 0 else -3 if net >= -2 else -5
-    return round(raw / 5 * 2), {"insider_buy_count": buy, "insider_sell_count": sell}
+    score = 5 if net >= 3 else 3 if net >= 1 else 0 if net == 0 else -3 if net >= -2 else -5
+    return round(score / 5 * 2), metadata
 
 
 def average_trade_size(rows: list[dict[str, Any]]) -> float | None:
@@ -152,8 +179,9 @@ def fetch_symbol(
     start, end = (today - timedelta(days=35)).isoformat(), today.isoformat()
     cached_slow = cached_slow or {}
     cached_raw = cached_slow.get("raw") or {}
+    checked_at = datetime.now(UTC).isoformat()
     result: dict[str, Any] = {
-        "refreshed_at": datetime.now(UTC).isoformat(), "errors": {},
+        "refreshed_at": checked_at, "errors": {},
         "endpoint_sources": {}, "raw": {}, "s_ff_net": None,
         "s_depth_wall": finite(cached_slow.get("s_depth_wall")),
         "depth_signal_date": cached_slow.get("depth_signal_date"),
@@ -161,42 +189,81 @@ def fetch_symbol(
         "depth_captured_at": cached_slow.get("depth_captured_at"),
         "s_prop_5d": finite(cached_slow.get("s_prop_5d")),
         "s_insider": finite(cached_slow.get("s_insider")),
+        "proprietary_flow_status": cached_slow.get("proprietary_flow_status"),
+        "proprietary_flow_checked_at": cached_slow.get("proprietary_flow_checked_at"),
+        "proprietary_flow_refreshed_at": cached_slow.get("proprietary_flow_refreshed_at"),
+        "insider_deal_status": cached_slow.get("insider_deal_status"),
+        "insider_deal_checked_at": cached_slow.get("insider_deal_checked_at"),
+        "insider_deal_refreshed_at": cached_slow.get("insider_deal_refreshed_at"),
     }
-    for key in ("proprietary_net_5d", "proprietary_net_20d", "insider_buy_count", "insider_sell_count"):
+    for key in (
+        "proprietary_net_5d", "proprietary_net_20d", "proprietary_row_count",
+        "proprietary_usable_rows", "insider_buy_count", "insider_sell_count",
+        "insider_row_count", "insider_unclassified_count",
+    ):
         value = finite(cached_raw.get(key))
         if value is not None:
             result["raw"][key] = value
+    for key in ("proprietary_as_of", "insider_as_of"):
+        if cached_raw.get(key) not in (None, ""):
+            result["raw"][key] = cached_raw[key]
     if result["s_prop_5d"] is not None:
         result["endpoint_sources"]["proprietary_flow"] = "FHSC_CACHE"
+        result["proprietary_flow_status"] = result["proprietary_flow_status"] or "available"
+    else:
+        result["proprietary_flow_status"] = result["proprietary_flow_status"] or "not_available"
     if result["s_insider"] is not None:
         result["endpoint_sources"]["insider_deal"] = "FHSC_CACHE"
+        result["insider_deal_status"] = result["insider_deal_status"] or "available"
+    else:
+        result["insider_deal_status"] = result["insider_deal_status"] or "not_available"
     if result["s_depth_wall"] is not None:
         result["endpoint_sources"]["order_book"] = "FHSC_SESSION_CACHE"
     proprietary_rows: list[dict[str, Any]] = []
     insider_rows: list[dict[str, Any]] = []
     if refresh_slow:
+        result["proprietary_flow_checked_at"] = checked_at
         for attempt in range(max(1, slow_retries)):
             try:
                 proprietary_rows = _records(Market("fhsc").equity(symbol).proprietary_flow(start=start, end=end, compat="v6", floating=2))
                 score, raw = proprietary_score(proprietary_rows)
                 if score is None:
-                    raise ValueError("FHSC proprietary_flow returned no usable values")
+                    status = "empty_response_unverified" if not proprietary_rows else "unclassified_response"
+                    result["proprietary_flow_status"] = status
+                    result["raw"].update(raw)
+                    result["errors"]["proprietary_flow_fhsc"] = {"type": status}
+                    break
                 result["s_prop_5d"], result["endpoint_sources"]["proprietary_flow"] = score, "FHSC"
                 result["raw"].update(raw)
+                result["proprietary_flow_status"] = "available"
+                result["proprietary_flow_refreshed_at"] = checked_at
                 result["errors"].pop("proprietary_flow_fhsc", None)
                 break
             except Exception as exc:
+                result["proprietary_flow_status"] = "source_error"
                 result["errors"]["proprietary_flow_fhsc"] = _error(exc)
                 if attempt + 1 < max(1, slow_retries):
                     time.sleep(0.5 * (attempt + 1))
+        result["insider_deal_checked_at"] = checked_at
         try:
             insider_rows = _records(Market("fhsc").equity(symbol).insider_deal(compat="v6", floating=2))
             score, raw = insider_score(insider_rows)
             if score is None:
-                raise ValueError("FHSC insider_deal returned no usable values")
-            result["s_insider"], result["endpoint_sources"]["insider_deal"] = score, "FHSC"
-            result["raw"].update(raw)
+                status = "empty_response_unverified" if not insider_rows else "unclassified_response"
+                result["insider_deal_status"] = status
+                result["raw"].update(raw)
+                result["errors"]["insider_deal_fhsc"] = {"type": status}
+            else:
+                result["s_insider"], result["endpoint_sources"]["insider_deal"] = score, "FHSC"
+                result["raw"].update(raw)
+                result["insider_deal_status"] = (
+                    "available_with_unclassified"
+                    if finite(raw.get("insider_unclassified_count")) else "available"
+                )
+                result["insider_deal_refreshed_at"] = checked_at
+                result["errors"].pop("insider_deal_fhsc", None)
         except Exception as exc:
+            result["insider_deal_status"] = "source_error"
             result["errors"]["insider_deal_fhsc"] = _error(exc)
     foreign_rows: list[dict[str, Any]] = []
     for source in ("ssi", "fhsc"):

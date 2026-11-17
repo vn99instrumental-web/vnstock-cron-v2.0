@@ -201,3 +201,13 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Current Buy serving coverage is complete for the requested dashboard fields: v6.4.17 has 20/20, v6.4.18 has 39/39, and v6.4.19-shadow has 44/44 rows with session turnover (`adtv_bil`), 20-session turnover (`adtv_20d_bil`), KN/foreign net and depth. Every selected row uses the daily-close `23:59` marker.
 - Data-contract checks found zero turnover-contract mismatches, zero foreign-ratio mismatches and zero invalid numeric values. The generated quality report is `PASS` with 1,800 rows and no low-coverage or invalid-value findings.
 - Vercel production deployment `dpl_436waBNgDTEfZJKrWk172bhMAosQ` is READY on UI commit `26109c24`; later Python/data-only commits were intentionally canceled by the Vercel build-ignore policy and are consumed at runtime from GitHub serving after cache revalidation. Browser visual verification remains login-gated.
+
+## Gen6 source-state, provenance và weekly material refresh — 2026-11-17
+
+- Công thức 17 tín hiệu và ranh giới nguồn/cadence không đổi: intraday không gọi BCTC, proprietary-flow hoặc insider; daily hậu phiên refresh slow data; weekly là full-universe BCTC safety net.
+- `s_prop_5d` và `s_insider` giữ last-known-good score khi FHSC trả rỗng/lỗi, đồng thời lưu status phân biệt `available`, `empty_response_unverified`, `unclassified_response`, `source_error` và `not_available`; không quy thiếu dữ liệu thành 0.
+- Serving breakdown giữ raw values, source/as-of và checked/refreshed timestamps cho proprietary, insider, foreign, order-book/order-flow và cash flow. Buy/Today hiển thị lý do factor bị loại khỏi điểm khi nguồn không khả dụng.
+- Weekly fundamentals so sánh nội dung BCTC/factor sau khi bỏ timestamp/metadata biến động. Chỉ khi có thay đổi vật chất mới chạy lại score, serving validation và Vercel revalidation.
+- Production snapshot đã kiểm tra trực tiếp sau run `44014755975`: `2026-11-17 11:06` ICT, 100/100 VN100, quality gate PASS; coverage `s_cf_core` 100, `s_of_phasefix` 100, `s_prop_5d` 99, `s_insider` 74, `s_ff_net` 100 và `s_depth_wall` 85.
+- Xác minh local trên HEAD sau khi merge JSON-safe: 43 Gen6 Python tests PASS, workflow YAML parse PASS, TypeScript PASS và Next.js 15 production build PASS. ESLint standalone bị chặn bởi local `node_modules` thiếu transitive module `debug`; Next build vẫn compile/typecheck và hoàn tất artifact production.
+- Security review: không thêm secret/dependency/client credential, không mở rộng route dữ liệu, và workflow chỉ đọc GitHub secrets qua biến môi trường server-side.

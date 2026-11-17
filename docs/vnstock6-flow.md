@@ -10,13 +10,19 @@ The source contract is explicit:
 | Reference | SSI | none | `Reference("ssi").equity.list()` |
 | Market OHLCV | SSI | none | intraday and daily-close market data stay on the verified SSI flow |
 | Fundamental | FHSC | none | quarterly balance sheet, income statement and cash flow; ratios and growth are calculated by `vnstock_quant.fa` per symbol |
+| Foreign flow | SSI | FHSC | refreshed on each scoring run; source and as-of date are retained |
+| Session statistics | SSI | FHSC active-session | intraday turnover and average trade size only |
+| Order book | FHSC | none | intraday only because Gen6 has no SSI order-book reader |
+| Proprietary/insider | FHSC | last-known-good cache | source endpoints are called only by post-market daily maintenance |
 The Vercel release is native-capable and `VNSTOCK6_NATIVE_MODE=1` makes the selected Gen6 source read only `output/serving/vnstock6/current`. It does not fall back to Supabase or the legacy serving root.
 
 ## Verified flows
 
 - `vnstock6_source_diagnostic.yml`: read-only account, key, route and schema diagnostic. It never uploads raw data or credentials.
 - `vnstock6_native_candidate.yml`: read-only end-to-end run; produces only a compact secret-free summary artifact.
-- `vnstock6_native_production.yml`: n8n/manual entry point with `intraday`, `daily` and `weekly` modes. It publishes the Gen6 ledger and serving root under the shared `vnstock-main-writer` lock.
+- `vnstock6_native_production.yml`: n8n/manual intraday executor. It publishes the Gen6 ledger and serving root under the shared `vnstock-main-writer` lock.
+- `vnstock6_daily_maintenance.yml`: post-market executor for BCTC change detection, slow market factors, closing scores, outcomes and full serving rebuild.
+- `vnstock6_fundamental_refresh.yml`: weekly full-universe BCTC safety net; it recalculates and revalidates the dashboard only when material statement/factor content changes.
 - Dashboard activation is a separate boolean input and defaults to true for the production workflow. It can be disabled explicitly for a data-only run.
 ## Git data contract
 
@@ -41,15 +47,15 @@ Each intraday trigger sends this authenticated GitHub REST request:
 - body: `{"ref":"main","inputs":{"mode":"intraday","activate_dashboard":"true"}}`;
 - headers: `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`.
 
-The workflow concurrency group vnstock-main-writer queues overlapping calls. An intraday run fetches SSI OHLCV only, calculates technical indicators (including ADX and Supertrend), scores with the committed fundamental cache, publishes the Gen6 ledger/serving release, pushes main, then calls the authenticated Vercel revalidation endpoint. It never calls FHSC. n8n should treat HTTP 204 from GitHub dispatch as accepted and alert only when dispatch fails; GitHub Actions remains the source of run success/failure.
+The workflow concurrency group vnstock-main-writer queues overlapping calls. An intraday run fetches SSI OHLCV, SSI foreign/session statistics, and the approved FHSC order book (with FHSC foreign/active-session fallback when SSI is unavailable). It calculates technical indicators, scores with committed BCTC/proprietary/insider caches, publishes the Gen6 ledger/serving release, pushes main, then calls the authenticated Vercel revalidation endpoint. It never calls BCTC, proprietary-flow or insider endpoints. n8n should treat HTTP 204 from GitHub dispatch as accepted and alert only when dispatch fails; GitHub Actions remains the source of run success/failure.
 
 ## Data cadence
 
 | Cadence | Workflow | External reads | Derived work |
 | --- | --- | --- | --- |
-| Five weekday runs at 09:15, 10:30, 11:30, 13:45, 14:50 ICT | vnstock6_native_production.yml dispatched by n8n with mode=intraday | SSI OHLCV only; only a 14-day correction window after bootstrap | technical indicators, scoring, incremental serving and Vercel revalidation |
-| Weekdays at 16:15 ICT | vnstock6_daily_maintenance.yml | FHSC quarterly statements plus SSI daily-close OHLCV | compare statement signatures; recalculate changed BCTC factors, calculate the closing score, mature outcomes, rebuild analytics/serving and revalidate Vercel |
-| Sundays at 09:15 ICT | vnstock6_fundamental_refresh.yml | SSI reference plus FHSC balance sheet, income statement and cash flow | vnstock_quant.fa ratios/growth and the committed fundamental cache |
+| Five weekday runs at 09:15, 10:30, 11:30, 13:45, 14:50 ICT | vnstock6_native_production.yml dispatched by n8n with mode=intraday | SSI OHLCV/foreign/session; approved FHSC order book and bounded fallbacks; no BCTC/proprietary/insider calls | fast technical/flow/depth signals, scoring, incremental serving and Vercel revalidation |
+| Weekdays at 16:15 ICT | vnstock6_daily_maintenance.yml | BCTC update probes, FHSC proprietary/insider, SSI daily-close OHLCV/foreign; cached in-session depth | recalculate changed BCTC, closing score, outcomes, analytics/serving and Vercel revalidation |
+| Sundays at 09:15 ICT | vnstock6_fundamental_refresh.yml | SSI reference plus FHSC balance sheet, income statement and cash flow | full BCTC safety refresh; rebuild scores/serving and revalidate only on material change |
 
 All three writers share vnstock-main-writer; overlapping jobs queue instead of writing Git concurrently. n8n is the single schedule owner, while GitHub Actions performs the dispatched work. Do not run the legacy writer concurrently.
 
@@ -67,10 +73,10 @@ FHSC throttles statement reads, so fundamentals are not re-downloaded during eac
 
 - Candidate refreshes three symbols through the dedicated fundamental command. It reports `PASS_DEGRADED` when FHSC is unavailable only if fundamental and growth factors are explicitly excluded.
 - Daily maintenance checks all configured symbols after market close. A deterministic signature of balance sheet, income statement and cash-flow content is compared with the committed cache; unchanged statements update only `checked_at`, while changed statements recalculate ratios, growth and cash-flow factors with `vnstock_quant.fa`.
-- Intraday mode never calls FHSC or the three statement endpoints. It reads the last committed cache and refetches only the recent SSI OHLCV correction window.
-- Weekly refresh recalculates the full FHSC universe as a safety net. Read failures preserve last-known-good data; missing or expired values are excluded and available weights are renormalized, never replaced by zero.
+- Intraday mode never calls the three statement endpoints, `proprietary_flow` or `insider_deal`. It reads their last committed caches; FHSC use is limited to order book and the approved foreign/active-session fallbacks.
+- Weekly refresh recalculates the full FHSC universe as a safety net. Read failures preserve last-known-good data; missing or expired values are excluded and available weights are renormalized, never replaced by zero. Refresh timestamps are ignored for change detection; only material content changes trigger scoring, serving rebuild and Vercel revalidation.
 
 
 ## Indicator upgrade (2026-11-13)
 
-Gen 6 publishes ADX(14), Supertrend(10,3), `s_trend_st` and the BCTC-derived cash-flow core. `vnstock_quant.ta` Community returns `QUANT_TIER_REQUIRED` for ADX/Supertrend, so the pipeline records an auditable `local_wilder_reference` implementation. Foreign, proprietary, insider, order-flow and depth signals remain explicitly unavailable and excluded because the approved intraday source is SSI OHLCV; FHSC is not used as a market-factor source.
+Gen6 publishes all 17 production-reference signals. ADX(14) and Supertrend(10,3) use the auditable `local_wilder_reference` implementation when Community `vnstock_quant.ta` returns `QUANT_TIER_REQUIRED`. Foreign flow and depth refresh intraday; proprietary and insider refresh post-market and are cached intraday; BCTC-derived fundamental, cash-flow and growth signals refresh only after statement checks/full weekly refresh. Empty or unclassified source responses remain unavailable and are excluded rather than converted to zero. The dashboard includes raw values, source/as-of provenance and exclusion reasons where available.

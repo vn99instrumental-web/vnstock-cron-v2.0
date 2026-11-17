@@ -26,6 +26,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+      - name: Sync the latest serialized writer state
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -38,6 +42,7 @@ jobs:
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
       - name: Refresh FHSC statements and calculated factors
+        id: fundamentals
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
@@ -52,13 +57,39 @@ jobs:
           args=()
           if [ "$REFRESH_LIMIT" -gt 0 ]; then args+=(--fundamental-limit "$REFRESH_LIMIT"); fi
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals "${args[@]}"
+          material_changed=$(~/.venv_6x/bin/python -c "import json; from pathlib import Path; d=json.loads(Path('output/vnstock6/fundamental-status.json').read_text()); print('true' if int(d['counts'].get('material_changed', 0)) > 0 else 'false')")
+          echo "material_changed=$material_changed" >> "$GITHUB_OUTPUT"
+          echo "Weekly material BCTC change: $material_changed"
       - name: Validate secret-free cache
         run: ~/.venv_6x/bin/python scripts/validate_vnstock6_fundamentals.py
-      - name: Publish fundamental cache
+      - name: Recalculate scores and serving when BCTC changed
+        if: steps.fundamentals.outputs.material_changed == 'true'
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
+        run: |
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
+          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.4.19-shadow v6.4.18 v6.4.17
+          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --output comparison/weekly-fundamental-summary.json
+      - name: Publish fundamental cache and changed dashboard
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- output/vnstock6/fundamental-factors.json output/vnstock6/fundamental-status.json
+          if [ "${{ steps.fundamentals.outputs.material_changed }}" = "true" ]; then
+            git add -- output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6-preview/dashboard.json output/serving/vnstock6 comparison/weekly-fundamental-summary.json
+          fi
           git diff --cached --quiet && exit 0
           git commit -m "data: refresh vnstock6 fundamentals"
           for attempt in 1 2 3 4 5; do
@@ -67,3 +98,11 @@ jobs:
             sleep $((attempt * 3))
           done
           exit 1
+      - name: Revalidate Vercel dashboard cache
+        if: steps.fundamentals.outputs.material_changed == 'true'
+        env:
+          DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          test -n "$DASHBOARD_REVALIDATE_SECRET"
+          curl --fail --silent --show-error --retry 3 --retry-all-errors -X POST \
+            "https://trading-snapshot-dl.vercel.app/api/revalidate" -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
