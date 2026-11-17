@@ -2,6 +2,11 @@ name: VNStock 6 daily analytics maintenance
 
 on:
   workflow_dispatch:
+    inputs:
+      refresh_slow_data:
+        description: Check BCTC and refresh FHSC slow factors (post-market only)
+        type: boolean
+        default: true
 
 concurrency:
   group: vnstock-main-writer
@@ -36,7 +41,7 @@ jobs:
         run: |
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
-      - name: Check FHSC statements and calculate the daily close
+      - name: Calculate the daily close with the approved slow-data cadence
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
@@ -47,8 +52,12 @@ jobs:
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --check-updates
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --refresh-slow-market
+          if [ "${{ inputs.refresh_slow_data }}" = "true" ]; then
+            ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --check-updates
+            ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --refresh-slow-market
+          else
+            ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
+          fi
       - name: Evaluate outcomes and rebuild analytics
         run: |
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
