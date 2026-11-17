@@ -4,6 +4,12 @@
 **Branch production:** `main`
 **Dashboard:** <https://trading-snapshot-dl.vercel.app>
 
+## Quy ước phân tích cổ phiếu bằng Gen6 — 2026-11-17
+
+Đối với **báo cáo phân tích từng mã**, ưu tiên Gen6 trong `output/serving/vnstock6/current/` làm **nguồn kỹ thuật**. Kiểm tra `output/vnstock6/native-status.json` và `output/serving/vnstock6/current/metadata.json` mỗi lần truy xuất. Profile chính tại ngày cập nhật: `v6.4.18`; `v6.4.19-shadow` chỉ đối chiếu. Không lấy score/decision V4 cũ để nhận định kỹ thuật hiện tại. Chi tiết: [docs/STOCK_ANALYSIS_GEN6_SOURCE.md](docs/STOCK_ANALYSIS_GEN6_SOURCE.md).
+
+**Phạm vi thay đổi:** quy ước nguồn cho trợ lý/agent nghiên cứu; không thay đổi công thức scoring, lịch chạy, dashboard hay ledger. Các mô tả V4 phía dưới giữ làm lịch sử của phiên bản cũ.
+
 ## Tóm tắt
 
 Ứng dụng production gồm pipeline Python, ledger lưu trong Git, Supabase làm lớp dữ liệu phục vụ dashboard và Next.js deploy trên Vercel. Scoring formula không thuộc phạm vi thay đổi UI/data-serving hiện tại.
