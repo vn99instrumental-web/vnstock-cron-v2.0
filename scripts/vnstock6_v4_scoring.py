@@ -88,7 +88,10 @@ def indicator_snapshot(frame: pd.DataFrame, quant: dict[str, Any], index_return2
     pos52 = _position(price, low52, high52)
     price_vs_ema200 = finite((price / ema200 - 1) * 100) if price and ema200 else None
     relative20 = None if ret20 is None or index_return20 is None else ret20 - index_return20
-    adtv_bil = finite((close.tail(20) * volume.tail(20)).mean() / 1_000_000)
+    # Prices are kVND and volumes are shares. Keep the production v2 contract:
+    # adtv_bil is the current/last session turnover; expose the 20D mean separately.
+    session_turnover_bil = finite(price * volume.iloc[-1] / 1_000_000) if price is not None else None
+    adtv_20d_bil = finite((close.tail(20) * volume.tail(20)).mean() / 1_000_000)
     ema12 = close.ewm(span=12, adjust=False).mean()
     ema26 = close.ewm(span=26, adjust=False).mean()
     macd_series = ema12 - ema26
@@ -108,7 +111,9 @@ def indicator_snapshot(frame: pd.DataFrame, quant: dict[str, Any], index_return2
         "macd": macd, "macd_signal": macd_signal,
         "macd_histogram": finite(macd - macd_signal) if macd is not None and macd_signal is not None else None,
         "return_20d": ret20, "vnindex_return_20d": index_return20, "relative_return_20d": relative20,
-        "vol_ma_ratio": vol_ratio, "adtv_bil": adtv_bil, "high_52w": high52, "low_52w": low52,
+        "vol_ma_ratio": vol_ratio, "adtv_bil": session_turnover_bil,
+        "session_turnover_bil": session_turnover_bil, "adtv_20d_bil": adtv_20d_bil,
+        "session_volume": finite(volume.iloc[-1]), "high_52w": high52, "low_52w": low52,
         "position_52w": pos52, "price_vs_ema200_pct": price_vs_ema200,
         "willr_14": willr, "stoch_k": stoch, "bb_mid": mid, "bb_lower": bb_low,
         "bb_upper": bb_high, "bb_position": bb_position, "cmf": cmf,
@@ -148,9 +153,10 @@ def classify_regime(index_rows: list[dict[str, Any]], signal_date: str) -> dict[
 
 def _depth_wall(market: dict[str,Any], price: float | None) -> float | None:
     rows=((market.get("raw") or {}).get("order_book") or [])
-    if not rows or not price: return None
+    if not rows or not price:
+        return finite(market.get("s_depth_wall"))
     normalized={str(key).lower().replace(" ","_"):value for key,value in rows[-1].items()}; avg=finite((market.get("raw") or {}).get("average_trade_size"))
-    if not avg: return None
+    if not avg: return finite(market.get("s_depth_wall"))
     bid=ask=0.0
     for i in (1,2,3):
         bp=finite(normalized.get(f"bid_price_{i}")); bv=finite(normalized.get(f"bid_volume_{i}")); ap=finite(normalized.get(f"ask_price_{i}")); av=finite(normalized.get(f"ask_volume_{i}"))

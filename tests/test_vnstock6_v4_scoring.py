@@ -41,6 +41,18 @@ class Gen6V4ScoringTest(unittest.TestCase):
             "stop", "tp1", "tp2", "of_vol_spike_pct",
         ):
             self.assertIsNotNone(result[key], key)
+        expected_session = self.frame.iloc[-1]["close"] * self.frame.iloc[-1]["volume"] / 1_000_000
+        expected_20d = (self.frame["close"].tail(20) * self.frame["volume"].tail(20)).mean() / 1_000_000
+        self.assertAlmostEqual(result["adtv_bil"], expected_session)
+        self.assertAlmostEqual(result["adtv_20d_bil"], expected_20d)
+
+    def test_depth_uses_last_valid_session_cache_when_book_is_closed(self):
+        indicators = indicator_snapshot(self.frame, self.quant, 3.0)
+        signals = signal_values(
+            indicators, {"fundamental": 0.4, "growth": 0.2}, "UPTREND",
+            market={"s_depth_wall": 3, "raw": {"order_book": []}},
+        )
+        self.assertEqual(signals["s_depth_wall"], 3)
 
     def test_regime_uses_only_rows_before_signal_date(self):
         rows = self.frame[["date", "open", "high", "low", "close", "volume"]].to_dict("records")

@@ -63,23 +63,28 @@ function adtvOf(s: BuySignal): number | null {
   return Number.isFinite(v) ? v : null;
 }
 
+function adtv20Of(s: BuySignal): number | null {
+  const v = Number((s.breakdown ?? {}).adtv_20d_bil);
+  return Number.isFinite(v) ? v : null;
+}
+
 /** Phân loại thanh khoản cho mua ngắn hạn (tỷ VND/phiên). */
 function liqTier(adtv: number | null): { label: string; color: string; warn: boolean } | null {
   if (adtv == null) return { label: "KL ?", color: "var(--color-muted)", warn: false };
-  if (adtv < 3) return { label: `${adtv.toFixed(1)} tỷ · rất mỏng`, color: "var(--color-sell)", warn: true };
-  if (adtv < 10) return { label: `${adtv.toFixed(1)} tỷ · mỏng`, color: "#ca8a04", warn: true };
-  return { label: `${adtv.toFixed(adtv < 100 ? 1 : 0)} tỷ`, color: "var(--color-buy)", warn: false };
+  if (adtv < 3) return { label: `${adtv.toFixed(2)} tỷ · rất mỏng`, color: "var(--color-sell)", warn: true };
+  if (adtv < 10) return { label: `${adtv.toFixed(2)} tỷ · mỏng`, color: "#ca8a04", warn: true };
+  return { label: `${adtv.toFixed(2)} tỷ`, color: "var(--color-buy)", warn: false };
 }
 
 /** Badge thanh khoản (D). */
-function LiqBadge({ adtv }: { adtv: number | null }) {
+function LiqBadge({ adtv, adtv20 }: { adtv: number | null; adtv20: number | null }) {
   const t = liqTier(adtv);
   if (!t) return null;
   return (
     <span
       className="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium"
       style={{ color: t.color, borderColor: t.color }}
-      title="Thanh khoản TB (giá trị khớp/phiên). Dưới ~10 tỷ khó vào/ra nhanh, dễ trượt giá khi mua ngắn hạn."
+      title={`GTGD phiên gần nhất: ${adtv?.toFixed(2) ?? "—"} tỷ. TB 20 phiên: ${adtv20?.toFixed(2) ?? "—"} tỷ.`}
     >
       ⚡ {t.label}
     </span>
@@ -114,8 +119,8 @@ function PersistChip({ r }: { r: RobustnessRow | undefined }) {
 function fmtBil(v: number | null): string {
   if (v == null || !Number.isFinite(v)) return "—";
   const b = v / 1e9;
-  if (Math.abs(b) >= 0.1) return (b >= 0 ? "+" : "") + b.toFixed(1) + " tỷ";
-  return (v >= 0 ? "+" : "") + (v / 1e6).toFixed(0) + " tr";
+  if (Math.abs(b) >= 0.1) return (b >= 0 ? "+" : "") + b.toFixed(2) + " tỷ";
+  return (v >= 0 ? "+" : "") + (v / 1e6).toFixed(2) + " tr";
 }
 
 function num(v: unknown): number | null {
@@ -341,7 +346,8 @@ export function BuyBoard({
   }, [sel]);
 
   const ffNum = (s: BuySignal): number | null => {
-    const v = Number((s.breakdown ?? {}).ff_intra_net);
+    const breakdown = s.breakdown ?? {};
+    const v = Number(breakdown.ff_intra_net ?? breakdown.foreign_net_1d);
     return Number.isFinite(v) ? v : null;
   };
   // E+F gộp thành 1 điểm bền để sort: ưu tiên số phiên giữ BUY, rồi số snap hôm nay.
@@ -441,7 +447,7 @@ export function BuyBoard({
             </span>
           </span>
           <span className="flex items-center gap-1.5">
-            <LiqBadge adtv={adtvOf(s)} />
+            <LiqBadge adtv={adtvOf(s)} adtv20={adtv20Of(s)} />
             <PersistChip r={robMap.get(s.symbol)} />
           </span>
         </button>

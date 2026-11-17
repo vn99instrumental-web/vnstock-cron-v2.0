@@ -8,6 +8,7 @@ from scripts.vnstock6_market_factors import (
     foreign_score,
     insider_score,
     proprietary_score,
+    session_turnover_value,
 )
 
 
@@ -20,6 +21,7 @@ class MarketFactorTest(unittest.TestCase):
         score, raw = foreign_score(rows)
         self.assertEqual(score, 4)
         self.assertGreater(raw["foreign_intensity"], 0.3)
+        self.assertEqual(raw["foreign_net_1d"], 80.0)
 
     def test_proprietary_flow_uses_existing_v4_bands(self):
         rows = [{"net_value": 1_500_000_000.0} for _ in range(10)]
@@ -45,6 +47,31 @@ class MarketFactorTest(unittest.TestCase):
             "total_sell_trade": 2,
         }]
         self.assertEqual(average_trade_size(rows), 100)
+        self.assertEqual(session_turnover_value([{"total_value": 12_345_000_000}]), 12_345_000_000)
+
+    def test_daily_mode_skips_depth_calls_and_preserves_session_cache(self):
+        class Equity:
+            def foreign_flow(self, **kwargs):
+                return [{"foreign_buy_value": 100, "foreign_sell_value": 20}] * 20
+            def session_stats(self, **kwargs):
+                raise AssertionError("daily must not fetch session depth")
+            def active_session(self, **kwargs):
+                raise AssertionError("daily must not fetch active session")
+            def order_book(self, **kwargs):
+                raise AssertionError("daily must not fetch order book")
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        cache = {
+            "s_depth_wall": 2, "depth_signal_date": "2026-11-16",
+            "depth_snap_time": "14:19", "depth_captured_at": "2026-11-16T07:19:00Z",
+        }
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol("FPT", date(2026, 11, 16), cache, fetch_depth=False)
+        self.assertEqual(result["s_depth_wall"], 2)
+        self.assertEqual(result["depth_snap_time"], "14:19")
+        self.assertEqual(result["endpoint_rows"]["order_book"], 0)
 
     def test_foreign_falls_back_and_depth_uses_fhsc_book(self):
         class Equity:

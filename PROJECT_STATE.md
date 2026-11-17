@@ -180,3 +180,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Latest v6.4.18 snapshot is `2026-11-16 17:14` ICT for 100 symbols. Coverage is `s_cf_core` 100, `s_of_phasefix` 100, `s_prop_5d` 99, `s_insider` 74, `s_ff_net` 100, and `s_depth_wall` 46. Missing source values remain null and are excluded/renormalized.
 - Native status reports 38 cash-flow overlays, so 62 symbols use native Gen6 BCTC cash-flow values and 38 use the audited legacy finance cache fallback. Intraday did not fetch BCTC.
 - Browser interaction was not executed end-to-end: the in-app browser redirected to login and the already-authenticated Chrome tab could not expose DOM control. GitHub Actions publish/revalidation and committed serving data were verified directly.
+
+## Gen6 dashboard completeness and quality gate 2026-11-17
+
+- The approved source/cadence boundary remains unchanged: SSI supplies OHLCV, session aggregates and foreign flow; FHSC supplies order book plus post-market slow data. Intraday never fetches BCTC.
+- `adtv_bil` again matches the cron 2.0 dashboard contract: current/last-session turnover in billion VND. The 20-session mean is preserved separately as `adtv_20d_bil`.
+- The Buy tab receives `ff_intra_net` from the latest foreign-flow session, shows KN and liquidity with two decimals, and exposes the 20-session turnover in the liquidity tooltip.
+- Post-market/daily runs no longer call order-book/session-depth endpoints. They reuse the most complete valid 09:00–15:00 depth snapshot for the same signal date, preventing a thin post-close book from overwriting in-session coverage.
+- Candidate validation now writes `output/vnstock6/data-quality.json` and blocks publication for insufficient price, turnover, foreign-net or depth coverage, or invalid indicator ranges.
+- Verification before deployment: 33 Gen6 Python tests passed; Buy-tab ESLint and TypeScript passed; Next.js 15 production build passed in the isolated dependency workspace. Production workflow/deployment verification is recorded after the remote run completes.

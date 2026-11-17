@@ -156,6 +156,45 @@ def load_market_factor_cache() -> dict[str, dict[str, Any]]:
         return {}
 
 
+def load_best_depth_snapshot(scoring_version: str) -> dict[str, dict[str, Any]]:
+    """Recover the most complete valid in-session depth snapshot from history."""
+    for path in sorted(PRED_ROOT.glob("*.jsonl"), reverse=True):
+        groups: dict[str, list[dict[str, Any]]] = {}
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if row.get("scoring_version") != scoring_version or finite(row.get("s_depth_wall")) is None:
+                continue
+            snap_time = str(row.get("snap_time") or "")
+            if not ("09:00" <= snap_time <= "15:00"):
+                continue
+            groups.setdefault(snap_time, []).append(row)
+        if not groups:
+            continue
+        snap_time, rows = max(groups.items(), key=lambda item: (len(item[1]), item[0]))
+        return {
+            str(row["symbol"]): {
+                "s_depth_wall": finite(row.get("s_depth_wall")),
+                "depth_signal_date": row.get("signal_date"),
+                "depth_snap_time": snap_time,
+                "depth_captured_at": row.get("generated_at") or row.get("signal_date"),
+            }
+            for row in rows
+        }
+    return {}
+
+
+def merge_depth_cache(
+    cache: dict[str, dict[str, Any]], history: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    output = {symbol: dict(value) for symbol, value in cache.items()}
+    for symbol, depth in history.items():
+        current = output.setdefault(symbol, {})
+        if str(depth.get("depth_signal_date") or "") >= str(current.get("depth_signal_date") or ""):
+            current.update(depth)
+    return output
+
 def save_market_factor_cache(factors: dict[str, Any]) -> None:
     MARKET_FACTOR_CACHE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -486,6 +525,22 @@ def score_v4_profiles(
     regime_info = classify_regime(index_rows, signal_date)
     indicators = indicator_snapshot(frame, quant, regime_info.get("return_20d"))
     market = market or {}
+    market_raw = market.get("raw") or {}
+    exact_turnover = finite(market_raw.get("session_turnover_value"))
+    if exact_turnover is not None:
+        indicators["adtv_bil"] = exact_turnover / 1_000_000_000
+        indicators["session_turnover_bil"] = exact_turnover / 1_000_000_000
+        indicators["liquidity_source"] = "SSI_SESSION_STATS"
+    else:
+        indicators["liquidity_source"] = "SSI_OHLCV_LAST_SESSION"
+    foreign_net_1d = finite(market_raw.get("foreign_net_1d"))
+    turnover_bil = finite(indicators.get("session_turnover_bil"))
+    foreign_ratio = (
+        foreign_net_1d / (turnover_bil * 1_000_000_000)
+        if foreign_net_1d is not None and turnover_bil and turnover_bil > 0 else None
+    )
+    if foreign_ratio is not None and abs(foreign_ratio) > 1:
+        foreign_ratio = None
     signals = signal_values(indicators, fundamentals, regime_info["regime"], market, snap_time)
     output: list[dict[str, Any]] = []
     for version in versions:
@@ -507,6 +562,12 @@ def score_v4_profiles(
             "registry_version": 3, "gate_version": 7,
             "regime_as_of": regime_info.get("as_of"), "regime_method": regime_info.get("reason"),
             **indicators, **levels, **signals, **scored,
+            "ff_intra_net": foreign_net_1d, "ff_intra_ratio": foreign_ratio,
+            "foreign_net_1d": foreign_net_1d,
+            "foreign_net_5d": finite(market_raw.get("foreign_net_5d")),
+            "foreign_net_20d": finite(market_raw.get("foreign_net_20d")),
+            "foreign_as_of": market_raw.get("foreign_as_of") or signal_date,
+            "foreign_source": (market.get("endpoint_sources") or {}).get("foreign_flow"),
             "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
             "ratio_roe": ratios.get("RT_PRT_ROE"), "ratio_roa": ratios.get("RT_PRT_ROA"),
             "ratio_gross_margin": ratios.get("RT_PRT_GROSS_MARGIN"), "ratio_net_margin": ratios.get("RT_PRT_NET_MARGIN"),
@@ -572,18 +633,20 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
     factor_cache, restored_cash_flow = overlay_legacy_cash_flow(factor_cache, universe)
-    market_cache = load_market_factor_cache()
-    market_factors = collect_market_factors(
-        universe, today, int((config.get("market_indicators") or {}).get("max_workers", 4)),
-        slow_cache=market_cache, refresh_slow=refresh_slow_market,
+    market_cache = merge_depth_cache(
+        load_market_factor_cache(), load_best_depth_snapshot(config["scoring_version"])
     )
-    if refresh_slow_market:
-        save_market_factor_cache(market_factors)
+    index_rows = update_vnindex(reference_source, today)
+    market_date = today if intraday else date.fromisoformat(str(index_rows[-1]["date"])[:10])
+    market_factors = collect_market_factors(
+        universe, market_date, int((config.get("market_indicators") or {}).get("max_workers", 4)),
+        slow_cache=market_cache, refresh_slow=refresh_slow_market,
+        fetch_depth=intraday,
+    )
     versions = list(config.get("scoring_versions") or [config["scoring_version"]])
     unknown_versions = [version for version in versions if version not in PROFILES]
     if unknown_versions:
         raise ValueError(f"Unsupported Gen6 scoring profiles: {unknown_versions}")
-    index_rows = update_vnindex(reference_source, today)
     max_age_days = fundamental_ttl_days(config, now)
     for symbol in universe:
         attempts = []
@@ -616,9 +679,12 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
                         raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
                     incoming.extend(live_rows)
                 merged = merge_ohlcv(symbol, incoming)
+                symbol_market = dict(market_factors.get(symbol) or {})
+                if str(symbol_market.get("depth_signal_date") or "") != str(merged[-1]["date"]):
+                    symbol_market["s_depth_wall"] = None
                 predictions.extend(score_v4_profiles(
                     symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows,
-                    market_factors.get(symbol),
+                    symbol_market,
                 ))
                 source_counts[market_source.upper()] += 1
                 break
@@ -633,6 +699,19 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     partition = PRED_ROOT / f"{predictions[0]['signal_date']}.jsonl"
     added = append_jsonl(partition, predictions, "pred_id")
     primary_rows = [row for row in predictions if row.get("scoring_version") == config["scoring_version"]]
+    if intraday:
+        captured_at = datetime.now(timezone.utc).isoformat()
+        for row in primary_rows:
+            depth = finite(row.get("s_depth_wall"))
+            if depth is None:
+                continue
+            target = market_factors.setdefault(str(row["symbol"]), {})
+            target.update({
+                "s_depth_wall": depth, "depth_signal_date": row.get("signal_date"),
+                "depth_snap_time": row.get("snap_time"), "depth_captured_at": captured_at,
+            })
+    if intraday or refresh_slow_market:
+        save_market_factor_cache(market_factors)
     indicator_coverage = {
         key: sum(row.get(key) is not None for row in primary_rows)
         for key in ("s_ff_net", "s_of_phasefix", "s_prop_5d", "s_insider", "s_depth_wall", "s_cf_core")
@@ -645,6 +724,7 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
         "fundamental_cache_symbols": len(factor_cache),
         "cash_flow_overlay_symbols": restored_cash_flow,
         "slow_market_cache_symbols": len(market_cache), "slow_market_refreshed": refresh_slow_market,
+        "market_factor_date": market_date.isoformat(),
         "fundamental_stale_cache_used": sum(
             bool(value) and not cache_entry_is_fresh(value, max_age_days)
             for value in factor_cache.values()
@@ -652,8 +732,9 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
         "fundamental_symbols_refreshed": 0,
         "market_indicator_coverage": indicator_coverage,
         "depth_input_coverage": sum(
-            bool((value.get("raw") or {}).get("order_book"))
-            and bool((value.get("raw") or {}).get("average_trade_size"))
+            finite(value.get("s_depth_wall")) is not None
+            or (bool((value.get("raw") or {}).get("order_book"))
+            and bool((value.get("raw") or {}).get("average_trade_size")))
             for value in market_factors.values()
         ),
         "successful_symbols": successful_symbols, "prediction_rows": len(predictions),

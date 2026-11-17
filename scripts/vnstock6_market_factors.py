@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
@@ -44,6 +45,15 @@ def _sum(rows: list[dict[str, Any]], *names: str) -> float | None:
     return sum(values) if values else None
 
 
+def _net_value(row: dict[str, Any]) -> float | None:
+    net = finite(_value(row, "foreign_net_value", "net_val", "net_value"))
+    if net is not None:
+        return net
+    buy = finite(_value(row, "foreign_buy_value", "buy_val", "buy_value"))
+    sell = finite(_value(row, "foreign_sell_value", "sell_val", "sell_value"))
+    return buy - sell if buy is not None and sell is not None else None
+
+
 def foreign_score(rows: list[dict[str, Any]]) -> tuple[float | None, dict[str, Any]]:
     """Match the v4 foreign 5/20-session bands, using actual daily values."""
     if not rows:
@@ -69,6 +79,8 @@ def foreign_score(rows: list[dict[str, Any]]) -> tuple[float | None, dict[str, A
         aligned = net20 is not None and (net20 > 0) == (net5 > 0)
         raw = (10 if abs(intensity) >= 0.30 and aligned else 5) * (1 if net5 > 0 else -1)
     return round(max(-15, min(15, raw)) / 15 * 6), {
+        "foreign_net_1d": _net_value(rows[-1]),
+        "foreign_as_of": str(_value(rows[-1], "time", "date", "trading_date") or "")[:10] or None,
         "foreign_net_5d": net5, "foreign_net_20d": net20, "foreign_intensity": intensity,
     }
 
@@ -121,18 +133,32 @@ def average_trade_size(rows: list[dict[str, Any]]) -> float | None:
     return (buy_volume + sell_volume) / count if count > 0 else None
 
 
+def session_turnover_value(rows: list[dict[str, Any]]) -> float | None:
+    """Return exact accumulated session turnover in VND from SSI aggregates."""
+    if not rows:
+        return None
+    return finite(_value(rows[-1], "total_value", "total_match_value", "matched_value"))
+
+
 def _error(exc: Exception) -> dict[str, Any]:
     return {"type": type(exc).__name__, "code": getattr(exc, "code", None), "action": getattr(exc, "action", None)}
 
 
-def fetch_symbol(symbol: str, today: date, cached_slow: dict[str, Any] | None = None, refresh_slow: bool = False) -> dict[str, Any]:
+def fetch_symbol(
+    symbol: str, today: date, cached_slow: dict[str, Any] | None = None,
+    refresh_slow: bool = False, fetch_depth: bool = True, slow_retries: int = 3,
+) -> dict[str, Any]:
     """Fetch fast endpoints and preserve slow FHSC factors between daily refreshes."""
     start, end = (today - timedelta(days=35)).isoformat(), today.isoformat()
     cached_slow = cached_slow or {}
     cached_raw = cached_slow.get("raw") or {}
     result: dict[str, Any] = {
         "refreshed_at": datetime.now(UTC).isoformat(), "errors": {},
-        "endpoint_sources": {}, "raw": {}, "s_ff_net": None, "s_depth_wall": None,
+        "endpoint_sources": {}, "raw": {}, "s_ff_net": None,
+        "s_depth_wall": finite(cached_slow.get("s_depth_wall")),
+        "depth_signal_date": cached_slow.get("depth_signal_date"),
+        "depth_snap_time": cached_slow.get("depth_snap_time"),
+        "depth_captured_at": cached_slow.get("depth_captured_at"),
         "s_prop_5d": finite(cached_slow.get("s_prop_5d")),
         "s_insider": finite(cached_slow.get("s_insider")),
     }
@@ -144,18 +170,25 @@ def fetch_symbol(symbol: str, today: date, cached_slow: dict[str, Any] | None = 
         result["endpoint_sources"]["proprietary_flow"] = "FHSC_CACHE"
     if result["s_insider"] is not None:
         result["endpoint_sources"]["insider_deal"] = "FHSC_CACHE"
+    if result["s_depth_wall"] is not None:
+        result["endpoint_sources"]["order_book"] = "FHSC_SESSION_CACHE"
     proprietary_rows: list[dict[str, Any]] = []
     insider_rows: list[dict[str, Any]] = []
     if refresh_slow:
-        try:
-            proprietary_rows = _records(Market("fhsc").equity(symbol).proprietary_flow(start=start, end=end, compat="v6", floating=2))
-            score, raw = proprietary_score(proprietary_rows)
-            if score is None:
-                raise ValueError("FHSC proprietary_flow returned no usable values")
-            result["s_prop_5d"], result["endpoint_sources"]["proprietary_flow"] = score, "FHSC"
-            result["raw"].update(raw)
-        except Exception as exc:
-            result["errors"]["proprietary_flow_fhsc"] = _error(exc)
+        for attempt in range(max(1, slow_retries)):
+            try:
+                proprietary_rows = _records(Market("fhsc").equity(symbol).proprietary_flow(start=start, end=end, compat="v6", floating=2))
+                score, raw = proprietary_score(proprietary_rows)
+                if score is None:
+                    raise ValueError("FHSC proprietary_flow returned no usable values")
+                result["s_prop_5d"], result["endpoint_sources"]["proprietary_flow"] = score, "FHSC"
+                result["raw"].update(raw)
+                result["errors"].pop("proprietary_flow_fhsc", None)
+                break
+            except Exception as exc:
+                result["errors"]["proprietary_flow_fhsc"] = _error(exc)
+                if attempt + 1 < max(1, slow_retries):
+                    time.sleep(0.5 * (attempt + 1))
         try:
             insider_rows = _records(Market("fhsc").equity(symbol).insider_deal(compat="v6", floating=2))
             score, raw = insider_score(insider_rows)
@@ -181,11 +214,22 @@ def fetch_symbol(symbol: str, today: date, cached_slow: dict[str, Any] | None = 
         except Exception as exc:
             result["errors"][f"foreign_flow_{source}"] = _error(exc)
 
+    if not fetch_depth:
+        result["endpoint_rows"] = {
+            "foreign_flow": len(foreign_rows), "session_stats": 0, "order_book": 0,
+            "proprietary_flow": len(proprietary_rows), "insider_deal": len(insider_rows),
+        }
+        return result
+
     stats_rows: list[dict[str, Any]] = []
     try:
         stats_rows = _records(Market("ssi").equity(symbol).session_stats(
             start=today.isoformat(), end=end, compat="v6", floating=2
         ))
+        turnover = session_turnover_value(stats_rows)
+        if turnover is not None:
+            result["raw"]["session_turnover_value"] = turnover
+            result["endpoint_sources"]["session_turnover"] = "SSI"
         average = average_trade_size(stats_rows)
         if not average:
             raise ValueError("SSI session_stats returned no average trade size")
@@ -221,11 +265,17 @@ def fetch_symbol(symbol: str, today: date, cached_slow: dict[str, Any] | None = 
     return result
 
 
-def collect_market_factors(symbols: list[str], today: date, max_workers: int = 4, slow_cache: dict[str, dict[str, Any]] | None = None, refresh_slow: bool = False) -> dict[str, dict[str, Any]]:
+def collect_market_factors(
+    symbols: list[str], today: date, max_workers: int = 4,
+    slow_cache: dict[str, dict[str, Any]] | None = None,
+    refresh_slow: bool = False, fetch_depth: bool = True,
+) -> dict[str, dict[str, Any]]:
     slow_cache = slow_cache or {}
     workers = max(1, min(int(max_workers), len(symbols) or 1))
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="vnstock6-market") as executor:
         values = list(executor.map(
-            lambda symbol: fetch_symbol(symbol, today, slow_cache.get(symbol), refresh_slow), symbols
+            lambda symbol: fetch_symbol(
+                symbol, today, slow_cache.get(symbol), refresh_slow, fetch_depth
+            ), symbols
         ))
     return dict(zip(symbols, values))

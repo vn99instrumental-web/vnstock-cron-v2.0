@@ -191,6 +191,20 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertEqual(factors["FPT"]["cash_flow"], .5)
         self.assertEqual(factors["FPT"]["cash_flow_source"], "legacy_finance_cache")
 
+    def test_depth_cache_prefers_complete_in_session_snapshot(self):
+        rows = [
+            {"symbol": "FPT", "signal_date": "2026-11-16", "snap_time": "14:19", "scoring_version": "v6.4.18", "s_depth_wall": 2},
+            {"symbol": "SSI", "signal_date": "2026-11-16", "snap_time": "14:19", "scoring_version": "v6.4.18", "s_depth_wall": 1},
+            {"symbol": "FPT", "signal_date": "2026-11-16", "snap_time": "17:14", "scoring_version": "v6.4.18", "s_depth_wall": 3},
+        ]
+        payload = "".join(json.dumps(row) + "\n" for row in rows)
+        with patch.object(Path, "glob", return_value=[Path("2026-11-16.jsonl")]), patch.object(
+            Path, "read_text", return_value=payload
+        ):
+            cached = pipeline.load_best_depth_snapshot("v6.4.18")
+        self.assertEqual(set(cached), {"FPT", "SSI"})
+        self.assertEqual(cached["FPT"]["depth_snap_time"], "14:19")
+
 
 if __name__ == "__main__":
     unittest.main()

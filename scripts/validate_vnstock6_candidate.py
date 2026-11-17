@@ -4,10 +4,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def finite(value: object) -> float | None:
+    try:
+        number = float(value)
+        return number if math.isfinite(number) else None
+    except (TypeError, ValueError):
+        return None
 
 
 def main() -> None:
@@ -73,6 +82,49 @@ def main() -> None:
         raise RuntimeError(f"Derived technical indicator coverage is too low: {indicator_coverage}")
     if indicator_coverage["s_cf_core"] < int(config["minimum_coverage"]) * len(versions):
         raise RuntimeError(f"Cash-flow overlay coverage is too low: {indicator_coverage}")
+    quality_fields = (
+        "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "ff_intra_ratio",
+        "rsi_14", "position_52w", "s_depth_wall",
+    )
+    field_coverage = {
+        key: sum(finite(row.get(key)) is not None for row in rows) for key in quality_fields
+    }
+    minimum_rows = int(config["minimum_coverage"]) * len(versions)
+    required_coverage = ("price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "s_depth_wall")
+    low_quality_coverage = {
+        key: field_coverage[key] for key in required_coverage if field_coverage[key] < minimum_rows
+    }
+    invalid_values: list[dict[str, object]] = []
+    for row in rows:
+        checks = {
+            "price": (finite(row.get("price")), 0, None),
+            "adtv_bil": (finite(row.get("adtv_bil")), 0, None),
+            "adtv_20d_bil": (finite(row.get("adtv_20d_bil")), 0, None),
+            "ff_intra_ratio": (finite(row.get("ff_intra_ratio")), -1, 1),
+            "rsi_14": (finite(row.get("rsi_14")), 0, 100),
+            "position_52w": (finite(row.get("position_52w")), 0, 1),
+            "s_depth_wall": (finite(row.get("s_depth_wall")), -3, 3),
+        }
+        for key, (value, low, high) in checks.items():
+            if value is not None and (value < low or (high is not None and value > high)):
+                invalid_values.append({"symbol": row.get("symbol"), "version": row.get("scoring_version"), "field": key, "value": value})
+    quality = {
+        "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
+        "status": "FAIL" if low_quality_coverage or invalid_values else "PASS",
+        "rows": len(rows), "minimum_required_rows": minimum_rows,
+        "field_coverage": field_coverage, "low_coverage": low_quality_coverage,
+        "invalid_values": invalid_values[:100],
+        "contracts": {
+            "adtv_bil": "current_or_last_session_turnover_bil_vnd",
+            "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
+            "ff_intra_net": "latest_session_foreign_net_vnd",
+        },
+    }
+    quality_path = ROOT / "output/vnstock6/data-quality.json"
+    quality_path.parent.mkdir(parents=True, exist_ok=True)
+    quality_path.write_text(json.dumps(quality, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if low_quality_coverage or invalid_values:
+        raise RuntimeError(f"Dashboard data-quality gate failed: coverage={low_quality_coverage}, invalid={len(invalid_values)}")
     excluded_counts = {}
     for row in rows:
         for factor in row.get("excluded_factors", []):
@@ -88,6 +140,7 @@ def main() -> None:
         "fundamental_scored_rows": fundamental_scored,
         "growth_scored_rows": growth_scored,
         "indicator_coverage": indicator_coverage,
+        "data_quality": quality,
         "fundamental_refresh": {"status": refresh_state, "counts": refresh_counts},
         "stages": {name: "success" for name in ("authenticate", "reference", "market_ingest", "scoring", "serving")},
     }
