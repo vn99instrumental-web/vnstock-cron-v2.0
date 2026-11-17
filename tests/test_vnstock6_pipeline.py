@@ -12,6 +12,11 @@ import vnstock6_native_pipeline as pipeline
 
 
 class PipelineCadenceTest(unittest.TestCase):
+    def test_daily_close_uses_end_of_day_marker(self):
+        now = datetime(2026, 11, 17, 8, 20, tzinfo=timezone.utc)
+        self.assertEqual(pipeline.scoring_snap_time(now, False), "23:59")
+        self.assertEqual(pipeline.scoring_snap_time(now, True), "08:20")
+
     def test_intraday_bars_are_aggregated_into_current_daily_candle(self):
         frame = pd.DataFrame(
             {

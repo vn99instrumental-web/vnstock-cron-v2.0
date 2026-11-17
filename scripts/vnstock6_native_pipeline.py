@@ -39,6 +39,11 @@ MARKET_FACTOR_CACHE = ROOT / "output" / "vnstock6" / "market-factors.json"
 VNINDEX_PATH = ROOT / "output" / "market" / "vnindex.json"
 ICT = timezone(timedelta(hours=7))
 
+
+def scoring_snap_time(now: datetime, intraday: bool) -> str:
+    """Use real time intraday and a stable end-of-day marker for daily close."""
+    return now.strftime("%H:%M") if intraday else "23:59"
+
 def load_config() -> dict[str, Any]:
     value = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     sources_config = value.get("sources") or {}
@@ -683,7 +688,7 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
                 if str(symbol_market.get("depth_signal_date") or "") != str(merged[-1]["date"]):
                     symbol_market["s_depth_wall"] = None
                 predictions.extend(score_v4_profiles(
-                    symbol, merged, versions, now.strftime("%H:%M"), factors, index_rows,
+                    symbol, merged, versions, scoring_snap_time(now, intraday), factors, index_rows,
                     symbol_market,
                 ))
                 source_counts[market_source.upper()] += 1
