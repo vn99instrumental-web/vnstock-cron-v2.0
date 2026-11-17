@@ -65,10 +65,29 @@ def _as_of(rows: list[dict[str, Any]]) -> str | None:
     return str(value)[:10] if value not in (None, "") else None
 
 
+def _row_date(row: dict[str, Any]) -> str | None:
+    value = _value(
+        row, "time", "date", "trading_date", "deal_date",
+        "transaction_date", "public_date", "report_date",
+    )
+    return str(value)[:10] if value not in (None, "") else None
+
+
+def rows_for_date(rows: list[dict[str, Any]], target: date) -> list[dict[str, Any]]:
+    """Keep only source rows that explicitly belong to the requested session."""
+    wanted = target.isoformat()
+    return [row for row in rows if _row_date(row) == wanted]
+
+
+def _sort_by_date(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(rows, key=lambda row: _row_date(row) or "")
+
+
 def foreign_score(rows: list[dict[str, Any]]) -> tuple[float | None, dict[str, Any]]:
     """Match the v4 foreign 5/20-session bands, using actual daily values."""
     if not rows:
         return None, {}
+    rows = _sort_by_date(rows)
     latest, recent = rows[-20:], rows[-5:]
     buy5 = _sum(recent, "foreign_buy_value", "buy_val", "buy_value")
     sell5 = _sum(recent, "foreign_sell_value", "sell_val", "sell_value")
@@ -266,53 +285,97 @@ def fetch_symbol(
             result["insider_deal_status"] = "source_error"
             result["errors"]["insider_deal_fhsc"] = _error(exc)
     foreign_rows: list[dict[str, Any]] = []
+    ssi_foreign_rows: list[dict[str, Any]] = []
     for source in ("ssi", "fhsc"):
         try:
-            foreign_rows = _records(Market(source).equity(symbol).foreign_flow(
+            candidate_rows = _records(Market(source).equity(symbol).foreign_flow(
                 start=start, end=end, interval="1D", compat="v6", floating=2
             ))
-            score, raw = foreign_score(foreign_rows)
-            if score is not None:
+            if source == "ssi":
+                ssi_foreign_rows = candidate_rows
+            current_rows = rows_for_date(candidate_rows, today)
+            score, raw = foreign_score(candidate_rows)
+            if score is not None and current_rows:
+                current_net = _net_value(_sort_by_date(current_rows)[-1])
+                if current_net is None:
+                    raise ValueError(f"{source.upper()} foreign_flow has no usable current-session value")
+                raw["foreign_net_1d"] = current_net
+                raw["foreign_as_of"] = today.isoformat()
+                foreign_rows = candidate_rows
                 result["s_ff_net"] = score
                 result["raw"].update(raw)
                 result["endpoint_sources"]["foreign_flow"] = source.upper()
                 break
-            result["errors"][f"foreign_flow_{source}"] = {"type": "EmptyData"}
+            result["errors"][f"foreign_flow_{source}"] = {
+                "type": "StaleOrEmptyData", "as_of": _as_of(_sort_by_date(candidate_rows)),
+                "required_date": today.isoformat(),
+            }
         except Exception as exc:
             result["errors"][f"foreign_flow_{source}"] = _error(exc)
 
-    if not fetch_depth:
-        result["endpoint_rows"] = {
-            "foreign_flow": len(foreign_rows), "session_stats": 0, "order_book": 0,
-            "proprietary_flow": len(proprietary_rows), "insider_deal": len(insider_rows),
-        }
-        return result
-
     stats_rows: list[dict[str, Any]] = []
+    average: float | None = None
     try:
-        stats_rows = _records(Market("ssi").equity(symbol).session_stats(
+        candidate_stats = _records(Market("ssi").equity(symbol).session_stats(
             start=today.isoformat(), end=end, compat="v6", floating=2
         ))
+        stats_rows = rows_for_date(candidate_stats, today)
+        if not stats_rows:
+            raise ValueError("SSI session_stats did not return the requested session")
         turnover = session_turnover_value(stats_rows)
         if turnover is not None:
             result["raw"]["session_turnover_value"] = turnover
-            result["endpoint_sources"]["session_turnover"] = "SSI"
+            result["raw"]["session_turnover_as_of"] = today.isoformat()
+            result["raw"]["session_turnover_checked_at"] = checked_at
+            result["endpoint_sources"]["session_turnover"] = "SSI_SESSION_STATS"
         average = average_trade_size(stats_rows)
-        if not average:
+        if average:
+            result["endpoint_sources"]["trade_size"] = "SSI"
+        elif fetch_depth:
             raise ValueError("SSI session_stats returned no average trade size")
-        result["endpoint_sources"]["trade_size"] = "SSI"
+        current_stats = stats_rows[-1]
+        stats_buy = finite(_value(current_stats, "fr_buy_value_total"))
+        stats_sell = finite(_value(current_stats, "fr_sell_value_total"))
+        stats_net = finite(_value(current_stats, "fr_net_value_total"))
+        if stats_net is None and stats_buy is not None and stats_sell is not None:
+            stats_net = stats_buy - stats_sell
+        if stats_net is not None and ssi_foreign_rows:
+            current_foreign = {
+                "time": today.isoformat(),
+                "foreign_buy_value": stats_buy,
+                "foreign_sell_value": stats_sell,
+                "foreign_net_value": stats_net,
+            }
+            aligned_history = [
+                row for row in ssi_foreign_rows if _row_date(row) != today.isoformat()
+            ] + [current_foreign]
+            score, raw = foreign_score(aligned_history)
+            if score is not None:
+                result["s_ff_net"] = score
+                result["raw"].update(raw)
+                result["raw"]["foreign_as_of"] = today.isoformat()
+                result["endpoint_sources"]["foreign_flow"] = "SSI_SESSION_STATS"
+                foreign_rows = aligned_history
     except Exception as exc:
         result["errors"]["session_stats_ssi"] = _error(exc)
-        try:
-            active_rows = _records(Market("fhsc").equity(symbol).active_session(compat="v6", floating=2))
-            average = average_trade_size(active_rows)
-            if average:
-                result["endpoint_sources"]["trade_size"] = "FHSC"
-            else:
-                result["errors"]["active_session_fhsc"] = {"type": "EmptyData"}
-        except Exception as fallback_exc:
-            average = None
-            result["errors"]["active_session_fhsc"] = _error(fallback_exc)
+        if fetch_depth:
+            try:
+                active_rows = _records(Market("fhsc").equity(symbol).active_session(compat="v6", floating=2))
+                average = average_trade_size(active_rows)
+                if average:
+                    result["endpoint_sources"]["trade_size"] = "FHSC"
+                else:
+                    result["errors"]["active_session_fhsc"] = {"type": "EmptyData"}
+            except Exception as fallback_exc:
+                average = None
+                result["errors"]["active_session_fhsc"] = _error(fallback_exc)
+
+    if not fetch_depth:
+        result["endpoint_rows"] = {
+            "foreign_flow": len(foreign_rows), "session_stats": len(stats_rows), "order_book": 0,
+            "proprietary_flow": len(proprietary_rows), "insider_deal": len(insider_rows),
+        }
+        return result
 
     result["endpoint_sources"]["order_book_primary"] = "SSI_UNSUPPORTED"
     try:

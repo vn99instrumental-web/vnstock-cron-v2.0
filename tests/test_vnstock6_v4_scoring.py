@@ -89,6 +89,14 @@ class Gen6V4ScoringTest(unittest.TestCase):
             result = score_profile(version, factors, "UPTREND")
             self.assertIn("flow", result["included_factors"])
 
+    def test_unclassified_insider_response_is_excluded(self):
+        from vnstock6_v4_scoring import signal_values
+
+        values = signal_values(
+            {"entry": 100}, {}, "SIDEWAYS",
+            {"s_insider": 0, "insider_deal_status": "unclassified_response"},
+        )
+        self.assertIsNone(values["s_insider"])
 
 if __name__ == "__main__":
     unittest.main()

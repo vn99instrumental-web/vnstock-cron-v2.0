@@ -90,7 +90,7 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
     ["macd", "MACD"], ["macd_signal", "MACD signal"], ["macd_histogram", "MACD hist"],
     ["willr_14", "Williams %R"], ["stoch_k", "Stochastic %K"], ["cmf", "CMF"],
     ["bb_position", "Bollinger %B"], ["vol_ma_ratio", "Volume/TB", "x"],
-    ["adtv_bil", "ADTV", " tỷ"], ["obv", "OBV"],
+    ["adtv_bil", "GTGD phiên", " tỷ"], ["adtv_20d_bil", "GTGD TB20", " tỷ"], ["obv", "OBV"],
     ["ratio_roe", "ROE"], ["ratio_roa", "ROA"],
     ["ratio_gross_margin", "Gross margin"], ["ratio_net_margin", "Net margin"],
     ["ratio_current", "Current ratio"], ["ratio_debt_equity", "D/E"],
@@ -431,10 +431,10 @@ export function TodayBoard({ signals, versions, versionDates, priceStats }: { si
                             1D {priceStats[row.symbol]?.changePct != null ? fmtPct(priceStats[row.symbol].changePct, 1) : "—"}
                           </span>
                         </div>
-                        <div title="Thanh khoản giá trị trung bình mỗi phiên (ADTV) từ snapshot mới nhất có dữ liệu" className="mt-1 text-[10px] tabular text-[var(--color-muted)]">
+                        <div title="GTGD lũy kế đúng tại snapshot mới nhất; xem GTGD TB20 trong chi tiết" className="mt-1 text-[10px] tabular text-[var(--color-muted)]">
                           ⚡ {liquidityBySymbol.get(row.symbol) == null
                             ? "Chưa có TK"
-                            : liquidityBySymbol.get(row.symbol)!.toLocaleString("vi-VN", { maximumFractionDigits: 1 }) + " tỷ"}
+                            : liquidityBySymbol.get(row.symbol)!.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " tỷ"}
                         </div>
                       </td>
                       {versions.map((version) => <td key={version} className="px-2 py-2">{renderVersionCell(row, version)}</td>)}

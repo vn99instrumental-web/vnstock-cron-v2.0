@@ -76,6 +76,9 @@ SIGNAL_BREAKDOWN_KEYS = frozenset({
     "vol_ma_ratio", "ff_intra_net", "ff_intra_ratio", "of_bp_pts",
     "n_supergroups_aligned", "ff_score", "fundamental_score",
     "foreign_as_of", "foreign_source", "liquidity_source",
+    "turnover_as_of", "turnover_checked_at", "turnover_quality",
+    "depth_signal_date", "depth_snap_time", "depth_captured_at",
+    "snapshot_at", "run_kind", "data_as_of",
     "proprietary_as_of", "proprietary_source", "proprietary_flow_status",
     "proprietary_flow_checked_at", "proprietary_flow_refreshed_at",
     "insider_as_of", "insider_source", "insider_deal_status",
@@ -215,8 +218,8 @@ def build_run_rows(preds: list[dict]) -> list[dict]:
         n_buy = sum(v for k, v in dec_count.items() if k in BUY_DECISIONS)
         rows.append({
             "run_id":          _run_id(sd, st, version),
-            "kind":            "intraday",                  # mọi run v4 là snap intraday (evidence)
-            "started_at":      _snap_ts(sd, st),
+            "kind":            first.get("run_kind") or "intraday",
+            "started_at":      first.get("snapshot_at") or _snap_ts(sd, st),
             "scoring_version": version,
             "gate_version":    None if first.get("gate_version") is None else str(first.get("gate_version")),
             "universe_size":   len(items),

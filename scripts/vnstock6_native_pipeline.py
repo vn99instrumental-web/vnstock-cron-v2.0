@@ -43,8 +43,8 @@ ICT = timezone(timedelta(hours=7))
 
 
 def scoring_snap_time(now: datetime, intraday: bool) -> str:
-    """Use real time intraday and a stable end-of-day marker for daily close."""
-    return now.strftime("%H:%M") if intraday else "23:59"
+    """Record the real collection time for both intraday and post-market runs."""
+    return now.strftime("%H:%M")
 
 def load_config() -> dict[str, Any]:
     value = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
@@ -564,7 +564,8 @@ def score(symbol: str, rows: list[dict[str, Any]], version: str, snap_time: str,
 def score_v4_profiles(
     symbol: str, rows: list[dict[str, Any]], versions: list[str], snap_time: str,
     fundamentals: dict[str, Any], index_rows: list[dict[str, Any]],
-    market: dict[str, Any] | None = None,
+    market: dict[str, Any] | None = None, snapshot_at: str | None = None,
+    run_kind: str = "intraday",
 ) -> list[dict[str, Any]]:
     frame = pd.DataFrame(rows).sort_values("date")
     if len(frame) < 50:
@@ -577,14 +578,23 @@ def score_v4_profiles(
     indicators = indicator_snapshot(frame, quant, regime_info.get("return_20d"))
     market = market or {}
     market_raw = market.get("raw") or {}
+    turnover_as_of = str(market_raw.get("session_turnover_as_of") or "")
     exact_turnover = finite(market_raw.get("session_turnover_value"))
-    if exact_turnover is not None:
+    if exact_turnover is not None and turnover_as_of == signal_date:
         indicators["adtv_bil"] = exact_turnover / 1_000_000_000
         indicators["session_turnover_bil"] = exact_turnover / 1_000_000_000
         indicators["liquidity_source"] = "SSI_SESSION_STATS"
+        indicators["turnover_quality"] = "exact"
     else:
-        indicators["liquidity_source"] = "SSI_OHLCV_LAST_SESSION"
-    foreign_net_1d = finite(market_raw.get("foreign_net_1d"))
+        indicators["liquidity_source"] = "SSI_OHLCV_ESTIMATE"
+        indicators["turnover_quality"] = "estimated"
+    indicators["turnover_as_of"] = turnover_as_of or signal_date
+    indicators["turnover_checked_at"] = market_raw.get("session_turnover_checked_at")
+    foreign_as_of = str(market_raw.get("foreign_as_of") or "")
+    foreign_net_1d = (
+        finite(market_raw.get("foreign_net_1d"))
+        if foreign_as_of == signal_date else None
+    )
     turnover_bil = finite(indicators.get("session_turnover_bil"))
     foreign_ratio = (
         foreign_net_1d / (turnover_bil * 1_000_000_000)
@@ -605,6 +615,8 @@ def score_v4_profiles(
         output.append({
             "pred_id": f"v6_{hashlib.sha256(raw_id.encode()).hexdigest()[:24]}",
             "symbol": symbol, "signal_date": signal_date, "snap_time": snap_time,
+            "snapshot_at": snapshot_at, "run_kind": run_kind,
+            "data_as_of": snap_time if run_kind == "intraday" else "15:00",
             "scoring_version": version, "price": current,
             "pipeline_generation": 6, "reference_source": "SSI",
             "market_source": str(latest.get("market_source") or "UNKNOWN"),
@@ -617,7 +629,7 @@ def score_v4_profiles(
             "foreign_net_1d": foreign_net_1d,
             "foreign_net_5d": finite(market_raw.get("foreign_net_5d")),
             "foreign_net_20d": finite(market_raw.get("foreign_net_20d")),
-            "foreign_as_of": market_raw.get("foreign_as_of") or signal_date,
+            "foreign_as_of": foreign_as_of or None,
             "foreign_source": (market.get("endpoint_sources") or {}).get("foreign_flow"),
             "proprietary_net_5d": finite(market_raw.get("proprietary_net_5d")),
             "proprietary_net_20d": finite(market_raw.get("proprietary_net_20d")),
@@ -638,6 +650,9 @@ def score_v4_profiles(
             "insider_deal_checked_at": market.get("insider_deal_checked_at"),
             "insider_deal_refreshed_at": market.get("insider_deal_refreshed_at"),
             "order_book_source": (market.get("endpoint_sources") or {}).get("order_book"),
+            "depth_signal_date": market.get("depth_signal_date"),
+            "depth_snap_time": market.get("depth_snap_time"),
+            "depth_captured_at": market.get("depth_captured_at"),
             "order_flow_source": "SSI_OHLCV_PHASE_VOLUME",
             "order_flow_as_of": f"{signal_date} {snap_time}",
             "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
@@ -716,6 +731,9 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
         slow_cache=market_cache, refresh_slow=refresh_slow_market,
         fetch_depth=intraday,
     )
+    snapshot_at = datetime.now(ICT)
+    snap_time = scoring_snap_time(snapshot_at, intraday)
+    run_kind = "intraday" if intraday else "postmarket"
     versions = list(config.get("scoring_versions") or [config["scoring_version"]])
     unknown_versions = [version for version in versions if version not in PROFILES]
     if unknown_versions:
@@ -756,8 +774,8 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
                 if str(symbol_market.get("depth_signal_date") or "") != str(merged[-1]["date"]):
                     symbol_market["s_depth_wall"] = None
                 predictions.extend(score_v4_profiles(
-                    symbol, merged, versions, scoring_snap_time(now, intraday), factors, index_rows,
-                    symbol_market,
+                    symbol, merged, versions, snap_time, factors, index_rows,
+                    symbol_market, snapshot_at.isoformat(), run_kind,
                 ))
                 source_counts[market_source.upper()] += 1
                 break

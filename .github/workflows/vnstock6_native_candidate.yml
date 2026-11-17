@@ -8,6 +8,7 @@ on:
       - "config/vnstock6.json"
       - "config/scoring/review_versions.json"
       - "scripts/vnstock6_*.py"
+      - "scripts/verify_vnstock_account.py"
       - "scripts/build_dashboard_serving_local.py"
       - "scripts/materialize_vnstock6_serving.py"
       - "scripts/validate_vnstock6_candidate.py"
@@ -46,7 +47,7 @@ jobs:
       - name: Install pinned generation 6
         run: ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
       - name: Verify scoring calculations
-        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors
+        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_account tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors
       - name: Build and validate native candidate
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
@@ -59,7 +60,7 @@ jobs:
           test -n "$SSI_API_KEY"
           test -n "$SSI_API_SECRET"
           test -n "$FHSC_API_KEY"
-          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/python scripts/verify_vnstock_account.py
           force=()
           if [ "${{ inputs.force }}" = "true" ]; then force+=(--force); fi
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run "${force[@]}"

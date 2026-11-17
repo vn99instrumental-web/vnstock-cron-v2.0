@@ -51,7 +51,7 @@ jobs:
         run: |
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
-          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/python scripts/verify_vnstock_account.py
           if [ "${{ inputs.refresh_slow_data }}" = "true" ]; then
             ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals --check-updates
             ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --refresh-slow-market

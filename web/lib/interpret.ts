@@ -91,7 +91,7 @@ export const VAR_NAME: Record<string, string> = {
   ff_intra_pts: "Điểm khối ngoại",
   ff_intra_flag_pts: "Cờ khối ngoại",
   of_bp_pts: "Điểm order flow (bp)",
-  adtv_bil: "Thanh khoản TB (tỷ)",
+  adtv_bil: "GTGD phiên (tỷ)",
   confluence_bonus: "Thưởng đồng thuận",
   n_supergroups_aligned: "Số nhóm đồng thuận",
   total_score: "Điểm tổng (trade)",

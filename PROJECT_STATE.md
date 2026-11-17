@@ -211,3 +211,18 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Production snapshot đã kiểm tra trực tiếp sau run `44014755975`: `2026-11-17 11:06` ICT, 100/100 VN100, quality gate PASS; coverage `s_cf_core` 100, `s_of_phasefix` 100, `s_prop_5d` 99, `s_insider` 74, `s_ff_net` 100 và `s_depth_wall` 85.
 - Xác minh local trên HEAD sau khi merge JSON-safe: 43 Gen6 Python tests PASS, workflow YAML parse PASS, TypeScript PASS và Next.js 15 production build PASS. ESLint standalone bị chặn bởi local `node_modules` thiếu transitive module `debug`; Next build vẫn compile/typecheck và hoàn tất artifact production.
 - Security review: không thêm secret/dependency/client credential, không mở rộng route dữ liệu, và workflow chỉ đọc GitHub secrets qua biến môi trường server-side.
+
+## Gen6 timestamp and market-value integrity - 2026-11-17
+
+- Gen6 accepts SSI/FHSC market observations only when their source date matches `signal_date`; stale foreign-flow, turnover and depth values are not scored as current-session data.
+- SSI `session_stats` is queried for both intraday and post-market scoring. Its cumulative `total_value` is the preferred exact session turnover; OHLCV close-times-volume remains an explicitly labelled `SSI_OHLCV_ESTIMATE` fallback only when the exact aggregate is unavailable.
+- Same-day SSI `session_stats` foreign buy/sell/net totals can align the current foreign-flow signal when the daily `foreign_flow` history has not yet published the session row. SSI remains first priority; FHSC remains fallback.
+- Every new result carries actual `snapshot_at`, `run_kind` and `data_as_of`. Intraday uses the actual collection time; post-market uses the market close data boundary `15:00` while retaining the actual execution timestamp.
+- Serving selection prefers timestamped Gen6 runs over legacy synthetic `23:59` rows on the same day and removes those old markers once a real timestamped run exists.
+- Candidate validation checks only the latest snapshot for each scoring version and enforces same-date provenance for non-null foreign, exact-turnover and depth signals. Missing/unverifiable factors stay null and are excluded/renormalized.
+- Dashboard labels distinguish exact current-session turnover (`GTGD phien`) from the 20-session mean (`GTGD TB20`); displayed values remain rounded to two decimals.
+- Verification: 49 Gen6 Python unit tests passed; modified Python files compiled; TypeScript and Next.js 15 production build passed for the UI diff. Standalone ESLint remains blocked by the pre-existing local missing transitive `debug` module, while the Next production build completed.
+- Unit tests mock the `vnstock_quant.ta.compute` boundary and no longer consume the Community daily calculation quota.
+- Live diagnosis confirmed the Community account limit `QUANT_TRIAL_EXHAUSTED` at 30 calculations/day. The production calculation approach has not been changed; a quota-safe engine policy requires explicit approval.
+- Security review found no credential value, new dependency, client-side secret, widened source boundary or unvalidated external write in this change set.
+- Operational status: changes are local only. No commit, push, workflow run, data publication or Vercel deployment has been performed for this correction yet.

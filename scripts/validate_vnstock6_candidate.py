@@ -83,7 +83,25 @@ def main() -> None:
     }
     if low_coverage:
         raise RuntimeError(f"Serving coverage is too low: {low_coverage}")
-    rows = [row for profile_rows in rows_by_version.values() for row in profile_rows]
+    all_rows = [row for profile_rows in rows_by_version.values() for row in profile_rows]
+    latest_rows_by_version = {}
+    for profile, profile_rows in rows_by_version.items():
+        latest_key = max(
+            ((str(row.get("signal_date") or ""), str(row.get("snap_time") or "")) for row in profile_rows),
+            default=("", ""),
+        )
+        latest_rows_by_version[profile] = [
+            row for row in profile_rows
+            if (str(row.get("signal_date") or ""), str(row.get("snap_time") or "")) == latest_key
+        ]
+    latest_low_coverage = {
+        profile: len(profile_rows)
+        for profile, profile_rows in latest_rows_by_version.items()
+        if len(profile_rows) < int(config["minimum_coverage"])
+    }
+    if latest_low_coverage:
+        raise RuntimeError(f"Latest snapshot coverage is too low: {latest_low_coverage}")
+    rows = [row for profile_rows in latest_rows_by_version.values() for row in profile_rows]
     invalid = [row for row in rows if row.get("market_source") != "SSI" or row.get("pipeline_generation") != 6]
     if invalid:
         raise RuntimeError("Candidate contains rows without native SSI generation provenance")
@@ -117,14 +135,18 @@ def main() -> None:
         raise RuntimeError(f"Cash-flow overlay coverage is too low: {indicator_coverage}")
     quality_fields = (
         "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "ff_intra_ratio",
-        "rsi_14", "position_52w", "s_depth_wall",
+        "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
+        "position_52w", "s_depth_wall",
     )
     field_coverage = {
         key: sum(finite(dashboard_value(row, key)) is not None for row in rows)
         for key in quality_fields
     }
     minimum_rows = int(config["minimum_coverage"]) * len(versions)
-    required_coverage = ("price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "s_depth_wall")
+    required_coverage = (
+        "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "s_depth_wall",
+        "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
+    )
     low_quality_coverage = {
         key: field_coverage[key] for key in required_coverage if field_coverage[key] < minimum_rows
     }
@@ -135,23 +157,48 @@ def main() -> None:
             "adtv_bil": (finite(dashboard_value(row, "adtv_bil")), 0, None),
             "adtv_20d_bil": (finite(dashboard_value(row, "adtv_20d_bil")), 0, None),
             "ff_intra_ratio": (finite(dashboard_value(row, "ff_intra_ratio")), -1, 1),
+            "ema20": (finite(dashboard_value(row, "ema20")), 0, None),
+            "ema50": (finite(dashboard_value(row, "ema50")), 0, None),
+            "ema200": (finite(dashboard_value(row, "ema200")), 0, None),
             "rsi_14": (finite(dashboard_value(row, "rsi_14")), 0, 100),
+            "atr_14": (finite(dashboard_value(row, "atr_14")), 0, None),
             "position_52w": (finite(dashboard_value(row, "position_52w")), 0, 1),
             "s_depth_wall": (finite(dashboard_value(row, "s_depth_wall")), -3, 3),
         }
         for key, (value, low, high) in checks.items():
             if value is not None and (value < low or (high is not None and value > high)):
                 invalid_values.append({"symbol": row.get("symbol"), "version": row.get("scoring_version"), "field": key, "value": value})
+        signal_date = str(row.get("signal_date") or "")
+        foreign_as_of = str(dashboard_value(row, "foreign_as_of") or "")
+        if finite(dashboard_value(row, "ff_intra_net")) is not None and foreign_as_of != signal_date:
+            invalid_values.append({
+                "symbol": row.get("symbol"), "version": row.get("scoring_version"),
+                "field": "foreign_as_of", "value": foreign_as_of, "required": signal_date,
+            })
+        liquidity_source = str(dashboard_value(row, "liquidity_source") or "")
+        turnover_as_of = str(dashboard_value(row, "turnover_as_of") or "")
+        if liquidity_source == "SSI_SESSION_STATS" and turnover_as_of != signal_date:
+            invalid_values.append({
+                "symbol": row.get("symbol"), "version": row.get("scoring_version"),
+                "field": "turnover_as_of", "value": turnover_as_of, "required": signal_date,
+            })
+        depth_date = str(dashboard_value(row, "depth_signal_date") or "")
+        if finite(dashboard_value(row, "s_depth_wall")) is not None and depth_date != signal_date:
+            invalid_values.append({
+                "symbol": row.get("symbol"), "version": row.get("scoring_version"),
+                "field": "depth_signal_date", "value": depth_date, "required": signal_date,
+            })
     quality = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": "FAIL" if low_quality_coverage or invalid_values else "PASS",
-        "rows": len(rows), "minimum_required_rows": minimum_rows,
+        "rows": len(rows), "total_serving_rows": len(all_rows), "minimum_required_rows": minimum_rows,
         "field_coverage": field_coverage, "low_coverage": low_quality_coverage,
         "invalid_values": invalid_values[:100],
         "contracts": {
             "adtv_bil": "current_or_last_session_turnover_bil_vnd",
             "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
-            "ff_intra_net": "latest_session_foreign_net_vnd",
+            "ff_intra_net": "same_session_foreign_net_vnd",
+            "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date",
         },
     }
     quality_path = ROOT / "output/vnstock6/data-quality.json"

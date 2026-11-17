@@ -5,7 +5,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from build_dashboard_serving_local import _today_signal
+from build_dashboard_serving_local import _latest_day_rows, _latest_runs, _today_signal
+from sync_supabase import build_run_rows
 
 
 class ServingProjectionTests(unittest.TestCase):
@@ -45,6 +46,35 @@ class ServingProjectionTests(unittest.TestCase):
         self.assertEqual(breakdown["order_book_source"], "FHSC_SESSION_CACHE")
         self.assertEqual(breakdown["order_flow_source"], "SSI_OHLCV_PHASE_VOLUME")
 
+    def test_gen6_run_uses_actual_execution_timestamp_and_kind(self):
+        rows = build_run_rows([
+            {
+                "symbol": "FPT", "signal_date": "2026-11-17", "snap_time": "16:54",
+                "scoring_version": "v6.4.18", "decision": "BUY",
+                "snapshot_at": "2026-11-17T16:54:20+07:00",
+                "run_kind": "postmarket",
+            }
+        ])
+
+        self.assertEqual(rows[0]["kind"], "postmarket")
+        self.assertEqual(rows[0]["started_at"], "2026-11-17T16:54:20+07:00")
+
+    def test_timestamped_run_replaces_legacy_synthetic_eod_marker(self):
+        rows = [
+            {
+                "symbol": "FPT", "signal_date": "2026-11-17", "snap_time": "23:59",
+                "scoring_version": "v6.4.18", "decision": "BUY",
+            },
+            {
+                "symbol": "FPT", "signal_date": "2026-11-17", "snap_time": "16:54",
+                "scoring_version": "v6.4.18", "decision": "BUY",
+                "snapshot_at": "2026-11-17T16:54:20+07:00",
+            },
+        ]
+        _, latest = _latest_runs(rows, ["v6.4.18"])
+        self.assertEqual(latest["v6.4.18"][0]["snap_time"], "16:54")
+        day = _latest_day_rows(rows, ["v6.4.18"])
+        self.assertEqual([row["snap_time"] for row in day["v6.4.18"]], ["16:54"])
 
 if __name__ == "__main__":
     unittest.main()

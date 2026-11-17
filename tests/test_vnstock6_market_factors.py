@@ -58,9 +58,9 @@ class MarketFactorTest(unittest.TestCase):
     def test_daily_mode_skips_depth_calls_and_preserves_session_cache(self):
         class Equity:
             def foreign_flow(self, **kwargs):
-                return [{"foreign_buy_value": 100, "foreign_sell_value": 20}] * 20
+                return [{"time": "2026-11-16", "foreign_buy_value": 100, "foreign_sell_value": 20}] * 20
             def session_stats(self, **kwargs):
-                raise AssertionError("daily must not fetch session depth")
+                return [{"time": "2026-11-16", "total_value": 12_345_000_000}]
             def active_session(self, **kwargs):
                 raise AssertionError("daily must not fetch active session")
             def order_book(self, **kwargs):
@@ -88,11 +88,12 @@ class MarketFactorTest(unittest.TestCase):
                 if self.source == "ssi":
                     raise RuntimeError("ssi unavailable")
                 return [
-                    {"foreign_buy_value": 100, "foreign_sell_value": 20, "foreign_net_value": 80}
+                    {"time": "2026-11-16", "foreign_buy_value": 100, "foreign_sell_value": 20, "foreign_net_value": 80}
                 ] * 20
 
             def session_stats(self, **kwargs):
                 return [{
+                    "time": "2026-11-16", "total_value": 12_345_000_000,
                     "total_buy_trade_volume": 800, "total_sell_trade_volume": 200,
                     "total_buy_trade": 8, "total_sell_trade": 2,
                 }]
@@ -124,8 +125,8 @@ class MarketFactorTest(unittest.TestCase):
 
     def test_intraday_preserves_slow_cache_without_calling_slow_endpoints(self):
         class Equity:
-            def foreign_flow(self, **kwargs): return [{"foreign_buy_value": 100, "foreign_sell_value": 20, "foreign_net_value": 80}] * 20
-            def session_stats(self, **kwargs): return [{"total_buy_trade_volume": 800, "total_sell_trade_volume": 200, "total_buy_trade": 8, "total_sell_trade": 2}]
+            def foreign_flow(self, **kwargs): return [{"time": "2026-11-16", "foreign_buy_value": 100, "foreign_sell_value": 20, "foreign_net_value": 80}] * 20
+            def session_stats(self, **kwargs): return [{"time": "2026-11-16", "total_value": 12_345_000_000, "total_buy_trade_volume": 800, "total_sell_trade_volume": 200, "total_buy_trade": 8, "total_sell_trade": 2}]
             def order_book(self, **kwargs): return []
             def proprietary_flow(self, **kwargs): raise AssertionError("slow endpoint called during intraday")
             def insider_deal(self, **kwargs): raise AssertionError("slow endpoint called during intraday")
@@ -185,6 +186,63 @@ class MarketFactorTest(unittest.TestCase):
         self.assertEqual(result["proprietary_flow_status"], "empty_response_unverified")
         self.assertEqual(result["insider_deal_status"], "empty_response_unverified")
 
+    def test_stale_foreign_flow_is_not_used_for_current_session(self):
+        class Equity:
+            def foreign_flow(self, **kwargs):
+                return [{
+                    "time": "2026-11-15", "foreign_buy_value": 100,
+                    "foreign_sell_value": 20, "foreign_net_value": 80,
+                }] * 20
+
+            def session_stats(self, **kwargs):
+                return [{"time": "2026-11-16", "total_value": 12_345_000_000}]
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol(
+                "FPT", date(2026, 11, 16), {}, fetch_depth=False
+            )
+        self.assertIsNone(result["s_ff_net"])
+        self.assertNotIn("foreign_net_1d", result["raw"])
+        self.assertEqual(
+            result["errors"]["foreign_flow_fhsc"]["required_date"], "2026-11-16"
+        )
+        self.assertEqual(
+            result["endpoint_sources"]["session_turnover"], "SSI_SESSION_STATS"
+        )
+        self.assertEqual(
+            result["raw"]["session_turnover_as_of"], "2026-11-16"
+        )
+
+    def test_ssi_session_stats_aligns_current_foreign_value(self):
+        class Equity:
+            def foreign_flow(self, **kwargs):
+                return [{
+                    "time": "2026-11-15", "foreign_buy_value": 100,
+                    "foreign_sell_value": 20, "foreign_net_value": 80,
+                }] * 20
+
+            def session_stats(self, **kwargs):
+                return [{
+                    "time": "2026-11-16", "total_value": 12_345_000_000,
+                    "fr_buy_value_total": 300, "fr_sell_value_total": 100,
+                    "fr_net_value_total": 200,
+                }]
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol(
+                "FPT", date(2026, 11, 16), {}, fetch_depth=False
+            )
+        self.assertEqual(result["raw"]["foreign_net_1d"], 200)
+        self.assertEqual(result["raw"]["foreign_as_of"], "2026-11-16")
+        self.assertEqual(
+            result["endpoint_sources"]["foreign_flow"], "SSI_SESSION_STATS"
+        )
 
 if __name__ == "__main__":
     unittest.main()

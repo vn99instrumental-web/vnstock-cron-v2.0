@@ -47,7 +47,7 @@ jobs:
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
       - name: Verify scoring calculations
-        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors
+        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_account tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors
       - name: Build and validate native release
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
@@ -58,7 +58,7 @@ jobs:
         run: |
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
-          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/python scripts/verify_vnstock_account.py
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --intraday
           ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --versions v6.4.19-shadow v6.4.18 v6.4.17
           ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \

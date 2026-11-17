@@ -146,6 +146,16 @@ def _run_key(row: dict[str, Any]) -> tuple[str, str, str]:
     return str(row.get("signal_date")), str(row.get("snap_time")), str(row.get("scoring_version"))
 
 
+def _run_sort_key(row: dict[str, Any]) -> tuple[str, bool, str]:
+    """Prefer timestamped Gen6 runs over legacy synthetic EOD markers."""
+    snapshot_at = str(row.get("snapshot_at") or "")
+    return (
+        str(row.get("signal_date") or ""),
+        bool(snapshot_at),
+        snapshot_at or str(row.get("snap_time") or ""),
+    )
+
+
 def _latest_runs(predictions: list[dict[str, Any]], versions: list[str]) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]]]:
     groups: dict[tuple[str, str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in predictions:
@@ -154,7 +164,7 @@ def _latest_runs(predictions: list[dict[str, Any]], versions: list[str]) -> tupl
     for version in versions:
         candidates = [(key, rows) for key, rows in groups.items() if key[2] == version]
         if candidates:
-            latest_rows[version] = max(candidates, key=lambda item: item[0][:2])[1]
+            latest_rows[version] = max(candidates, key=lambda item: _run_sort_key(item[1][0]))[1]
     runs = {
         version: build_run_rows(rows)[0]
         for version, rows in latest_rows.items()
@@ -172,15 +182,20 @@ def _latest_day_rows(predictions: list[dict[str, Any]], versions: list[str]) -> 
         )
         for version in versions
     }
-    return {
-        version: [
+    output: dict[str, list[dict[str, Any]]] = {}
+    for version in versions:
+        if not newest_dates[version]:
+            continue
+        rows = [
             row for row in predictions
             if row.get("scoring_version") == version
             and str(row.get("signal_date")) == newest_dates[version]
         ]
-        for version in versions
-        if newest_dates[version]
-    }
+        # Once timestamped runs exist, hide old synthetic 23:59 rows for that day.
+        if any(row.get("snapshot_at") for row in rows):
+            rows = [row for row in rows if row.get("snapshot_at")]
+        output[version] = rows
+    return output
 
 
 def _breakdown(row: dict[str, Any]) -> dict[str, Any]:
@@ -292,10 +307,12 @@ def _buy_snapshot(
     buys = [row for row in predictions if row.get("scoring_version") == version and row.get("decision") in BUY_DECISIONS]
     if not buys:
         return old
-    latest_key = max((_run_key(row)[:2] for row in buys))
+    latest_row = max(buys, key=_run_sort_key)
+    latest_key = _run_key(latest_row)[:2]
     selected = [row for row in buys if _run_key(row)[:2] == latest_key]
     version_rows = [row for row in predictions if row.get("scoring_version") == version]
-    newest_key = max((_run_key(row)[:2] for row in version_rows))
+    newest_row = max(version_rows, key=_run_sort_key)
+    newest_key = _run_key(newest_row)[:2]
     newest_rows = [row for row in version_rows if _run_key(row)[:2] == newest_key]
     newest_run = build_run_rows(newest_rows)[0]
     run = build_run_rows(selected)[0]
@@ -729,7 +746,7 @@ def build(versions: list[str], full: bool, dry_run: bool) -> Path:
         projected = [
             _today_signal(row, _previous_close(version, str(row.get("symbol")), str(row.get("signal_date"))))
             for row in sorted(latest_day[version], key=lambda item: (
-                str(item.get("snap_time")), float(item.get("score_trade") or item.get("total_score") or 0)
+                _run_sort_key(item), float(item.get("score_trade") or item.get("total_score") or 0)
             ))
         ]
         status = _json(CURRENT / "today" / f"{version}.json", {}).get("status", {})

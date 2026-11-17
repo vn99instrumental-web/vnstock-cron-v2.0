@@ -57,7 +57,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "ff_asc", label: "Khối ngoại BÁN ↑" },
 ];
 
-/** ADTV (thanh khoản, tỷ VND) từ breakdown.adtv_bil. */
+/** Giá trị giao dịch của phiên/snapshot hiện tại (tỷ VND). */
 function adtvOf(s: BuySignal): number | null {
   const v = Number((s.breakdown ?? {}).adtv_bil);
   return Number.isFinite(v) ? v : null;

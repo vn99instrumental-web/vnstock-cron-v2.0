@@ -213,7 +213,11 @@ def signal_values(ind: dict[str, Any], fundamental: dict[str, Any], regime: str,
         "s_vol_ratio_h": None if vol_ratio is None else (3 if vol_ratio >= 1.5 else -3 if vol_ratio < .5 else 0),
         "s_ff_net": finite(market.get("s_ff_net")),
         "s_of_phasefix": order_flow_phase_score(finite(ind.get("of_vol_spike_pct")), snap_time),
-        "s_prop_5d": finite(market.get("s_prop_5d")), "s_insider": finite(market.get("s_insider")),
+        "s_prop_5d": finite(market.get("s_prop_5d")),
+        "s_insider": (
+            None if market.get("insider_deal_status") == "unclassified_response"
+            else finite(market.get("s_insider"))
+        ),
         "s_depth_wall": _depth_wall(market, finite(ind.get("entry"))),
         "s_fund_core": None if fundamental.get("fundamental") is None else round(float(fundamental["fundamental"]) * 8, 4),
         "s_cf_core": None if fundamental.get("cash_flow_score") is None else int(round(_clip(float(fundamental["cash_flow_score"]), -10, 10) / 10 * 3)),

@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 import numpy as np
 import pandas as pd
 from scripts.vnstock6_quant import _is_financial_industry, _statement_signature, technical_indicators
@@ -24,7 +25,7 @@ class QuantIndicatorsTest(unittest.TestCase):
         self.assertTrue(_is_financial_industry("Insurance"))
         self.assertFalse(_is_financial_industry("Công nghệ"))
 
-    def test_pinned_quant_engine_calculates_baseline_indicators(self):
+    def test_quant_adapter_maps_baseline_indicators_without_spending_live_quota(self):
         size=260
         frame=pd.DataFrame({
             "open":np.arange(size,dtype=float)+10,
@@ -33,12 +34,19 @@ class QuantIndicatorsTest(unittest.TestCase):
             "close":np.arange(size,dtype=float)+10.5,
             "volume":np.arange(size,dtype=float)+1000,
         })
-        result=technical_indicators(frame)
+
+        def fake_compute(data, name, **params):
+            self.assertEqual(len(data), size)
+            return pd.Series(np.arange(size, dtype=float) + 1)
+
+        with patch("scripts.vnstock6_quant.ta.compute", side_effect=fake_compute) as compute:
+            result=technical_indicators(frame)
+
+        self.assertEqual(compute.call_count,6)
         self.assertEqual(result["engine"],"vnstock_quant.ta")
         self.assertEqual(result["version"],"1.0.0")
         for key in ("ema20","ema50","ema200","rsi14","atr14","obv","adx14","supertrend"):
             self.assertIsNotNone(result[key],key)
         self.assertEqual(result["errors"],{})
-
 if __name__ == "__main__":
     unittest.main()
