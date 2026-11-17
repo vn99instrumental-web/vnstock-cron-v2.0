@@ -24,6 +24,7 @@ from vnstock6_scoring import availability_score
 from vnstock6_quant import fundamental_factors, technical_indicators
 from vnstock6_fundamental_probe import latest_income_statement_probe
 from vnstock6_market_factors import collect_market_factors
+from vnstock6_json_safe import dumps_json
 from vnstock6_v4_scoring import (
     PROFILES, classify_regime, factor_values, indicator_snapshot, score_profile, signal_values,
 )
@@ -209,7 +210,7 @@ def save_market_factor_cache(factors: dict[str, Any]) -> None:
         "symbols": dict(sorted(factors.items())),
     }
     MARKET_FACTOR_CACHE.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        dumps_json(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 
 
@@ -221,7 +222,7 @@ def save_fundamental_cache(source: str, factors: dict[str, Any]) -> None:
         "calculation_version": "1.1.0", "symbols": dict(sorted(factors.items())),
     }
     FUNDAMENTAL_CACHE.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        dumps_json(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 
 
@@ -405,7 +406,7 @@ def refresh_fundamental_cache(
     }
     status_path = ROOT / "output" / "vnstock6" / "fundamental-status.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
-    status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    status_path.write_text(dumps_json(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(
         f"VNStock6 fundamentals: {counts['updated']} updated, {counts['unchanged']} unchanged, "
         f"{counts['failed']} failed, {counts['failed_preserved']} preserved"
@@ -450,7 +451,7 @@ def merge_ohlcv(symbol: str, incoming: list[dict[str, Any]]) -> list[dict[str, A
     merged.update({row["date"]: row for row in incoming})
     result = [merged[key] for key in sorted(merged)][-900:]
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    path.write_text(dumps_json(result, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return result
 
 
@@ -602,7 +603,7 @@ def update_vnindex(market_source: str, today: date) -> list[dict[str, Any]]:
     merged.update({row["date"]: row for row in incoming})
     rows = [merged[key] for key in sorted(merged)][-900:]
     VNINDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
-    VNINDEX_PATH.write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    VNINDEX_PATH.write_text(dumps_json(rows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return rows
 
 
@@ -616,7 +617,7 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     before = len(existing)
     existing.update({str(row[key]): row for row in rows})
     path.parent.mkdir(parents=True, exist_ok=True)
-    body = "".join(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n" for row in existing.values())
+    body = "".join(dumps_json(row, ensure_ascii=False, separators=(",", ":")) + "\n" for row in existing.values())
     path.write_text(body, encoding="utf-8")
     return len(existing) - before
 
@@ -747,7 +748,7 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     }
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
-    status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    status_path.write_text(dumps_json(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"VNStock6 native: {len(predictions)}/{len(universe)} symbols, {added} new predictions")
 
 
