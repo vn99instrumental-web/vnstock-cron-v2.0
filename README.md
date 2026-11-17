@@ -14,7 +14,14 @@ Pipeline thu thập/chấm điểm cổ phiếu Việt Nam và dashboard Next.js
 
 Dashboard production: <https://trading-snapshot-dl.vercel.app>
 
-Các scoring version dùng để đối chiếu: `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`. `v4.18` vẫn là production mặc định; `v4.19-shadow` chỉ forward-test, dùng trọng số IC cố định MeanRev/Breakout/Flow/Fund/Growth = 5/15/20/25/35 và không phát thông báo. Phương pháp và cách monitor: `docs/V419_SHADOW_WEIGHTING.md`.
+## Nguồn kỹ thuật mặc định cho phân tích cổ phiếu (từ 17/11/2026)
+
+Khi phân tích một mã cổ phiếu, đọc **Gen6** tại `output/serving/vnstock6/current/`; xác nhận version hiện hành trong `output/vnstock6/native-status.json` và `output/serving/vnstock6/current/metadata.json`. Tại mốc cập nhật: profile chính `v6.4.18`; `v6.4.19-shadow` chỉ để đối chiếu. **Không dùng tín hiệu/score V4 cũ làm dữ liệu kỹ thuật hiện tại.** Quy trình và các đường dẫn: [docs/STOCK_ANALYSIS_GEN6_SOURCE.md](docs/STOCK_ANALYSIS_GEN6_SOURCE.md).
+
+Chính sách trên áp dụng cho **bài phân tích cổ phiếu/agent nghiên cứu**, không tự sửa công thức hoặc chuyển đổi deployment của pipeline. Các kết quả V4 cũ vẫn giữ lại để tra cứu lịch sử.
+
+
+Lịch sử hệ thống V4 (chỉ tham khảo, không dùng làm tín hiệu kỹ thuật hiện tại): `v4.19-shadow`, `v4.18`, `v4.17`, `v4.9`, `v4.8`, `v4.1`, `v2.3`. `v4.18` là production của nhánh V4 legacy; `v4.19-shadow` chỉ forward-test, dùng trọng số IC cố định MeanRev/Breakout/Flow/Fund/Growth = 5/15/20/25/35 và không phát thông báo. Phương pháp và cách monitor: `docs/V419_SHADOW_WEIGHTING.md`.
 
 ## Kiểm tra dashboard
 
