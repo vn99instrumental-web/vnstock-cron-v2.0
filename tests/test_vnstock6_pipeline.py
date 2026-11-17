@@ -12,6 +12,25 @@ import vnstock6_native_pipeline as pipeline
 
 
 class PipelineCadenceTest(unittest.TestCase):
+    def test_market_cache_writer_normalizes_nested_order_book(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as folder:
+            cache_path = Path(folder) / "market-factors.json"
+            with patch.object(pipeline, "MARKET_FACTOR_CACHE", cache_path):
+                pipeline.save_market_factor_cache({
+                    "FPT": {"raw": {"order_book": [{
+                        "time": pd.Timestamp("2026-11-17 09:30:00"),
+                        "bid_volume_1": 1200,
+                        "ask_volume_1": float("nan"),
+                    }]}}
+                })
+            saved = json.loads(cache_path.read_text(encoding="utf-8"))
+        record = saved["symbols"]["FPT"]["raw"]["order_book"][0]
+        self.assertEqual(record["time"], "2026-11-17T09:30:00")
+        self.assertEqual(record["bid_volume_1"], 1200)
+        self.assertIsNone(record["ask_volume_1"])
+
     def test_daily_close_uses_end_of_day_marker(self):
         now = datetime(2026, 11, 17, 8, 20, tzinfo=timezone.utc)
         self.assertEqual(pipeline.scoring_snap_time(now, False), "23:59")
