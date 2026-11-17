@@ -1,10 +1,10 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-11-17T03:36:01.260209+00:00",
+  "generated_at": "2026-11-17T04:13:37.886589+00:00",
   "source": "SSI_FAST+FHSC_SLOW",
   "symbols": {
     "ACB": {
-      "refreshed_at": "2026-11-17T03:29:14.733990+00:00",
+      "refreshed_at": "2026-11-17T04:06:56.950640+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -34,19 +34,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:16+07:00",
+            "time": "2026-11-17T11:07:00+07:00",
             "bid_price_1": 20.35,
-            "bid_volume_1": 69600,
+            "bid_volume_1": 218600,
             "bid_price_2": 20.3,
-            "bid_volume_2": 203100,
+            "bid_volume_2": 237100,
             "bid_price_3": 20.25,
-            "bid_volume_3": 257700,
+            "bid_volume_3": 245900,
             "ask_price_1": 20.4,
-            "ask_volume_1": 90300,
+            "ask_volume_1": 122400,
             "ask_price_2": 20.45,
-            "ask_volume_2": 219500,
+            "ask_volume_2": 179400,
             "ask_price_3": 20.5,
-            "ask_volume_3": 113400,
+            "ask_volume_3": 176800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -55,8 +55,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -68,7 +68,7 @@
       }
     },
     "ANV": {
-      "refreshed_at": "2026-11-17T03:29:14.736127+00:00",
+      "refreshed_at": "2026-11-17T04:06:56.952694+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -100,19 +100,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:11+07:00",
-            "bid_price_1": 16.8,
-            "bid_volume_1": 15100,
-            "bid_price_2": 16.75,
-            "bid_volume_2": 20400,
-            "bid_price_3": 16.7,
-            "bid_volume_3": 20800,
-            "ask_price_1": 16.85,
-            "ask_volume_1": 11000,
-            "ask_price_2": 16.9,
-            "ask_volume_2": 11200,
-            "ask_price_3": 16.95,
-            "ask_volume_3": 10000,
+            "time": "2026-11-17T11:05:59+07:00",
+            "bid_price_1": 16.75,
+            "bid_volume_1": 6900,
+            "bid_price_2": 16.7,
+            "bid_volume_2": 19700,
+            "bid_price_3": 16.65,
+            "bid_volume_3": 6000,
+            "ask_price_1": 16.8,
+            "ask_volume_1": 7700,
+            "ask_price_2": 16.85,
+            "ask_volume_2": 1700,
+            "ask_price_3": 16.9,
+            "ask_volume_3": 15200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -134,7 +134,7 @@
       }
     },
     "BAF": {
-      "refreshed_at": "2026-11-17T03:29:14.737384+00:00",
+      "refreshed_at": "2026-11-17T04:06:56.953976+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -164,19 +164,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:27:45+07:00",
+            "time": "2026-11-17T11:07:00+07:00",
             "bid_price_1": 31.2,
-            "bid_volume_1": 14200,
+            "bid_volume_1": 25500,
             "bid_price_2": 31.15,
-            "bid_volume_2": 17300,
+            "bid_volume_2": 18100,
             "bid_price_3": 31.1,
-            "bid_volume_3": 116600,
+            "bid_volume_3": 117600,
             "ask_price_1": 31.25,
-            "ask_volume_1": 57500,
+            "ask_volume_1": 10700,
             "ask_price_2": 31.3,
-            "ask_volume_2": 13800,
+            "ask_volume_2": 29600,
             "ask_price_3": 31.35,
-            "ask_volume_3": 8900,
+            "ask_volume_3": 56200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -185,8 +185,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -198,7 +198,7 @@
       }
     },
     "BCM": {
-      "refreshed_at": "2026-11-17T03:29:14.738540+00:00",
+      "refreshed_at": "2026-11-17T04:06:56.955087+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -225,19 +225,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:21+07:00",
-            "bid_price_1": 36.8,
-            "bid_volume_1": 200,
-            "bid_price_2": 36.65,
-            "bid_volume_2": 4400,
-            "bid_price_3": 36.6,
-            "bid_volume_3": 35800,
-            "ask_price_1": 36.85,
-            "ask_volume_1": 18000,
-            "ask_price_2": 36.9,
-            "ask_volume_2": 100,
-            "ask_price_3": 36.95,
-            "ask_volume_3": 100,
+            "time": "2026-11-17T11:07:05+07:00",
+            "bid_price_1": 36.95,
+            "bid_volume_1": 1100,
+            "bid_price_2": 36.85,
+            "bid_volume_2": 2600,
+            "bid_price_3": 36.8,
+            "bid_volume_3": 1600,
+            "ask_price_1": 37.0,
+            "ask_volume_1": 5600,
+            "ask_price_2": 37.05,
+            "ask_volume_2": 200,
+            "ask_price_3": 37.1,
+            "ask_volume_3": 900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -246,8 +246,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -259,7 +259,7 @@
       }
     },
     "BID": {
-      "refreshed_at": "2026-11-17T03:29:22.355980+00:00",
+      "refreshed_at": "2026-11-17T04:07:04.706349+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -286,19 +286,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:29+07:00",
+            "time": "2026-11-17T11:07:13+07:00",
             "bid_price_1": 31.25,
-            "bid_volume_1": 5600,
+            "bid_volume_1": 2400,
             "bid_price_2": 31.2,
-            "bid_volume_2": 177700,
+            "bid_volume_2": 246400,
             "bid_price_3": 31.15,
-            "bid_volume_3": 124700,
+            "bid_volume_3": 139500,
             "ask_price_1": 31.3,
-            "ask_volume_1": 113100,
+            "ask_volume_1": 125500,
             "ask_price_2": 31.35,
-            "ask_volume_2": 121300,
+            "ask_volume_2": 125800,
             "ask_price_3": 31.4,
-            "ask_volume_3": 6200,
+            "ask_volume_3": 7400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -307,8 +307,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 1.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -320,7 +320,7 @@
       }
     },
     "BMP": {
-      "refreshed_at": "2026-11-17T03:29:24.026684+00:00",
+      "refreshed_at": "2026-11-17T04:07:06.372386+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -347,19 +347,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:28:26+07:00",
-            "bid_price_1": 128.4,
-            "bid_volume_1": 500,
-            "bid_price_2": 128.3,
+            "time": "2026-11-17T11:05:00+07:00",
+            "bid_price_1": 128.5,
+            "bid_volume_1": 100,
+            "bid_price_2": 128.4,
             "bid_volume_2": 500,
-            "bid_price_3": 128.2,
-            "bid_volume_3": 400,
-            "ask_price_1": 128.5,
-            "ask_volume_1": 700,
-            "ask_price_2": 128.6,
-            "ask_volume_2": 200,
-            "ask_price_3": 128.7,
-            "ask_volume_3": 100,
+            "bid_price_3": 128.3,
+            "bid_volume_3": 600,
+            "ask_price_1": 129.0,
+            "ask_volume_1": 200,
+            "ask_price_2": 129.1,
+            "ask_volume_2": 100,
+            "ask_price_3": 129.2,
+            "ask_volume_3": 400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -368,8 +368,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -381,7 +381,7 @@
       }
     },
     "BSI": {
-      "refreshed_at": "2026-11-17T03:29:25.688804+00:00",
+      "refreshed_at": "2026-11-17T04:07:08.043195+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -408,19 +408,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:27+07:00",
-            "bid_price_1": 27.5,
-            "bid_volume_1": 2600,
-            "bid_price_2": 27.45,
-            "bid_volume_2": 300,
-            "bid_price_3": 27.4,
-            "bid_volume_3": 7200,
-            "ask_price_1": 27.6,
-            "ask_volume_1": 7600,
-            "ask_price_2": 27.65,
-            "ask_volume_2": 1100,
-            "ask_price_3": 27.7,
-            "ask_volume_3": 5900,
+            "time": "2026-11-17T11:07:17+07:00",
+            "bid_price_1": 27.4,
+            "bid_volume_1": 2700,
+            "bid_price_2": 27.35,
+            "bid_volume_2": 9300,
+            "bid_price_3": 27.3,
+            "bid_volume_3": 7500,
+            "ask_price_1": 27.5,
+            "ask_volume_1": 1000,
+            "ask_price_2": 27.55,
+            "ask_volume_2": 1000,
+            "ask_price_3": 27.6,
+            "ask_volume_3": 2500,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -429,8 +429,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -442,7 +442,7 @@
       }
     },
     "BSR": {
-      "refreshed_at": "2026-11-17T03:29:32.363765+00:00",
+      "refreshed_at": "2026-11-17T04:07:13.062834+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -469,29 +469,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:45+07:00",
-            "bid_price_1": 24.85,
-            "bid_volume_1": 10100,
-            "bid_price_2": 24.8,
-            "bid_volume_2": 64800,
-            "bid_price_3": 24.75,
-            "bid_volume_3": 7200,
-            "ask_price_1": 24.9,
-            "ask_volume_1": 25600,
-            "ask_price_2": 24.95,
-            "ask_volume_2": 58500,
-            "ask_price_3": 25.0,
-            "ask_volume_3": 87200,
+            "time": "2026-11-17T11:07:26+07:00",
+            "bid_price_1": 24.7,
+            "bid_volume_1": 115900,
+            "bid_price_2": 24.65,
+            "bid_volume_2": 146900,
+            "bid_price_3": 24.6,
+            "bid_volume_3": 176200,
+            "ask_price_1": 24.75,
+            "ask_volume_1": 45300,
+            "ask_price_2": 24.8,
+            "ask_volume_2": 17200,
+            "ask_price_3": 24.85,
+            "ask_volume_3": 29400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -2,
-      "s_depth_wall": -1.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -1.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -503,7 +503,7 @@
       }
     },
     "BVH": {
-      "refreshed_at": "2026-11-17T03:29:34.023262+00:00",
+      "refreshed_at": "2026-11-17T04:07:16.373418+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -533,19 +533,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:46+07:00",
-            "bid_price_1": 62.7,
-            "bid_volume_1": 1600,
-            "bid_price_2": 62.6,
-            "bid_volume_2": 15100,
-            "bid_price_3": 62.5,
-            "bid_volume_3": 24500,
-            "ask_price_1": 63.0,
-            "ask_volume_1": 2600,
-            "ask_price_2": 63.3,
-            "ask_volume_2": 100,
-            "ask_price_3": 63.4,
-            "ask_volume_3": 2500,
+            "time": "2026-11-17T11:07:29+07:00",
+            "bid_price_1": 62.6,
+            "bid_volume_1": 4800,
+            "bid_price_2": 62.5,
+            "bid_volume_2": 23200,
+            "bid_price_3": 62.4,
+            "bid_volume_3": 2900,
+            "ask_price_1": 62.8,
+            "ask_volume_1": 500,
+            "ask_price_2": 62.9,
+            "ask_volume_2": 900,
+            "ask_price_3": 63.0,
+            "ask_volume_3": 2700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -554,8 +554,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -567,7 +567,7 @@
       }
     },
     "BWE": {
-      "refreshed_at": "2026-11-17T03:29:35.691241+00:00",
+      "refreshed_at": "2026-11-17T04:07:18.036680+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -597,19 +597,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:37+07:00",
-            "bid_price_1": 40.5,
-            "bid_volume_1": 2100,
-            "bid_price_2": 40.3,
-            "bid_volume_2": 100,
-            "bid_price_3": 40.2,
-            "bid_volume_3": 100,
-            "ask_price_1": 40.8,
-            "ask_volume_1": 700,
-            "ask_price_2": 40.85,
-            "ask_volume_2": 900,
-            "ask_price_3": 40.9,
-            "ask_volume_3": 300,
+            "time": "2026-11-17T11:07:02+07:00",
+            "bid_price_1": 40.85,
+            "bid_volume_1": 100,
+            "bid_price_2": 40.7,
+            "bid_volume_2": 1000,
+            "bid_price_3": 40.65,
+            "bid_volume_3": 1900,
+            "ask_price_1": 40.9,
+            "ask_volume_1": 300,
+            "ask_price_2": 41.0,
+            "ask_volume_2": 200,
+            "ask_price_3": 41.15,
+            "ask_volume_3": 200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -618,8 +618,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -631,7 +631,7 @@
       }
     },
     "CII": {
-      "refreshed_at": "2026-11-17T03:29:37.355640+00:00",
+      "refreshed_at": "2026-11-17T04:07:21.374426+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -658,19 +658,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:49+07:00",
-            "bid_price_1": 13.65,
-            "bid_volume_1": 147200,
-            "bid_price_2": 13.6,
-            "bid_volume_2": 162900,
-            "bid_price_3": 13.55,
-            "bid_volume_3": 201700,
-            "ask_price_1": 13.7,
-            "ask_volume_1": 61800,
-            "ask_price_2": 13.75,
-            "ask_volume_2": 171800,
-            "ask_price_3": 13.8,
-            "ask_volume_3": 303400,
+            "time": "2026-11-17T11:07:34+07:00",
+            "bid_price_1": 13.7,
+            "bid_volume_1": 53100,
+            "bid_price_2": 13.65,
+            "bid_volume_2": 243200,
+            "bid_price_3": 13.6,
+            "bid_volume_3": 146900,
+            "ask_price_1": 13.75,
+            "ask_volume_1": 223400,
+            "ask_price_2": 13.8,
+            "ask_volume_2": 258000,
+            "ask_price_3": 13.85,
+            "ask_volume_3": 254400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -679,8 +679,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 1.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -692,7 +692,7 @@
       }
     },
     "CMG": {
-      "refreshed_at": "2026-11-17T03:29:45.690681+00:00",
+      "refreshed_at": "2026-11-17T04:07:26.373375+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -722,19 +722,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:29:58+07:00",
-            "bid_price_1": 17.35,
-            "bid_volume_1": 7600,
-            "bid_price_2": 17.3,
-            "bid_volume_2": 14800,
-            "bid_price_3": 17.25,
-            "bid_volume_3": 16300,
-            "ask_price_1": 17.45,
-            "ask_volume_1": 1500,
-            "ask_price_2": 17.5,
-            "ask_volume_2": 1200,
-            "ask_price_3": 17.6,
-            "ask_volume_3": 1100,
+            "time": "2026-11-17T11:07:02+07:00",
+            "bid_price_1": 17.3,
+            "bid_volume_1": 12800,
+            "bid_price_2": 17.25,
+            "bid_volume_2": 17300,
+            "bid_price_3": 17.2,
+            "bid_volume_3": 14300,
+            "ask_price_1": 17.4,
+            "ask_volume_1": 2000,
+            "ask_price_2": 17.45,
+            "ask_volume_2": 1400,
+            "ask_price_3": 17.5,
+            "ask_volume_3": 1700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -743,8 +743,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 0.0,
       "endpoint_rows": {
@@ -756,7 +756,7 @@
       }
     },
     "CTD": {
-      "refreshed_at": "2026-11-17T03:29:47.355023+00:00",
+      "refreshed_at": "2026-11-17T04:07:29.704759+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -786,19 +786,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:28:54+07:00",
-            "bid_price_1": 72.1,
-            "bid_volume_1": 3100,
-            "bid_price_2": 72.0,
-            "bid_volume_2": 3900,
-            "bid_price_3": 71.9,
-            "bid_volume_3": 6900,
-            "ask_price_1": 72.3,
-            "ask_volume_1": 11500,
-            "ask_price_2": 72.4,
-            "ask_volume_2": 13800,
-            "ask_price_3": 72.5,
-            "ask_volume_3": 10100,
+            "time": "2026-11-17T11:07:41+07:00",
+            "bid_price_1": 71.8,
+            "bid_volume_1": 7400,
+            "bid_price_2": 71.7,
+            "bid_volume_2": 1600,
+            "bid_price_3": 71.6,
+            "bid_volume_3": 3400,
+            "ask_price_1": 71.9,
+            "ask_volume_1": 1700,
+            "ask_price_2": 72.0,
+            "ask_volume_2": 4600,
+            "ask_price_3": 72.1,
+            "ask_volume_3": 5700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -807,8 +807,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -820,7 +820,7 @@
       }
     },
     "CTG": {
-      "refreshed_at": "2026-11-17T03:29:49.024362+00:00",
+      "refreshed_at": "2026-11-17T04:07:31.371605+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -847,19 +847,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:00+07:00",
+            "time": "2026-11-17T11:07:42+07:00",
             "bid_price_1": 30.85,
-            "bid_volume_1": 99800,
+            "bid_volume_1": 276800,
             "bid_price_2": 30.8,
-            "bid_volume_2": 274500,
+            "bid_volume_2": 277000,
             "bid_price_3": 30.75,
-            "bid_volume_3": 108200,
+            "bid_volume_3": 70100,
             "ask_price_1": 30.9,
-            "ask_volume_1": 65900,
+            "ask_volume_1": 64800,
             "ask_price_2": 30.95,
-            "ask_volume_2": 199700,
+            "ask_volume_2": 202800,
             "ask_price_3": 31.0,
-            "ask_volume_3": 132100,
+            "ask_volume_3": 143600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -868,8 +868,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -881,7 +881,7 @@
       }
     },
     "CTR": {
-      "refreshed_at": "2026-11-17T03:29:50.721725+00:00",
+      "refreshed_at": "2026-11-17T04:07:34.704494+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -908,19 +908,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:01+07:00",
+            "time": "2026-11-17T11:07:20+07:00",
             "bid_price_1": 59.3,
-            "bid_volume_1": 1200,
+            "bid_volume_1": 6200,
             "bid_price_2": 59.2,
-            "bid_volume_2": 5800,
+            "bid_volume_2": 6600,
             "bid_price_3": 59.1,
-            "bid_volume_3": 2400,
-            "ask_price_1": 59.7,
-            "ask_volume_1": 1400,
-            "ask_price_2": 59.8,
-            "ask_volume_2": 1400,
-            "ask_price_3": 59.9,
-            "ask_volume_3": 4100,
+            "bid_volume_3": 3300,
+            "ask_price_1": 59.4,
+            "ask_volume_1": 5400,
+            "ask_price_2": 59.5,
+            "ask_volume_2": 3600,
+            "ask_price_3": 59.6,
+            "ask_volume_3": 2800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -929,8 +929,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -942,7 +942,7 @@
       }
     },
     "CTS": {
-      "refreshed_at": "2026-11-17T03:29:59.025362+00:00",
+      "refreshed_at": "2026-11-17T04:07:39.707186+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -969,19 +969,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:10+07:00",
-            "bid_price_1": 22.95,
-            "bid_volume_1": 2300,
-            "bid_price_2": 22.9,
-            "bid_volume_2": 11400,
-            "bid_price_3": 22.85,
-            "bid_volume_3": 49500,
-            "ask_price_1": 23.0,
-            "ask_volume_1": 4300,
-            "ask_price_2": 23.05,
-            "ask_volume_2": 35300,
-            "ask_price_3": 23.1,
-            "ask_volume_3": 13300,
+            "time": "2026-11-17T11:07:41+07:00",
+            "bid_price_1": 22.7,
+            "bid_volume_1": 11700,
+            "bid_price_2": 22.65,
+            "bid_volume_2": 6500,
+            "bid_price_3": 22.6,
+            "bid_volume_3": 4400,
+            "ask_price_1": 22.75,
+            "ask_volume_1": 4800,
+            "ask_price_2": 22.8,
+            "ask_volume_2": 8100,
+            "ask_price_3": 22.85,
+            "ask_volume_3": 9000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -990,8 +990,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -1003,7 +1003,7 @@
       }
     },
     "DBC": {
-      "refreshed_at": "2026-11-17T03:30:00.713624+00:00",
+      "refreshed_at": "2026-11-17T04:07:43.039416+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1033,29 +1033,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:12+07:00",
-            "bid_price_1": 16.6,
-            "bid_volume_1": 6800,
-            "bid_price_2": 16.55,
-            "bid_volume_2": 103100,
-            "bid_price_3": 16.5,
-            "bid_volume_3": 17100,
-            "ask_price_1": 16.65,
-            "ask_volume_1": 113800,
-            "ask_price_2": 16.7,
-            "ask_volume_2": 256800,
-            "ask_price_3": 16.75,
-            "ask_volume_3": 190900,
+            "time": "2026-11-17T11:07:51+07:00",
+            "bid_price_1": 16.65,
+            "bid_volume_1": 56600,
+            "bid_price_2": 16.6,
+            "bid_volume_2": 62000,
+            "bid_price_3": 16.55,
+            "bid_volume_3": 155500,
+            "ask_price_1": 16.7,
+            "ask_volume_1": 2100,
+            "ask_price_2": 16.75,
+            "ask_volume_2": 123900,
+            "ask_price_3": 16.8,
+            "ask_volume_3": 183700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -2,
-      "s_depth_wall": -1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -1067,7 +1067,7 @@
       }
     },
     "DCM": {
-      "refreshed_at": "2026-11-17T03:30:02.366042+00:00",
+      "refreshed_at": "2026-11-17T04:07:44.705969+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1097,19 +1097,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:11+07:00",
+            "time": "2026-11-17T11:07:53+07:00",
             "bid_price_1": 30.2,
-            "bid_volume_1": 200,
+            "bid_volume_1": 22900,
             "bid_price_2": 30.15,
-            "bid_volume_2": 18900,
+            "bid_volume_2": 27700,
             "bid_price_3": 30.1,
-            "bid_volume_3": 22500,
+            "bid_volume_3": 25000,
             "ask_price_1": 30.25,
-            "ask_volume_1": 4700,
+            "ask_volume_1": 12800,
             "ask_price_2": 30.3,
-            "ask_volume_2": 10700,
+            "ask_volume_2": 42500,
             "ask_price_3": 30.35,
-            "ask_volume_3": 900,
+            "ask_volume_3": 3900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1118,8 +1118,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -1131,7 +1131,7 @@
       }
     },
     "DGW": {
-      "refreshed_at": "2026-11-17T03:30:04.040783+00:00",
+      "refreshed_at": "2026-11-17T04:07:48.041149+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1161,19 +1161,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:11+07:00",
+            "time": "2026-11-17T11:07:53+07:00",
             "bid_price_1": 40.35,
-            "bid_volume_1": 3900,
+            "bid_volume_1": 1000,
             "bid_price_2": 40.3,
-            "bid_volume_2": 20300,
+            "bid_volume_2": 15300,
             "bid_price_3": 40.25,
-            "bid_volume_3": 900,
+            "bid_volume_3": 6200,
             "ask_price_1": 40.4,
-            "ask_volume_1": 4500,
-            "ask_price_2": 40.45,
-            "ask_volume_2": 400,
-            "ask_price_3": 40.5,
-            "ask_volume_3": 3700,
+            "ask_volume_1": 2800,
+            "ask_price_2": 40.5,
+            "ask_volume_2": 4100,
+            "ask_price_3": 40.55,
+            "ask_volume_3": 3100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1182,8 +1182,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -1195,7 +1195,7 @@
       }
     },
     "DIG": {
-      "refreshed_at": "2026-11-17T03:30:12.358028+00:00",
+      "refreshed_at": "2026-11-17T04:07:53.039064+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1225,29 +1225,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:22+07:00",
-            "bid_price_1": 10.1,
-            "bid_volume_1": 109000,
-            "bid_price_2": 10.05,
-            "bid_volume_2": 89300,
-            "bid_price_3": 10.0,
-            "bid_volume_3": 369300,
-            "ask_price_1": 10.15,
-            "ask_volume_1": 59700,
-            "ask_price_2": 10.2,
-            "ask_volume_2": 277900,
-            "ask_price_3": 10.25,
-            "ask_volume_3": 155100,
+            "time": "2026-11-17T11:08:04+07:00",
+            "bid_price_1": 10.05,
+            "bid_volume_1": 140700,
+            "bid_price_2": 10.0,
+            "bid_volume_2": 389800,
+            "bid_price_3": 9.99,
+            "bid_volume_3": 67300,
+            "ask_price_1": 10.1,
+            "ask_volume_1": 16400,
+            "ask_price_2": 10.15,
+            "ask_volume_2": 100500,
+            "ask_price_3": 10.2,
+            "ask_volume_3": 284900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 2,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -1259,7 +1259,7 @@
       }
     },
     "DPM": {
-      "refreshed_at": "2026-11-17T03:30:14.023380+00:00",
+      "refreshed_at": "2026-11-17T04:07:56.371534+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1286,19 +1286,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:23+07:00",
+            "time": "2026-11-17T11:08:05+07:00",
             "bid_price_1": 19.25,
-            "bid_volume_1": 8600,
+            "bid_volume_1": 4100,
             "bid_price_2": 19.2,
-            "bid_volume_2": 147000,
+            "bid_volume_2": 172200,
             "bid_price_3": 19.15,
-            "bid_volume_3": 116700,
+            "bid_volume_3": 122800,
             "ask_price_1": 19.3,
-            "ask_volume_1": 1400,
+            "ask_volume_1": 18100,
             "ask_price_2": 19.35,
-            "ask_volume_2": 8100,
+            "ask_volume_2": 20900,
             "ask_price_3": 19.4,
-            "ask_volume_3": 26700,
+            "ask_volume_3": 21800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1307,8 +1307,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 2.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -1320,7 +1320,7 @@
       }
     },
     "DSE": {
-      "refreshed_at": "2026-11-17T03:30:15.691405+00:00",
+      "refreshed_at": "2026-11-17T04:07:58.073647+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1350,15 +1350,15 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:26:52+07:00",
+            "time": "2026-11-17T11:07:57+07:00",
             "bid_price_1": 19.55,
-            "bid_volume_1": 34500,
+            "bid_volume_1": 32500,
             "bid_price_2": 19.5,
             "bid_volume_2": 51700,
             "bid_price_3": 19.45,
             "bid_volume_3": 44400,
             "ask_price_1": 19.6,
-            "ask_volume_1": 16200,
+            "ask_volume_1": 13500,
             "ask_price_2": 19.65,
             "ask_volume_2": 12800,
             "ask_price_3": 19.7,
@@ -1371,8 +1371,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -1384,7 +1384,7 @@
       }
     },
     "DXG": {
-      "refreshed_at": "2026-11-17T03:30:17.359517+00:00",
+      "refreshed_at": "2026-11-17T04:08:01.372979+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1414,19 +1414,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:30+07:00",
+            "time": "2026-11-17T11:08:08+07:00",
             "bid_price_1": 11.0,
-            "bid_volume_1": 10500,
+            "bid_volume_1": 243800,
             "bid_price_2": 10.95,
-            "bid_volume_2": 1193800,
+            "bid_volume_2": 1393700,
             "bid_price_3": 10.9,
-            "bid_volume_3": 433300,
+            "bid_volume_3": 697800,
             "ask_price_1": 11.05,
-            "ask_volume_1": 364400,
+            "ask_volume_1": 419100,
             "ask_price_2": 11.1,
-            "ask_volume_2": 828900,
+            "ask_volume_2": 880100,
             "ask_price_3": 11.15,
-            "ask_volume_3": 150900,
+            "ask_volume_3": 134400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1435,8 +1435,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -1.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -1448,7 +1448,7 @@
       }
     },
     "EIB": {
-      "refreshed_at": "2026-11-17T03:30:25.687340+00:00",
+      "refreshed_at": "2026-11-17T04:08:06.409251+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1475,29 +1475,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:37+07:00",
+            "time": "2026-11-17T11:08:14+07:00",
             "bid_price_1": 16.05,
-            "bid_volume_1": 111400,
+            "bid_volume_1": 85700,
             "bid_price_2": 16.0,
-            "bid_volume_2": 283800,
+            "bid_volume_2": 313800,
             "bid_price_3": 15.95,
-            "bid_volume_3": 114500,
+            "bid_volume_3": 121200,
             "ask_price_1": 16.1,
-            "ask_volume_1": 107000,
+            "ask_volume_1": 118800,
             "ask_price_2": 16.15,
-            "ask_volume_2": 119100,
+            "ask_volume_2": 202300,
             "ask_price_3": 16.2,
-            "ask_volume_3": 112100,
+            "ask_volume_3": 95200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -2,
-      "s_depth_wall": 1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -1509,7 +1509,7 @@
       }
     },
     "EVF": {
-      "refreshed_at": "2026-11-17T03:30:27.357325+00:00",
+      "refreshed_at": "2026-11-17T04:08:09.732827+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1539,19 +1539,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:39+07:00",
-            "bid_price_1": 11.55,
-            "bid_volume_1": 12000,
-            "bid_price_2": 11.5,
-            "bid_volume_2": 31900,
-            "bid_price_3": 11.45,
-            "bid_volume_3": 38100,
-            "ask_price_1": 11.6,
-            "ask_volume_1": 21200,
-            "ask_price_2": 11.65,
-            "ask_volume_2": 5300,
-            "ask_price_3": 11.7,
-            "ask_volume_3": 13500,
+            "time": "2026-11-17T11:08:18+07:00",
+            "bid_price_1": 11.45,
+            "bid_volume_1": 33500,
+            "bid_price_2": 11.4,
+            "bid_volume_2": 70800,
+            "bid_price_3": 11.35,
+            "bid_volume_3": 116700,
+            "ask_price_1": 11.5,
+            "ask_volume_1": 9700,
+            "ask_price_2": 11.55,
+            "ask_volume_2": 4800,
+            "ask_price_3": 11.6,
+            "ask_volume_3": 32600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1560,8 +1560,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -1573,7 +1573,7 @@
       }
     },
     "FPT": {
-      "refreshed_at": "2026-11-17T03:30:29.022386+00:00",
+      "refreshed_at": "2026-11-17T04:08:11.370635+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1603,19 +1603,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:40+07:00",
+            "time": "2026-11-17T11:08:24+07:00",
             "bid_price_1": 49.35,
-            "bid_volume_1": 154200,
+            "bid_volume_1": 80900,
             "bid_price_2": 49.3,
-            "bid_volume_2": 194100,
+            "bid_volume_2": 189000,
             "bid_price_3": 49.25,
-            "bid_volume_3": 88600,
+            "bid_volume_3": 105400,
             "ask_price_1": 49.4,
-            "ask_volume_1": 19500,
+            "ask_volume_1": 116700,
             "ask_price_2": 49.45,
-            "ask_volume_2": 78300,
+            "ask_volume_2": 95600,
             "ask_price_3": 49.5,
-            "ask_volume_3": 89900,
+            "ask_volume_3": 101000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1624,8 +1624,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -1637,7 +1637,7 @@
       }
     },
     "FRT": {
-      "refreshed_at": "2026-11-17T03:30:30.691278+00:00",
+      "refreshed_at": "2026-11-17T04:08:14.714106+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1667,19 +1667,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:36+07:00",
+            "time": "2026-11-17T11:08:07+07:00",
             "bid_price_1": 145.4,
-            "bid_volume_1": 400,
+            "bid_volume_1": 1000,
             "bid_price_2": 145.3,
             "bid_volume_2": 200,
             "bid_price_3": 145.2,
-            "bid_volume_3": 100,
-            "ask_price_1": 145.6,
-            "ask_volume_1": 200,
-            "ask_price_2": 145.8,
-            "ask_volume_2": 100,
-            "ask_price_3": 146.0,
-            "ask_volume_3": 2300,
+            "bid_volume_3": 300,
+            "ask_price_1": 145.9,
+            "ask_volume_1": 500,
+            "ask_price_2": 146.0,
+            "ask_volume_2": 3000,
+            "ask_price_3": 146.1,
+            "ask_volume_3": 100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1688,8 +1688,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -1701,7 +1701,7 @@
       }
     },
     "FTS": {
-      "refreshed_at": "2026-11-17T03:30:39.023419+00:00",
+      "refreshed_at": "2026-11-17T04:08:16.370881+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1728,19 +1728,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:46+07:00",
-            "bid_price_1": 18.9,
-            "bid_volume_1": 1400,
-            "bid_price_2": 18.85,
-            "bid_volume_2": 6400,
-            "bid_price_3": 18.8,
-            "bid_volume_3": 14000,
-            "ask_price_1": 18.95,
-            "ask_volume_1": 10200,
-            "ask_price_2": 19.0,
-            "ask_volume_2": 29700,
-            "ask_price_3": 19.05,
-            "ask_volume_3": 100,
+            "time": "2026-11-17T11:08:19+07:00",
+            "bid_price_1": 18.8,
+            "bid_volume_1": 3000,
+            "bid_price_2": 18.75,
+            "bid_volume_2": 4100,
+            "bid_price_3": 18.7,
+            "bid_volume_3": 6800,
+            "ask_price_1": 18.85,
+            "ask_volume_1": 12700,
+            "ask_price_2": 18.9,
+            "ask_volume_2": 29600,
+            "ask_price_3": 18.95,
+            "ask_volume_3": 26200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1749,8 +1749,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -1762,7 +1762,7 @@
       }
     },
     "GAS": {
-      "refreshed_at": "2026-11-17T03:30:40.714409+00:00",
+      "refreshed_at": "2026-11-17T04:08:24.705010+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1792,29 +1792,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:44+07:00",
-            "bid_price_1": 71.5,
-            "bid_volume_1": 700,
-            "bid_price_2": 71.4,
-            "bid_volume_2": 600,
-            "bid_price_3": 71.3,
-            "bid_volume_3": 6700,
-            "ask_price_1": 71.7,
-            "ask_volume_1": 1200,
-            "ask_price_2": 71.8,
-            "ask_volume_2": 1700,
-            "ask_price_3": 71.9,
-            "ask_volume_3": 2900,
+            "time": "2026-11-17T11:08:30+07:00",
+            "bid_price_1": 71.2,
+            "bid_volume_1": 12500,
+            "bid_price_2": 71.1,
+            "bid_volume_2": 11400,
+            "bid_price_3": 71.0,
+            "bid_volume_3": 46000,
+            "ask_price_1": 71.3,
+            "ask_volume_1": 9000,
+            "ask_price_2": 71.4,
+            "ask_volume_2": 4200,
+            "ask_price_3": 71.5,
+            "ask_volume_3": 3400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 0.0,
       "endpoint_rows": {
@@ -1826,7 +1826,7 @@
       }
     },
     "GEE": {
-      "refreshed_at": "2026-11-17T03:30:42.363587+00:00",
+      "refreshed_at": "2026-11-17T04:08:26.374303+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1856,29 +1856,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:49+07:00",
-            "bid_price_1": 61.1,
-            "bid_volume_1": 14700,
-            "bid_price_2": 61.0,
-            "bid_volume_2": 31600,
-            "bid_price_3": 60.9,
-            "bid_volume_3": 4300,
-            "ask_price_1": 61.2,
-            "ask_volume_1": 700,
-            "ask_price_2": 61.3,
-            "ask_volume_2": 5500,
-            "ask_price_3": 61.4,
-            "ask_volume_3": 6400,
+            "time": "2026-11-17T11:08:32+07:00",
+            "bid_price_1": 60.9,
+            "bid_volume_1": 5700,
+            "bid_price_2": 60.8,
+            "bid_volume_2": 41300,
+            "bid_price_3": 60.7,
+            "bid_volume_3": 900,
+            "ask_price_1": 61.0,
+            "ask_volume_1": 8300,
+            "ask_price_2": 61.1,
+            "ask_volume_2": 3900,
+            "ask_price_3": 61.2,
+            "ask_volume_3": 5800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 0.0,
       "endpoint_rows": {
@@ -1890,7 +1890,7 @@
       }
     },
     "GEX": {
-      "refreshed_at": "2026-11-17T03:30:44.025571+00:00",
+      "refreshed_at": "2026-11-17T04:08:28.035891+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1919,19 +1919,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:52+07:00",
-            "bid_price_1": 21.05,
-            "bid_volume_1": 185200,
-            "bid_price_2": 21.0,
-            "bid_volume_2": 125800,
-            "bid_price_3": 20.95,
-            "bid_volume_3": 245600,
-            "ask_price_1": 21.1,
-            "ask_volume_1": 42300,
-            "ask_price_2": 21.15,
-            "ask_volume_2": 55400,
-            "ask_price_3": 21.2,
-            "ask_volume_3": 77600,
+            "time": "2026-11-17T11:08:32+07:00",
+            "bid_price_1": 21.0,
+            "bid_volume_1": 4800,
+            "bid_price_2": 20.95,
+            "bid_volume_2": 258900,
+            "bid_price_3": 20.9,
+            "bid_volume_3": 227200,
+            "ask_price_1": 21.05,
+            "ask_volume_1": 20400,
+            "ask_price_2": 21.1,
+            "ask_volume_2": 157300,
+            "ask_price_3": 21.15,
+            "ask_volume_3": 48900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -1953,7 +1953,7 @@
       }
     },
     "GMD": {
-      "refreshed_at": "2026-11-17T03:30:52.357010+00:00",
+      "refreshed_at": "2026-11-17T04:08:29.729767+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -1985,19 +1985,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:04+07:00",
-            "bid_price_1": 52.2,
-            "bid_volume_1": 5200,
-            "bid_price_2": 52.1,
-            "bid_volume_2": 49100,
-            "bid_price_3": 52.0,
-            "bid_volume_3": 79400,
-            "ask_price_1": 52.3,
-            "ask_volume_1": 4300,
-            "ask_price_2": 52.4,
-            "ask_volume_2": 4200,
-            "ask_price_3": 52.5,
-            "ask_volume_3": 18300,
+            "time": "2026-11-17T11:08:38+07:00",
+            "bid_price_1": 52.3,
+            "bid_volume_1": 3600,
+            "bid_price_2": 52.2,
+            "bid_volume_2": 37200,
+            "bid_price_3": 52.1,
+            "bid_volume_3": 70900,
+            "ask_price_1": 52.4,
+            "ask_volume_1": 5200,
+            "ask_price_2": 52.5,
+            "ask_volume_2": 14200,
+            "ask_price_3": 52.6,
+            "ask_volume_3": 1600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2019,7 +2019,7 @@
       }
     },
     "GVR": {
-      "refreshed_at": "2026-11-17T03:30:54.023481+00:00",
+      "refreshed_at": "2026-11-17T04:08:38.039986+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2046,29 +2046,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:04+07:00",
+            "time": "2026-11-17T11:08:35+07:00",
             "bid_price_1": 28.5,
-            "bid_volume_1": 44700,
+            "bid_volume_1": 9500,
             "bid_price_2": 28.45,
-            "bid_volume_2": 5000,
+            "bid_volume_2": 10500,
             "bid_price_3": 28.4,
-            "bid_volume_3": 26000,
+            "bid_volume_3": 29700,
             "ask_price_1": 28.55,
-            "ask_volume_1": 14600,
+            "ask_volume_1": 90900,
             "ask_price_2": 28.6,
-            "ask_volume_2": 20800,
+            "ask_volume_2": 8300,
             "ask_price_3": 28.65,
-            "ask_volume_3": 22600,
+            "ask_volume_3": 28600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": -1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 1.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -2080,7 +2080,7 @@
       }
     },
     "HAG": {
-      "refreshed_at": "2026-11-17T03:30:55.693182+00:00",
+      "refreshed_at": "2026-11-17T04:08:39.706304+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2110,19 +2110,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:05+07:00",
+            "time": "2026-11-17T11:08:07+07:00",
             "bid_price_1": 13.6,
-            "bid_volume_1": 6900,
+            "bid_volume_1": 16900,
             "bid_price_2": 13.55,
-            "bid_volume_2": 113400,
+            "bid_volume_2": 104200,
             "bid_price_3": 13.5,
-            "bid_volume_3": 115600,
+            "bid_volume_3": 165100,
             "ask_price_1": 13.65,
-            "ask_volume_1": 16600,
+            "ask_volume_1": 27700,
             "ask_price_2": 13.7,
-            "ask_volume_2": 82600,
+            "ask_volume_2": 81500,
             "ask_price_3": 13.75,
-            "ask_volume_3": 141700,
+            "ask_volume_3": 144600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2131,8 +2131,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -2144,7 +2144,7 @@
       }
     },
     "HCM": {
-      "refreshed_at": "2026-11-17T03:30:57.353495+00:00",
+      "refreshed_at": "2026-11-17T04:08:41.371886+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2174,19 +2174,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:09+07:00",
-            "bid_price_1": 23.0,
-            "bid_volume_1": 42600,
-            "bid_price_2": 22.95,
-            "bid_volume_2": 35500,
-            "bid_price_3": 22.9,
-            "bid_volume_3": 98400,
-            "ask_price_1": 23.05,
-            "ask_volume_1": 55300,
-            "ask_price_2": 23.1,
-            "ask_volume_2": 132600,
-            "ask_price_3": 23.15,
-            "ask_volume_3": 73800,
+            "time": "2026-11-17T11:08:44+07:00",
+            "bid_price_1": 22.95,
+            "bid_volume_1": 37500,
+            "bid_price_2": 22.9,
+            "bid_volume_2": 107900,
+            "bid_price_3": 22.85,
+            "bid_volume_3": 89200,
+            "ask_price_1": 23.0,
+            "ask_volume_1": 2600,
+            "ask_price_2": 23.05,
+            "ask_volume_2": 69800,
+            "ask_price_3": 23.1,
+            "ask_volume_3": 165300,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2195,8 +2195,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -1.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -2208,7 +2208,7 @@
       }
     },
     "HDB": {
-      "refreshed_at": "2026-11-17T03:31:05.708465+00:00",
+      "refreshed_at": "2026-11-17T04:08:43.036408+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2238,29 +2238,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:24+07:00",
-            "bid_price_1": 22.35,
-            "bid_volume_1": 28300,
-            "bid_price_2": 22.3,
-            "bid_volume_2": 108700,
-            "bid_price_3": 22.25,
-            "bid_volume_3": 91300,
-            "ask_price_1": 22.4,
-            "ask_volume_1": 54100,
-            "ask_price_2": 22.45,
-            "ask_volume_2": 227900,
-            "ask_price_3": 22.5,
-            "ask_volume_3": 393100,
+            "time": "2026-11-17T11:08:50+07:00",
+            "bid_price_1": 22.25,
+            "bid_volume_1": 1300,
+            "bid_price_2": 22.2,
+            "bid_volume_2": 51000,
+            "bid_price_3": 22.15,
+            "bid_volume_3": 128000,
+            "ask_price_1": 22.3,
+            "ask_volume_1": 75600,
+            "ask_price_2": 22.35,
+            "ask_volume_2": 114100,
+            "ask_price_3": 22.4,
+            "ask_volume_3": 113800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 2,
-      "s_depth_wall": -1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -2272,7 +2272,7 @@
       }
     },
     "HDG": {
-      "refreshed_at": "2026-11-17T03:31:07.365228+00:00",
+      "refreshed_at": "2026-11-17T04:08:51.373469+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2302,19 +2302,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:21+07:00",
-            "bid_price_1": 16.5,
-            "bid_volume_1": 26300,
-            "bid_price_2": 16.45,
-            "bid_volume_2": 25400,
-            "bid_price_3": 16.4,
-            "bid_volume_3": 27600,
-            "ask_price_1": 16.55,
-            "ask_volume_1": 37400,
-            "ask_price_2": 16.6,
-            "ask_volume_2": 25600,
-            "ask_price_3": 16.65,
-            "ask_volume_3": 56300,
+            "time": "2026-11-17T11:08:10+07:00",
+            "bid_price_1": 16.45,
+            "bid_volume_1": 31800,
+            "bid_price_2": 16.4,
+            "bid_volume_2": 43400,
+            "bid_price_3": 16.35,
+            "bid_volume_3": 33500,
+            "ask_price_1": 16.5,
+            "ask_volume_1": 1000,
+            "ask_price_2": 16.55,
+            "ask_volume_2": 22100,
+            "ask_price_3": 16.6,
+            "ask_volume_3": 51600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2323,8 +2323,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -2336,7 +2336,7 @@
       }
     },
     "HHV": {
-      "refreshed_at": "2026-11-17T03:31:09.033959+00:00",
+      "refreshed_at": "2026-11-17T04:08:53.038434+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2366,19 +2366,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:25+07:00",
-            "bid_price_1": 9.46,
-            "bid_volume_1": 200,
-            "bid_price_2": 9.45,
-            "bid_volume_2": 11800,
-            "bid_price_3": 9.44,
-            "bid_volume_3": 29100,
-            "ask_price_1": 9.47,
-            "ask_volume_1": 200,
-            "ask_price_2": 9.48,
-            "ask_volume_2": 3900,
-            "ask_price_3": 9.49,
-            "ask_volume_3": 12900,
+            "time": "2026-11-17T11:09:04+07:00",
+            "bid_price_1": 9.44,
+            "bid_volume_1": 9600,
+            "bid_price_2": 9.43,
+            "bid_volume_2": 25000,
+            "bid_price_3": 9.42,
+            "bid_volume_3": 20900,
+            "ask_price_1": 9.45,
+            "ask_volume_1": 4100,
+            "ask_price_2": 9.46,
+            "ask_volume_2": 26000,
+            "ask_price_3": 9.47,
+            "ask_volume_3": 1100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2387,8 +2387,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -2400,7 +2400,7 @@
       }
     },
     "HPG": {
-      "refreshed_at": "2026-11-17T03:31:10.688373+00:00",
+      "refreshed_at": "2026-11-17T04:08:54.706849+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2430,29 +2430,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:27+07:00",
-            "bid_price_1": 20.9,
-            "bid_volume_1": 737700,
-            "bid_price_2": 20.85,
-            "bid_volume_2": 919900,
-            "bid_price_3": 20.8,
-            "bid_volume_3": 825000,
-            "ask_price_1": 20.95,
-            "ask_volume_1": 512400,
-            "ask_price_2": 21.0,
-            "ask_volume_2": 274200,
-            "ask_price_3": 21.05,
-            "ask_volume_3": 335200,
+            "time": "2026-11-17T11:09:04+07:00",
+            "bid_price_1": 21.0,
+            "bid_volume_1": 110500,
+            "bid_price_2": 20.95,
+            "bid_volume_2": 158400,
+            "bid_price_3": 20.9,
+            "bid_volume_3": 749300,
+            "ask_price_1": 21.05,
+            "ask_volume_1": 398000,
+            "ask_price_2": 21.1,
+            "ask_volume_2": 334500,
+            "ask_price_3": 21.15,
+            "ask_volume_3": 107000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 2,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -2464,7 +2464,7 @@
       }
     },
     "HSG": {
-      "refreshed_at": "2026-11-17T03:31:26.636023+00:00",
+      "refreshed_at": "2026-11-17T04:08:56.371681+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2493,19 +2493,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:34+07:00",
-            "bid_price_1": 10.65,
-            "bid_volume_1": 1000,
-            "bid_price_2": 10.6,
-            "bid_volume_2": 34900,
-            "bid_price_3": 10.55,
-            "bid_volume_3": 188500,
-            "ask_price_1": 10.7,
-            "ask_volume_1": 57300,
-            "ask_price_2": 10.75,
-            "ask_volume_2": 5900,
-            "ask_price_3": 10.8,
-            "ask_volume_3": 7900,
+            "time": "2026-11-17T11:08:59+07:00",
+            "bid_price_1": 10.6,
+            "bid_volume_1": 57800,
+            "bid_price_2": 10.55,
+            "bid_volume_2": 240100,
+            "bid_price_3": 10.5,
+            "bid_volume_3": 184200,
+            "ask_price_1": 10.65,
+            "ask_volume_1": 29900,
+            "ask_price_2": 10.7,
+            "ask_volume_2": 74800,
+            "ask_price_3": 10.75,
+            "ask_volume_3": 26500,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2527,7 +2527,7 @@
       }
     },
     "HT1": {
-      "refreshed_at": "2026-11-17T03:31:26.875796+00:00",
+      "refreshed_at": "2026-11-17T04:09:04.705675+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2556,19 +2556,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:26+07:00",
-            "bid_price_1": 12.5,
-            "bid_volume_1": 75100,
-            "bid_price_2": 12.45,
-            "bid_volume_2": 9200,
-            "bid_price_3": 12.4,
-            "bid_volume_3": 5000,
-            "ask_price_1": 12.55,
-            "ask_volume_1": 6900,
-            "ask_price_2": 12.6,
-            "ask_volume_2": 7300,
-            "ask_price_3": 12.65,
-            "ask_volume_3": 900,
+            "time": "2026-11-17T11:09:10+07:00",
+            "bid_price_1": 12.55,
+            "bid_volume_1": 102900,
+            "bid_price_2": 12.5,
+            "bid_volume_2": 72900,
+            "bid_price_3": 12.45,
+            "bid_volume_3": 3900,
+            "ask_price_1": 12.65,
+            "ask_volume_1": 2800,
+            "ask_price_2": 12.7,
+            "ask_volume_2": 2300,
+            "ask_price_3": 12.75,
+            "ask_volume_3": 100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2590,7 +2590,7 @@
       }
     },
     "KBC": {
-      "refreshed_at": "2026-11-17T03:31:27.124914+00:00",
+      "refreshed_at": "2026-11-17T04:09:06.375835+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2622,19 +2622,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:12+07:00",
-            "bid_price_1": 26.55,
-            "bid_volume_1": 10800,
-            "bid_price_2": 26.5,
-            "bid_volume_2": 20200,
-            "bid_price_3": 26.45,
-            "bid_volume_3": 6900,
-            "ask_price_1": 26.6,
-            "ask_volume_1": 2800,
-            "ask_price_2": 26.7,
-            "ask_volume_2": 20100,
-            "ask_price_3": 26.75,
-            "ask_volume_3": 10500,
+            "time": "2026-11-17T11:09:12+07:00",
+            "bid_price_1": 26.7,
+            "bid_volume_1": 7900,
+            "bid_price_2": 26.65,
+            "bid_volume_2": 4600,
+            "bid_price_3": 26.6,
+            "bid_volume_3": 10900,
+            "ask_price_1": 26.75,
+            "ask_volume_1": 28300,
+            "ask_price_2": 26.8,
+            "ask_volume_2": 39900,
+            "ask_price_3": 26.85,
+            "ask_volume_3": 28300,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2656,7 +2656,7 @@
       }
     },
     "KDC": {
-      "refreshed_at": "2026-11-17T03:31:27.629716+00:00",
+      "refreshed_at": "2026-11-17T04:09:08.043014+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2686,19 +2686,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:27:53+07:00",
+            "time": "2026-11-17T11:07:00+07:00",
             "bid_price_1": 49.65,
-            "bid_volume_1": 3200,
+            "bid_volume_1": 3700,
             "bid_price_2": 49.6,
             "bid_volume_2": 3700,
             "bid_price_3": 49.55,
             "bid_volume_3": 6000,
             "ask_price_1": 50.0,
-            "ask_volume_1": 1700,
+            "ask_volume_1": 2500,
             "ask_price_2": 50.1,
-            "ask_volume_2": 1900,
+            "ask_volume_2": 10500,
             "ask_price_3": 50.2,
-            "ask_volume_3": 5100,
+            "ask_volume_3": 6100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2707,8 +2707,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -2720,7 +2720,7 @@
       }
     },
     "KDH": {
-      "refreshed_at": "2026-11-17T03:31:35.962204+00:00",
+      "refreshed_at": "2026-11-17T04:09:09.710058+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2750,29 +2750,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:44+07:00",
-            "bid_price_1": 15.35,
-            "bid_volume_1": 1000,
-            "bid_price_2": 15.3,
-            "bid_volume_2": 128300,
-            "bid_price_3": 15.25,
-            "bid_volume_3": 116700,
-            "ask_price_1": 15.4,
-            "ask_volume_1": 166400,
-            "ask_price_2": 15.45,
-            "ask_volume_2": 99300,
-            "ask_price_3": 15.5,
-            "ask_volume_3": 362700,
+            "time": "2026-11-17T11:09:13+07:00",
+            "bid_price_1": 15.3,
+            "bid_volume_1": 159200,
+            "bid_price_2": 15.25,
+            "bid_volume_2": 149300,
+            "bid_price_3": 15.2,
+            "bid_volume_3": 174300,
+            "ask_price_1": 15.35,
+            "ask_volume_1": 41500,
+            "ask_price_2": 15.4,
+            "ask_volume_2": 212900,
+            "ask_price_3": 15.45,
+            "ask_volume_3": 155200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 0,
-      "s_depth_wall": -1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -2784,7 +2784,7 @@
       }
     },
     "KOS": {
-      "refreshed_at": "2026-11-17T03:31:37.628705+00:00",
+      "refreshed_at": "2026-11-17T04:09:18.039628+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2814,29 +2814,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:49+07:00",
+            "time": "2026-11-17T11:09:19+07:00",
             "bid_price_1": 3.46,
-            "bid_volume_1": 30700,
+            "bid_volume_1": 1400,
             "bid_price_2": 3.45,
-            "bid_volume_2": 86000,
+            "bid_volume_2": 5000,
             "bid_price_3": 3.44,
-            "bid_volume_3": 21300,
+            "bid_volume_3": 2300,
             "ask_price_1": 3.47,
-            "ask_volume_1": 463500,
-            "ask_price_2": 3.5,
-            "ask_volume_2": 497300,
-            "ask_price_3": 3.51,
-            "ask_volume_3": 504100,
+            "ask_volume_1": 3000,
+            "ask_price_2": 3.48,
+            "ask_volume_2": 4100,
+            "ask_price_3": 3.49,
+            "ask_volume_3": 9100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 2,
-      "s_depth_wall": -2.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -2848,7 +2848,7 @@
       }
     },
     "LPB": {
-      "refreshed_at": "2026-11-17T03:31:39.301988+00:00",
+      "refreshed_at": "2026-11-17T04:09:19.711894+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2878,19 +2878,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:49+07:00",
-            "bid_price_1": 37.15,
-            "bid_volume_1": 7900,
-            "bid_price_2": 37.1,
-            "bid_volume_2": 21200,
-            "bid_price_3": 37.05,
-            "bid_volume_3": 29100,
-            "ask_price_1": 37.2,
-            "ask_volume_1": 7400,
-            "ask_price_2": 37.25,
-            "ask_volume_2": 7800,
-            "ask_price_3": 37.3,
-            "ask_volume_3": 6500,
+            "time": "2026-11-17T11:09:31+07:00",
+            "bid_price_1": 37.1,
+            "bid_volume_1": 22500,
+            "bid_price_2": 37.05,
+            "bid_volume_2": 29800,
+            "bid_price_3": 37.0,
+            "bid_volume_3": 93100,
+            "ask_price_1": 37.15,
+            "ask_volume_1": 11500,
+            "ask_price_2": 37.2,
+            "ask_volume_2": 13000,
+            "ask_price_3": 37.25,
+            "ask_volume_3": 10600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2899,8 +2899,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -2912,7 +2912,7 @@
       }
     },
     "MBB": {
-      "refreshed_at": "2026-11-17T03:31:40.985589+00:00",
+      "refreshed_at": "2026-11-17T04:09:21.373425+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -2942,19 +2942,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:51+07:00",
+            "time": "2026-11-17T11:09:34+07:00",
             "bid_price_1": 18.85,
-            "bid_volume_1": 111000,
+            "bid_volume_1": 41300,
             "bid_price_2": 18.8,
-            "bid_volume_2": 470700,
+            "bid_volume_2": 357800,
             "bid_price_3": 18.75,
-            "bid_volume_3": 408600,
+            "bid_volume_3": 505300,
             "ask_price_1": 18.9,
-            "ask_volume_1": 68600,
+            "ask_volume_1": 227900,
             "ask_price_2": 18.95,
-            "ask_volume_2": 100100,
+            "ask_volume_2": 117100,
             "ask_price_3": 19.0,
-            "ask_volume_3": 241000,
+            "ask_volume_3": 300400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -2963,8 +2963,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -2976,7 +2976,7 @@
       }
     },
     "MCH": {
-      "refreshed_at": "2026-11-17T03:31:49.294621+00:00",
+      "refreshed_at": "2026-11-17T04:09:23.039025+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3006,19 +3006,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:52+07:00",
+            "time": "2026-11-17T11:09:35+07:00",
             "bid_price_1": 131.0,
-            "bid_volume_1": 700,
-            "bid_price_2": 130.5,
-            "bid_volume_2": 1300,
-            "bid_price_3": 130.3,
-            "bid_volume_3": 2500,
-            "ask_price_1": 131.1,
-            "ask_volume_1": 400,
-            "ask_price_2": 131.2,
-            "ask_volume_2": 3700,
-            "ask_price_3": 131.3,
-            "ask_volume_3": 2100,
+            "bid_volume_1": 2000,
+            "bid_price_2": 130.9,
+            "bid_volume_2": 2200,
+            "bid_price_3": 130.8,
+            "bid_volume_3": 2000,
+            "ask_price_1": 131.3,
+            "ask_volume_1": 200,
+            "ask_price_2": 131.4,
+            "ask_volume_2": 300,
+            "ask_price_3": 131.5,
+            "ask_volume_3": 6400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3027,8 +3027,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -3040,7 +3040,7 @@
       }
     },
     "MSB": {
-      "refreshed_at": "2026-11-17T03:31:50.971146+00:00",
+      "refreshed_at": "2026-11-17T04:09:31.374533+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3070,19 +3070,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:05+07:00",
+            "time": "2026-11-17T11:09:42+07:00",
             "bid_price_1": 16.2,
-            "bid_volume_1": 728900,
+            "bid_volume_1": 759900,
             "bid_price_2": 16.15,
-            "bid_volume_2": 1273100,
+            "bid_volume_2": 1383600,
             "bid_price_3": 16.1,
-            "bid_volume_3": 910000,
+            "bid_volume_3": 963400,
             "ask_price_1": 16.25,
-            "ask_volume_1": 45100,
+            "ask_volume_1": 235300,
             "ask_price_2": 16.3,
-            "ask_volume_2": 246500,
+            "ask_volume_2": 241900,
             "ask_price_3": 16.35,
-            "ask_volume_3": 281900,
+            "ask_volume_3": 273400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3091,8 +3091,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 2.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -3104,7 +3104,7 @@
       }
     },
     "MSN": {
-      "refreshed_at": "2026-11-17T03:31:52.628782+00:00",
+      "refreshed_at": "2026-11-17T04:09:33.041655+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3134,19 +3134,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:05+07:00",
-            "bid_price_1": 72.0,
-            "bid_volume_1": 20400,
-            "bid_price_2": 71.9,
-            "bid_volume_2": 12800,
-            "bid_price_3": 71.8,
-            "bid_volume_3": 25800,
-            "ask_price_1": 72.1,
-            "ask_volume_1": 12000,
-            "ask_price_2": 72.2,
-            "ask_volume_2": 87200,
-            "ask_price_3": 72.3,
-            "ask_volume_3": 77600,
+            "time": "2026-11-17T11:09:40+07:00",
+            "bid_price_1": 71.9,
+            "bid_volume_1": 21200,
+            "bid_price_2": 71.8,
+            "bid_volume_2": 28900,
+            "bid_price_3": 71.7,
+            "bid_volume_3": 27600,
+            "ask_price_1": 72.0,
+            "ask_volume_1": 17700,
+            "ask_price_2": 72.1,
+            "ask_volume_2": 46400,
+            "ask_price_3": 72.2,
+            "ask_volume_3": 83600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3155,8 +3155,8 @@
       "s_ff_net": 2,
       "s_depth_wall": -1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -3168,7 +3168,7 @@
       }
     },
     "MWG": {
-      "refreshed_at": "2026-11-17T03:31:54.294933+00:00",
+      "refreshed_at": "2026-11-17T04:09:34.710115+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3198,29 +3198,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:07+07:00",
-            "bid_price_1": 72.7,
-            "bid_volume_1": 4700,
-            "bid_price_2": 72.6,
-            "bid_volume_2": 12100,
-            "bid_price_3": 72.5,
-            "bid_volume_3": 52300,
-            "ask_price_1": 72.8,
-            "ask_volume_1": 10600,
-            "ask_price_2": 72.9,
-            "ask_volume_2": 2400,
-            "ask_price_3": 73.0,
-            "ask_volume_3": 37400,
+            "time": "2026-11-17T11:09:39+07:00",
+            "bid_price_1": 72.6,
+            "bid_volume_1": 64900,
+            "bid_price_2": 72.5,
+            "bid_volume_2": 80100,
+            "bid_price_3": 72.4,
+            "bid_volume_3": 59200,
+            "ask_price_1": 72.7,
+            "ask_volume_1": 21600,
+            "ask_price_2": 72.8,
+            "ask_volume_2": 16600,
+            "ask_price_3": 72.9,
+            "ask_volume_3": 12700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 0,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -3232,7 +3232,7 @@
       }
     },
     "NAB": {
-      "refreshed_at": "2026-11-17T03:32:06.120484+00:00",
+      "refreshed_at": "2026-11-17T04:09:36.374277+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3262,19 +3262,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:15+07:00",
+            "time": "2026-11-17T11:09:45+07:00",
             "bid_price_1": 12.7,
-            "bid_volume_1": 7500,
+            "bid_volume_1": 21300,
             "bid_price_2": 12.65,
-            "bid_volume_2": 101100,
+            "bid_volume_2": 105700,
             "bid_price_3": 12.6,
-            "bid_volume_3": 235600,
+            "bid_volume_3": 234900,
             "ask_price_1": 12.75,
-            "ask_volume_1": 10300,
+            "ask_volume_1": 21700,
             "ask_price_2": 12.8,
-            "ask_volume_2": 32100,
+            "ask_volume_2": 29700,
             "ask_price_3": 12.85,
-            "ask_volume_3": 28700,
+            "ask_volume_3": 30000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3283,8 +3283,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -3296,7 +3296,7 @@
       }
     },
     "NKG": {
-      "refreshed_at": "2026-11-17T03:32:06.357628+00:00",
+      "refreshed_at": "2026-11-17T04:09:44.705296+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3328,19 +3328,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:19+07:00",
-            "bid_price_1": 12.3,
-            "bid_volume_1": 3000,
-            "bid_price_2": 12.25,
-            "bid_volume_2": 137600,
-            "bid_price_3": 12.2,
-            "bid_volume_3": 408900,
-            "ask_price_1": 12.35,
-            "ask_volume_1": 13700,
-            "ask_price_2": 12.4,
-            "ask_volume_2": 55100,
-            "ask_price_3": 12.45,
-            "ask_volume_3": 181200,
+            "time": "2026-11-17T11:09:36+07:00",
+            "bid_price_1": 12.25,
+            "bid_volume_1": 170000,
+            "bid_price_2": 12.2,
+            "bid_volume_2": 417500,
+            "bid_price_3": 12.15,
+            "bid_volume_3": 240300,
+            "ask_price_1": 12.3,
+            "ask_volume_1": 12000,
+            "ask_price_2": 12.35,
+            "ask_volume_2": 43400,
+            "ask_price_3": 12.4,
+            "ask_volume_3": 69000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3362,7 +3362,7 @@
       }
     },
     "NLG": {
-      "refreshed_at": "2026-11-17T03:32:06.709899+00:00",
+      "refreshed_at": "2026-11-17T04:09:46.370524+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3392,19 +3392,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:31+07:00",
-            "bid_price_1": 23.8,
-            "bid_volume_1": 4800,
-            "bid_price_2": 23.75,
-            "bid_volume_2": 13100,
-            "bid_price_3": 23.7,
-            "bid_volume_3": 23800,
-            "ask_price_1": 23.85,
-            "ask_volume_1": 4900,
-            "ask_price_2": 23.9,
-            "ask_volume_2": 7200,
-            "ask_price_3": 23.95,
-            "ask_volume_3": 10300,
+            "time": "2026-11-17T11:09:34+07:00",
+            "bid_price_1": 23.85,
+            "bid_volume_1": 1700,
+            "bid_price_2": 23.8,
+            "bid_volume_2": 9500,
+            "bid_price_3": 23.75,
+            "bid_volume_3": 15400,
+            "ask_price_1": 23.9,
+            "ask_volume_1": 14600,
+            "ask_price_2": 23.95,
+            "ask_volume_2": 10900,
+            "ask_price_3": 24.0,
+            "ask_volume_3": 23100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3413,8 +3413,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -3426,7 +3426,7 @@
       }
     },
     "NT2": {
-      "refreshed_at": "2026-11-17T03:32:07.626075+00:00",
+      "refreshed_at": "2026-11-17T04:09:48.038062+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3455,19 +3455,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:19+07:00",
-            "bid_price_1": 24.15,
-            "bid_volume_1": 200,
-            "bid_price_2": 24.1,
-            "bid_volume_2": 9100,
-            "bid_price_3": 24.05,
-            "bid_volume_3": 1900,
-            "ask_price_1": 24.2,
-            "ask_volume_1": 1100,
-            "ask_price_2": 24.25,
-            "ask_volume_2": 29300,
-            "ask_price_3": 24.3,
-            "ask_volume_3": 23500,
+            "time": "2026-11-17T11:09:57+07:00",
+            "bid_price_1": 24.1,
+            "bid_volume_1": 15300,
+            "bid_price_2": 24.05,
+            "bid_volume_2": 14600,
+            "bid_price_3": 24.0,
+            "bid_volume_3": 66700,
+            "ask_price_1": 24.15,
+            "ask_volume_1": 3100,
+            "ask_price_2": 24.2,
+            "ask_volume_2": 20600,
+            "ask_price_3": 24.25,
+            "ask_volume_3": 30700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3489,7 +3489,7 @@
       }
     },
     "NVL": {
-      "refreshed_at": "2026-11-17T03:32:15.958677+00:00",
+      "refreshed_at": "2026-11-17T04:09:49.704982+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3521,19 +3521,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:27+07:00",
+            "time": "2026-11-17T11:10:00+07:00",
             "bid_price_1": 10.3,
-            "bid_volume_1": 1251800,
+            "bid_volume_1": 548800,
             "bid_price_2": 10.25,
-            "bid_volume_2": 1041400,
+            "bid_volume_2": 1095200,
             "bid_price_3": 10.2,
-            "bid_volume_3": 3225700,
+            "bid_volume_3": 3130500,
             "ask_price_1": 10.35,
-            "ask_volume_1": 119500,
+            "ask_volume_1": 215100,
             "ask_price_2": 10.4,
-            "ask_volume_2": 473700,
+            "ask_volume_2": 586300,
             "ask_price_3": 10.45,
-            "ask_volume_3": 306900,
+            "ask_volume_3": 452200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3555,7 +3555,7 @@
       }
     },
     "OCB": {
-      "refreshed_at": "2026-11-17T03:32:17.624232+00:00",
+      "refreshed_at": "2026-11-17T04:09:58.037615+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3585,19 +3585,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:57+07:00",
+            "time": "2026-11-17T11:09:30+07:00",
             "bid_price_1": 10.55,
-            "bid_volume_1": 42800,
+            "bid_volume_1": 18400,
             "bid_price_2": 10.5,
-            "bid_volume_2": 82300,
+            "bid_volume_2": 84600,
             "bid_price_3": 10.45,
             "bid_volume_3": 49000,
             "ask_price_1": 10.6,
-            "ask_volume_1": 37800,
+            "ask_volume_1": 22500,
             "ask_price_2": 10.65,
-            "ask_volume_2": 66300,
+            "ask_volume_2": 65300,
             "ask_price_3": 10.7,
-            "ask_volume_3": 25500,
+            "ask_volume_3": 28600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3606,8 +3606,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -3619,7 +3619,7 @@
       }
     },
     "PAN": {
-      "refreshed_at": "2026-11-17T03:32:19.289880+00:00",
+      "refreshed_at": "2026-11-17T04:09:59.705240+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3649,19 +3649,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:17+07:00",
+            "time": "2026-11-17T11:09:50+07:00",
             "bid_price_1": 16.75,
-            "bid_volume_1": 6600,
+            "bid_volume_1": 10100,
             "bid_price_2": 16.7,
-            "bid_volume_2": 7300,
+            "bid_volume_2": 25400,
             "bid_price_3": 16.65,
-            "bid_volume_3": 20700,
+            "bid_volume_3": 24600,
             "ask_price_1": 16.8,
-            "ask_volume_1": 4500,
-            "ask_price_2": 16.9,
-            "ask_volume_2": 12600,
-            "ask_price_3": 17.0,
-            "ask_volume_3": 12500,
+            "ask_volume_1": 6800,
+            "ask_price_2": 16.85,
+            "ask_volume_2": 6200,
+            "ask_price_3": 16.9,
+            "ask_volume_3": 11600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3670,8 +3670,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 1.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -3683,7 +3683,7 @@
       }
     },
     "PC1": {
-      "refreshed_at": "2026-11-17T03:32:20.959085+00:00",
+      "refreshed_at": "2026-11-17T04:10:01.378811+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3713,19 +3713,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:23+07:00",
-            "bid_price_1": 16.4,
-            "bid_volume_1": 3800,
-            "bid_price_2": 16.35,
-            "bid_volume_2": 1000,
-            "bid_price_3": 16.3,
-            "bid_volume_3": 2800,
-            "ask_price_1": 16.45,
-            "ask_volume_1": 7900,
-            "ask_price_2": 16.5,
-            "ask_volume_2": 25900,
-            "ask_price_3": 16.55,
-            "ask_volume_3": 31900,
+            "time": "2026-11-17T11:09:53+07:00",
+            "bid_price_1": 16.3,
+            "bid_volume_1": 6700,
+            "bid_price_2": 16.25,
+            "bid_volume_2": 9100,
+            "bid_price_3": 16.2,
+            "bid_volume_3": 14400,
+            "ask_price_1": 16.35,
+            "ask_volume_1": 1100,
+            "ask_price_2": 16.4,
+            "ask_volume_2": 5200,
+            "ask_price_3": 16.45,
+            "ask_volume_3": 11400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3734,8 +3734,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -3747,7 +3747,7 @@
       }
     },
     "PDR": {
-      "refreshed_at": "2026-11-17T03:32:29.293081+00:00",
+      "refreshed_at": "2026-11-17T04:10:03.041967+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3779,19 +3779,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:33+07:00",
-            "bid_price_1": 11.3,
-            "bid_volume_1": 28400,
-            "bid_price_2": 11.25,
-            "bid_volume_2": 114700,
-            "bid_price_3": 11.2,
-            "bid_volume_3": 211900,
-            "ask_price_1": 11.35,
-            "ask_volume_1": 65600,
-            "ask_price_2": 11.4,
-            "ask_volume_2": 87200,
-            "ask_price_3": 11.45,
-            "ask_volume_3": 95700,
+            "time": "2026-11-17T11:10:15+07:00",
+            "bid_price_1": 11.2,
+            "bid_volume_1": 218700,
+            "bid_price_2": 11.15,
+            "bid_volume_2": 222500,
+            "bid_price_3": 11.1,
+            "bid_volume_3": 264100,
+            "ask_price_1": 11.25,
+            "ask_volume_1": 172000,
+            "ask_price_2": 11.3,
+            "ask_volume_2": 26200,
+            "ask_price_3": 11.35,
+            "ask_volume_3": 45600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3813,7 +3813,7 @@
       }
     },
     "PHR": {
-      "refreshed_at": "2026-11-17T03:32:30.964180+00:00",
+      "refreshed_at": "2026-11-17T04:10:11.374680+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3843,17 +3843,17 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:33+07:00",
-            "bid_price_1": 28.4,
-            "bid_volume_1": 4900,
-            "bid_price_2": 28.35,
-            "bid_volume_2": 17500,
-            "bid_price_3": 28.3,
-            "bid_volume_3": 13900,
+            "time": "2026-11-17T11:09:41+07:00",
+            "bid_price_1": 28.45,
+            "bid_volume_1": 100,
+            "bid_price_2": 28.4,
+            "bid_volume_2": 4700,
+            "bid_price_3": 28.35,
+            "bid_volume_3": 3400,
             "ask_price_1": 28.5,
-            "ask_volume_1": 13900,
+            "ask_volume_1": 15900,
             "ask_price_2": 28.6,
-            "ask_volume_2": 9600,
+            "ask_volume_2": 8100,
             "ask_price_3": 28.65,
             "ask_volume_3": 10200,
             "total_bid_volume": null,
@@ -3864,8 +3864,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -3877,7 +3877,7 @@
       }
     },
     "PLX": {
-      "refreshed_at": "2026-11-17T03:32:32.628363+00:00",
+      "refreshed_at": "2026-11-17T04:10:13.040228+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3907,29 +3907,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:43+07:00",
-            "bid_price_1": 32.25,
-            "bid_volume_1": 1500,
-            "bid_price_2": 32.2,
-            "bid_volume_2": 12300,
-            "bid_price_3": 32.15,
-            "bid_volume_3": 12300,
-            "ask_price_1": 32.3,
-            "ask_volume_1": 1900,
-            "ask_price_2": 32.35,
-            "ask_volume_2": 200,
-            "ask_price_3": 32.4,
-            "ask_volume_3": 7100,
+            "time": "2026-11-17T11:10:25+07:00",
+            "bid_price_1": 32.05,
+            "bid_volume_1": 51400,
+            "bid_price_2": 32.0,
+            "bid_volume_2": 137000,
+            "bid_price_3": 31.95,
+            "bid_volume_3": 2900,
+            "ask_price_1": 32.1,
+            "ask_volume_1": 27900,
+            "ask_price_2": 32.15,
+            "ask_volume_2": 20500,
+            "ask_price_3": 32.2,
+            "ask_volume_3": 17100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 2.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -3941,7 +3941,7 @@
       }
     },
     "PNJ": {
-      "refreshed_at": "2026-11-17T03:32:34.317513+00:00",
+      "refreshed_at": "2026-11-17T04:10:14.705717+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -3971,19 +3971,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:46+07:00",
-            "bid_price_1": 14.35,
-            "bid_volume_1": 34900,
-            "bid_price_2": 14.3,
-            "bid_volume_2": 132500,
-            "bid_price_3": 14.25,
-            "bid_volume_3": 112800,
-            "ask_price_1": 14.4,
-            "ask_volume_1": 16900,
-            "ask_price_2": 14.45,
-            "ask_volume_2": 129900,
-            "ask_price_3": 14.5,
-            "ask_volume_3": 176300,
+            "time": "2026-11-17T11:10:24+07:00",
+            "bid_price_1": 14.4,
+            "bid_volume_1": 100,
+            "bid_price_2": 14.35,
+            "bid_volume_2": 27800,
+            "bid_price_3": 14.3,
+            "bid_volume_3": 135300,
+            "ask_price_1": 14.45,
+            "ask_volume_1": 157700,
+            "ask_price_2": 14.5,
+            "ask_volume_2": 180800,
+            "ask_price_3": 14.55,
+            "ask_volume_3": 19300,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -3992,8 +3992,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -4005,7 +4005,7 @@
       }
     },
     "POW": {
-      "refreshed_at": "2026-11-17T03:32:42.631616+00:00",
+      "refreshed_at": "2026-11-17T04:10:16.381888+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4035,19 +4035,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:55+07:00",
-            "bid_price_1": 13.0,
-            "bid_volume_1": 281200,
-            "bid_price_2": 12.95,
-            "bid_volume_2": 141700,
-            "bid_price_3": 12.9,
-            "bid_volume_3": 232300,
-            "ask_price_1": 13.05,
-            "ask_volume_1": 237000,
-            "ask_price_2": 13.1,
-            "ask_volume_2": 430700,
-            "ask_price_3": 13.15,
-            "ask_volume_3": 478800,
+            "time": "2026-11-17T11:10:29+07:00",
+            "bid_price_1": 12.9,
+            "bid_volume_1": 264800,
+            "bid_price_2": 12.85,
+            "bid_volume_2": 298500,
+            "bid_price_3": 12.8,
+            "bid_volume_3": 342000,
+            "ask_price_1": 12.95,
+            "ask_volume_1": 85700,
+            "ask_price_2": 13.0,
+            "ask_volume_2": 252200,
+            "ask_price_3": 13.05,
+            "ask_volume_3": 318900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4056,8 +4056,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4069,7 +4069,7 @@
       }
     },
     "PVD": {
-      "refreshed_at": "2026-11-17T03:32:44.291320+00:00",
+      "refreshed_at": "2026-11-17T04:10:24.705311+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4101,19 +4101,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:46+07:00",
-            "bid_price_1": 16.25,
-            "bid_volume_1": 4400,
-            "bid_price_2": 16.2,
-            "bid_volume_2": 32900,
-            "bid_price_3": 16.15,
-            "bid_volume_3": 49500,
-            "ask_price_1": 16.3,
-            "ask_volume_1": 700,
-            "ask_price_2": 16.35,
-            "ask_volume_2": 101400,
-            "ask_price_3": 16.4,
-            "ask_volume_3": 35800,
+            "time": "2026-11-17T11:10:36+07:00",
+            "bid_price_1": 16.15,
+            "bid_volume_1": 62500,
+            "bid_price_2": 16.1,
+            "bid_volume_2": 83700,
+            "bid_price_3": 16.05,
+            "bid_volume_3": 134900,
+            "ask_price_1": 16.2,
+            "ask_volume_1": 28800,
+            "ask_price_2": 16.25,
+            "ask_volume_2": 19600,
+            "ask_price_3": 16.3,
+            "ask_volume_3": 26700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4135,7 +4135,7 @@
       }
     },
     "PVT": {
-      "refreshed_at": "2026-11-17T03:32:45.961782+00:00",
+      "refreshed_at": "2026-11-17T04:10:26.370982+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4165,29 +4165,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:57+07:00",
-            "bid_price_1": 20.55,
-            "bid_volume_1": 9700,
-            "bid_price_2": 20.5,
-            "bid_volume_2": 62900,
-            "bid_price_3": 20.45,
-            "bid_volume_3": 344200,
-            "ask_price_1": 20.6,
-            "ask_volume_1": 52000,
-            "ask_price_2": 20.7,
-            "ask_volume_2": 29100,
-            "ask_price_3": 20.75,
-            "ask_volume_3": 9700,
+            "time": "2026-11-17T11:10:36+07:00",
+            "bid_price_1": 20.45,
+            "bid_volume_1": 300,
+            "bid_price_2": 20.4,
+            "bid_volume_2": 41600,
+            "bid_price_3": 20.35,
+            "bid_volume_3": 155800,
+            "ask_price_1": 20.5,
+            "ask_volume_1": 21700,
+            "ask_price_2": 20.55,
+            "ask_volume_2": 2100,
+            "ask_price_3": 20.6,
+            "ask_volume_3": 12700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -4,
-      "s_depth_wall": 1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -4199,7 +4199,7 @@
       }
     },
     "REE": {
-      "refreshed_at": "2026-11-17T03:32:47.623856+00:00",
+      "refreshed_at": "2026-11-17T04:10:28.050362+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4229,19 +4229,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:59+07:00",
-            "bid_price_1": 47.8,
-            "bid_volume_1": 3200,
-            "bid_price_2": 47.7,
-            "bid_volume_2": 3100,
-            "bid_price_3": 47.65,
-            "bid_volume_3": 6100,
+            "time": "2026-11-17T11:10:28+07:00",
+            "bid_price_1": 47.85,
+            "bid_volume_1": 700,
+            "bid_price_2": 47.8,
+            "bid_volume_2": 8900,
+            "bid_price_3": 47.7,
+            "bid_volume_3": 11000,
             "ask_price_1": 48.0,
-            "ask_volume_1": 1100,
+            "ask_volume_1": 500,
             "ask_price_2": 48.05,
-            "ask_volume_2": 200,
+            "ask_volume_2": 100,
             "ask_price_3": 48.1,
-            "ask_volume_3": 200,
+            "ask_volume_3": 300,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4250,8 +4250,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 1.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4263,7 +4263,7 @@
       }
     },
     "SAB": {
-      "refreshed_at": "2026-11-17T03:32:55.959703+00:00",
+      "refreshed_at": "2026-11-17T04:10:29.711586+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4290,19 +4290,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:44+07:00",
+            "time": "2026-11-17T11:10:34+07:00",
             "bid_price_1": 42.7,
-            "bid_volume_1": 5500,
+            "bid_volume_1": 5200,
             "bid_price_2": 42.65,
-            "bid_volume_2": 5200,
+            "bid_volume_2": 6600,
             "bid_price_3": 42.6,
-            "bid_volume_3": 5500,
+            "bid_volume_3": 13300,
             "ask_price_1": 42.75,
-            "ask_volume_1": 200,
+            "ask_volume_1": 1800,
             "ask_price_2": 42.8,
-            "ask_volume_2": 5400,
-            "ask_price_3": 42.85,
-            "ask_volume_3": 200,
+            "ask_volume_2": 10800,
+            "ask_price_3": 42.9,
+            "ask_volume_3": 1300,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4311,8 +4311,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -4324,7 +4324,7 @@
       }
     },
     "SBT": {
-      "refreshed_at": "2026-11-17T03:32:57.630882+00:00",
+      "refreshed_at": "2026-11-17T04:10:38.040847+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4354,19 +4354,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:33+07:00",
-            "bid_price_1": 21.05,
-            "bid_volume_1": 900,
-            "bid_price_2": 21.0,
-            "bid_volume_2": 3100,
-            "bid_price_3": 20.95,
-            "bid_volume_3": 12800,
-            "ask_price_1": 21.1,
-            "ask_volume_1": 16800,
-            "ask_price_2": 21.15,
-            "ask_volume_2": 26000,
-            "ask_price_3": 21.2,
-            "ask_volume_3": 43000,
+            "time": "2026-11-17T11:10:20+07:00",
+            "bid_price_1": 21.2,
+            "bid_volume_1": 100,
+            "bid_price_2": 21.15,
+            "bid_volume_2": 3200,
+            "bid_price_3": 21.1,
+            "bid_volume_3": 2500,
+            "ask_price_1": 21.25,
+            "ask_volume_1": 29000,
+            "ask_price_2": 21.3,
+            "ask_volume_2": 30900,
+            "ask_price_3": 21.35,
+            "ask_volume_3": 27200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4375,8 +4375,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4388,7 +4388,7 @@
       }
     },
     "SHB": {
-      "refreshed_at": "2026-11-17T03:32:59.290355+00:00",
+      "refreshed_at": "2026-11-17T04:10:39.707252+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4418,19 +4418,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:11+07:00",
+            "time": "2026-11-17T11:10:48+07:00",
             "bid_price_1": 10.65,
-            "bid_volume_1": 3327300,
+            "bid_volume_1": 3469100,
             "bid_price_2": 10.6,
-            "bid_volume_2": 2817200,
+            "bid_volume_2": 2974100,
             "bid_price_3": 10.55,
-            "bid_volume_3": 2929100,
+            "bid_volume_3": 3026800,
             "ask_price_1": 10.7,
-            "ask_volume_1": 66300,
+            "ask_volume_1": 455900,
             "ask_price_2": 10.75,
-            "ask_volume_2": 808700,
+            "ask_volume_2": 1192300,
             "ask_price_3": 10.8,
-            "ask_volume_3": 764600,
+            "ask_volume_3": 1226600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4439,8 +4439,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4452,7 +4452,7 @@
       }
     },
     "SIP": {
-      "refreshed_at": "2026-11-17T03:33:00.990037+00:00",
+      "refreshed_at": "2026-11-17T04:10:41.385853+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4479,19 +4479,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:30+07:00",
-            "bid_price_1": 50.1,
-            "bid_volume_1": 6700,
-            "bid_price_2": 50.0,
-            "bid_volume_2": 7900,
-            "bid_price_3": 49.95,
-            "bid_volume_3": 3000,
-            "ask_price_1": 50.2,
-            "ask_volume_1": 2300,
-            "ask_price_2": 50.3,
-            "ask_volume_2": 10700,
-            "ask_price_3": 50.4,
-            "ask_volume_3": 7800,
+            "time": "2026-11-17T11:10:18+07:00",
+            "bid_price_1": 50.0,
+            "bid_volume_1": 12600,
+            "bid_price_2": 49.95,
+            "bid_volume_2": 2600,
+            "bid_price_3": 49.9,
+            "bid_volume_3": 3400,
+            "ask_price_1": 50.1,
+            "ask_volume_1": 1000,
+            "ask_price_2": 50.2,
+            "ask_volume_2": 4800,
+            "ask_price_3": 50.3,
+            "ask_volume_3": 10700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4500,8 +4500,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": null,
       "s_insider": 0.0,
       "endpoint_rows": {
@@ -4513,7 +4513,7 @@
       }
     },
     "SJS": {
-      "refreshed_at": "2026-11-17T03:33:09.306540+00:00",
+      "refreshed_at": "2026-11-17T04:10:43.039622+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4543,19 +4543,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:30:59+07:00",
-            "bid_price_1": 52.6,
-            "bid_volume_1": 200,
-            "bid_price_2": 52.0,
-            "bid_volume_2": 600,
-            "bid_price_3": 51.5,
-            "bid_volume_3": 100,
-            "ask_price_1": 53.0,
-            "ask_volume_1": 1000,
+            "time": "2026-11-17T11:10:56+07:00",
+            "bid_price_1": 52.8,
+            "bid_volume_1": 100,
+            "bid_price_2": 52.7,
+            "bid_volume_2": 1400,
+            "bid_price_3": 52.6,
+            "bid_volume_3": 400,
+            "ask_price_1": 54.0,
+            "ask_volume_1": 100,
             "ask_price_2": 54.2,
             "ask_volume_2": 100,
-            "ask_price_3": 54.5,
-            "ask_volume_3": 600,
+            "ask_price_3": 54.4,
+            "ask_volume_3": 100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4564,8 +4564,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -4577,7 +4577,7 @@
       }
     },
     "SSB": {
-      "refreshed_at": "2026-11-17T03:33:11.025006+00:00",
+      "refreshed_at": "2026-11-17T04:10:51.373184+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4607,19 +4607,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:09+07:00",
-            "bid_price_1": 15.2,
-            "bid_volume_1": 12600,
-            "bid_price_2": 15.15,
-            "bid_volume_2": 26600,
-            "bid_price_3": 15.1,
-            "bid_volume_3": 52200,
-            "ask_price_1": 15.3,
-            "ask_volume_1": 11200,
-            "ask_price_2": 15.35,
-            "ask_volume_2": 13600,
-            "ask_price_3": 15.4,
-            "ask_volume_3": 43500,
+            "time": "2026-11-17T11:10:53+07:00",
+            "bid_price_1": 15.15,
+            "bid_volume_1": 32800,
+            "bid_price_2": 15.1,
+            "bid_volume_2": 62700,
+            "bid_price_3": 15.05,
+            "bid_volume_3": 111600,
+            "ask_price_1": 15.2,
+            "ask_volume_1": 9500,
+            "ask_price_2": 15.25,
+            "ask_volume_2": 23000,
+            "ask_price_3": 15.3,
+            "ask_volume_3": 9700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4628,8 +4628,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -1.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4641,7 +4641,7 @@
       }
     },
     "SSI": {
-      "refreshed_at": "2026-11-17T03:33:13.561274+00:00",
+      "refreshed_at": "2026-11-17T04:10:53.041706+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4671,29 +4671,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:24+07:00",
+            "time": "2026-11-17T11:11:05+07:00",
             "bid_price_1": 19.85,
-            "bid_volume_1": 178800,
+            "bid_volume_1": 331000,
             "bid_price_2": 19.8,
-            "bid_volume_2": 200400,
+            "bid_volume_2": 259100,
             "bid_price_3": 19.75,
-            "bid_volume_3": 186300,
+            "bid_volume_3": 328700,
             "ask_price_1": 19.9,
-            "ask_volume_1": 40200,
+            "ask_volume_1": 205100,
             "ask_price_2": 19.95,
-            "ask_volume_2": 178600,
+            "ask_volume_2": 367300,
             "ask_price_3": 20.0,
-            "ask_volume_3": 380600,
+            "ask_volume_3": 533800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 2,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": -1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4705,7 +4705,7 @@
       }
     },
     "STB": {
-      "refreshed_at": "2026-11-17T03:33:14.294921+00:00",
+      "refreshed_at": "2026-11-17T04:10:54.705868+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4735,19 +4735,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:22+07:00",
-            "bid_price_1": 71.3,
-            "bid_volume_1": 5600,
-            "bid_price_2": 71.1,
-            "bid_volume_2": 900,
-            "bid_price_3": 71.0,
-            "bid_volume_3": 15700,
-            "ask_price_1": 71.4,
-            "ask_volume_1": 400,
-            "ask_price_2": 71.5,
-            "ask_volume_2": 16100,
-            "ask_price_3": 71.6,
-            "ask_volume_3": 9500,
+            "time": "2026-11-17T11:11:06+07:00",
+            "bid_price_1": 71.9,
+            "bid_volume_1": 1100,
+            "bid_price_2": 71.8,
+            "bid_volume_2": 1000,
+            "bid_price_3": 71.7,
+            "bid_volume_3": 3100,
+            "ask_price_1": 72.0,
+            "ask_volume_1": 900,
+            "ask_price_2": 72.1,
+            "ask_volume_2": 30500,
+            "ask_price_3": 72.3,
+            "ask_volume_3": 3600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4756,8 +4756,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -4769,7 +4769,7 @@
       }
     },
     "TAL": {
-      "refreshed_at": "2026-11-17T03:33:22.642545+00:00",
+      "refreshed_at": "2026-11-17T04:10:56.370734+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4799,19 +4799,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:31:37+07:00",
-            "bid_price_1": 24.5,
-            "bid_volume_1": 4400,
-            "bid_price_2": 24.45,
-            "bid_volume_2": 2500,
-            "bid_price_3": 24.4,
-            "bid_volume_3": 2100,
-            "ask_price_1": 24.7,
-            "ask_volume_1": 5300,
-            "ask_price_2": 24.75,
-            "ask_volume_2": 7000,
-            "ask_price_3": 24.8,
-            "ask_volume_3": 5000,
+            "time": "2026-11-17T11:10:16+07:00",
+            "bid_price_1": 24.6,
+            "bid_volume_1": 3100,
+            "bid_price_2": 24.5,
+            "bid_volume_2": 4900,
+            "bid_price_3": 24.45,
+            "bid_volume_3": 3000,
+            "ask_price_1": 24.65,
+            "ask_volume_1": 3400,
+            "ask_price_2": 24.7,
+            "ask_volume_2": 7500,
+            "ask_price_3": 24.75,
+            "ask_volume_3": 9000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -4820,8 +4820,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -4833,7 +4833,7 @@
       }
     },
     "TCB": {
-      "refreshed_at": "2026-11-17T03:33:24.293013+00:00",
+      "refreshed_at": "2026-11-17T04:11:04.705506+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4860,29 +4860,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:36+07:00",
+            "time": "2026-11-17T11:11:15+07:00",
             "bid_price_1": 21.1,
-            "bid_volume_1": 65200,
+            "bid_volume_1": 423000,
             "bid_price_2": 21.05,
-            "bid_volume_2": 349000,
+            "bid_volume_2": 771200,
             "bid_price_3": 21.0,
-            "bid_volume_3": 902400,
+            "bid_volume_3": 1923900,
             "ask_price_1": 21.15,
-            "ask_volume_1": 158800,
+            "ask_volume_1": 139100,
             "ask_price_2": 21.2,
-            "ask_volume_2": 242300,
+            "ask_volume_2": 151400,
             "ask_price_3": 21.25,
-            "ask_volume_3": 173700,
+            "ask_volume_3": 173000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 2,
-      "s_depth_wall": 1.0,
+      "s_depth_wall": 2.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -4894,7 +4894,7 @@
       }
     },
     "TCH": {
-      "refreshed_at": "2026-11-17T03:33:26.843555+00:00",
+      "refreshed_at": "2026-11-17T04:11:06.386710+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4924,29 +4924,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:38+07:00",
-            "bid_price_1": 13.15,
-            "bid_volume_1": 12500,
-            "bid_price_2": 13.1,
-            "bid_volume_2": 99000,
-            "bid_price_3": 13.05,
-            "bid_volume_3": 151300,
-            "ask_price_1": 13.2,
-            "ask_volume_1": 141400,
-            "ask_price_2": 13.25,
-            "ask_volume_2": 132800,
-            "ask_price_3": 13.3,
-            "ask_volume_3": 140900,
+            "time": "2026-11-17T11:11:18+07:00",
+            "bid_price_1": 13.1,
+            "bid_volume_1": 56300,
+            "bid_price_2": 13.05,
+            "bid_volume_2": 212300,
+            "bid_price_3": 13.0,
+            "bid_volume_3": 146000,
+            "ask_price_1": 13.15,
+            "ask_volume_1": 56200,
+            "ask_price_2": 13.2,
+            "ask_volume_2": 62300,
+            "ask_price_3": 13.25,
+            "ask_volume_3": 128200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -4958,7 +4958,7 @@
       }
     },
     "TCX": {
-      "refreshed_at": "2026-11-17T03:33:27.623865+00:00",
+      "refreshed_at": "2026-11-17T04:11:08.050294+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -4990,19 +4990,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:40+07:00",
-            "bid_price_1": 27.7,
-            "bid_volume_1": 12300,
-            "bid_price_2": 27.65,
-            "bid_volume_2": 50600,
-            "bid_price_3": 27.6,
-            "bid_volume_3": 52300,
-            "ask_price_1": 27.75,
-            "ask_volume_1": 28300,
-            "ask_price_2": 27.8,
-            "ask_volume_2": 36700,
-            "ask_price_3": 27.85,
-            "ask_volume_3": 24000,
+            "time": "2026-11-17T11:11:21+07:00",
+            "bid_price_1": 27.65,
+            "bid_volume_1": 14900,
+            "bid_price_2": 27.6,
+            "bid_volume_2": 45800,
+            "bid_price_3": 27.55,
+            "bid_volume_3": 15700,
+            "ask_price_1": 27.7,
+            "ask_volume_1": 9500,
+            "ask_price_2": 27.75,
+            "ask_volume_2": 33000,
+            "ask_price_3": 27.8,
+            "ask_volume_3": 47600,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5024,7 +5024,7 @@
       }
     },
     "TPB": {
-      "refreshed_at": "2026-11-17T03:33:35.965057+00:00",
+      "refreshed_at": "2026-11-17T04:11:09.710186+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5051,19 +5051,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:46+07:00",
+            "time": "2026-11-17T11:11:21+07:00",
             "bid_price_1": 12.6,
-            "bid_volume_1": 49900,
+            "bid_volume_1": 34500,
             "bid_price_2": 12.55,
-            "bid_volume_2": 478500,
+            "bid_volume_2": 597700,
             "bid_price_3": 12.5,
-            "bid_volume_3": 612200,
+            "bid_volume_3": 731300,
             "ask_price_1": 12.65,
-            "ask_volume_1": 84200,
+            "ask_volume_1": 121600,
             "ask_price_2": 12.7,
-            "ask_volume_2": 47400,
+            "ask_volume_2": 119400,
             "ask_price_3": 12.75,
-            "ask_volume_3": 132300,
+            "ask_volume_3": 136500,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5072,8 +5072,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 2.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -5085,7 +5085,7 @@
       }
     },
     "VCB": {
-      "refreshed_at": "2026-11-17T03:33:37.634297+00:00",
+      "refreshed_at": "2026-11-17T04:11:18.038405+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5115,29 +5115,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:54+07:00",
-            "bid_price_1": 52.7,
-            "bid_volume_1": 8400,
-            "bid_price_2": 52.6,
-            "bid_volume_2": 320400,
-            "bid_price_3": 52.5,
-            "bid_volume_3": 351800,
-            "ask_price_1": 52.8,
-            "ask_volume_1": 69800,
-            "ask_price_2": 52.9,
-            "ask_volume_2": 120700,
-            "ask_price_3": 53.0,
-            "ask_volume_3": 132900,
+            "time": "2026-11-17T11:11:30+07:00",
+            "bid_price_1": 52.6,
+            "bid_volume_1": 300700,
+            "bid_price_2": 52.5,
+            "bid_volume_2": 327400,
+            "bid_price_3": 52.4,
+            "bid_volume_3": 95800,
+            "ask_price_1": 52.7,
+            "ask_volume_1": 4700,
+            "ask_price_2": 52.8,
+            "ask_volume_2": 100900,
+            "ask_price_3": 52.9,
+            "ask_volume_3": 516500,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -4,
-      "s_depth_wall": 1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -5149,7 +5149,7 @@
       }
     },
     "VCG": {
-      "refreshed_at": "2026-11-17T03:33:39.296797+00:00",
+      "refreshed_at": "2026-11-17T04:11:19.707525+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5176,19 +5176,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:48+07:00",
+            "time": "2026-11-17T11:11:31+07:00",
             "bid_price_1": 14.8,
-            "bid_volume_1": 131100,
+            "bid_volume_1": 117900,
             "bid_price_2": 14.75,
-            "bid_volume_2": 162800,
+            "bid_volume_2": 161400,
             "bid_price_3": 14.7,
-            "bid_volume_3": 325800,
+            "bid_volume_3": 305300,
             "ask_price_1": 14.85,
-            "ask_volume_1": 45100,
+            "ask_volume_1": 60700,
             "ask_price_2": 14.9,
-            "ask_volume_2": 28700,
+            "ask_volume_2": 51800,
             "ask_price_3": 14.95,
-            "ask_volume_3": 18500,
+            "ask_volume_3": 27900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5197,8 +5197,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 2.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -1.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -5210,7 +5210,7 @@
       }
     },
     "VCI": {
-      "refreshed_at": "2026-11-17T03:33:40.963392+00:00",
+      "refreshed_at": "2026-11-17T04:11:21.373659+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5240,29 +5240,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:54+07:00",
+            "time": "2026-11-17T11:11:32+07:00",
             "bid_price_1": 19.3,
-            "bid_volume_1": 127000,
+            "bid_volume_1": 21900,
             "bid_price_2": 19.25,
-            "bid_volume_2": 247500,
+            "bid_volume_2": 227100,
             "bid_price_3": 19.2,
-            "bid_volume_3": 123500,
+            "bid_volume_3": 304200,
             "ask_price_1": 19.35,
-            "ask_volume_1": 45300,
+            "ask_volume_1": 64200,
             "ask_price_2": 19.4,
-            "ask_volume_2": 126700,
+            "ask_volume_2": 148700,
             "ask_price_3": 19.45,
-            "ask_volume_3": 57900,
+            "ask_volume_3": 218200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -4,
-      "s_depth_wall": 1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -1.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -5274,7 +5274,7 @@
       }
     },
     "VCK": {
-      "refreshed_at": "2026-11-17T03:33:49.297627+00:00",
+      "refreshed_at": "2026-11-17T04:11:23.042948+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5303,19 +5303,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:00+07:00",
-            "bid_price_1": 27.2,
-            "bid_volume_1": 3600,
-            "bid_price_2": 27.15,
-            "bid_volume_2": 15900,
-            "bid_price_3": 27.1,
-            "bid_volume_3": 13300,
-            "ask_price_1": 27.25,
-            "ask_volume_1": 13400,
-            "ask_price_2": 27.3,
-            "ask_volume_2": 19300,
-            "ask_price_3": 27.35,
-            "ask_volume_3": 44400,
+            "time": "2026-11-17T11:11:22+07:00",
+            "bid_price_1": 27.1,
+            "bid_volume_1": 4900,
+            "bid_price_2": 27.05,
+            "bid_volume_2": 15700,
+            "bid_price_3": 27.0,
+            "bid_volume_3": 19400,
+            "ask_price_1": 27.15,
+            "ask_volume_1": 11300,
+            "ask_price_2": 27.2,
+            "ask_volume_2": 37000,
+            "ask_price_3": 27.25,
+            "ask_volume_3": 13400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5337,7 +5337,7 @@
       }
     },
     "VGC": {
-      "refreshed_at": "2026-11-17T03:33:55.785778+00:00",
+      "refreshed_at": "2026-11-17T04:11:31.374496+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5364,19 +5364,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:33:45+07:00",
+            "time": "2026-11-17T11:11:01+07:00",
             "bid_price_1": 40.05,
-            "bid_volume_1": 900,
+            "bid_volume_1": 100,
             "bid_price_2": 40.0,
-            "bid_volume_2": 4000,
+            "bid_volume_2": 8600,
             "bid_price_3": 39.95,
-            "bid_volume_3": 5900,
-            "ask_price_1": 40.25,
-            "ask_volume_1": 200,
-            "ask_price_2": 40.3,
-            "ask_volume_2": 1100,
-            "ask_price_3": 40.45,
-            "ask_volume_3": 1100,
+            "bid_volume_3": 4900,
+            "ask_price_1": 40.1,
+            "ask_volume_1": 1100,
+            "ask_price_2": 40.15,
+            "ask_volume_2": 700,
+            "ask_price_3": 40.2,
+            "ask_volume_3": 1000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5385,8 +5385,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 1.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -5398,7 +5398,7 @@
       }
     },
     "VHC": {
-      "refreshed_at": "2026-11-17T03:33:55.994298+00:00",
+      "refreshed_at": "2026-11-17T04:11:33.038897+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5430,19 +5430,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:32:52+07:00",
+            "time": "2026-11-17T11:11:34+07:00",
             "bid_price_1": 51.2,
-            "bid_volume_1": 2400,
+            "bid_volume_1": 2600,
             "bid_price_2": 51.1,
-            "bid_volume_2": 14200,
+            "bid_volume_2": 14100,
             "bid_price_3": 51.0,
-            "bid_volume_3": 42600,
+            "bid_volume_3": 44100,
             "ask_price_1": 51.3,
-            "ask_volume_1": 6900,
+            "ask_volume_1": 7200,
             "ask_price_2": 51.4,
-            "ask_volume_2": 5500,
+            "ask_volume_2": 7600,
             "ask_price_3": 51.5,
-            "ask_volume_3": 16800,
+            "ask_volume_3": 15200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5464,7 +5464,7 @@
       }
     },
     "VHM": {
-      "refreshed_at": "2026-11-17T03:33:56.237898+00:00",
+      "refreshed_at": "2026-11-17T04:11:34.724374+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5494,29 +5494,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:02+07:00",
-            "bid_price_1": 62.2,
-            "bid_volume_1": 2500,
-            "bid_price_2": 62.1,
-            "bid_volume_2": 12400,
-            "bid_price_3": 62.0,
-            "bid_volume_3": 38800,
-            "ask_price_1": 62.3,
-            "ask_volume_1": 1100,
-            "ask_price_2": 62.4,
-            "ask_volume_2": 1000,
-            "ask_price_3": 62.5,
-            "ask_volume_3": 11700,
+            "time": "2026-11-17T11:11:35+07:00",
+            "bid_price_1": 62.0,
+            "bid_volume_1": 63300,
+            "bid_price_2": 61.9,
+            "bid_volume_2": 32700,
+            "bid_price_3": 61.8,
+            "bid_volume_3": 58300,
+            "ask_price_1": 62.1,
+            "ask_volume_1": 8000,
+            "ask_price_2": 62.2,
+            "ask_volume_2": 34300,
+            "ask_price_3": 62.3,
+            "ask_volume_3": 23300,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": 0.0,
       "endpoint_rows": {
@@ -5528,7 +5528,7 @@
       }
     },
     "VIB": {
-      "refreshed_at": "2026-11-17T03:34:02.629627+00:00",
+      "refreshed_at": "2026-11-17T04:11:36.371041+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5558,29 +5558,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:16+07:00",
+            "time": "2026-11-17T11:11:35+07:00",
             "bid_price_1": 13.75,
-            "bid_volume_1": 63900,
+            "bid_volume_1": 105400,
             "bid_price_2": 13.7,
-            "bid_volume_2": 211200,
+            "bid_volume_2": 224800,
             "bid_price_3": 13.65,
-            "bid_volume_3": 523500,
+            "bid_volume_3": 1195700,
             "ask_price_1": 13.8,
-            "ask_volume_1": 191600,
+            "ask_volume_1": 233100,
             "ask_price_2": 13.85,
-            "ask_volume_2": 65400,
+            "ask_volume_2": 65700,
             "ask_price_3": 13.9,
-            "ask_volume_3": 85500,
+            "ask_volume_3": 89400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 4,
-      "s_depth_wall": 2.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -5592,7 +5592,7 @@
       }
     },
     "VIC": {
-      "refreshed_at": "2026-11-17T03:34:04.294488+00:00",
+      "refreshed_at": "2026-11-17T04:11:44.704956+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5622,19 +5622,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:14+07:00",
-            "bid_price_1": 246.0,
-            "bid_volume_1": 5300,
-            "bid_price_2": 245.9,
-            "bid_volume_2": 5900,
-            "bid_price_3": 245.8,
-            "bid_volume_3": 5000,
-            "ask_price_1": 246.3,
-            "ask_volume_1": 1000,
-            "ask_price_2": 246.5,
-            "ask_volume_2": 6100,
-            "ask_price_3": 246.6,
-            "ask_volume_3": 2600,
+            "time": "2026-11-17T11:11:51+07:00",
+            "bid_price_1": 246.2,
+            "bid_volume_1": 2800,
+            "bid_price_2": 246.0,
+            "bid_volume_2": 900,
+            "bid_price_3": 245.9,
+            "bid_volume_3": 6500,
+            "ask_price_1": 246.5,
+            "ask_volume_1": 100,
+            "ask_price_2": 246.6,
+            "ask_volume_2": 2300,
+            "ask_price_3": 246.7,
+            "ask_volume_3": 2700,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5643,8 +5643,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 2.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -5656,7 +5656,7 @@
       }
     },
     "VIX": {
-      "refreshed_at": "2026-11-17T03:34:06.894586+00:00",
+      "refreshed_at": "2026-11-17T04:11:46.370951+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5686,19 +5686,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:18+07:00",
-            "bid_price_1": 12.9,
-            "bid_volume_1": 581700,
-            "bid_price_2": 12.85,
-            "bid_volume_2": 616500,
-            "bid_price_3": 12.8,
-            "bid_volume_3": 978200,
-            "ask_price_1": 12.95,
-            "ask_volume_1": 10500,
-            "ask_price_2": 13.0,
-            "ask_volume_2": 1043300,
-            "ask_price_3": 13.05,
-            "ask_volume_3": 539100,
+            "time": "2026-11-17T11:11:57+07:00",
+            "bid_price_1": 12.85,
+            "bid_volume_1": 786300,
+            "bid_price_2": 12.8,
+            "bid_volume_2": 1081000,
+            "bid_price_3": 12.75,
+            "bid_volume_3": 784300,
+            "ask_price_1": 12.9,
+            "ask_volume_1": 422500,
+            "ask_price_2": 12.95,
+            "ask_volume_2": 579100,
+            "ask_price_3": 13.0,
+            "ask_volume_3": 1182200,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5707,8 +5707,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": -2.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -5720,7 +5720,7 @@
       }
     },
     "VJC": {
-      "refreshed_at": "2026-11-17T03:34:07.639442+00:00",
+      "refreshed_at": "2026-11-17T04:11:48.040206+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5750,19 +5750,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:00+07:00",
-            "bid_price_1": 137.4,
-            "bid_volume_1": 2600,
-            "bid_price_2": 137.2,
-            "bid_volume_2": 3000,
-            "bid_price_3": 137.0,
-            "bid_volume_3": 900,
-            "ask_price_1": 137.5,
-            "ask_volume_1": 1800,
-            "ask_price_2": 137.9,
-            "ask_volume_2": 300,
-            "ask_price_3": 138.0,
-            "ask_volume_3": 2000,
+            "time": "2026-11-17T11:11:43+07:00",
+            "bid_price_1": 136.8,
+            "bid_volume_1": 3900,
+            "bid_price_2": 136.7,
+            "bid_volume_2": 1800,
+            "bid_price_3": 136.6,
+            "bid_volume_3": 2100,
+            "ask_price_1": 136.9,
+            "ask_volume_1": 3500,
+            "ask_price_2": 137.0,
+            "ask_volume_2": 5000,
+            "ask_price_3": 137.3,
+            "ask_volume_3": 4000,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5771,8 +5771,8 @@
       "s_ff_net": 4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -5784,7 +5784,7 @@
       }
     },
     "VND": {
-      "refreshed_at": "2026-11-17T03:34:18.037818+00:00",
+      "refreshed_at": "2026-11-17T04:11:49.711080+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5811,19 +5811,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:28+07:00",
-            "bid_price_1": 14.4,
-            "bid_volume_1": 214900,
-            "bid_price_2": 14.35,
-            "bid_volume_2": 191700,
-            "bid_price_3": 14.3,
-            "bid_volume_3": 197500,
-            "ask_price_1": 14.45,
-            "ask_volume_1": 163100,
-            "ask_price_2": 14.5,
-            "ask_volume_2": 251000,
-            "ask_price_3": 14.55,
-            "ask_volume_3": 147000,
+            "time": "2026-11-17T11:12:02+07:00",
+            "bid_price_1": 14.3,
+            "bid_volume_1": 95500,
+            "bid_price_2": 14.25,
+            "bid_volume_2": 279900,
+            "bid_price_3": 14.2,
+            "bid_volume_3": 337800,
+            "ask_price_1": 14.35,
+            "ask_volume_1": 106600,
+            "ask_price_2": 14.4,
+            "ask_volume_2": 122000,
+            "ask_price_3": 14.45,
+            "ask_volume_3": 179800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5832,8 +5832,8 @@
       "s_ff_net": 2,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -5845,7 +5845,7 @@
       }
     },
     "VNM": {
-      "refreshed_at": "2026-11-17T03:34:18.283580+00:00",
+      "refreshed_at": "2026-11-17T04:11:58.037949+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -5875,29 +5875,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:23+07:00",
-            "bid_price_1": 53.6,
-            "bid_volume_1": 19500,
-            "bid_price_2": 53.5,
-            "bid_volume_2": 32200,
-            "bid_price_3": 53.4,
-            "bid_volume_3": 67300,
-            "ask_price_1": 53.7,
-            "ask_volume_1": 700,
-            "ask_price_2": 53.8,
-            "ask_volume_2": 18100,
-            "ask_price_3": 53.9,
-            "ask_volume_3": 17500,
+            "time": "2026-11-17T11:11:58+07:00",
+            "bid_price_1": 53.5,
+            "bid_volume_1": 55300,
+            "bid_price_2": 53.4,
+            "bid_volume_2": 74500,
+            "bid_price_3": 53.3,
+            "bid_volume_3": 63600,
+            "ask_price_1": 53.6,
+            "ask_volume_1": 55700,
+            "ask_price_2": 53.7,
+            "ask_volume_2": 25900,
+            "ask_price_3": 53.8,
+            "ask_volume_3": 44800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": 0,
-      "s_depth_wall": 1.0,
+      "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": 2.0,
       "endpoint_rows": {
@@ -5909,16 +5909,11 @@
       }
     },
     "VPB": {
-      "refreshed_at": "2026-11-17T03:34:19.293650+00:00",
+      "refreshed_at": "2026-11-17T04:11:59.703593+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
           "code": null,
-          "action": null
-        },
-        "active_session_fhsc": {
-          "type": "NetworkError",
-          "code": "VNSTOCK_SOURCE_NETWORK",
           "action": null
         }
       },
@@ -5927,6 +5922,7 @@
         "insider_deal": "FHSC_CACHE",
         "order_book": "FHSC",
         "foreign_flow": "SSI",
+        "trade_size": "FHSC",
         "order_book_primary": "SSI_UNSUPPORTED"
       },
       "raw": {
@@ -5939,23 +5935,23 @@
         "foreign_net_5d": -37275137650.0,
         "foreign_net_20d": -49861977000.0,
         "foreign_intensity": -0.09527312131286227,
-        "average_trade_size": null,
+        "average_trade_size": 4376.847913249499,
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:30+07:00",
-            "bid_price_1": 21.65,
-            "bid_volume_1": 25200,
-            "bid_price_2": 21.6,
-            "bid_volume_2": 108200,
-            "bid_price_3": 21.55,
-            "bid_volume_3": 171800,
-            "ask_price_1": 21.7,
-            "ask_volume_1": 118400,
-            "ask_price_2": 21.75,
-            "ask_volume_2": 107400,
-            "ask_price_3": 21.8,
-            "ask_volume_3": 212800,
+            "time": "2026-11-17T11:12:06+07:00",
+            "bid_price_1": 21.75,
+            "bid_volume_1": 1100,
+            "bid_price_2": 21.7,
+            "bid_volume_2": 43000,
+            "bid_price_3": 21.65,
+            "bid_volume_3": 224000,
+            "ask_price_1": 21.8,
+            "ask_volume_1": 84900,
+            "ask_price_2": 21.85,
+            "ask_volume_2": 113800,
+            "ask_price_3": 21.9,
+            "ask_volume_3": 179100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -5964,8 +5960,8 @@
       "s_ff_net": 0,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 3.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -5977,7 +5973,7 @@
       }
     },
     "VPI": {
-      "refreshed_at": "2026-11-17T03:34:20.966196+00:00",
+      "refreshed_at": "2026-11-17T04:12:01.371941+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -6007,19 +6003,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:32+07:00",
+            "time": "2026-11-17T11:11:58+07:00",
             "bid_price_1": 58.2,
-            "bid_volume_1": 16100,
+            "bid_volume_1": 15500,
             "bid_price_2": 58.1,
             "bid_volume_2": 1200,
             "bid_price_3": 58.0,
             "bid_volume_3": 2300,
             "ask_price_1": 58.4,
-            "ask_volume_1": 8300,
+            "ask_volume_1": 2000,
             "ask_price_2": 58.5,
-            "ask_volume_2": 2500,
+            "ask_volume_2": 9700,
             "ask_price_3": 58.6,
-            "ask_volume_3": 900,
+            "ask_volume_3": 9400,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -6028,8 +6024,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -1.0,
       "endpoint_rows": {
@@ -6041,7 +6037,7 @@
       }
     },
     "VPL": {
-      "refreshed_at": "2026-11-17T03:34:29.300262+00:00",
+      "refreshed_at": "2026-11-17T04:12:03.039308+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -6071,19 +6067,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:18+07:00",
+            "time": "2026-11-17T11:12:13+07:00",
             "bid_price_1": 94.0,
-            "bid_volume_1": 6200,
+            "bid_volume_1": 1200,
             "bid_price_2": 93.9,
-            "bid_volume_2": 4400,
+            "bid_volume_2": 4200,
             "bid_price_3": 93.8,
             "bid_volume_3": 2700,
             "ask_price_1": 94.1,
-            "ask_volume_1": 5000,
+            "ask_volume_1": 4600,
             "ask_price_2": 94.2,
-            "ask_volume_2": 3800,
+            "ask_volume_2": 4600,
             "ask_price_3": 94.3,
-            "ask_volume_3": 1600,
+            "ask_volume_3": 2800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -6092,8 +6088,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 1.0,
       "endpoint_rows": {
@@ -6105,7 +6101,7 @@
       }
     },
     "VPX": {
-      "refreshed_at": "2026-11-17T03:34:30.960675+00:00",
+      "refreshed_at": "2026-11-17T04:12:11.389366+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -6134,19 +6130,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:09+07:00",
-            "bid_price_1": 23.35,
-            "bid_volume_1": 12500,
-            "bid_price_2": 23.3,
-            "bid_volume_2": 28700,
-            "bid_price_3": 23.2,
-            "bid_volume_3": 4700,
-            "ask_price_1": 23.4,
-            "ask_volume_1": 19600,
-            "ask_price_2": 23.45,
-            "ask_volume_2": 12200,
-            "ask_price_3": 23.5,
-            "ask_volume_3": 20200,
+            "time": "2026-11-17T11:12:18+07:00",
+            "bid_price_1": 23.25,
+            "bid_volume_1": 1400,
+            "bid_price_2": 23.2,
+            "bid_volume_2": 10100,
+            "bid_price_3": 23.15,
+            "bid_volume_3": 5000,
+            "ask_price_1": 23.3,
+            "ask_volume_1": 12700,
+            "ask_price_2": 23.35,
+            "ask_volume_2": 6400,
+            "ask_price_3": 23.4,
+            "ask_volume_3": 18500,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -6168,7 +6164,7 @@
       }
     },
     "VRE": {
-      "refreshed_at": "2026-11-17T03:34:32.629220+00:00",
+      "refreshed_at": "2026-11-17T04:12:13.040099+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -6195,29 +6191,29 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:45+07:00",
-            "bid_price_1": 23.95,
-            "bid_volume_1": 22900,
-            "bid_price_2": 23.9,
-            "bid_volume_2": 24100,
-            "bid_price_3": 23.85,
-            "bid_volume_3": 70400,
-            "ask_price_1": 24.0,
-            "ask_volume_1": 17200,
-            "ask_price_2": 24.05,
-            "ask_volume_2": 20500,
-            "ask_price_3": 24.1,
-            "ask_volume_3": 21800,
+            "time": "2026-11-17T11:12:25+07:00",
+            "bid_price_1": 23.9,
+            "bid_volume_1": 18400,
+            "bid_price_2": 23.85,
+            "bid_volume_2": 33100,
+            "bid_price_3": 23.8,
+            "bid_volume_3": 114700,
+            "ask_price_1": 23.95,
+            "ask_volume_1": 28600,
+            "ask_price_2": 24.0,
+            "ask_volume_2": 46400,
+            "ask_price_3": 24.05,
+            "ask_volume_3": 26900,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
         ]
       },
       "s_ff_net": -4,
-      "s_depth_wall": 0.0,
+      "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": null,
       "endpoint_rows": {
@@ -6229,7 +6225,7 @@
       }
     },
     "VSC": {
-      "refreshed_at": "2026-11-17T03:34:34.327052+00:00",
+      "refreshed_at": "2026-11-17T04:12:14.711629+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -6259,19 +6255,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:45+07:00",
+            "time": "2026-11-17T11:12:12+07:00",
             "bid_price_1": 13.35,
-            "bid_volume_1": 186300,
+            "bid_volume_1": 250400,
             "bid_price_2": 13.3,
-            "bid_volume_2": 225800,
+            "bid_volume_2": 309700,
             "bid_price_3": 13.25,
-            "bid_volume_3": 283200,
+            "bid_volume_3": 280200,
             "ask_price_1": 13.4,
-            "ask_volume_1": 85700,
+            "ask_volume_1": 77100,
             "ask_price_2": 13.45,
-            "ask_volume_2": 78900,
+            "ask_volume_2": 138700,
             "ask_price_3": 13.5,
-            "ask_volume_3": 120200,
+            "ask_volume_3": 108800,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -6280,8 +6276,8 @@
       "s_ff_net": -2,
       "s_depth_wall": 1.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": -2.0,
       "endpoint_rows": {
@@ -6293,7 +6289,7 @@
       }
     },
     "VTP": {
-      "refreshed_at": "2026-11-17T03:34:42.628384+00:00",
+      "refreshed_at": "2026-11-17T04:12:16.379500+00:00",
       "errors": {
         "session_stats_ssi": {
           "type": "ValueError",
@@ -6323,19 +6319,19 @@
         "order_book": [
           {
             "index": 0,
-            "time": "2026-11-17T10:34:14+07:00",
-            "bid_price_1": 45.05,
-            "bid_volume_1": 1200,
-            "bid_price_2": 45.0,
-            "bid_volume_2": 3700,
-            "bid_price_3": 44.95,
-            "bid_volume_3": 1800,
-            "ask_price_1": 45.35,
-            "ask_volume_1": 7800,
-            "ask_price_2": 45.4,
-            "ask_volume_2": 3100,
-            "ask_price_3": 45.45,
-            "ask_volume_3": 4200,
+            "time": "2026-11-17T11:12:28+07:00",
+            "bid_price_1": 45.0,
+            "bid_volume_1": 4700,
+            "bid_price_2": 44.95,
+            "bid_volume_2": 7400,
+            "bid_price_3": 44.9,
+            "bid_volume_3": 7100,
+            "ask_price_1": 45.05,
+            "ask_volume_1": 10200,
+            "ask_price_2": 45.1,
+            "ask_volume_2": 2300,
+            "ask_price_3": 45.2,
+            "ask_volume_3": 6100,
             "total_bid_volume": null,
             "total_ask_volume": null
           }
@@ -6344,8 +6340,8 @@
       "s_ff_net": -4,
       "s_depth_wall": 0.0,
       "depth_signal_date": "2026-11-17",
-      "depth_snap_time": "10:29",
-      "depth_captured_at": "2026-11-17T03:36:01.259961+00:00",
+      "depth_snap_time": "11:06",
+      "depth_captured_at": "2026-11-17T04:13:37.886358+00:00",
       "s_prop_5d": 0.0,
       "s_insider": 2.0,
       "endpoint_rows": {
