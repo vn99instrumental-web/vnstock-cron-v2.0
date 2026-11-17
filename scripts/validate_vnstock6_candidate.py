@@ -19,6 +19,14 @@ def finite(value: object) -> float | None:
         return None
 
 
+def dashboard_value(row: dict[str, object], key: str) -> object:
+    value = row.get(key)
+    if value is not None:
+        return value
+    breakdown = row.get("breakdown")
+    return breakdown.get(key) if isinstance(breakdown, dict) else None
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
@@ -87,7 +95,8 @@ def main() -> None:
         "rsi_14", "position_52w", "s_depth_wall",
     )
     field_coverage = {
-        key: sum(finite(row.get(key)) is not None for row in rows) for key in quality_fields
+        key: sum(finite(dashboard_value(row, key)) is not None for row in rows)
+        for key in quality_fields
     }
     minimum_rows = int(config["minimum_coverage"]) * len(versions)
     required_coverage = ("price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "s_depth_wall")
@@ -97,13 +106,13 @@ def main() -> None:
     invalid_values: list[dict[str, object]] = []
     for row in rows:
         checks = {
-            "price": (finite(row.get("price")), 0, None),
-            "adtv_bil": (finite(row.get("adtv_bil")), 0, None),
-            "adtv_20d_bil": (finite(row.get("adtv_20d_bil")), 0, None),
-            "ff_intra_ratio": (finite(row.get("ff_intra_ratio")), -1, 1),
-            "rsi_14": (finite(row.get("rsi_14")), 0, 100),
-            "position_52w": (finite(row.get("position_52w")), 0, 1),
-            "s_depth_wall": (finite(row.get("s_depth_wall")), -3, 3),
+            "price": (finite(dashboard_value(row, "price")), 0, None),
+            "adtv_bil": (finite(dashboard_value(row, "adtv_bil")), 0, None),
+            "adtv_20d_bil": (finite(dashboard_value(row, "adtv_20d_bil")), 0, None),
+            "ff_intra_ratio": (finite(dashboard_value(row, "ff_intra_ratio")), -1, 1),
+            "rsi_14": (finite(dashboard_value(row, "rsi_14")), 0, 100),
+            "position_52w": (finite(dashboard_value(row, "position_52w")), 0, 1),
+            "s_depth_wall": (finite(dashboard_value(row, "s_depth_wall")), -3, 3),
         }
         for key, (value, low, high) in checks.items():
             if value is not None and (value < low or (high is not None and value > high)):
