@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-17T01:21:14.189929+00:00",
+  "status": "PASS",
+  "rows": 1500,
+  "minimum_required_rows": 240,
+  "field_coverage": {
+    "price": 1500,
+    "adtv_bil": 1500,
+    "adtv_20d_bil": 300,
+    "ff_intra_net": 300,
+    "ff_intra_ratio": 300,
+    "rsi_14": 1500,
+    "position_52w": 1500,
+    "s_depth_wall": 900
+  },
+  "low_coverage": {},
+  "invalid_values": [],
+  "contracts": {
+    "adtv_bil": "current_or_last_session_turnover_bil_vnd",
+    "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
+    "ff_intra_net": "latest_session_foreign_net_vnd"
+  }
+}
