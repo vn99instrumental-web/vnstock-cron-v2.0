@@ -1,10 +1,10 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-11-17T09:27:35.998912+00:00",
+  "generated_at": "2026-11-17T09:53:55.445486+00:00",
   "source": "SSI_FAST+FHSC_SLOW",
   "symbols": {
     "ACB": {
-      "refreshed_at": "2026-11-17T09:21:18.859090+00:00",
+      "refreshed_at": "2026-11-17T09:47:41.147689+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -15,13 +15,13 @@
       "raw": {
         "proprietary_net_5d": -19540282000.0,
         "proprietary_net_20d": 535519000.0,
-        "insider_buy_count": 7,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 7,
+        "insider_sell_count": 1,
         "insider_row_count": 9,
         "insider_unclassified_count": 1,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -2557273100.0,
         "foreign_as_of": "2026-11-17",
@@ -37,11 +37,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:18.859090+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:18.859090+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:41.147689+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:41.147689+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:21:18.859090+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:18.859090+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:41.147689+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:47:41.147689+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -51,7 +51,7 @@
       }
     },
     "ANV": {
-      "refreshed_at": "2026-11-17T09:21:18.859770+00:00",
+      "refreshed_at": "2026-11-17T09:47:41.148596+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -62,13 +62,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": -417505000.0,
-        "insider_buy_count": 6,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 6,
+        "insider_sell_count": 2,
         "insider_row_count": 8,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 8500000.0,
         "foreign_as_of": "2026-11-17",
@@ -84,11 +84,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:18.859770+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:18.859770+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:41.148596+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:41.148596+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:21:18.859770+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:18.859770+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:41.148596+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:47:41.148596+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -98,7 +98,7 @@
       }
     },
     "BAF": {
-      "refreshed_at": "2026-11-17T09:21:18.861239+00:00",
+      "refreshed_at": "2026-11-17T09:47:41.150297+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -109,13 +109,13 @@
       "raw": {
         "proprietary_net_5d": -58235000.0,
         "proprietary_net_20d": 748075000.0,
-        "insider_buy_count": 22,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 22,
+        "insider_sell_count": 0,
         "insider_row_count": 22,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -3328090000.0,
         "foreign_as_of": "2026-11-17",
@@ -131,11 +131,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:18.861239+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:18.861239+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:41.150297+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:41.150297+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:21:18.861239+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:18.861239+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:41.150297+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:47:41.150297+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -145,7 +145,7 @@
       }
     },
     "BCM": {
-      "refreshed_at": "2026-11-17T09:21:18.862266+00:00",
+      "refreshed_at": "2026-11-17T09:47:41.151701+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -176,10 +176,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:18.862266+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:18.862266+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:41.151701+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:41.151701+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:18.862266+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:41.151701+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -190,7 +190,7 @@
       }
     },
     "BID": {
-      "refreshed_at": "2026-11-17T09:21:26.167462+00:00",
+      "refreshed_at": "2026-11-17T09:47:48.709011+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -221,10 +221,10 @@
       "s_prop_5d": 2,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:26.167462+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:26.167462+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:48.709011+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:48.709011+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:26.167462+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:48.709011+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -235,7 +235,7 @@
       }
     },
     "BMP": {
-      "refreshed_at": "2026-11-17T09:21:28.490557+00:00",
+      "refreshed_at": "2026-11-17T09:47:49.921377+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -266,10 +266,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:28.490557+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:28.490557+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:49.921377+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:49.921377+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:28.490557+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:49.921377+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -280,7 +280,7 @@
       }
     },
     "BSI": {
-      "refreshed_at": "2026-11-17T09:21:29.414003+00:00",
+      "refreshed_at": "2026-11-17T09:47:51.582502+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -311,10 +311,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:29.414003+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:29.414003+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:51.582502+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:51.582502+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:29.414003+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:51.582502+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -325,7 +325,7 @@
       }
     },
     "BSR": {
-      "refreshed_at": "2026-11-17T09:21:31.054792+00:00",
+      "refreshed_at": "2026-11-17T09:47:53.273420+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -356,10 +356,10 @@
       "s_prop_5d": -1,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:31.054792+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:31.054792+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:47:53.273420+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:47:53.273420+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:31.054792+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:47:53.273420+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -370,7 +370,7 @@
       }
     },
     "BVH": {
-      "refreshed_at": "2026-11-17T09:21:40.432800+00:00",
+      "refreshed_at": "2026-11-17T09:48:01.779265+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -381,13 +381,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 119440000.0,
-        "insider_buy_count": 2,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 2,
+        "insider_sell_count": 1,
         "insider_row_count": 3,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -2005160000.0,
         "foreign_as_of": "2026-11-17",
@@ -403,11 +403,11 @@
       "s_prop_5d": 0,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:40.432800+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:40.432800+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:01.779265+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:01.779265+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:21:40.432800+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:40.432800+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:01.779265+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:01.779265+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -417,7 +417,7 @@
       }
     },
     "BWE": {
-      "refreshed_at": "2026-11-17T09:21:41.057311+00:00",
+      "refreshed_at": "2026-11-17T09:48:03.249601+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -428,13 +428,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 0.0,
-        "insider_buy_count": 36,
-        "insider_sell_count": 3,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 36,
+        "insider_sell_count": 3,
         "insider_row_count": 39,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -1033070000.0,
         "foreign_as_of": "2026-11-17",
@@ -450,11 +450,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:41.057311+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:41.057311+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:03.249601+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:03.249601+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:21:41.057311+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:41.057311+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:03.249601+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:03.249601+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -464,7 +464,7 @@
       }
     },
     "CII": {
-      "refreshed_at": "2026-11-17T09:21:42.732459+00:00",
+      "refreshed_at": "2026-11-17T09:48:04.921541+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -495,10 +495,10 @@
       "s_prop_5d": -2,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:42.732459+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:42.732459+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:04.921541+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:04.921541+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:42.732459+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:04.921541+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -509,7 +509,7 @@
       }
     },
     "CMG": {
-      "refreshed_at": "2026-11-17T09:21:44.375899+00:00",
+      "refreshed_at": "2026-11-17T09:48:06.574982+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -520,13 +520,13 @@
       "raw": {
         "proprietary_net_5d": 526500000.0,
         "proprietary_net_20d": 526500000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 1,
         "insider_row_count": 2,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -1345885000.0,
         "foreign_as_of": "2026-11-17",
@@ -542,11 +542,11 @@
       "s_prop_5d": 1,
       "s_insider": 0,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:44.375899+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:44.375899+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:06.574982+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:06.574982+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:21:44.375899+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:44.375899+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:06.574982+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:06.574982+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -556,7 +556,7 @@
       }
     },
     "CTD": {
-      "refreshed_at": "2026-11-17T09:21:52.804923+00:00",
+      "refreshed_at": "2026-11-17T09:48:15.156707+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -567,13 +567,13 @@
       "raw": {
         "proprietary_net_5d": 9406030000.0,
         "proprietary_net_20d": -2342570000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 4,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 4,
         "insider_row_count": 7,
         "insider_unclassified_count": 2,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 9647715300.0,
         "foreign_as_of": "2026-11-17",
@@ -589,11 +589,11 @@
       "s_prop_5d": 2,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:52.804923+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:52.804923+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:15.156707+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:15.156707+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:21:52.804923+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:21:52.804923+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:15.156707+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:15.156707+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -603,7 +603,7 @@
       }
     },
     "CTG": {
-      "refreshed_at": "2026-11-17T09:21:54.390545+00:00",
+      "refreshed_at": "2026-11-17T09:48:16.613338+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -634,10 +634,10 @@
       "s_prop_5d": -3,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:54.390545+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:54.390545+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:16.613338+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:16.613338+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:54.390545+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:16.613338+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -648,7 +648,7 @@
       }
     },
     "CTR": {
-      "refreshed_at": "2026-11-17T09:21:56.933579+00:00",
+      "refreshed_at": "2026-11-17T09:48:18.242688+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -679,10 +679,10 @@
       "s_prop_5d": -2,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:56.933579+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:56.933579+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:18.242688+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:18.242688+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:56.933579+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:18.242688+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -693,7 +693,7 @@
       }
     },
     "CTS": {
-      "refreshed_at": "2026-11-17T09:21:57.720890+00:00",
+      "refreshed_at": "2026-11-17T09:48:19.913818+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -724,10 +724,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:21:57.720890+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:21:57.720890+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:19.913818+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:19.913818+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:21:57.720890+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:19.913818+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -738,7 +738,7 @@
       }
     },
     "DBC": {
-      "refreshed_at": "2026-11-17T09:22:07.049280+00:00",
+      "refreshed_at": "2026-11-17T09:48:28.669456+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -749,13 +749,13 @@
       "raw": {
         "proprietary_net_5d": 207892000.0,
         "proprietary_net_20d": 9349687000.0,
-        "insider_buy_count": 6,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 6,
+        "insider_sell_count": 1,
         "insider_row_count": 7,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 9050935000.0,
         "foreign_as_of": "2026-11-17",
@@ -771,11 +771,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:07.049280+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:07.049280+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:28.669456+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:28.669456+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:07.049280+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:07.049280+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:28.669456+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:28.669456+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -785,7 +785,7 @@
       }
     },
     "DCM": {
-      "refreshed_at": "2026-11-17T09:22:07.722280+00:00",
+      "refreshed_at": "2026-11-17T09:48:30.714656+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -796,13 +796,13 @@
       "raw": {
         "proprietary_net_5d": -270760000.0,
         "proprietary_net_20d": -3402195000.0,
-        "insider_buy_count": 0,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -5394547750.0,
         "foreign_as_of": "2026-11-17",
@@ -818,11 +818,11 @@
       "s_prop_5d": 0,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:07.722280+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:07.722280+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:30.714656+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:30.714656+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:07.722280+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:07.722280+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:30.714656+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:30.714656+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -832,7 +832,7 @@
       }
     },
     "DGW": {
-      "refreshed_at": "2026-11-17T09:22:09.386999+00:00",
+      "refreshed_at": "2026-11-17T09:48:31.588108+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -843,13 +843,13 @@
       "raw": {
         "proprietary_net_5d": 313120000.0,
         "proprietary_net_20d": 758325000.0,
-        "insider_buy_count": 14,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 14,
+        "insider_sell_count": 2,
         "insider_row_count": 16,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -960645000.0,
         "foreign_as_of": "2026-11-17",
@@ -865,11 +865,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:09.386999+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:09.386999+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:31.588108+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:31.588108+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:09.386999+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:09.386999+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:31.588108+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:31.588108+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -879,7 +879,7 @@
       }
     },
     "DIG": {
-      "refreshed_at": "2026-11-17T09:22:11.115767+00:00",
+      "refreshed_at": "2026-11-17T09:48:33.246601+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -890,13 +890,13 @@
       "raw": {
         "proprietary_net_5d": 129540000.0,
         "proprietary_net_20d": 3760312000.0,
-        "insider_buy_count": 14,
-        "insider_sell_count": 36,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 14,
+        "insider_sell_count": 36,
         "insider_row_count": 50,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -950000.0,
         "foreign_as_of": "2026-11-17",
@@ -912,11 +912,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:11.115767+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:11.115767+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:33.246601+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:33.246601+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:11.115767+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:11.115767+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:33.246601+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:33.246601+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -926,7 +926,7 @@
       }
     },
     "DPM": {
-      "refreshed_at": "2026-11-17T09:22:19.476498+00:00",
+      "refreshed_at": "2026-11-17T09:48:42.170553+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -957,10 +957,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:19.476498+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:19.476498+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:42.170553+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:42.170553+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:22:19.476498+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:42.170553+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -971,7 +971,7 @@
       }
     },
     "DSE": {
-      "refreshed_at": "2026-11-17T09:22:21.054623+00:00",
+      "refreshed_at": "2026-11-17T09:48:43.259364+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -982,13 +982,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": -507280000.0,
-        "insider_buy_count": 8,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 8,
+        "insider_sell_count": 2,
         "insider_row_count": 14,
         "insider_unclassified_count": 4,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -561210000.0,
         "foreign_as_of": "2026-11-17",
@@ -1004,11 +1004,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:21.054623+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:21.054623+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:43.259364+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:43.259364+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:22:21.054623+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:21.054623+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:43.259364+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:43.259364+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1018,7 +1018,7 @@
       }
     },
     "DXG": {
-      "refreshed_at": "2026-11-17T09:22:22.728165+00:00",
+      "refreshed_at": "2026-11-17T09:48:44.917074+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1029,13 +1029,13 @@
       "raw": {
         "proprietary_net_5d": 1125000000.0,
         "proprietary_net_20d": -2853550000.0,
-        "insider_buy_count": 27,
-        "insider_sell_count": 30,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 27,
+        "insider_sell_count": 30,
         "insider_row_count": 57,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -99710000.0,
         "foreign_as_of": "2026-11-17",
@@ -1051,11 +1051,11 @@
       "s_prop_5d": 1,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:22.728165+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:22.728165+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:44.917074+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:44.917074+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:22.728165+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:22.728165+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:44.917074+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:44.917074+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1065,7 +1065,7 @@
       }
     },
     "EIB": {
-      "refreshed_at": "2026-11-17T09:22:24.394464+00:00",
+      "refreshed_at": "2026-11-17T09:48:46.599150+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -1096,10 +1096,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:24.394464+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:24.394464+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:46.599150+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:46.599150+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:22:24.394464+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:46.599150+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -1110,7 +1110,7 @@
       }
     },
     "EVF": {
-      "refreshed_at": "2026-11-17T09:22:33.771005+00:00",
+      "refreshed_at": "2026-11-17T09:48:54.962481+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1121,13 +1121,13 @@
       "raw": {
         "proprietary_net_5d": 11650000.0,
         "proprietary_net_20d": 48665000.0,
-        "insider_buy_count": 4,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 4,
+        "insider_sell_count": 0,
         "insider_row_count": 4,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -700375000.0,
         "foreign_as_of": "2026-11-17",
@@ -1143,11 +1143,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:33.771005+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:33.771005+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:54.962481+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:54.962481+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:33.771005+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:33.771005+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:54.962481+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:54.962481+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1157,7 +1157,7 @@
       }
     },
     "FPT": {
-      "refreshed_at": "2026-11-17T09:22:34.393073+00:00",
+      "refreshed_at": "2026-11-17T09:48:56.602185+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1168,13 +1168,13 @@
       "raw": {
         "proprietary_net_5d": 7644170000.0,
         "proprietary_net_20d": -144523030000.0,
-        "insider_buy_count": 11,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 11,
+        "insider_sell_count": 1,
         "insider_row_count": 12,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -146887580700.0,
         "foreign_as_of": "2026-11-17",
@@ -1190,11 +1190,11 @@
       "s_prop_5d": 2,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:34.393073+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:34.393073+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:56.602185+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:56.602185+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:34.393073+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:34.393073+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:56.602185+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:56.602185+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1204,7 +1204,7 @@
       }
     },
     "FRT": {
-      "refreshed_at": "2026-11-17T09:22:37.732015+00:00",
+      "refreshed_at": "2026-11-17T09:48:59.924230+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1215,13 +1215,13 @@
       "raw": {
         "proprietary_net_5d": 5114450000.0,
         "proprietary_net_20d": -78090390000.0,
-        "insider_buy_count": 5,
-        "insider_sell_count": 3,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 5,
+        "insider_sell_count": 3,
         "insider_row_count": 8,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -957465700.0,
         "foreign_as_of": "2026-11-17",
@@ -1237,11 +1237,11 @@
       "s_prop_5d": 2,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:37.732015+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:37.732015+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:48:59.924230+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:48:59.924230+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:37.732015+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:37.732015+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:48:59.924230+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:48:59.924230+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1251,7 +1251,7 @@
       }
     },
     "FTS": {
-      "refreshed_at": "2026-11-17T09:22:43.684085+00:00",
+      "refreshed_at": "2026-11-17T09:49:04.951922+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -1282,10 +1282,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:43.684085+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:43.684085+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:04.951922+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:04.951922+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:22:43.684085+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:04.951922+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -1296,7 +1296,7 @@
       }
     },
     "GAS": {
-      "refreshed_at": "2026-11-17T09:22:46.056594+00:00",
+      "refreshed_at": "2026-11-17T09:49:08.256665+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1307,13 +1307,13 @@
       "raw": {
         "proprietary_net_5d": -29415630000.0,
         "proprietary_net_20d": -86216192000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 1,
         "insider_row_count": 2,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -17289232900.0,
         "foreign_as_of": "2026-11-17",
@@ -1329,11 +1329,11 @@
       "s_prop_5d": -3,
       "s_insider": 0,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:46.056594+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:46.056594+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:08.256665+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:08.256665+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:46.056594+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:46.056594+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:08.256665+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:08.256665+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1343,7 +1343,7 @@
       }
     },
     "GEE": {
-      "refreshed_at": "2026-11-17T09:22:47.723424+00:00",
+      "refreshed_at": "2026-11-17T09:49:09.911734+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1354,13 +1354,13 @@
       "raw": {
         "proprietary_net_5d": 254300000.0,
         "proprietary_net_20d": 283950000.0,
-        "insider_buy_count": 2,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 2,
+        "insider_sell_count": 2,
         "insider_row_count": 4,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -564164000.0,
         "foreign_as_of": "2026-11-17",
@@ -1376,11 +1376,11 @@
       "s_prop_5d": 0,
       "s_insider": 0,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:47.723424+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:47.723424+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:09.911734+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:09.911734+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:47.723424+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:47.723424+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:09.911734+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:09.911734+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1390,7 +1390,7 @@
       }
     },
     "GEX": {
-      "refreshed_at": "2026-11-17T09:22:51.076439+00:00",
+      "refreshed_at": "2026-11-17T09:49:13.259471+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -1421,10 +1421,10 @@
       "s_prop_5d": -3,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:51.076439+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:51.076439+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:13.259471+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:13.259471+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:22:51.076439+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:13.259471+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -1435,7 +1435,7 @@
       }
     },
     "GMD": {
-      "refreshed_at": "2026-11-17T09:22:56.044209+00:00",
+      "refreshed_at": "2026-11-17T09:49:19.028829+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1446,13 +1446,13 @@
       "raw": {
         "proprietary_net_5d": 79022640000.0,
         "proprietary_net_20d": 98191120000.0,
-        "insider_buy_count": 16,
-        "insider_sell_count": 6,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 16,
+        "insider_sell_count": 6,
         "insider_row_count": 22,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -18943650000.0,
         "foreign_as_of": "2026-11-17",
@@ -1468,11 +1468,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:56.044209+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:56.044209+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:19.028829+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:19.028829+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:22:56.044209+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:22:56.044209+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:19.028829+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:19.028829+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1482,7 +1482,7 @@
       }
     },
     "GVR": {
-      "refreshed_at": "2026-11-17T09:22:59.387944+00:00",
+      "refreshed_at": "2026-11-17T09:49:21.607427+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -1513,10 +1513,10 @@
       "s_prop_5d": -1,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:22:59.387944+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:22:59.387944+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:21.607427+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:21.607427+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:22:59.387944+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:21.607427+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -1527,7 +1527,7 @@
       }
     },
     "HAG": {
-      "refreshed_at": "2026-11-17T09:23:01.068693+00:00",
+      "refreshed_at": "2026-11-17T09:49:23.245268+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1538,13 +1538,13 @@
       "raw": {
         "proprietary_net_5d": 4110000.0,
         "proprietary_net_20d": -379250000.0,
-        "insider_buy_count": 6,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 6,
+        "insider_sell_count": 0,
         "insider_row_count": 6,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -406204000.0,
         "foreign_as_of": "2026-11-17",
@@ -1560,11 +1560,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:01.068693+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:01.068693+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:23.245268+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:23.245268+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:01.068693+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:01.068693+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:23.245268+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:23.245268+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1574,7 +1574,7 @@
       }
     },
     "HCM": {
-      "refreshed_at": "2026-11-17T09:23:04.390507+00:00",
+      "refreshed_at": "2026-11-17T09:49:26.576720+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1585,13 +1585,13 @@
       "raw": {
         "proprietary_net_5d": -16261000.0,
         "proprietary_net_20d": -366826000.0,
-        "insider_buy_count": 36,
-        "insider_sell_count": 9,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 36,
+        "insider_sell_count": 9,
         "insider_row_count": 45,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -1307930000.0,
         "foreign_as_of": "2026-11-17",
@@ -1607,11 +1607,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:04.390507+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:04.390507+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:26.576720+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:26.576720+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:04.390507+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:04.390507+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:26.576720+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:26.576720+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1621,7 +1621,7 @@
       }
     },
     "HDB": {
-      "refreshed_at": "2026-11-17T09:23:09.386729+00:00",
+      "refreshed_at": "2026-11-17T09:49:31.588910+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1632,13 +1632,13 @@
       "raw": {
         "proprietary_net_5d": -6588165000.0,
         "proprietary_net_20d": 170804439000.0,
-        "insider_buy_count": 5,
-        "insider_sell_count": 4,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 5,
+        "insider_sell_count": 4,
         "insider_row_count": 10,
         "insider_unclassified_count": 1,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -30642579150.0,
         "foreign_as_of": "2026-11-17",
@@ -1654,11 +1654,11 @@
       "s_prop_5d": -3,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:09.386729+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:09.386729+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:31.588910+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:31.588910+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:23:09.386729+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:09.386729+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:31.588910+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:31.588910+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1668,7 +1668,7 @@
       }
     },
     "HDG": {
-      "refreshed_at": "2026-11-17T09:23:12.706466+00:00",
+      "refreshed_at": "2026-11-17T09:49:34.910216+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1679,13 +1679,13 @@
       "raw": {
         "proprietary_net_5d": -3167470000.0,
         "proprietary_net_20d": -9447425000.0,
-        "insider_buy_count": 3,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 3,
+        "insider_sell_count": 2,
         "insider_row_count": 5,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 2336995000.0,
         "foreign_as_of": "2026-11-17",
@@ -1701,11 +1701,11 @@
       "s_prop_5d": -2,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:12.706466+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:12.706466+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:34.910216+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:34.910216+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:12.706466+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:12.706466+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:34.910216+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:34.910216+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1715,7 +1715,7 @@
       }
     },
     "HHV": {
-      "refreshed_at": "2026-11-17T09:23:14.392675+00:00",
+      "refreshed_at": "2026-11-17T09:49:36.576974+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1726,13 +1726,13 @@
       "raw": {
         "proprietary_net_5d": -342048000.0,
         "proprietary_net_20d": -29449506000.0,
-        "insider_buy_count": 7,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 7,
+        "insider_sell_count": 2,
         "insider_row_count": 9,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 203640500.0,
         "foreign_as_of": "2026-11-17",
@@ -1748,11 +1748,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:14.392675+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:14.392675+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:36.576974+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:36.576974+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:14.392675+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:14.392675+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:36.576974+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:36.576974+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1762,7 +1762,7 @@
       }
     },
     "HPG": {
-      "refreshed_at": "2026-11-17T09:23:17.724052+00:00",
+      "refreshed_at": "2026-11-17T09:49:39.928062+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1773,13 +1773,13 @@
       "raw": {
         "proprietary_net_5d": 6236130000.0,
         "proprietary_net_20d": -48516741000.0,
-        "insider_buy_count": 3,
-        "insider_sell_count": 5,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 3,
+        "insider_sell_count": 5,
         "insider_row_count": 8,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 50717865750.0,
         "foreign_as_of": "2026-11-17",
@@ -1795,11 +1795,11 @@
       "s_prop_5d": 2,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:17.724052+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:17.724052+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:39.928062+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:39.928062+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:17.724052+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:17.724052+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:39.928062+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:39.928062+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1809,7 +1809,7 @@
       }
     },
     "HSG": {
-      "refreshed_at": "2026-11-17T09:23:22.719396+00:00",
+      "refreshed_at": "2026-11-17T09:49:44.915598+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -1840,10 +1840,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:22.719396+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:22.719396+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:44.915598+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:44.915598+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:23:22.719396+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:44.915598+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -1854,7 +1854,7 @@
       }
     },
     "HT1": {
-      "refreshed_at": "2026-11-17T09:23:26.782551+00:00",
+      "refreshed_at": "2026-11-17T09:49:48.255459+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -1885,10 +1885,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:26.782551+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:26.782551+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:48.255459+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:48.255459+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:23:26.782551+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:48.255459+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -1899,7 +1899,7 @@
       }
     },
     "KBC": {
-      "refreshed_at": "2026-11-17T09:23:27.720701+00:00",
+      "refreshed_at": "2026-11-17T09:49:49.931394+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1910,13 +1910,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": -172214345000.0,
-        "insider_buy_count": 7,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 7,
+        "insider_sell_count": 1,
         "insider_row_count": 8,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -2307484600.0,
         "foreign_as_of": "2026-11-17",
@@ -1932,11 +1932,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:27.720701+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:27.720701+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:49.931394+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:49.931394+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:27.720701+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:27.720701+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:49.931394+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:49.931394+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1946,7 +1946,7 @@
       }
     },
     "KDC": {
-      "refreshed_at": "2026-11-17T09:23:31.059558+00:00",
+      "refreshed_at": "2026-11-17T09:49:54.137000+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -1957,13 +1957,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 35290000.0,
-        "insider_buy_count": 5,
-        "insider_sell_count": 8,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 5,
+        "insider_sell_count": 8,
         "insider_row_count": 13,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -185405000.0,
         "foreign_as_of": "2026-11-17",
@@ -1979,11 +1979,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:31.059558+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:31.059558+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:54.137000+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:54.137000+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:31.059558+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:31.059558+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:54.137000+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:54.137000+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -1993,7 +1993,7 @@
       }
     },
     "KDH": {
-      "refreshed_at": "2026-11-17T09:23:36.063965+00:00",
+      "refreshed_at": "2026-11-17T09:49:58.875816+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2004,13 +2004,13 @@
       "raw": {
         "proprietary_net_5d": -27936115000.0,
         "proprietary_net_20d": -6022980000.0,
-        "insider_buy_count": 39,
-        "insider_sell_count": 16,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 39,
+        "insider_sell_count": 16,
         "insider_row_count": 56,
         "insider_unclassified_count": 1,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 44312611800.0,
         "foreign_as_of": "2026-11-17",
@@ -2026,11 +2026,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:36.063965+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:36.063965+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:49:58.875816+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:49:58.875816+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:23:36.063965+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:36.063965+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:49:58.875816+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:49:58.875816+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2040,7 +2040,7 @@
       }
     },
     "KOS": {
-      "refreshed_at": "2026-11-17T09:23:39.384396+00:00",
+      "refreshed_at": "2026-11-17T09:50:01.580899+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2051,13 +2051,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 0.0,
-        "insider_buy_count": 2,
-        "insider_sell_count": 27,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 2,
+        "insider_sell_count": 27,
         "insider_row_count": 29,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 22805000.0,
         "foreign_as_of": "2026-11-17",
@@ -2073,11 +2073,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:39.384396+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:39.384396+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:01.580899+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:01.580899+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:39.384396+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:39.384396+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:01.580899+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:01.580899+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2087,7 +2087,7 @@
       }
     },
     "LPB": {
-      "refreshed_at": "2026-11-17T09:23:41.069988+00:00",
+      "refreshed_at": "2026-11-17T09:50:03.254026+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2098,13 +2098,13 @@
       "raw": {
         "proprietary_net_5d": -1388085000.0,
         "proprietary_net_20d": -16022745000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -17455205000.0,
         "foreign_as_of": "2026-11-17",
@@ -2120,11 +2120,11 @@
       "s_prop_5d": -1,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:41.069988+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:41.069988+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:03.254026+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:03.254026+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:41.069988+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:41.069988+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:03.254026+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:03.254026+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2134,7 +2134,7 @@
       }
     },
     "MBB": {
-      "refreshed_at": "2026-11-17T09:23:45.142168+00:00",
+      "refreshed_at": "2026-11-17T09:50:06.583086+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2145,13 +2145,13 @@
       "raw": {
         "proprietary_net_5d": -65625011000.0,
         "proprietary_net_20d": 21902259000.0,
-        "insider_buy_count": 128,
-        "insider_sell_count": 6,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 128,
+        "insider_sell_count": 6,
         "insider_row_count": 138,
         "insider_unclassified_count": 4,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -65141431150.0,
         "foreign_as_of": "2026-11-17",
@@ -2167,11 +2167,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:45.142168+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:45.142168+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:06.583086+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:06.583086+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:23:45.142168+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:45.142168+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:06.583086+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:06.583086+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2181,7 +2181,7 @@
       }
     },
     "MCH": {
-      "refreshed_at": "2026-11-17T09:23:53.532845+00:00",
+      "refreshed_at": "2026-11-17T09:50:14.957755+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2192,13 +2192,13 @@
       "raw": {
         "proprietary_net_5d": -1624990000.0,
         "proprietary_net_20d": -61746340000.0,
-        "insider_buy_count": 10,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 10,
+        "insider_sell_count": 0,
         "insider_row_count": 10,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -25723784000.0,
         "foreign_as_of": "2026-11-17",
@@ -2214,11 +2214,11 @@
       "s_prop_5d": -1,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:53.532845+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:53.532845+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:14.957755+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:14.957755+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:53.532845+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:53.532845+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:14.957755+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:14.957755+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2228,7 +2228,7 @@
       }
     },
     "MSB": {
-      "refreshed_at": "2026-11-17T09:23:54.411508+00:00",
+      "refreshed_at": "2026-11-17T09:50:16.595012+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2239,13 +2239,13 @@
       "raw": {
         "proprietary_net_5d": -111300000.0,
         "proprietary_net_20d": -99753980000.0,
-        "insider_buy_count": 5,
-        "insider_sell_count": 15,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 5,
+        "insider_sell_count": 15,
         "insider_row_count": 20,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 1990350000.0,
         "foreign_as_of": "2026-11-17",
@@ -2261,11 +2261,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:54.411508+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:54.411508+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:16.595012+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:16.595012+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:54.411508+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:54.411508+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:16.595012+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:16.595012+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2275,7 +2275,7 @@
       }
     },
     "MSN": {
-      "refreshed_at": "2026-11-17T09:23:56.064894+00:00",
+      "refreshed_at": "2026-11-17T09:50:18.285953+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2286,13 +2286,13 @@
       "raw": {
         "proprietary_net_5d": 34945310000.0,
         "proprietary_net_20d": 129457720000.0,
-        "insider_buy_count": 7,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 7,
+        "insider_sell_count": 2,
         "insider_row_count": 9,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 147017075544.0,
         "foreign_as_of": "2026-11-17",
@@ -2308,11 +2308,11 @@
       "s_prop_5d": 2,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:23:56.064894+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:23:56.064894+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:18.285953+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:18.285953+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:23:56.064894+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:23:56.064894+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:18.285953+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:18.285953+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2322,7 +2322,7 @@
       }
     },
     "MWG": {
-      "refreshed_at": "2026-11-17T09:24:06.161030+00:00",
+      "refreshed_at": "2026-11-17T09:50:28.308102+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2333,13 +2333,13 @@
       "raw": {
         "proprietary_net_5d": 10230106000.0,
         "proprietary_net_20d": 89056854000.0,
-        "insider_buy_count": 22,
-        "insider_sell_count": 12,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 22,
+        "insider_sell_count": 12,
         "insider_row_count": 37,
         "insider_unclassified_count": 3,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 295781200.0,
         "foreign_as_of": "2026-11-17",
@@ -2355,11 +2355,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:06.161030+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:06.161030+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:28.308102+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:28.308102+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:24:06.161030+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:06.161030+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:28.308102+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:28.308102+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2369,7 +2369,7 @@
       }
     },
     "NAB": {
-      "refreshed_at": "2026-11-17T09:24:07.737099+00:00",
+      "refreshed_at": "2026-11-17T09:50:29.931314+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2380,13 +2380,13 @@
       "raw": {
         "proprietary_net_5d": 174665000.0,
         "proprietary_net_20d": 1010750000.0,
-        "insider_buy_count": 23,
-        "insider_sell_count": 4,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 23,
+        "insider_sell_count": 4,
         "insider_row_count": 27,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -3384404000.0,
         "foreign_as_of": "2026-11-17",
@@ -2402,11 +2402,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:07.737099+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:07.737099+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:29.931314+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:29.931314+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:07.737099+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:07.737099+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:29.931314+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:29.931314+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2416,7 +2416,7 @@
       }
     },
     "NKG": {
-      "refreshed_at": "2026-11-17T09:24:09.405699+00:00",
+      "refreshed_at": "2026-11-17T09:50:31.599983+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2427,13 +2427,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": -2623670000.0,
-        "insider_buy_count": 6,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 6,
+        "insider_sell_count": 0,
         "insider_row_count": 6,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 3957165000.0,
         "foreign_as_of": "2026-11-17",
@@ -2449,11 +2449,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:09.405699+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:09.405699+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:31.599983+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:31.599983+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:09.405699+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:09.405699+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:31.599983+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:31.599983+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2463,7 +2463,7 @@
       }
     },
     "NLG": {
-      "refreshed_at": "2026-11-17T09:24:11.290209+00:00",
+      "refreshed_at": "2026-11-17T09:50:33.294946+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2474,13 +2474,13 @@
       "raw": {
         "proprietary_net_5d": 32963605000.0,
         "proprietary_net_20d": 34066695000.0,
-        "insider_buy_count": 26,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 26,
+        "insider_sell_count": 1,
         "insider_row_count": 27,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -1196610000.0,
         "foreign_as_of": "2026-11-17",
@@ -2496,11 +2496,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:11.290209+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:11.290209+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:33.294946+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:33.294946+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:11.290209+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:11.290209+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:33.294946+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:33.294946+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2510,7 +2510,7 @@
       }
     },
     "NT2": {
-      "refreshed_at": "2026-11-17T09:24:19.487378+00:00",
+      "refreshed_at": "2026-11-17T09:50:41.865969+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -2541,10 +2541,10 @@
       "s_prop_5d": -1,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:19.487378+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:19.487378+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:41.865969+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:41.865969+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:24:19.487378+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:41.865969+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -2555,7 +2555,7 @@
       }
     },
     "NVL": {
-      "refreshed_at": "2026-11-17T09:24:21.055354+00:00",
+      "refreshed_at": "2026-11-17T09:50:43.261216+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2566,13 +2566,13 @@
       "raw": {
         "proprietary_net_5d": 314880000.0,
         "proprietary_net_20d": 775205000.0,
-        "insider_buy_count": 3,
-        "insider_sell_count": 19,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 3,
+        "insider_sell_count": 19,
         "insider_row_count": 22,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -3115552050.0,
         "foreign_as_of": "2026-11-17",
@@ -2588,11 +2588,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:21.055354+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:21.055354+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:43.261216+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:43.261216+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:21.055354+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:21.055354+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:43.261216+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:43.261216+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2602,7 +2602,7 @@
       }
     },
     "OCB": {
-      "refreshed_at": "2026-11-17T09:24:22.718005+00:00",
+      "refreshed_at": "2026-11-17T09:50:44.924558+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2613,13 +2613,13 @@
       "raw": {
         "proprietary_net_5d": 151535000.0,
         "proprietary_net_20d": 192684000.0,
-        "insider_buy_count": 0,
-        "insider_sell_count": 5,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 0,
+        "insider_sell_count": 5,
         "insider_row_count": 5,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 60375000.0,
         "foreign_as_of": "2026-11-17",
@@ -2635,11 +2635,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:22.718005+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:22.718005+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:44.924558+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:44.924558+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:22.718005+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:22.718005+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:44.924558+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:44.924558+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2649,7 +2649,7 @@
       }
     },
     "PAN": {
-      "refreshed_at": "2026-11-17T09:24:24.409403+00:00",
+      "refreshed_at": "2026-11-17T09:50:46.576426+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2660,13 +2660,13 @@
       "raw": {
         "proprietary_net_5d": -662728000.0,
         "proprietary_net_20d": 1036302000.0,
-        "insider_buy_count": 2,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 2,
+        "insider_sell_count": 0,
         "insider_row_count": 2,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -708765000.0,
         "foreign_as_of": "2026-11-17",
@@ -2682,11 +2682,11 @@
       "s_prop_5d": -1,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:24.409403+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:24.409403+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:46.576426+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:46.576426+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:24.409403+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:24.409403+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:46.576426+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:46.576426+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2696,7 +2696,7 @@
       }
     },
     "PC1": {
-      "refreshed_at": "2026-11-17T09:24:32.776481+00:00",
+      "refreshed_at": "2026-11-17T09:50:54.962131+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2707,13 +2707,13 @@
       "raw": {
         "proprietary_net_5d": 2476500000.0,
         "proprietary_net_20d": 22385000.0,
-        "insider_buy_count": 19,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 19,
+        "insider_sell_count": 1,
         "insider_row_count": 20,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 2238990000.0,
         "foreign_as_of": "2026-11-17",
@@ -2729,11 +2729,11 @@
       "s_prop_5d": 2,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:32.776481+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:32.776481+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:54.962131+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:54.962131+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:32.776481+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:32.776481+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:54.962131+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:54.962131+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2743,7 +2743,7 @@
       }
     },
     "PDR": {
-      "refreshed_at": "2026-11-17T09:24:34.388152+00:00",
+      "refreshed_at": "2026-11-17T09:50:56.586327+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2754,13 +2754,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 666582000.0,
-        "insider_buy_count": 12,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 12,
+        "insider_sell_count": 0,
         "insider_row_count": 12,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 2455625000.0,
         "foreign_as_of": "2026-11-17",
@@ -2776,11 +2776,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:34.388152+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:34.388152+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:56.586327+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:56.586327+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:34.388152+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:34.388152+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:56.586327+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:56.586327+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2790,7 +2790,7 @@
       }
     },
     "PHR": {
-      "refreshed_at": "2026-11-17T09:24:36.054268+00:00",
+      "refreshed_at": "2026-11-17T09:50:58.252165+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2801,13 +2801,13 @@
       "raw": {
         "proprietary_net_5d": -167832000.0,
         "proprietary_net_20d": -610472000.0,
-        "insider_buy_count": 3,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 3,
+        "insider_sell_count": 1,
         "insider_row_count": 4,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -54537100.0,
         "foreign_as_of": "2026-11-17",
@@ -2823,11 +2823,11 @@
       "s_prop_5d": 0,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:36.054268+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:36.054268+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:58.252165+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:58.252165+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:36.054268+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:36.054268+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:58.252165+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:58.252165+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2837,7 +2837,7 @@
       }
     },
     "PLX": {
-      "refreshed_at": "2026-11-17T09:24:37.721435+00:00",
+      "refreshed_at": "2026-11-17T09:50:59.924080+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2848,13 +2848,13 @@
       "raw": {
         "proprietary_net_5d": -2052700000.0,
         "proprietary_net_20d": -8098470000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -5562874000.0,
         "foreign_as_of": "2026-11-17",
@@ -2870,11 +2870,11 @@
       "s_prop_5d": -2,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:37.721435+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:37.721435+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:50:59.924080+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:50:59.924080+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:37.721435+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:37.721435+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:50:59.924080+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:50:59.924080+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2884,7 +2884,7 @@
       }
     },
     "PNJ": {
-      "refreshed_at": "2026-11-17T09:24:46.137600+00:00",
+      "refreshed_at": "2026-11-17T09:51:08.323526+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2895,13 +2895,13 @@
       "raw": {
         "proprietary_net_5d": 3966500000.0,
         "proprietary_net_20d": 1921020000.0,
-        "insider_buy_count": 43,
-        "insider_sell_count": 57,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 43,
+        "insider_sell_count": 57,
         "insider_row_count": 100,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 5987521950.0,
         "foreign_as_of": "2026-11-17",
@@ -2917,11 +2917,11 @@
       "s_prop_5d": 2,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:46.137600+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:46.137600+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:08.323526+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:08.323526+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:46.137600+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:46.137600+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:08.323526+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:08.323526+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2931,7 +2931,7 @@
       }
     },
     "POW": {
-      "refreshed_at": "2026-11-17T09:24:47.724210+00:00",
+      "refreshed_at": "2026-11-17T09:51:09.937415+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2942,13 +2942,13 @@
       "raw": {
         "proprietary_net_5d": -68257981000.0,
         "proprietary_net_20d": 6528239000.0,
-        "insider_buy_count": 6,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 6,
+        "insider_sell_count": 0,
         "insider_row_count": 6,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 53894393200.0,
         "foreign_as_of": "2026-11-17",
@@ -2964,11 +2964,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:47.724210+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:47.724210+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:09.937415+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:09.937415+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:47.724210+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:47.724210+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:09.937415+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:09.937415+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -2978,7 +2978,7 @@
       }
     },
     "PVD": {
-      "refreshed_at": "2026-11-17T09:24:49.389546+00:00",
+      "refreshed_at": "2026-11-17T09:51:11.575328+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -2989,13 +2989,13 @@
       "raw": {
         "proprietary_net_5d": -4960056000.0,
         "proprietary_net_20d": -3674072000.0,
-        "insider_buy_count": 2,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 2,
+        "insider_sell_count": 2,
         "insider_row_count": 4,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -1878400450.0,
         "foreign_as_of": "2026-11-17",
@@ -3011,11 +3011,11 @@
       "s_prop_5d": -2,
       "s_insider": 0,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:49.389546+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:49.389546+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:11.575328+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:11.575328+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:49.389546+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:49.389546+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:11.575328+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:11.575328+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3025,7 +3025,7 @@
       }
     },
     "PVT": {
-      "refreshed_at": "2026-11-17T09:24:51.068544+00:00",
+      "refreshed_at": "2026-11-17T09:51:13.258017+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3036,13 +3036,13 @@
       "raw": {
         "proprietary_net_5d": 28501745000.0,
         "proprietary_net_20d": 105362865000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 3,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 3,
         "insider_row_count": 4,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -5853060000.0,
         "foreign_as_of": "2026-11-17",
@@ -3058,11 +3058,11 @@
       "s_prop_5d": 3,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:24:51.068544+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:24:51.068544+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:13.258017+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:13.258017+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:24:51.068544+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:24:51.068544+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:13.258017+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:13.258017+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3072,7 +3072,7 @@
       }
     },
     "REE": {
-      "refreshed_at": "2026-11-17T09:25:01.150380+00:00",
+      "refreshed_at": "2026-11-17T09:51:24.225482+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3083,13 +3083,13 @@
       "raw": {
         "proprietary_net_5d": 66768602000.0,
         "proprietary_net_20d": 68394222000.0,
-        "insider_buy_count": 27,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 27,
+        "insider_sell_count": 1,
         "insider_row_count": 28,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 11002200.0,
         "foreign_as_of": "2026-11-17",
@@ -3105,11 +3105,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:01.150380+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:01.150380+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:24.225482+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:24.225482+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:01.150380+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:01.150380+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:24.225482+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:24.225482+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3119,7 +3119,7 @@
       }
     },
     "SAB": {
-      "refreshed_at": "2026-11-17T09:25:03.430904+00:00",
+      "refreshed_at": "2026-11-17T09:51:24.934649+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -3150,10 +3150,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:03.430904+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:03.430904+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:24.934649+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:24.934649+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:25:03.430904+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:24.934649+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -3164,7 +3164,7 @@
       }
     },
     "SBT": {
-      "refreshed_at": "2026-11-17T09:25:04.387206+00:00",
+      "refreshed_at": "2026-11-17T09:51:26.598227+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3175,13 +3175,13 @@
       "raw": {
         "proprietary_net_5d": -8005971000.0,
         "proprietary_net_20d": -18365160000.0,
-        "insider_buy_count": 28,
-        "insider_sell_count": 11,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 28,
+        "insider_sell_count": 11,
         "insider_row_count": 39,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 268445000.0,
         "foreign_as_of": "2026-11-17",
@@ -3197,11 +3197,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:04.387206+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:04.387206+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:26.598227+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:26.598227+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:04.387206+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:04.387206+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:26.598227+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:26.598227+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3211,7 +3211,7 @@
       }
     },
     "SHB": {
-      "refreshed_at": "2026-11-17T09:25:06.063915+00:00",
+      "refreshed_at": "2026-11-17T09:51:28.272097+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3222,13 +3222,13 @@
       "raw": {
         "proprietary_net_5d": 18266663000.0,
         "proprietary_net_20d": 5240422000.0,
-        "insider_buy_count": 20,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 20,
+        "insider_sell_count": 0,
         "insider_row_count": 20,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -3563728000.0,
         "foreign_as_of": "2026-11-17",
@@ -3244,11 +3244,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:06.063915+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:06.063915+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:28.272097+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:28.272097+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:06.063915+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:06.063915+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:28.272097+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:28.272097+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3258,24 +3258,24 @@
       }
     },
     "SIP": {
-      "refreshed_at": "2026-11-17T09:25:14.503544+00:00",
+      "refreshed_at": "2026-11-17T09:51:36.622209+00:00",
       "errors": {},
       "endpoint_sources": {
+        "proprietary_flow": "FHSC",
         "insider_deal": "FHSC",
         "order_book": "FHSC_SESSION_CACHE",
-        "proprietary_flow": "FHSC",
         "foreign_flow": "SSI"
       },
       "raw": {
-        "insider_buy_count": 1,
-        "insider_sell_count": 1,
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 34140000.0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 1,
         "insider_row_count": 2,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -706820000.0,
         "foreign_as_of": "2026-11-17",
@@ -3291,11 +3291,11 @@
       "s_prop_5d": 0,
       "s_insider": 0,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:14.503544+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:14.503544+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:36.622209+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:36.622209+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:14.503544+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:14.503544+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:36.622209+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:36.622209+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3305,7 +3305,7 @@
       }
     },
     "SJS": {
-      "refreshed_at": "2026-11-17T09:25:16.050685+00:00",
+      "refreshed_at": "2026-11-17T09:51:38.247018+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3316,13 +3316,13 @@
       "raw": {
         "proprietary_net_5d": -27600000000.0,
         "proprietary_net_20d": -27555860000.0,
-        "insider_buy_count": 0,
-        "insider_sell_count": 9,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 0,
+        "insider_sell_count": 9,
         "insider_row_count": 9,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 944252400.0,
         "foreign_as_of": "2026-11-17",
@@ -3338,11 +3338,11 @@
       "s_prop_5d": -3,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:16.050685+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:16.050685+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:38.247018+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:38.247018+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:16.050685+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:16.050685+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:38.247018+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:38.247018+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3352,7 +3352,7 @@
       }
     },
     "SSB": {
-      "refreshed_at": "2026-11-17T09:25:17.745736+00:00",
+      "refreshed_at": "2026-11-17T09:51:39.958397+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3363,13 +3363,13 @@
       "raw": {
         "proprietary_net_5d": 470555000.0,
         "proprietary_net_20d": -2534595000.0,
-        "insider_buy_count": 58,
-        "insider_sell_count": 30,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 58,
+        "insider_sell_count": 30,
         "insider_row_count": 90,
         "insider_unclassified_count": 2,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -2674190000.0,
         "foreign_as_of": "2026-11-17",
@@ -3385,11 +3385,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:17.745736+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:17.745736+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:39.958397+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:39.958397+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:25:17.745736+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:17.745736+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:39.958397+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:39.958397+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3399,7 +3399,7 @@
       }
     },
     "SSI": {
-      "refreshed_at": "2026-11-17T09:25:19.385222+00:00",
+      "refreshed_at": "2026-11-17T09:51:41.592267+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3410,13 +3410,13 @@
       "raw": {
         "proprietary_net_5d": -92026040000.0,
         "proprietary_net_20d": -75836374000.0,
-        "insider_buy_count": 31,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 31,
+        "insider_sell_count": 0,
         "insider_row_count": 31,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -8177667700.0,
         "foreign_as_of": "2026-11-17",
@@ -3432,11 +3432,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:19.385222+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:19.385222+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:41.592267+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:41.592267+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:19.385222+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:19.385222+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:41.592267+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:41.592267+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3446,7 +3446,7 @@
       }
     },
     "STB": {
-      "refreshed_at": "2026-11-17T09:25:28.046840+00:00",
+      "refreshed_at": "2026-11-17T09:51:49.975013+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3457,13 +3457,13 @@
       "raw": {
         "proprietary_net_5d": -23390251000.0,
         "proprietary_net_20d": -96920149000.0,
-        "insider_buy_count": 0,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -38101770200.0,
         "foreign_as_of": "2026-11-17",
@@ -3479,11 +3479,11 @@
       "s_prop_5d": -3,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:28.046840+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:28.046840+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:49.975013+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:49.975013+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:28.046840+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:28.046840+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:49.975013+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:49.975013+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3493,7 +3493,7 @@
       }
     },
     "TAL": {
-      "refreshed_at": "2026-11-17T09:25:29.596940+00:00",
+      "refreshed_at": "2026-11-17T09:51:51.582401+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3504,13 +3504,13 @@
       "raw": {
         "proprietary_net_5d": 10644595000.0,
         "proprietary_net_20d": 12589520000.0,
-        "insider_buy_count": 24,
-        "insider_sell_count": 6,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 24,
+        "insider_sell_count": 6,
         "insider_row_count": 30,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 1100525000.0,
         "foreign_as_of": "2026-11-17",
@@ -3526,11 +3526,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:29.596940+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:29.596940+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:51.582401+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:51.582401+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:29.596940+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:29.596940+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:51.582401+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:51.582401+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3540,7 +3540,7 @@
       }
     },
     "TCB": {
-      "refreshed_at": "2026-11-17T09:25:32.755518+00:00",
+      "refreshed_at": "2026-11-17T09:51:54.912413+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -3571,10 +3571,10 @@
       "s_prop_5d": -3,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:32.755518+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:32.755518+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:54.912413+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:54.912413+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:25:32.755518+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:54.912413+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -3585,7 +3585,7 @@
       }
     },
     "TCH": {
-      "refreshed_at": "2026-11-17T09:25:37.782527+00:00",
+      "refreshed_at": "2026-11-17T09:51:59.917623+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3596,13 +3596,13 @@
       "raw": {
         "proprietary_net_5d": 2440260000.0,
         "proprietary_net_20d": -1136715000.0,
-        "insider_buy_count": 13,
-        "insider_sell_count": 15,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 13,
+        "insider_sell_count": 15,
         "insider_row_count": 28,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 9335405000.0,
         "foreign_as_of": "2026-11-17",
@@ -3618,11 +3618,11 @@
       "s_prop_5d": 2,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:37.782527+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:37.782527+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:51:59.917623+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:51:59.917623+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:37.782527+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:37.782527+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:51:59.917623+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:51:59.917623+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3632,7 +3632,7 @@
       }
     },
     "TCX": {
-      "refreshed_at": "2026-11-17T09:25:41.053450+00:00",
+      "refreshed_at": "2026-11-17T09:52:03.245969+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3643,13 +3643,13 @@
       "raw": {
         "proprietary_net_5d": 5801080000.0,
         "proprietary_net_20d": -3196989000.0,
-        "insider_buy_count": 23,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 23,
+        "insider_sell_count": 1,
         "insider_row_count": 24,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 2189685000.0,
         "foreign_as_of": "2026-11-17",
@@ -3665,11 +3665,11 @@
       "s_prop_5d": 2,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:41.053450+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:41.053450+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:03.245969+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:03.245969+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:41.053450+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:41.053450+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:03.245969+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:03.245969+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3679,7 +3679,7 @@
       }
     },
     "TPB": {
-      "refreshed_at": "2026-11-17T09:25:42.772268+00:00",
+      "refreshed_at": "2026-11-17T09:52:05.637143+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -3710,10 +3710,10 @@
       "s_prop_5d": -1,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:42.772268+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:42.772268+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:05.637143+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:05.637143+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:25:42.772268+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:05.637143+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -3724,7 +3724,7 @@
       }
     },
     "VCB": {
-      "refreshed_at": "2026-11-17T09:25:46.085774+00:00",
+      "refreshed_at": "2026-11-17T09:52:08.281219+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3735,13 +3735,13 @@
       "raw": {
         "proprietary_net_5d": -2312290000.0,
         "proprietary_net_20d": -111471640000.0,
-        "insider_buy_count": 2,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 2,
+        "insider_sell_count": 0,
         "insider_row_count": 2,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -102430920400.0,
         "foreign_as_of": "2026-11-17",
@@ -3757,11 +3757,11 @@
       "s_prop_5d": -2,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:46.085774+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:46.085774+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:08.281219+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:08.281219+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:46.085774+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:46.085774+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:08.281219+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:08.281219+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3771,7 +3771,7 @@
       }
     },
     "VCG": {
-      "refreshed_at": "2026-11-17T09:25:51.070083+00:00",
+      "refreshed_at": "2026-11-17T09:52:13.257897+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -3802,10 +3802,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:51.070083+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:51.070083+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:13.257897+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:13.257897+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:25:51.070083+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:13.257897+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -3816,7 +3816,7 @@
       }
     },
     "VCI": {
-      "refreshed_at": "2026-11-17T09:25:54.389341+00:00",
+      "refreshed_at": "2026-11-17T09:52:17.395806+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3827,13 +3827,13 @@
       "raw": {
         "proprietary_net_5d": -4789010000.0,
         "proprietary_net_20d": -18265305000.0,
-        "insider_buy_count": 13,
-        "insider_sell_count": 6,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 13,
+        "insider_sell_count": 6,
         "insider_row_count": 19,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 2193265000.0,
         "foreign_as_of": "2026-11-17",
@@ -3849,11 +3849,11 @@
       "s_prop_5d": -2,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:54.389341+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:54.389341+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:17.395806+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:17.395806+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:25:54.389341+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:25:54.389341+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:17.395806+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:17.395806+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -3863,7 +3863,7 @@
       }
     },
     "VCK": {
-      "refreshed_at": "2026-11-17T09:25:56.049423+00:00",
+      "refreshed_at": "2026-11-17T09:52:18.266485+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -3894,10 +3894,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:56.049423+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:56.049423+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:18.266485+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:18.266485+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:25:56.049423+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:18.266485+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -3908,7 +3908,7 @@
       }
     },
     "VGC": {
-      "refreshed_at": "2026-11-17T09:25:59.380396+00:00",
+      "refreshed_at": "2026-11-17T09:52:21.578364+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -3939,10 +3939,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:25:59.380396+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:25:59.380396+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:21.578364+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:21.578364+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:25:59.380396+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:21.578364+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -3953,7 +3953,7 @@
       }
     },
     "VHC": {
-      "refreshed_at": "2026-11-17T09:26:05.213508+00:00",
+      "refreshed_at": "2026-11-17T09:52:26.573218+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -3964,13 +3964,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": 20120000.0,
-        "insider_buy_count": 4,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 4,
+        "insider_sell_count": 2,
         "insider_row_count": 8,
         "insider_unclassified_count": 2,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -1529620000.0,
         "foreign_as_of": "2026-11-17",
@@ -3986,11 +3986,11 @@
       "s_prop_5d": 0,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:05.213508+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:05.213508+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:26.573218+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:26.573218+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:26:05.213508+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:05.213508+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:26.573218+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:26.573218+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4000,12 +4000,10 @@
       }
     },
     "VHM": {
-      "refreshed_at": "2026-11-17T09:26:07.728760+00:00",
+      "refreshed_at": "2026-11-17T09:52:29.909180+00:00",
       "errors": {
         "insider_deal_fhsc": {
-          "type": "NetworkError",
-          "code": "VNSTOCK_SOURCE_NETWORK",
-          "action": null
+          "type": "unclassified_response"
         }
       },
       "endpoint_sources": {
@@ -4017,11 +4015,14 @@
       "raw": {
         "proprietary_net_5d": -61197580000.0,
         "proprietary_net_20d": -12742580000.0,
-        "insider_buy_count": 0.0,
-        "insider_sell_count": 0.0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
+        "insider_buy_count": 0,
+        "insider_sell_count": 0,
         "proprietary_as_of": "2026-11-16",
+        "insider_row_count": 4,
+        "insider_unclassified_count": 4,
+        "insider_as_of": null,
         "foreign_net_1d": -11210611400.0,
         "foreign_as_of": "2026-11-17",
         "foreign_net_5d": 132753364600.0,
@@ -4036,21 +4037,21 @@
       "s_prop_5d": -3,
       "s_insider": 0.0,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:07.728760+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:07.728760+00:00",
-      "insider_deal_status": "source_error",
-      "insider_deal_checked_at": "2026-11-17T09:26:07.728760+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:29.909180+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:29.909180+00:00",
+      "insider_deal_status": "unclassified_response",
+      "insider_deal_checked_at": "2026-11-17T09:52:29.909180+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
         "order_book": 0,
         "proprietary_flow": 19,
-        "insider_deal": 0
+        "insider_deal": 4
       }
     },
     "VIB": {
-      "refreshed_at": "2026-11-17T09:26:09.383809+00:00",
+      "refreshed_at": "2026-11-17T09:52:31.583386+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4061,13 +4062,13 @@
       "raw": {
         "proprietary_net_5d": 9632038000.0,
         "proprietary_net_20d": 28589561000.0,
-        "insider_buy_count": 22,
-        "insider_sell_count": 5,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 22,
+        "insider_sell_count": 5,
         "insider_row_count": 28,
         "insider_unclassified_count": 1,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 1333331200.0,
         "foreign_as_of": "2026-11-17",
@@ -4083,11 +4084,11 @@
       "s_prop_5d": 2,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:09.383809+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:09.383809+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:31.583386+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:31.583386+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:26:09.383809+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:09.383809+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:31.583386+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:31.583386+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4097,7 +4098,7 @@
       }
     },
     "VIC": {
-      "refreshed_at": "2026-11-17T09:26:12.715865+00:00",
+      "refreshed_at": "2026-11-17T09:52:34.912524+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4108,13 +4109,13 @@
       "raw": {
         "proprietary_net_5d": -11277720000.0,
         "proprietary_net_20d": -27350530000.0,
-        "insider_buy_count": 0,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
         "insider_row_count": 17,
         "insider_unclassified_count": 16,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 6272256500.0,
         "foreign_as_of": "2026-11-17",
@@ -4130,11 +4131,11 @@
       "s_prop_5d": -3,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:12.715865+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:12.715865+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:34.912524+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:34.912524+00:00",
       "insider_deal_status": "available_with_unclassified",
-      "insider_deal_checked_at": "2026-11-17T09:26:12.715865+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:12.715865+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:34.912524+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:34.912524+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4144,7 +4145,7 @@
       }
     },
     "VIX": {
-      "refreshed_at": "2026-11-17T09:26:18.874959+00:00",
+      "refreshed_at": "2026-11-17T09:52:39.908685+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4155,13 +4156,13 @@
       "raw": {
         "proprietary_net_5d": 258491140000.0,
         "proprietary_net_20d": 274341650000.0,
-        "insider_buy_count": 7,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 7,
+        "insider_sell_count": 0,
         "insider_row_count": 7,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -20247715250.0,
         "foreign_as_of": "2026-11-17",
@@ -4177,11 +4178,11 @@
       "s_prop_5d": 3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:18.874959+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:18.874959+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:39.908685+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:39.908685+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:18.874959+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:18.874959+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:39.908685+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:39.908685+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4191,7 +4192,7 @@
       }
     },
     "VJC": {
-      "refreshed_at": "2026-11-17T09:26:21.008283+00:00",
+      "refreshed_at": "2026-11-17T09:52:43.233872+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4202,13 +4203,13 @@
       "raw": {
         "proprietary_net_5d": 12448590000.0,
         "proprietary_net_20d": 300721794000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 2,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 2,
         "insider_row_count": 3,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 7067519700.0,
         "foreign_as_of": "2026-11-17",
@@ -4224,11 +4225,11 @@
       "s_prop_5d": 3,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:21.008283+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:21.008283+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:43.233872+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:43.233872+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:21.008283+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:21.008283+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:43.233872+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:43.233872+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4238,7 +4239,7 @@
       }
     },
     "VND": {
-      "refreshed_at": "2026-11-17T09:26:26.755865+00:00",
+      "refreshed_at": "2026-11-17T09:52:44.913031+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -4269,10 +4270,10 @@
       "s_prop_5d": -2,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:26.755865+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:26.755865+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:44.913031+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:44.913031+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:26:26.755865+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:44.913031+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -4283,7 +4284,7 @@
       }
     },
     "VNM": {
-      "refreshed_at": "2026-11-17T09:26:29.506422+00:00",
+      "refreshed_at": "2026-11-17T09:52:48.266581+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4294,13 +4295,13 @@
       "raw": {
         "proprietary_net_5d": -5304720000.0,
         "proprietary_net_20d": 22684088000.0,
-        "insider_buy_count": 10,
-        "insider_sell_count": 6,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 10,
+        "insider_sell_count": 6,
         "insider_row_count": 16,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 16766166800.0,
         "foreign_as_of": "2026-11-17",
@@ -4316,11 +4317,11 @@
       "s_prop_5d": -3,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:29.506422+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:29.506422+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:48.266581+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:48.266581+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:29.506422+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:29.506422+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:48.266581+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:48.266581+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4330,7 +4331,7 @@
       }
     },
     "VPB": {
-      "refreshed_at": "2026-11-17T09:26:29.564854+00:00",
+      "refreshed_at": "2026-11-17T09:52:53.242606+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4341,13 +4342,13 @@
       "raw": {
         "proprietary_net_5d": 50103110000.0,
         "proprietary_net_20d": 1365396992000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 2886251000.0,
         "foreign_as_of": "2026-11-17",
@@ -4363,11 +4364,11 @@
       "s_prop_5d": 2,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:29.564854+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:29.564854+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:53.242606+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:53.242606+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:29.564854+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:29.564854+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:53.242606+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:53.242606+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4377,7 +4378,7 @@
       }
     },
     "VPI": {
-      "refreshed_at": "2026-11-17T09:26:32.736506+00:00",
+      "refreshed_at": "2026-11-17T09:52:56.578990+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4388,13 +4389,13 @@
       "raw": {
         "proprietary_net_5d": 254440000.0,
         "proprietary_net_20d": 838130000.0,
-        "insider_buy_count": 0,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 0,
+        "insider_sell_count": 1,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": 529220000.0,
         "foreign_as_of": "2026-11-17",
@@ -4410,11 +4411,11 @@
       "s_prop_5d": 0,
       "s_insider": -1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:32.736506+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:32.736506+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:56.578990+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:56.578990+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:32.736506+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:32.736506+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:56.578990+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:56.578990+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4424,7 +4425,7 @@
       }
     },
     "VPL": {
-      "refreshed_at": "2026-11-17T09:26:37.718460+00:00",
+      "refreshed_at": "2026-11-17T09:52:58.234851+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4435,13 +4436,13 @@
       "raw": {
         "proprietary_net_5d": 3522270000.0,
         "proprietary_net_20d": 1376881000.0,
-        "insider_buy_count": 1,
-        "insider_sell_count": 0,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 1,
+        "insider_sell_count": 0,
         "insider_row_count": 1,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -9489670000.0,
         "foreign_as_of": "2026-11-17",
@@ -4457,11 +4458,11 @@
       "s_prop_5d": 2,
       "s_insider": 1,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:37.718460+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:37.718460+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:52:58.234851+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:52:58.234851+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:37.718460+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:37.718460+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:52:58.234851+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:52:58.234851+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4471,7 +4472,7 @@
       }
     },
     "VPX": {
-      "refreshed_at": "2026-11-17T09:26:41.806137+00:00",
+      "refreshed_at": "2026-11-17T09:53:02.390538+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -4502,10 +4503,10 @@
       "s_prop_5d": 0,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:41.806137+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:41.806137+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:53:02.390538+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:53:02.390538+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:26:41.806137+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:53:02.390538+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -4516,7 +4517,7 @@
       }
     },
     "VRE": {
-      "refreshed_at": "2026-11-17T09:26:42.742459+00:00",
+      "refreshed_at": "2026-11-17T09:53:06.570247+00:00",
       "errors": {
         "insider_deal_fhsc": {
           "type": "empty_response_unverified"
@@ -4547,10 +4548,10 @@
       "s_prop_5d": -2,
       "s_insider": null,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:42.742459+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:42.742459+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:53:06.570247+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:53:06.570247+00:00",
       "insider_deal_status": "empty_response_unverified",
-      "insider_deal_checked_at": "2026-11-17T09:26:42.742459+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:53:06.570247+00:00",
       "insider_deal_refreshed_at": null,
       "endpoint_rows": {
         "foreign_flow": 26,
@@ -4561,7 +4562,7 @@
       }
     },
     "VSC": {
-      "refreshed_at": "2026-11-17T09:26:46.105503+00:00",
+      "refreshed_at": "2026-11-17T09:53:09.917313+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4572,13 +4573,13 @@
       "raw": {
         "proprietary_net_5d": 281520000.0,
         "proprietary_net_20d": 600520000.0,
-        "insider_buy_count": 3,
-        "insider_sell_count": 10,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 3,
+        "insider_sell_count": 10,
         "insider_row_count": 13,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -5055220000.0,
         "foreign_as_of": "2026-11-17",
@@ -4594,11 +4595,11 @@
       "s_prop_5d": 0,
       "s_insider": -2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:46.105503+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:46.105503+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:53:09.917313+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:53:09.917313+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:46.105503+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:46.105503+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:53:09.917313+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:53:09.917313+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
@@ -4608,7 +4609,7 @@
       }
     },
     "VTP": {
-      "refreshed_at": "2026-11-17T09:26:51.051941+00:00",
+      "refreshed_at": "2026-11-17T09:53:11.570933+00:00",
       "errors": {},
       "endpoint_sources": {
         "proprietary_flow": "FHSC",
@@ -4619,13 +4620,13 @@
       "raw": {
         "proprietary_net_5d": 0.0,
         "proprietary_net_20d": -602340000.0,
-        "insider_buy_count": 5,
-        "insider_sell_count": 1,
         "proprietary_row_count": 19,
         "proprietary_usable_rows": 19,
-        "proprietary_as_of": "2026-11-16",
+        "insider_buy_count": 5,
+        "insider_sell_count": 1,
         "insider_row_count": 6,
         "insider_unclassified_count": 0,
+        "proprietary_as_of": "2026-11-16",
         "insider_as_of": null,
         "foreign_net_1d": -74135000.0,
         "foreign_as_of": "2026-11-17",
@@ -4641,11 +4642,11 @@
       "s_prop_5d": 0,
       "s_insider": 2,
       "proprietary_flow_status": "available",
-      "proprietary_flow_checked_at": "2026-11-17T09:26:51.051941+00:00",
-      "proprietary_flow_refreshed_at": "2026-11-17T09:26:51.051941+00:00",
+      "proprietary_flow_checked_at": "2026-11-17T09:53:11.570933+00:00",
+      "proprietary_flow_refreshed_at": "2026-11-17T09:53:11.570933+00:00",
       "insider_deal_status": "available",
-      "insider_deal_checked_at": "2026-11-17T09:26:51.051941+00:00",
-      "insider_deal_refreshed_at": "2026-11-17T09:26:51.051941+00:00",
+      "insider_deal_checked_at": "2026-11-17T09:53:11.570933+00:00",
+      "insider_deal_refreshed_at": "2026-11-17T09:53:11.570933+00:00",
       "endpoint_rows": {
         "foreign_flow": 26,
         "session_stats": 0,
