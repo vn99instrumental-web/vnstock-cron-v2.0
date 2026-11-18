@@ -713,13 +713,15 @@ export function BuyBoard({
                                 <span className="tabular w-11 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>
                                   {m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span>
                                 </span>
-                                <span className="shrink-0 font-medium">{m.name}</span>
-                                <span className="text-[var(--color-muted)]">— {m.text}</span>
-                                {m.raw ? (
-                                  <span className="ml-auto shrink-0 rounded bg-black/5 px-1 text-[10px] font-medium tabular text-[var(--color-ink)] dark:bg-white/10" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">
-                                    {m.raw}
-                                  </span>
-                                ) : null}
+                                <span className="min-w-0 text-[var(--color-muted)]">
+                                  <span className="font-medium text-[var(--color-ink)]">{m.name}</span>
+                                  {" — "}{m.text}
+                                  {m.raw ? (
+                                    <span className="font-medium tabular text-[var(--color-ink)]" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">
+                                      {": "}{m.raw}
+                                    </span>
+                                  ) : null}
+                                </span>
                               </li>
                             ))}
                           </ul>

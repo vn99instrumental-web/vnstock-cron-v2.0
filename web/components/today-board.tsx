@@ -112,9 +112,11 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
                 {g.members.map((m) => (
                   <li key={m.key} className="flex flex-wrap items-start gap-x-1.5 text-[11px] leading-tight">
                     <span className="tabular w-10 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>{m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span></span>
-                    <span className="font-medium">{m.name}</span>
-                    <span className="text-[var(--color-muted)]">— {m.text}</span>
-                    {m.raw ? <span className="ml-auto rounded bg-black/5 px-1 text-[10px] tabular dark:bg-white/10">{m.raw}</span> : null}
+                    <span className="min-w-0 text-[var(--color-muted)]">
+                      <span className="font-medium text-[var(--color-ink)]">{m.name}</span>
+                      {" — "}{m.text}
+                      {m.raw ? <span className="font-medium tabular text-[var(--color-ink)]" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">{": "}{m.raw}</span> : null}
+                    </span>
                   </li>
                 ))}
               </ul>
