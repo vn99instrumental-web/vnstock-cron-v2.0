@@ -475,6 +475,40 @@ def refresh_fundamental_cache(
     )
     return status
 
+def intraday_turnover_value(frame: pd.DataFrame, trading_day: date) -> float | None:
+    """Estimate matched value as sum of each intraday bar close times volume."""
+    data = frame.reset_index()
+    lowered = {str(column).lower(): column for column in data.columns}
+    time_column = next((lowered[key] for key in ("time", "date", "datetime", "index") if key in lowered), None)
+    close_column, volume_column = lowered.get("close"), lowered.get("volume")
+    if time_column is None or close_column is None or volume_column is None:
+        return None
+    parsed = pd.to_datetime(data[time_column], errors="coerce")
+    close = pd.to_numeric(data[close_column], errors="coerce")
+    volume = pd.to_numeric(data[volume_column], errors="coerce")
+    mask = parsed.dt.date == trading_day
+    values = (close[mask] * volume[mask]).dropna()
+    if values.empty:
+        return None
+    return finite(values.sum() * 1_000)
+
+
+def fetch_intraday_ohlcv(
+    equity: Any, symbol: str, market_source: str, trading_day: date, now: datetime,
+    retries: int = 2,
+) -> tuple[list[dict[str, Any]], float | None]:
+    """Fetch current-session bars with two bounded retries for transient empties."""
+    for attempt in range(max(0, retries) + 1):
+        live = equity.ohlcv(
+            start=trading_day.isoformat(), end=now.isoformat(), interval="5m", compat="v6"
+        )
+        live_rows = normalize_ohlcv(live, symbol, market_source)
+        if any(row["date"] == trading_day.isoformat() for row in live_rows):
+            return live_rows, intraday_turnover_value(live, trading_day)
+        if attempt < max(0, retries):
+            time.sleep(0.5 * (attempt + 1))
+    raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
+
 def normalize_ohlcv(frame: pd.DataFrame, symbol: str, market_source: str) -> list[dict[str, Any]]:
     data = frame.reset_index()
     lowered = {str(column).lower(): column for column in data.columns}
@@ -597,16 +631,27 @@ def score_v4_profiles(
     market_raw = market.get("raw") or {}
     turnover_as_of = str(market_raw.get("session_turnover_as_of") or "")
     exact_turnover = finite(market_raw.get("session_turnover_value"))
+    estimate_as_of = str(market_raw.get("intraday_turnover_as_of") or "")
+    intraday_turnover = finite(market_raw.get("intraday_turnover_value_estimate"))
     if exact_turnover is not None and turnover_as_of == signal_date:
         indicators["adtv_bil"] = exact_turnover / 1_000_000_000
         indicators["session_turnover_bil"] = exact_turnover / 1_000_000_000
         indicators["liquidity_source"] = "SSI_SESSION_STATS"
         indicators["turnover_quality"] = "exact"
+        indicators["turnover_as_of"] = turnover_as_of
+        indicators["turnover_checked_at"] = market_raw.get("session_turnover_checked_at")
+    elif intraday_turnover is not None and estimate_as_of == signal_date:
+        indicators["adtv_bil"] = intraday_turnover / 1_000_000_000
+        indicators["session_turnover_bil"] = intraday_turnover / 1_000_000_000
+        indicators["liquidity_source"] = "SSI_OHLCV_ESTIMATE"
+        indicators["turnover_quality"] = "estimated"
+        indicators["turnover_as_of"] = estimate_as_of
+        indicators["turnover_checked_at"] = market_raw.get("intraday_turnover_checked_at")
     else:
         indicators["liquidity_source"] = "SSI_OHLCV_ESTIMATE"
         indicators["turnover_quality"] = "estimated"
-    indicators["turnover_as_of"] = turnover_as_of or signal_date
-    indicators["turnover_checked_at"] = market_raw.get("session_turnover_checked_at")
+        indicators["turnover_as_of"] = signal_date
+        indicators["turnover_checked_at"] = None
     foreign_as_of = str(market_raw.get("foreign_as_of") or "")
     foreign_net_1d = (
         finite(market_raw.get("foreign_net_1d"))
@@ -791,16 +836,23 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
                 equity = Market(market_source).equity(symbol)
                 frame = equity.ohlcv(start=start, interval="1D", compat="v6")
                 incoming = normalize_ohlcv(frame, symbol, market_source)
+                intraday_turnover = None
                 if intraday:
-                    live = equity.ohlcv(
-                        start=today.isoformat(), end=now.isoformat(), interval="5m", compat="v6"
+                    live_rows, intraday_turnover = fetch_intraday_ohlcv(
+                        equity, symbol, market_source, today, now,
                     )
-                    live_rows = normalize_ohlcv(live, symbol, market_source)
-                    if not any(row["date"] == today.isoformat() for row in live_rows):
-                        raise ValueError(f"No current-session intraday OHLC for {symbol} from {market_source}")
                     incoming.extend(live_rows)
                 merged = merge_ohlcv(symbol, incoming)
                 symbol_market = dict(market_factors.get(symbol) or {})
+                if intraday_turnover is not None:
+                    market_raw = dict(symbol_market.get("raw") or {})
+                    market_raw.update({
+                        "intraday_turnover_value_estimate": intraday_turnover,
+                        "intraday_turnover_as_of": today.isoformat(),
+                        "intraday_turnover_method": "sum_5m_close_x_volume",
+                        "intraday_turnover_checked_at": snapshot_at.astimezone(timezone.utc).isoformat(),
+                    })
+                    symbol_market["raw"] = market_raw
                 if str(symbol_market.get("depth_signal_date") or "") != str(merged[-1]["date"]):
                     symbol_market["s_depth_wall"] = None
                 predictions.extend(score_v4_profiles(
@@ -852,6 +904,10 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
         ),
         "fundamental_symbols_refreshed": 0,
         "market_indicator_coverage": indicator_coverage,
+        "session_stats_probe": next((
+            value.get("session_stats_probe") for value in market_factors.values()
+            if value.get("session_stats_probe")
+        ), None),
         "depth_input_coverage": sum(
             finite(value.get("s_depth_wall")) is not None
             or (bool((value.get("raw") or {}).get("order_book"))
@@ -864,7 +920,10 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
     status_path.write_text(dumps_json(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"VNStock6 native: {len(predictions)}/{len(universe)} symbols, {added} new predictions")
+    print(
+        f"VNStock6 native: {successful_symbols}/{len(universe)} symbols, "
+        f"{len(predictions)} prediction rows, {added} new predictions"
+    )
 
 
 def evaluate(config: dict[str, Any]) -> None:

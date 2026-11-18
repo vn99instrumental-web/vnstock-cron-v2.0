@@ -245,3 +245,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Live FHSC order-book metadata is now stamped with the current signal date, snapshot time and capture timestamp before scoring. `FHSC_SESSION_CACHE` is deliberately not restamped, preventing stale depth from being presented as current.
 - Scoring formulas, thresholds, source priority and cadence are unchanged.
 - Verification: Python compile passed; 24 focused tests passed; the broader suite passed 45 logic tests with one pre-existing local Windows temp-directory sandbox error. Security review found no new credential exposure, endpoint, dependency or authority change.
+## Gen6 intraday session-stat circuit breaker - 2026-11-18
+
+- Intraday probes SSI `session_stats` on FPT, HPG and SSI. If all three return no current-session row, one run-wide circuit breaker skips the remaining per-symbol `session_stats` calls; post-market/daily still queries official statistics for every symbol.
+- When exact session statistics are unavailable, turnover is estimated as the sum of each SSI 5-minute bar close times volume, converted from kVND to VND. Serving remains labelled `SSI_OHLCV_ESTIMATE` and `estimated`; an available same-day `SSI_SESSION_STATS` value remains preferred and labelled `exact`.
+- Current-session SSI OHLCV performs two bounded retries after the initial attempt. A persistently empty symbol is excluded without failing a sufficiently covered run.
+- Native status records the probe result, and the console now reports successful symbols separately from prediction rows.
+- Scoring formulas, source priority, BCTC cadence and post-market replacement behavior are unchanged.
+- Verification: modified Python files compile; 28 focused tests passed; the full suite passed 50 logic tests with one pre-existing Windows temp-directory sandbox error. No new dependency, endpoint, secret, client exposure or authorization change was introduced.

@@ -190,9 +190,32 @@ def _error(exc: Exception) -> dict[str, Any]:
     return {"type": type(exc).__name__, "code": getattr(exc, "code", None), "action": getattr(exc, "action", None)}
 
 
+def probe_session_stats(
+    symbols: list[str], today: date, probe_count: int = 3,
+) -> tuple[bool, dict[str, Any]]:
+    """Probe whether SSI has published current-session daily statistics."""
+    preferred = [symbol for symbol in ("FPT", "HPG", "SSI") if symbol in symbols]
+    sample = (preferred + [symbol for symbol in symbols if symbol not in preferred])[:max(1, probe_count)]
+    empty: list[str] = []
+    errors: list[dict[str, Any]] = []
+    for symbol in sample:
+        try:
+            rows = _records(Market("ssi").equity(symbol).session_stats(
+                start=today.isoformat(), end=today.isoformat(), compat="v6", floating=2
+            ))
+            if rows_for_date(rows, today):
+                return True, {"status": "available", "symbols": sample, "available_symbol": symbol}
+            empty.append(symbol)
+        except Exception as exc:
+            errors.append({"symbol": symbol, **_error(exc)})
+    if len(empty) == len(sample):
+        return False, {"status": "circuit_open_empty", "symbols": sample, "empty_symbols": empty}
+    return True, {"status": "probe_inconclusive", "symbols": sample, "empty_symbols": empty, "errors": errors}
+
 def fetch_symbol(
     symbol: str, today: date, cached_slow: dict[str, Any] | None = None,
     refresh_slow: bool = False, fetch_depth: bool = True, slow_retries: int = 3,
+    fetch_session_stats: bool = True,
 ) -> dict[str, Any]:
     """Fetch fast endpoints and preserve slow FHSC factors between daily refreshes."""
     start, end = (today - timedelta(days=35)).isoformat(), today.isoformat()
@@ -319,6 +342,8 @@ def fetch_symbol(
     stats_rows: list[dict[str, Any]] = []
     average: float | None = None
     try:
+        if not fetch_session_stats:
+            raise RuntimeError("SSI session_stats circuit open after empty availability probe")
         candidate_stats = _records(Market("ssi").equity(symbol).session_stats(
             start=today.isoformat(), end=end, compat="v6", floating=2
         ))
@@ -413,11 +438,18 @@ def collect_market_factors(
     refresh_slow: bool = False, fetch_depth: bool = True,
 ) -> dict[str, dict[str, Any]]:
     slow_cache = slow_cache or {}
+    session_stats_enabled, session_stats_probe = (
+        probe_session_stats(symbols, today) if fetch_depth
+        else (True, {"status": "not_probed_postmarket"})
+    )
     workers = max(1, min(int(max_workers), len(symbols) or 1))
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="vnstock6-market") as executor:
         values = list(executor.map(
             lambda symbol: fetch_symbol(
-                symbol, today, slow_cache.get(symbol), refresh_slow, fetch_depth
+                symbol, today, slow_cache.get(symbol), refresh_slow, fetch_depth,
+                fetch_session_stats=session_stats_enabled,
             ), symbols
         ))
+    for value in values:
+        value["session_stats_probe"] = session_stats_probe
     return dict(zip(symbols, values))

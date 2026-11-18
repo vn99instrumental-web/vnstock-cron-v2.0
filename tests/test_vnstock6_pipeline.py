@@ -12,6 +12,69 @@ import vnstock6_native_pipeline as pipeline
 
 
 class PipelineCadenceTest(unittest.TestCase):
+    def test_intraday_turnover_sums_each_bar_close_times_volume(self):
+        frame = pd.DataFrame({
+            "time": ["2026-11-18 09:00", "2026-11-18 09:05", "2026-11-17 14:55"],
+            "close": [100, 101, 99], "volume": [1_000, 2_000, 9_000],
+        })
+        self.assertEqual(
+            pipeline.intraday_turnover_value(frame, date(2026, 11, 18)),
+            302_000_000,
+        )
+
+    def test_scoring_uses_bar_weighted_intraday_turnover_estimate(self):
+        rows, index_rows = [], []
+        for offset in range(260):
+            current = (date(2026, 1, 1) + timedelta(days=offset)).isoformat()
+            rows.append({
+                "date": current, "open": 100, "high": 101, "low": 99,
+                "close": 100 + offset * .01, "volume": 1_000 + offset,
+                "market_source": "SSI",
+            })
+            index_rows.append({
+                "date": current, "open": 1_700, "high": 1_710, "low": 1_690,
+                "close": 1_700 + offset * .1, "volume": 1_000_000,
+            })
+        signal_date = rows[-1]["date"]
+        market = {"raw": {
+            "intraday_turnover_value_estimate": 302_000_000,
+            "intraday_turnover_as_of": signal_date,
+            "intraday_turnover_checked_at": "2026-09-17T02:30:00+00:00",
+        }}
+        fundamentals = {"fundamental": None, "growth": None, "cash_flow": None, "ratios": {}}
+        quant = {
+            "ema20": 101, "ema50": 100, "ema200": 99,
+            "rsi14": 50, "adx": 20, "supertrend": 100,
+        }
+        with patch.object(pipeline, "technical_indicators", return_value=quant):
+            result = pipeline.score_v4_profiles(
+                "FPT", rows, ["v6.4.18"], "09:30", fundamentals, index_rows, market
+            )[0]
+        self.assertEqual(result["adtv_bil"], .302)
+        self.assertEqual(result["liquidity_source"], "SSI_OHLCV_ESTIMATE")
+        self.assertEqual(result["turnover_quality"], "estimated")
+    def test_intraday_ohlcv_retries_two_transient_empty_responses(self):
+        empty = pd.DataFrame(columns=["time", "open", "high", "low", "close", "volume"])
+        available = pd.DataFrame({
+            "time": ["2026-11-18 09:00"], "open": [100], "high": [101],
+            "low": [99], "close": [100], "volume": [1_000],
+        })
+
+        class Equity:
+            def __init__(self): self.calls = 0
+            def ohlcv(self, **kwargs):
+                self.calls += 1
+                return available if self.calls == 3 else empty
+
+        equity = Equity()
+        with patch.object(pipeline.time, "sleep"):
+            rows, turnover = pipeline.fetch_intraday_ohlcv(
+                equity, "FPT", "ssi", date(2026, 11, 18),
+                datetime(2026, 11, 18, 9, 30),
+            )
+        self.assertEqual(equity.calls, 3)
+        self.assertEqual(rows[0]["date"], "2026-11-18")
+        self.assertEqual(turnover, 100_000_000)
     def test_live_depth_metadata_is_current_before_scoring(self):
         factors = {
             "FPT": {

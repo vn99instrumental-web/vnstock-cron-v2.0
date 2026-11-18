@@ -8,11 +8,45 @@ from scripts.vnstock6_market_factors import (
     foreign_score,
     insider_score,
     proprietary_score,
+    probe_session_stats,
     session_turnover_value,
 )
 
 
 class MarketFactorTest(unittest.TestCase):
+    def test_session_stats_probe_opens_circuit_after_three_empty_symbols(self):
+        calls = []
+
+        class Equity:
+            def __init__(self, symbol): self.symbol = symbol
+            def session_stats(self, **kwargs):
+                calls.append(self.symbol)
+                return []
+
+        class Factory:
+            def equity(self, symbol): return Equity(symbol)
+
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            enabled, status = probe_session_stats(
+                ["ACB", "FPT", "HPG", "SSI", "VCB"], date(2026, 11, 18)
+            )
+        self.assertFalse(enabled)
+        self.assertEqual(calls, ["FPT", "HPG", "SSI"])
+        self.assertEqual(status["status"], "circuit_open_empty")
+
+    def test_session_stats_probe_keeps_endpoint_when_any_probe_is_available(self):
+        class Equity:
+            def __init__(self, symbol): self.symbol = symbol
+            def session_stats(self, **kwargs):
+                return [{"time": "2026-11-18", "total_value": 100}] if self.symbol == "HPG" else []
+
+        class Factory:
+            def equity(self, symbol): return Equity(symbol)
+
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            enabled, status = probe_session_stats(["FPT", "HPG", "SSI"], date(2026, 11, 18))
+        self.assertTrue(enabled)
+        self.assertEqual(status["available_symbol"], "HPG")
     def test_foreign_flow_uses_v4_bands(self):
         rows = [
             {"foreign_buy_value": 100.0, "foreign_sell_value": 20.0, "foreign_net_value": 80.0}
