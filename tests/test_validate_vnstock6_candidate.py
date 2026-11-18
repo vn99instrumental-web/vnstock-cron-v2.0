@@ -3,10 +3,20 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from validate_vnstock6_candidate import fundamental_refresh_summary
+from validate_vnstock6_candidate import (
+    OPTIONAL_SOURCE_COVERAGE,
+    REQUIRED_QUALITY_COVERAGE,
+    fundamental_refresh_summary,
+)
 
 
 class FundamentalRefreshSummaryTest(unittest.TestCase):
+    def test_same_session_source_fields_are_reported_but_not_release_blocking(self):
+        self.assertIn("ff_intra_net", OPTIONAL_SOURCE_COVERAGE)
+        self.assertIn("ff_intra_ratio", OPTIONAL_SOURCE_COVERAGE)
+        self.assertNotIn("ff_intra_net", REQUIRED_QUALITY_COVERAGE)
+        self.assertNotIn("ff_intra_ratio", REQUIRED_QUALITY_COVERAGE)
+
     def test_marks_refresh_from_current_run_as_success(self):
         status = {
             "run_id": "123", "generated_at": "2026-11-17T01:00:00Z",

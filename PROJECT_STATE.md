@@ -253,3 +253,11 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Native status records the probe result, and the console now reports successful symbols separately from prediction rows.
 - Scoring formulas, source priority, BCTC cadence and post-market replacement behavior are unchanged.
 - Verification: modified Python files compile; 28 focused tests passed; the full suite passed 50 logic tests with one pre-existing Windows temp-directory sandbox error. No new dependency, endpoint, secret, client exposure or authorization change was introduced.
+
+## Gen6 optional live-source validation - 2026-11-18
+
+- Candidate run `44229456639` ingested 100/100 symbols and built 300 predictions, then failed only because SSI/FHSC exposed no same-session foreign-flow rows at that snapshot and the validator incorrectly required full `ff_intra_net` coverage.
+- Same-session foreign net/ratio remain reported in data-quality coverage but are now release-optional when the source returns no usable current-day row. Missing values stay null and the existing scoring policy excludes and renormalizes the factor.
+- Any non-null foreign value still must match `signal_date`; stale values and invalid ratios still fail the quality gate. Price, turnover, depth and technical indicator coverage remain mandatory.
+- This is a validator correction only: source priority, scoring formulas, intraday/daily/BCTC cadence and source calls are unchanged.
+- Verification: modified Python compiles; 22 focused tests pass. The broader local run passed 34 logic tests and hit only the pre-existing Windows temporary-directory permission error in the cache-writer test.

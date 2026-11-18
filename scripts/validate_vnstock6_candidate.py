@@ -10,6 +10,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+QUALITY_FIELDS = (
+    "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "ff_intra_ratio",
+    "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
+    "position_52w", "s_depth_wall",
+)
+
+# Source-backed same-session fields may legitimately be unavailable during an
+# intraday snapshot. They remain visible in coverage and are validated for
+# exact-date alignment whenever present, but missing values follow the
+# pipeline's exclude-and-renormalize policy instead of blocking the release.
+REQUIRED_QUALITY_COVERAGE = (
+    "price", "adtv_bil", "adtv_20d_bil", "s_depth_wall",
+    "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
+)
+OPTIONAL_SOURCE_COVERAGE = ("ff_intra_net", "ff_intra_ratio")
+
 
 def finite(value: object) -> float | None:
     try:
@@ -133,22 +149,15 @@ def main() -> None:
         raise RuntimeError(f"Derived technical indicator coverage is too low: {indicator_coverage}")
     if indicator_coverage["s_cf_core"] < int(config["minimum_coverage"]) * len(versions):
         raise RuntimeError(f"Cash-flow overlay coverage is too low: {indicator_coverage}")
-    quality_fields = (
-        "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "ff_intra_ratio",
-        "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
-        "position_52w", "s_depth_wall",
-    )
     field_coverage = {
         key: sum(finite(dashboard_value(row, key)) is not None for row in rows)
-        for key in quality_fields
+        for key in QUALITY_FIELDS
     }
     minimum_rows = int(config["minimum_coverage"]) * len(versions)
-    required_coverage = (
-        "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "s_depth_wall",
-        "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
-    )
     low_quality_coverage = {
-        key: field_coverage[key] for key in required_coverage if field_coverage[key] < minimum_rows
+        key: field_coverage[key]
+        for key in REQUIRED_QUALITY_COVERAGE
+        if field_coverage[key] < minimum_rows
     }
     invalid_values: list[dict[str, object]] = []
     for row in rows:
@@ -193,12 +202,16 @@ def main() -> None:
         "status": "FAIL" if low_quality_coverage or invalid_values else "PASS",
         "rows": len(rows), "total_serving_rows": len(all_rows), "minimum_required_rows": minimum_rows,
         "field_coverage": field_coverage, "low_coverage": low_quality_coverage,
+        "optional_source_coverage": {
+            key: field_coverage[key] for key in OPTIONAL_SOURCE_COVERAGE
+        },
         "invalid_values": invalid_values[:100],
         "contracts": {
             "adtv_bil": "current_or_last_session_turnover_bil_vnd",
             "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
             "ff_intra_net": "same_session_foreign_net_vnd",
             "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date",
+            "optional_source_fields": "missing_is_null_and_excluded_from_scoring",
         },
     }
     quality_path = ROOT / "output/vnstock6/data-quality.json"
