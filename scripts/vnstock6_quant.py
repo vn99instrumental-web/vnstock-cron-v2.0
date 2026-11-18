@@ -114,7 +114,9 @@ def fundamental_factors(
         parts=[]
         for key,center,scale,invert in (("RT_PRT_ROE",.08,.15,False),("RT_PRT_ROA",.03,.08,False),("RT_PRT_GROSS_MARGIN",.15,.25,False),("RT_PRT_NET_MARGIN",.05,.15,False),("RT_LQD_CR",1.,1.,False),("RT_LEV_DE",1.5,1.5,True)):
             if key in ratios: parts.append(_clip((center-ratios[key] if invert else ratios[key]-center)/scale))
-        growth_values=[value for value in (_growth(frames,("IS_NET_REVENUE","IS_OPERATING_INCOME")),_growth(frames,("IS_NET_PROFIT_AFTER_TAX_OF_PARENT","IS_NET_PROFIT_AFTER_TAX"))) if value is not None]
+        growth_revenue_yoy=_growth(frames,("IS_NET_REVENUE","IS_OPERATING_INCOME"))
+        growth_profit_yoy=_growth(frames,("IS_NET_PROFIT_AFTER_TAX_OF_PARENT","IS_NET_PROFIT_AFTER_TAX"))
+        growth_values=[value for value in (growth_revenue_yoy,growth_profit_yoy) if value is not None]
         cash=frames[2] if len(frames)>2 else pd.DataFrame(); income=frames[1] if len(frames)>1 else pd.DataFrame()
         def latest_line(frame,codes):
             column="id" if "id" in frame else "line_code" if "line_code" in frame else None
@@ -127,7 +129,7 @@ def fundamental_factors(
         if industry and not financial and cfo is not None: cf_parts.append(5 if cfo>0 else -10)
         if industry and not financial and cf_quality is not None: cf_parts.append(5 if cf_quality>1 else -5 if cf_quality<.5 else 0)
         cf_score=max(-10,min(10,sum(cf_parts))) if cf_parts else None
-        return {"fundamental":sum(parts)/len(parts) if parts else None,"growth":sum(_clip(v/.25) for v in growth_values)/len(growth_values) if growth_values else None,"cash_flow":None if cf_score is None else cf_score/10,"cash_flow_score":cf_score,"cash_flow_operating":cfo,"cash_flow_quality":cf_quality,"industry":industry,"fundamental_reason":None if parts else "vnstock_quant_no_usable_ratios","growth_reason":None if growth_values else "insufficient_quarterly_growth_history","cash_flow_reason":None if cf_score is not None else "sector_cash_flow_excluded" if financial else "industry_unavailable" if not industry else "vnstock_quant_no_usable_cash_flow","ratios":ratios,"statements":statements,"statement_signature":statement_signature,"engine":"vnstock_quant.fa","version":"1.1.0"}
+        return {"fundamental":sum(parts)/len(parts) if parts else None,"growth":sum(_clip(v/.25) for v in growth_values)/len(growth_values) if growth_values else None,"growth_revenue_yoy":growth_revenue_yoy,"growth_profit_yoy":growth_profit_yoy,"cash_flow":None if cf_score is None else cf_score/10,"cash_flow_score":cf_score,"cash_flow_operating":cfo,"cash_flow_quality":cf_quality,"industry":industry,"fundamental_reason":None if parts else "vnstock_quant_no_usable_ratios","growth_reason":None if growth_values else "insufficient_quarterly_growth_history","cash_flow_reason":None if cf_score is not None else "sector_cash_flow_excluded" if financial else "industry_unavailable" if not industry else "vnstock_quant_no_usable_cash_flow","ratios":ratios,"statements":statements,"statement_signature":statement_signature,"engine":"vnstock_quant.fa","version":"1.1.0"}
     except Exception as exc:
         reason=getattr(exc,"code",None) or type(exc).__name__
         return {"fundamental":None,"growth":None,"cash_flow":None,"fundamental_reason":reason,"growth_reason":reason,"cash_flow_reason":reason,"ratios":{},"statements":statements,"engine":"vnstock_quant.fa","version":"1.1.0","error":{"type":type(exc).__name__,"code":getattr(exc,"code",None),"action":getattr(exc,"action",None)}}

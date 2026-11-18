@@ -6,6 +6,7 @@ import pandas as pd
 from scripts.vnstock6_v4_scoring import (
     PROFILES,
     classify_regime,
+    depth_wall_metrics,
     factor_values,
     indicator_snapshot,
     order_flow_phase_score,
@@ -53,6 +54,28 @@ class Gen6V4ScoringTest(unittest.TestCase):
             market={"s_depth_wall": 3, "raw": {"order_book": []}},
         )
         self.assertEqual(signals["s_depth_wall"], 3)
+
+    def test_depth_metrics_surface_exact_bid_ask_inputs_used_by_score(self):
+        market = {
+            "raw": {
+                "average_trade_size": 1_000,
+                "order_book": [{
+                    "bid_price_1": 100, "bid_volume_1": 50_000,
+                    "bid_price_2": 99.5, "bid_volume_2": 120_000,
+                    "ask_price_1": 100.5, "ask_volume_1": 40_000,
+                    "ask_price_2": 101, "ask_volume_2": 80_000,
+                }],
+            }
+        }
+        result = depth_wall_metrics(market, 100)
+        self.assertEqual(result["depth_bid_price"], 99.5)
+        self.assertEqual(result["depth_bid_volume"], 120_000)
+        self.assertEqual(result["depth_ask_price"], 101)
+        self.assertEqual(result["depth_ask_volume"], 80_000)
+        self.assertEqual(result["depth_bid_ask_ratio"], 1.5)
+        self.assertEqual(result["depth_bid_multiple"], 120)
+        self.assertEqual(result["depth_ask_multiple"], 80)
+        self.assertEqual(result["score"], 1)
 
     def test_regime_uses_only_rows_before_signal_date(self):
         rows = self.frame[["date", "open", "high", "low", "close", "volume"]].to_dict("records")

@@ -236,6 +236,38 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       if (supertrend != null) parts.push(`Supertrend ${supertrend.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
       return parts.length ? parts.join(" · ") : undefined;
     }
+    case "s_fund_core": {
+      const roe = g("ratio_roe"), roa = g("ratio_roa");
+      const gross = g("ratio_gross_margin"), net = g("ratio_net_margin");
+      const current = g("ratio_current"), debtEquity = g("ratio_debt_equity");
+      const parts: string[] = [];
+      if (roe != null) parts.push(`ROE ${(roe * 100).toFixed(2)}%`);
+      if (roa != null) parts.push(`ROA ${(roa * 100).toFixed(2)}%`);
+      if (gross != null) parts.push(`Biên gộp ${(gross * 100).toFixed(2)}%`);
+      if (net != null) parts.push(`Biên ròng ${(net * 100).toFixed(2)}%`);
+      if (current != null) parts.push(`Current ${current.toFixed(2)}x`);
+      if (debtEquity != null) parts.push(`D/E ${debtEquity.toFixed(2)}x`);
+      return parts.length ? parts.join(" · ") : undefined;
+    }
+    case "s_growth_core": {
+      const revenue = g("growth_revenue_yoy"), profit = g("growth_profit_yoy");
+      const parts: string[] = [];
+      if (revenue != null) parts.push(`DT YoY ${revenue >= 0 ? "+" : ""}${(revenue * 100).toFixed(2)}%`);
+      if (profit != null) parts.push(`LNST YoY ${profit >= 0 ? "+" : ""}${(profit * 100).toFixed(2)}%`);
+      return parts.length ? parts.join(" · ") : undefined;
+    }
+    case "s_mkt_context": {
+      const regime = textValue(b.market_regime) ?? textValue(b.regime);
+      const close = g("vnindex_close"), ema20 = g("vnindex_ema20"), ema50 = g("vnindex_ema50");
+      const ret20 = g("vnindex_return_20d");
+      const parts: string[] = [];
+      if (regime) parts.push(regime);
+      if (close != null) parts.push(`VN-Index ${close.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}`);
+      if (ema20 != null) parts.push(`EMA20 ${ema20.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}`);
+      if (ema50 != null) parts.push(`EMA50 ${ema50.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}`);
+      if (ret20 != null) parts.push(`20P ${ret20 >= 0 ? "+" : ""}${ret20.toFixed(2)}%`);
+      return parts.length ? parts.join(" · ") : undefined;
+    }
     case "s_cf_core": {
       const cfo = g("cash_flow_operating"), quality = g("cash_flow_quality");
       const parts: string[] = [];
@@ -253,25 +285,25 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       const parts: string[] = [];
       if (net5 != null) parts.push(`TD 5P ${vndShort(net5)}`);
       if (net20 != null) parts.push(`20P ${vndShort(net20)}`);
-      if (textValue(b.proprietary_as_of)) parts.push(`as-of ${textValue(b.proprietary_as_of)}`);
       return parts.length ? parts.join(" · ") : sourceStatusReason(key, b);
     }
     case "s_insider": {
       const buy = g("insider_buy_count"), sell = g("insider_sell_count");
-      const parts: string[] = [];
-      if (buy != null || sell != null) parts.push(`B${buy ?? 0}/S${sell ?? 0}`);
-      if (textValue(b.insider_as_of)) parts.push(`as-of ${textValue(b.insider_as_of)}`);
-      if (textValue(b.insider_source)) parts.push(String(b.insider_source));
-      return parts.length ? parts.join(" · ") : sourceStatusReason(key, b);
+      return buy != null || sell != null ? `B${buy ?? 0}/S${sell ?? 0}` : sourceStatusReason(key, b);
     }
     case "s_depth_wall": {
-      const source = textValue(b.order_book_source);
-      return source ? `Order book ${source}` : undefined;
+      const bidVolume = g("depth_bid_volume"), askVolume = g("depth_ask_volume");
+      const bidPrice = g("depth_bid_price"), askPrice = g("depth_ask_price");
+      const ratio = g("depth_bid_ask_ratio");
+      if (bidVolume == null && askVolume == null) return undefined;
+      const volume = (value: number | null) => value == null ? "—" : value.toLocaleString("vi-VN", { maximumFractionDigits: 0 });
+      const priceAt = (value: number | null) => value == null ? "" : ` @${value.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      return `Bid ${volume(bidVolume)} cp${priceAt(bidPrice)} / Ask ${volume(askVolume)} cp${priceAt(askPrice)}${ratio != null ? ` · B/A ${ratio.toFixed(2)}x` : ""}`;
     }
     case "s_of_phasefix": {
-      const spike = g("of_vol_spike_pct"), asOf = textValue(b.order_flow_as_of);
+      const spike = g("of_vol_spike_pct");
       if (spike != null)
-        return `KL theo pha ${spike >= 0 ? "+" : ""}${spike.toFixed(2)}%${asOf ? ` · ${asOf}` : ""}`;
+        return `KL theo pha ${spike >= 0 ? "+" : ""}${spike.toFixed(2)}%`;
       const bp = g("of_bp_pts");
       return bp != null && bp !== 0 ? `Áp lực lệnh ${bp > 0 ? "+" : ""}${bp}` : undefined;
     }

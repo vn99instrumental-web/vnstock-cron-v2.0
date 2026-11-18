@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 import pandas as pd
-from scripts.vnstock6_quant import _is_financial_industry, _statement_signature, technical_indicators
+from scripts.vnstock6_quant import _growth, _is_financial_industry, _statement_signature, technical_indicators
 
 class QuantIndicatorsTest(unittest.TestCase):
     def test_statement_signature_is_order_independent_and_value_sensitive(self):
@@ -18,6 +18,14 @@ class QuantIndicatorsTest(unittest.TestCase):
             _statement_signature([original,blank,blank]),
             _statement_signature([changed,blank,blank]),
         )
+    def test_growth_returns_actual_latest_quarter_yoy_rate(self):
+        frame = pd.DataFrame({
+            "period": ["2025Q1", "2025Q2", "2025Q3", "2025Q4", "2026Q1"],
+            "id": ["IS_NET_REVENUE"] * 5,
+            "value": [100, 110, 120, 130, 125],
+        })
+        self.assertAlmostEqual(_growth([frame], ("IS_NET_REVENUE",)), 0.25)
+
     def test_financial_industry_detection_handles_vietnamese_accents(self):
         self.assertTrue(_is_financial_industry("Ngân hàng"))
         self.assertTrue(_is_financial_industry("Chứng khoán"))

@@ -28,6 +28,12 @@ class ServingProjectionTests(unittest.TestCase):
             "insider_sell_count": 1,
             "insider_deal_status": "available",
             "order_book_source": "FHSC_SESSION_CACHE",
+            "depth_bid_price": 100.0, "depth_bid_volume": 120_000,
+            "depth_ask_price": 100.5, "depth_ask_volume": 80_000,
+            "depth_bid_ask_ratio": 1.5,
+            "growth_revenue_yoy": 0.25, "growth_profit_yoy": 0.4,
+            "market_regime": "UPTREND", "vnindex_close": 1_650.0,
+            "vnindex_ema20": 1_620.0, "vnindex_ema50": 1_600.0,
             "order_flow_source": "SSI_OHLCV_PHASE_VOLUME",
             **expected,
         }
@@ -44,6 +50,13 @@ class ServingProjectionTests(unittest.TestCase):
         self.assertEqual(breakdown["insider_buy_count"], 2)
         self.assertEqual(breakdown["insider_deal_status"], "available")
         self.assertEqual(breakdown["order_book_source"], "FHSC_SESSION_CACHE")
+        self.assertEqual(breakdown["depth_bid_volume"], 120_000)
+        self.assertEqual(breakdown["depth_ask_volume"], 80_000)
+        self.assertEqual(breakdown["depth_bid_ask_ratio"], 1.5)
+        self.assertEqual(breakdown["growth_revenue_yoy"], 0.25)
+        self.assertEqual(breakdown["growth_profit_yoy"], 0.4)
+        self.assertEqual(breakdown["market_regime"], "UPTREND")
+        self.assertEqual(breakdown["vnindex_close"], 1_650.0)
         self.assertEqual(breakdown["order_flow_source"], "SSI_OHLCV_PHASE_VOLUME")
 
     def test_gen6_run_uses_actual_execution_timestamp_and_kind(self):

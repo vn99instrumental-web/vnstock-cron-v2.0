@@ -198,6 +198,9 @@ def fetch_symbol(
     start, end = (today - timedelta(days=35)).isoformat(), today.isoformat()
     cached_slow = cached_slow or {}
     cached_raw = cached_slow.get("raw") or {}
+    cached_depth_current = cached_slow.get("depth_signal_date") == today.isoformat()
+    cached_order_book = _records(cached_raw.get("order_book")) if cached_depth_current else []
+    cached_average = finite(cached_raw.get("average_trade_size")) if cached_depth_current else None
     checked_at = datetime.now(UTC).isoformat()
     result: dict[str, Any] = {
         "refreshed_at": checked_at, "errors": {},
@@ -371,8 +374,13 @@ def fetch_symbol(
                 result["errors"]["active_session_fhsc"] = _error(fallback_exc)
 
     if not fetch_depth:
+        if cached_order_book:
+            result["raw"]["order_book"] = cached_order_book
+        if cached_average is not None:
+            result["raw"]["average_trade_size"] = cached_average
         result["endpoint_rows"] = {
-            "foreign_flow": len(foreign_rows), "session_stats": len(stats_rows), "order_book": 0,
+            "foreign_flow": len(foreign_rows), "session_stats": len(stats_rows),
+            "order_book": len(cached_order_book),
             "proprietary_flow": len(proprietary_rows), "insider_deal": len(insider_rows),
         }
         return result
@@ -387,6 +395,10 @@ def fetch_symbol(
     except Exception as exc:
         order_book = []
         result["errors"]["order_book_fhsc"] = _error(exc)
+    if not order_book and cached_order_book:
+        order_book = cached_order_book
+        average = average or cached_average
+        result["endpoint_sources"]["order_book"] = "FHSC_SESSION_CACHE"
     result["raw"].update({"average_trade_size": average, "order_book": order_book})
     result["endpoint_rows"] = {
         "foreign_flow": len(foreign_rows), "session_stats": len(stats_rows), "order_book": len(order_book),

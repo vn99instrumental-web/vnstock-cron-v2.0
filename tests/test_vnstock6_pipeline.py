@@ -158,6 +158,7 @@ class PipelineCadenceTest(unittest.TestCase):
             "latest_statement_signature": "latest-same",
             "refreshed_at": datetime.now(timezone.utc).isoformat(),
             "fundamental": 0.4, "growth": 0.2,
+            "growth_revenue_yoy": 0.1, "growth_profit_yoy": 0.2,
         }
         reference = pd.DataFrame({"symbol": ["FPT"], "industry": ["Technology"]})
         unchanged = {

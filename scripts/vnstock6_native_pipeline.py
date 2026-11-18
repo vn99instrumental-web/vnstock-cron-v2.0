@@ -27,7 +27,7 @@ from vnstock6_fundamental_probe import STATEMENT_TYPES, latest_statement_probe
 from vnstock6_market_factors import collect_market_factors
 from vnstock6_json_safe import dumps_json
 from vnstock6_v4_scoring import (
-    PROFILES, classify_regime, factor_values, indicator_snapshot, score_profile, signal_values,
+    PROFILES, classify_regime, depth_wall_metrics, factor_values, indicator_snapshot, score_profile, signal_values,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -356,7 +356,10 @@ def refresh_fundamental_cache(
 
             if probe and not probe.get("error") and previous:
                 previous_probe = previous.get("latest_statement_signature")
-                if previous_probe == probe["signature"]:
+                has_growth_inputs = all(
+                    key in previous for key in ("growth_revenue_yoy", "growth_profit_yoy")
+                )
+                if previous_probe == probe["signature"] and has_growth_inputs:
                     value = dict(previous)
                     value["checked_at"] = datetime.now(timezone.utc).isoformat()
                     value["latest_statement_signature"] = probe["signature"]
@@ -603,6 +606,7 @@ def score_v4_profiles(
     if foreign_ratio is not None and abs(foreign_ratio) > 1:
         foreign_ratio = None
     signals = signal_values(indicators, fundamentals, regime_info["regime"], market, snap_time)
+    depth_metrics = depth_wall_metrics(market, finite(indicators.get("entry")))
     output: list[dict[str, Any]] = []
     for version in versions:
         factors = factor_values(signals, PROFILES[version]["extras"], "trade")
@@ -624,7 +628,13 @@ def score_v4_profiles(
             "flow": "vnstock6_native_v4_profiles", "universe_variant": "vn100-hose",
             "registry_version": 3, "gate_version": 7,
             "regime_as_of": regime_info.get("as_of"), "regime_method": regime_info.get("reason"),
+            "market_regime": regime_info.get("regime"),
+            "vnindex_close": finite(regime_info.get("close")),
+            "vnindex_ema20": finite(regime_info.get("ema20")),
+            "vnindex_ema50": finite(regime_info.get("ema50")),
+            "vnindex_ema200": finite(regime_info.get("ema200")),
             **indicators, **levels, **signals, **scored,
+            **{key: value for key, value in depth_metrics.items() if key != "score"},
             "ff_intra_net": foreign_net_1d, "ff_intra_ratio": foreign_ratio,
             "foreign_net_1d": foreign_net_1d,
             "foreign_net_5d": finite(market_raw.get("foreign_net_5d")),
@@ -656,6 +666,8 @@ def score_v4_profiles(
             "order_flow_source": "SSI_OHLCV_PHASE_VOLUME",
             "order_flow_as_of": f"{signal_date} {snap_time}",
             "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
+            "growth_revenue_yoy": finite(fundamentals.get("growth_revenue_yoy")),
+            "growth_profit_yoy": finite(fundamentals.get("growth_profit_yoy")),
             "ratio_roe": ratios.get("RT_PRT_ROE"), "ratio_roa": ratios.get("RT_PRT_ROA"),
             "ratio_gross_margin": ratios.get("RT_PRT_GROSS_MARGIN"), "ratio_net_margin": ratios.get("RT_PRT_NET_MARGIN"),
             "ratio_current": ratios.get("RT_LQD_CR"), "ratio_debt_equity": ratios.get("RT_LEV_DE"),

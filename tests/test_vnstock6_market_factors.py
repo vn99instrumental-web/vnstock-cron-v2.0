@@ -72,12 +72,21 @@ class MarketFactorTest(unittest.TestCase):
         cache = {
             "s_depth_wall": 2, "depth_signal_date": "2026-11-16",
             "depth_snap_time": "14:19", "depth_captured_at": "2026-11-16T07:19:00Z",
+            "raw": {
+                "average_trade_size": 1000,
+                "order_book": [{
+                    "bid_price_1": 100, "bid_volume_1": 5000,
+                    "ask_price_1": 101, "ask_volume_1": 1000,
+                }],
+            },
         }
         with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
             result = fetch_symbol("FPT", date(2026, 11, 16), cache, fetch_depth=False)
         self.assertEqual(result["s_depth_wall"], 2)
         self.assertEqual(result["depth_snap_time"], "14:19")
-        self.assertEqual(result["endpoint_rows"]["order_book"], 0)
+        self.assertEqual(result["endpoint_rows"]["order_book"], 1)
+        self.assertEqual(result["raw"]["average_trade_size"], 1000)
+        self.assertEqual(result["raw"]["order_book"][0]["bid_volume_1"], 5000)
 
     def test_foreign_falls_back_and_depth_uses_fhsc_book(self):
         class Equity:

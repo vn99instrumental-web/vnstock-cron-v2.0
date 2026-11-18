@@ -151,21 +151,44 @@ def classify_regime(index_rows: list[dict[str, Any]], signal_date: str) -> dict[
             "reason": "prior_close_only"}
 
 
-def _depth_wall(market: dict[str,Any], price: float | None) -> float | None:
+def depth_wall_metrics(market: dict[str,Any], price: float | None) -> dict[str, float | None]:
+    """Return the exact bid/ask inputs used by the depth-wall score."""
+    fallback=finite(market.get("s_depth_wall"))
+    result={
+        "score": fallback, "depth_bid_price": None, "depth_bid_volume": None,
+        "depth_ask_price": None, "depth_ask_volume": None,
+        "depth_bid_ask_ratio": None, "depth_average_trade_size": None,
+        "depth_bid_multiple": None, "depth_ask_multiple": None,
+    }
     rows=((market.get("raw") or {}).get("order_book") or [])
-    if not rows or not price:
-        return finite(market.get("s_depth_wall"))
-    normalized={str(key).lower().replace(" ","_"):value for key,value in rows[-1].items()}; avg=finite((market.get("raw") or {}).get("average_trade_size"))
-    if not avg: return finite(market.get("s_depth_wall"))
-    bid=ask=0.0
+    if not rows or not price: return result
+    normalized={str(key).lower().replace(" ","_"):value for key,value in rows[-1].items()}
+    avg=finite((market.get("raw") or {}).get("average_trade_size"))
+    if not avg or avg <= 0: return result
+    bid=ask=0.0; bid_price=ask_price=None
     for i in (1,2,3):
         bp=finite(normalized.get(f"bid_price_{i}")); bv=finite(normalized.get(f"bid_volume_{i}")); ap=finite(normalized.get(f"ask_price_{i}")); av=finite(normalized.get(f"ask_volume_{i}"))
         if bp and bp>price*10: bp/=1000
         if ap and ap>price*10: ap/=1000
-        if bp and bv and price*.98<=bp<=price*1.02: bid=max(bid,bv)
-        if ap and av and price*.98<=ap<=price*1.02: ask=max(ask,av)
+        if bp and bv and price*.98<=bp<=price*1.02 and bv>bid: bid,bid_price=bv,bp
+        if ap and av and price*.98<=ap<=price*1.02 and av>ask: ask,ask_price=av,ap
     def band(value): return 3 if value/avg>=250 else 2 if value/avg>=100 else 1 if value/avg>=40 else 0
-    return float(max(-3,min(3,band(bid)-band(ask))))
+    result.update({
+        "score": float(max(-3,min(3,band(bid)-band(ask)))),
+        "depth_bid_price": bid_price, "depth_bid_volume": bid or None,
+        "depth_ask_price": ask_price, "depth_ask_volume": ask or None,
+        "depth_bid_ask_ratio": finite(bid/ask) if ask else None,
+        "depth_average_trade_size": avg,
+        "depth_bid_multiple": finite(bid/avg) if bid else None,
+        "depth_ask_multiple": finite(ask/avg) if ask else None,
+    })
+    return result
+
+
+def _depth_wall(market: dict[str,Any], price: float | None) -> float | None:
+    return depth_wall_metrics(market,price)["score"]
+
+
 
 
 _FRACTION_ANCHORS = (

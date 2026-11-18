@@ -230,3 +230,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Production run `44126170926` completed successfully in 8m01s. Build/validation, Git-ledger publication and Vercel cache revalidation all passed; data commit `c54a6786` was published.
 - The resulting 2026-11-17 23:35 ICT snapshot contains 300 serving rows (100 symbols x 3 scoring versions), zero invalid values and no low-coverage quality finding. Across all versions, price, turnover, foreign net, EMA20/50/200, RSI14, ATR14 and OBV cover 300/300 rows; depth covers 255/300 (85/100 symbols in each version) and missing depth remains excluded/renormalized.
 - This run executed after market close, so it verifies final-session data collection through the intraday path, not live in-session movement. A true live intraday test requires the next scheduled trigger during a trading session; based on this run, allow about 8-10 minutes after the trigger for Git publication and Vercel revalidation.
+
+## Gen6 indicator evidence display - 2026-11-18
+
+- Dashboard indicator rows now follow score -> indicator -> signal -> actual input: depth shows bid/ask volume, price and ratio; growth shows revenue/profit YoY; market context shows regime and VN-Index/EMA values; fundamentals show the ratios used.
+- UI no longer presents order-book source labels, proprietary/insider as-of dates, or order-flow collection timestamps as indicator evidence. Provenance remains in the serving/ledger payload for audit.
+- Scoring formulas and source priority are unchanged. Daily preserves only same-session cached order-book inputs; a temporary empty intraday response can reuse only that same-day cache.
+- Existing fundamental cache is backfilled with raw growth inputs on the next post-market BCTC maintenance even when the statement signature is unchanged.
+- Verification: Python compile passed; 27 focused tests passed; 39 integration tests passed with one additional pipeline writer test blocked by the local Windows temp-directory sandbox; TypeScript passed; Next.js production build passed with lint disabled because the pre-existing local pnpm tree lacks the transitive `debug` module.
+- Security review: no new endpoint, dependency, credential field, client-side secret or write authority was introduced; only already-public numeric market/fundamental inputs are added to serving output.
