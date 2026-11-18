@@ -227,7 +227,6 @@ function memberDetails(key: string, b: Record<string, unknown>): Pick<GroupMembe
  * Ledger chủ yếu lưu ĐIỂM; chỉ vài field thô có sẵn (thanh khoản, khối ngoại,
  * order flow). Trả null nếu không có field thô cho chỉ báo đó.
  */
-
 function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
   const g = (k: string) => num(b[k]);
   const price = g("price");
