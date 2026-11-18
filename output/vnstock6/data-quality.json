@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-18T04:35:37.126777+00:00",
+  "generated_at": "2026-11-18T06:00:16.372611+00:00",
   "status": "PASS",
   "rows": 300,
-  "total_serving_rows": 897,
+  "total_serving_rows": 1197,
   "minimum_required_rows": 240,
   "field_coverage": {
     "price": 300,
     "adtv_bil": 300,
     "adtv_20d_bil": 300,
-    "ff_intra_net": 297,
-    "ff_intra_ratio": 297,
+    "ff_intra_net": 300,
+    "ff_intra_ratio": 300,
     "ema20": 300,
     "ema50": 300,
     "ema200": 300,
@@ -21,11 +21,16 @@
     "s_depth_wall": 300
   },
   "low_coverage": {},
+  "optional_source_coverage": {
+    "ff_intra_net": 300,
+    "ff_intra_ratio": 300
+  },
   "invalid_values": [],
   "contracts": {
     "adtv_bil": "current_or_last_session_turnover_bil_vnd",
     "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
     "ff_intra_net": "same_session_foreign_net_vnd",
-    "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date"
+    "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date",
+    "optional_source_fields": "missing_is_null_and_excluded_from_scoring"
   }
 }
