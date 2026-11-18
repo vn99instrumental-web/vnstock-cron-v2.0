@@ -12,6 +12,27 @@ import vnstock6_native_pipeline as pipeline
 
 
 class PipelineCadenceTest(unittest.TestCase):
+    def test_live_depth_metadata_is_current_before_scoring(self):
+        factors = {
+            "FPT": {
+                "endpoint_sources": {"order_book": "FHSC"},
+                "raw": {"order_book": [{"bid_volume_1": 1200}]},
+                "depth_signal_date": "2026-11-17",
+            },
+            "HPG": {
+                "endpoint_sources": {"order_book": "FHSC_SESSION_CACHE"},
+                "raw": {"order_book": [{"bid_volume_1": 900}]},
+                "depth_signal_date": "2026-11-17",
+            },
+        }
+        pipeline.stamp_live_depth_metadata(
+            factors, date(2026, 11, 18), "09:35", "2026-11-18T02:35:00+00:00"
+        )
+        self.assertEqual(factors["FPT"]["depth_signal_date"], "2026-11-18")
+        self.assertEqual(factors["FPT"]["depth_snap_time"], "09:35")
+        self.assertEqual(factors["FPT"]["depth_captured_at"], "2026-11-18T02:35:00+00:00")
+        self.assertEqual(factors["HPG"]["depth_signal_date"], "2026-11-17")
+
     def test_market_cache_writer_normalizes_nested_order_book(self):
         from tempfile import TemporaryDirectory
 

@@ -239,3 +239,9 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Existing fundamental cache is backfilled with raw growth inputs on the next post-market BCTC maintenance even when the statement signature is unchanged.
 - Verification: Python compile passed; 27 focused tests passed; 39 integration tests passed with one additional pipeline writer test blocked by the local Windows temp-directory sandbox; TypeScript passed; Next.js production build passed with lint disabled because the pre-existing local pnpm tree lacks the transitive `debug` module.
 - Security review: no new endpoint, dependency, credential field, client-side secret or write authority was introduced; only already-public numeric market/fundamental inputs are added to serving output.
+## Gen6 first-intraday depth provenance fix - 2026-11-18
+
+- Root cause of production failures `44211603189` and `44223082513`: the first live FHSC order book of a new trading day was scored before `depth_signal_date` was advanced from the prior-day cache, so the temporal quality gate correctly rejected publication.
+- Live FHSC order-book metadata is now stamped with the current signal date, snapshot time and capture timestamp before scoring. `FHSC_SESSION_CACHE` is deliberately not restamped, preventing stale depth from being presented as current.
+- Scoring formulas, thresholds, source priority and cadence are unchanged.
+- Verification: Python compile passed; 24 focused tests passed; the broader suite passed 45 logic tests with one pre-existing local Windows temp-directory sandbox error. Security review found no new credential exposure, endpoint, dependency or authority change.

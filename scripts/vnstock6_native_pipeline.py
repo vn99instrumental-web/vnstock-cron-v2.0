@@ -221,6 +221,20 @@ def merge_depth_cache(
             current.update(depth)
     return output
 
+def stamp_live_depth_metadata(
+    factors: dict[str, dict[str, Any]], signal_date: date, snap_time: str, captured_at: str,
+) -> None:
+    """Align live FHSC order-book provenance before scoring and validation."""
+    for value in factors.values():
+        source = str((value.get("endpoint_sources") or {}).get("order_book") or "")
+        if source != "FHSC" or not (value.get("raw") or {}).get("order_book"):
+            continue
+        value.update({
+            "depth_signal_date": signal_date.isoformat(),
+            "depth_snap_time": snap_time,
+            "depth_captured_at": captured_at,
+        })
+
 def save_market_factor_cache(factors: dict[str, Any]) -> None:
     MARKET_FACTOR_CACHE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -745,6 +759,10 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     )
     snapshot_at = datetime.now(ICT)
     snap_time = scoring_snap_time(snapshot_at, intraday)
+    if intraday:
+        stamp_live_depth_metadata(
+            market_factors, market_date, snap_time, snapshot_at.astimezone(timezone.utc).isoformat(),
+        )
     run_kind = "intraday" if intraday else "postmarket"
     versions = list(config.get("scoring_versions") or [config["scoring_version"]])
     unknown_versions = [version for version in versions if version not in PROFILES]
