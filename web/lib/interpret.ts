@@ -145,7 +145,25 @@ export const FACTOR_GROUPS: {
     members: ["s_mkt_context"], desc: "Trạng thái thị trường chung." },
 ];
 
-export interface GroupMemberView { key: string; name: string; score: number; span: number; dir: Dir; text: string; raw?: string }
+export interface IndicatorDetailView {
+  label: string;
+  signal: string;
+  value: string;
+  dir: Dir;
+  available: boolean;
+}
+
+export interface GroupMemberView {
+  key: string;
+  name: string;
+  score: number;
+  span: number;
+  dir: Dir;
+  text: string;
+  raw?: string;
+  details?: IndicatorDetailView[];
+  method?: string;
+}
 
 /** Định dạng VND gọn: tỷ / triệu, kèm dấu. */
 function vndShort(v: number): string {
@@ -179,11 +197,37 @@ function sourceStatusReason(key: string, b: Record<string, unknown>): string | u
   }
 }
 
+function growthDetail(label: string, value: number | null): IndicatorDetailView {
+  if (value == null) {
+    return { label, signal: "chờ dữ liệu", value: "—", dir: "neutral", available: false };
+  }
+  const dir = dirOf(value);
+  return {
+    label,
+    signal: dir === "buy" ? "tăng" : dir === "sell" ? "giảm" : "đi ngang",
+    value: `${value > 0 ? "+" : ""}${(value * 100).toFixed(2)}%`,
+    dir,
+    available: true,
+  };
+}
+
+function memberDetails(key: string, b: Record<string, unknown>): Pick<GroupMemberView, "details" | "method"> {
+  if (key !== "s_growth_core") return {};
+  return {
+    details: [
+      growthDetail("Doanh thu YoY", num(b.growth_revenue_yoy)),
+      growthDetail("LNST YoY", num(b.growth_profit_yoy)),
+    ],
+    method: "Điểm = TB các tăng trưởng YoY có dữ liệu; mỗi giá trị ÷ 25%, giới hạn ±1, rồi ×5.",
+  };
+}
+
 /**
  * Giá trị THÔ cập nhật đến snapshot ra tín hiệu, gắn kèm 1 số chỉ báo con.
  * Ledger chủ yếu lưu ĐIỂM; chỉ vài field thô có sẵn (thanh khoản, khối ngoại,
  * order flow). Trả null nếu không có field thô cho chỉ báo đó.
  */
+
 function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
   const g = (k: string) => num(b[k]);
   const price = g("price");
@@ -340,7 +384,8 @@ export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] 
       members.push({
         key: k, name: meta?.name ?? k, score, span, dir,
         text: dir === "buy" ? (meta?.buy ?? "") : dir === "sell" ? (meta?.sell ?? "") : "trung tính",
-        raw: rawAnnot(k, b),
+        raw: k === "s_growth_core" ? undefined : rawAnnot(k, b),
+        ...memberDetails(k, b),
       });
     }
     members.sort((a, z) => Math.abs(z.score) - Math.abs(a.score));

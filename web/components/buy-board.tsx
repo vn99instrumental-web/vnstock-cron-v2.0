@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FactorMemberEvidence } from "@/components/factor-member-evidence";
 import { buildCandles, type Candle, type Levels, type PricePoint } from "@/lib/chart";
 import {
   PriceChart, IntradayStrip, CHART_SIMPLE_LAYERS, CHART_ADVANCED_LAYERS,
@@ -697,7 +698,7 @@ export function BuyBoard({
                         <div className="flex items-center gap-2">
                           <span className="text-[11px] font-semibold">{g.label}</span>
                           <span className="tabular shrink-0 text-[10px] font-semibold" style={{ color: DIR_COLOR[g.dir] }} title="Tổng điểm các chỉ báo trong nhóm / tổng span tối đa">
-                            {g.rawTotal > 0 ? "+" : ""}{g.rawTotal}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
+                            {g.rawTotal > 0 ? "+" : ""}{g.rawTotal.toFixed(2)}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
                           </span>
                           <div className="relative ml-auto h-2 w-20 shrink-0 rounded bg-black/5 dark:bg-white/10">
                             <div className="absolute top-0 h-2 rounded" style={{ backgroundColor: DIR_COLOR[g.dir], left: g.norm >= 0 ? "50%" : `${50 + g.norm * 50}%`, width: `${Math.min(50, Math.abs(g.norm) * 50)}%` }} />
@@ -709,19 +710,22 @@ export function BuyBoard({
                         {g.members.length ? (
                           <ul className="mt-1 flex flex-col gap-0.5">
                             {g.members.map((m) => (
-                              <li key={m.key} className="flex items-start gap-1.5 text-[11px] leading-tight">
-                                <span className="tabular w-11 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>
-                                  {m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span>
-                                </span>
-                                <span className="min-w-0 text-[var(--color-muted)]">
-                                  <span className="font-medium text-[var(--color-ink)]">{m.name}</span>
-                                  {" — "}{m.text}
-                                  {m.raw ? (
-                                    <span className="font-medium tabular text-[var(--color-ink)]" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">
-                                      {": "}{m.raw}
-                                    </span>
-                                  ) : null}
-                                </span>
+                              <li key={m.key} className="text-[11px] leading-tight">
+                                <div className="flex items-start gap-1.5">
+                                  <span className="tabular w-11 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>
+                                    {m.score > 0 ? "+" : ""}{m.score.toFixed(2)}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span>
+                                  </span>
+                                  <span className="min-w-0 text-[var(--color-muted)]">
+                                    <span className="font-medium text-[var(--color-ink)]">{m.name}</span>
+                                    {" — "}{m.text}
+                                    {m.raw ? (
+                                      <span className="font-medium tabular text-[var(--color-ink)]" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">
+                                        {": "}{m.raw}
+                                      </span>
+                                    ) : null}
+                                  </span>
+                                </div>
+                                <FactorMemberEvidence member={m} />
                               </li>
                             ))}
                           </ul>

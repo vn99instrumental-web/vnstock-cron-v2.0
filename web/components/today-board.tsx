@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
+import { FactorMemberEvidence } from "@/components/factor-member-evidence";
 import { DecisionBadge, InsightStrip } from "@/components/ui";
 import { fmtNum, fmtPct, hmVN, signClass, fmtBil } from "@/lib/format";
 import { DIR_COLOR, DIR_LABEL, factorGroupViews } from "@/lib/interpret";
@@ -103,20 +104,23 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-semibold">{g.label}</span>
               <span className="tabular text-[10px] font-semibold" style={{ color: DIR_COLOR[g.dir] }}>
-                {g.rawTotal > 0 ? "+" : ""}{g.rawTotal}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
+                {g.rawTotal > 0 ? "+" : ""}{g.rawTotal.toFixed(2)}<span className="font-normal text-[var(--color-muted)]">/±{g.spanTotal}</span>
               </span>
               <span className="ml-auto text-[10px] font-medium" style={{ color: DIR_COLOR[g.dir] }}>{DIR_LABEL[g.dir]}</span>
             </div>
             {g.members.length ? (
               <ul className="mt-1 space-y-1">
                 {g.members.map((m) => (
-                  <li key={m.key} className="flex flex-wrap items-start gap-x-1.5 text-[11px] leading-tight">
-                    <span className="tabular w-10 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>{m.score > 0 ? "+" : ""}{m.score}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span></span>
-                    <span className="min-w-0 text-[var(--color-muted)]">
-                      <span className="font-medium text-[var(--color-ink)]">{m.name}</span>
-                      {" — "}{m.text}
-                      {m.raw ? <span className="font-medium tabular text-[var(--color-ink)]" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">{": "}{m.raw}</span> : null}
-                    </span>
+                  <li key={m.key} className="text-[11px] leading-tight">
+                    <div className="flex items-start gap-x-1.5">
+                      <span className="tabular w-10 shrink-0 text-right font-semibold" style={{ color: DIR_COLOR[m.dir] }}>{m.score > 0 ? "+" : ""}{m.score.toFixed(2)}<span className="font-normal text-[var(--color-muted)]">/±{m.span}</span></span>
+                      <span className="min-w-0 text-[var(--color-muted)]">
+                        <span className="font-medium text-[var(--color-ink)]">{m.name}</span>
+                        {" — "}{m.text}
+                        {m.raw ? <span className="font-medium tabular text-[var(--color-ink)]" title="Giá trị thô, cập nhật theo snapshot ra tín hiệu">{": "}{m.raw}</span> : null}
+                      </span>
+                    </div>
+                    <FactorMemberEvidence member={m} />
                   </li>
                 ))}
               </ul>
