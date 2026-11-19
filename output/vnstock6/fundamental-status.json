@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-18T10:01:54.068601+00:00",
+  "generated_at": "2026-11-19T08:14:39.179440+00:00",
   "reference_source": "SSI",
   "fundamental_source": "FHSC",
   "configured_symbols": 100,
@@ -10,823 +10,723 @@
   "stale_only": false,
   "check_updates": true,
   "ttl_days": 3,
-  "run_id": "44265116172",
+  "run_id": "44484622479",
   "update_detection": "fhsc_latest_statements_limit_1",
   "probe_statement_types": [
     "income-statement",
     "balance-sheet",
     "cash-flow"
   ],
-  "probe_request_count": 303,
+  "probe_request_count": 300,
   "max_workers": 4,
   "counts": {
-    "updated": 100,
-    "unchanged": 0,
+    "updated": 0,
+    "unchanged": 100,
     "failed": 0,
     "failed_preserved": 0,
-    "material_changed": 100,
+    "material_changed": 0,
     "skipped_fresh": 0
   },
   "symbols": {
     "ACB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "ANV": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BAF": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BCM": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BID": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BMP": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BSI": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BSR": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BVH": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "BWE": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "CII": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "CMG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "CTD": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "CTG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "CTR": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "CTS": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DBC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DCM": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DGW": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DIG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DPM": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DSE": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "DXG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "EIB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "EVF": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "FPT": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "FRT": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "FTS": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "GAS": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "GEE": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "GEX": {
-      "status": "updated",
-      "attempt": 2,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "status": "unchanged",
+      "attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "GMD": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "GVR": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HAG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HCM": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HDB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HDG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HHV": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HPG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HSG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "HT1": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "KBC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "KDC": {
-      "status": "updated",
-      "attempt": 2,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "status": "unchanged",
+      "attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "KDH": {
-      "status": "updated",
-      "attempt": 2,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "status": "unchanged",
+      "attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "KOS": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "LPB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "MBB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "MCH": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "MSB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "MSN": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "MWG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "NAB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "NKG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "NLG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "NT2": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "NVL": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "OCB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PAN": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PC1": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PDR": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PHR": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PLX": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PNJ": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "POW": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 2,
-      "probe_request_count": 6,
-      "material_changed": true
+      "phase": "probe",
+      "probe_request_count": 3,
+      "material_changed": false
     },
     "PVD": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "PVT": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "REE": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SAB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SBT": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SHB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SIP": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SJS": {
-      "status": "updated",
-      "attempt": 2,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "status": "unchanged",
+      "attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SSB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "SSI": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "STB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "TAL": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "TCB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "TCH": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "TCX": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "TPB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VCB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VCG": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VCI": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VCK": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VGC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VHC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VHM": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VIB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VIC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VIX": {
-      "status": "updated",
-      "attempt": 2,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "status": "unchanged",
+      "attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VJC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VND": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VNM": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VPB": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VPI": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VPL": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VPX": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VRE": {
-      "status": "updated",
-      "attempt": 2,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "status": "unchanged",
+      "attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VSC": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     },
     "VTP": {
-      "status": "updated",
+      "status": "unchanged",
       "attempt": 1,
-      "phase": "materialize",
-      "probe_attempt": 1,
+      "phase": "probe",
       "probe_request_count": 3,
-      "material_changed": true
+      "material_changed": false
     }
   }
 }

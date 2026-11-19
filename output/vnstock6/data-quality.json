@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-19T07:35:51.003294+00:00",
+  "generated_at": "2026-11-19T08:22:05.567832+00:00",
   "status": "PASS",
   "rows": 300,
-  "total_serving_rows": 1494,
+  "total_serving_rows": 1794,
   "minimum_required_rows": 240,
   "field_coverage": {
     "price": 300,
     "adtv_bil": 300,
     "adtv_20d_bil": 300,
-    "ff_intra_net": 300,
-    "ff_intra_ratio": 300,
+    "ff_intra_net": 0,
+    "ff_intra_ratio": 0,
     "ema20": 300,
     "ema50": 300,
     "ema200": 300,
@@ -22,8 +22,8 @@
   },
   "low_coverage": {},
   "optional_source_coverage": {
-    "ff_intra_net": 300,
-    "ff_intra_ratio": 300
+    "ff_intra_net": 0,
+    "ff_intra_ratio": 0
   },
   "invalid_values": [],
   "contracts": {
