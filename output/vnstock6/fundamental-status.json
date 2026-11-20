@@ -1,27 +1,27 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-19T08:14:39.179440+00:00",
+  "generated_at": "2026-11-20T09:23:58.025374+00:00",
   "reference_source": "SSI",
   "fundamental_source": "FHSC",
   "configured_symbols": 100,
-  "reference_symbols_available": 100,
-  "symbols_requested": 100,
+  "reference_symbols_available": 99,
+  "symbols_requested": 99,
   "cache_symbols": 100,
   "stale_only": false,
   "check_updates": true,
   "ttl_days": 3,
-  "run_id": "44484622479",
+  "run_id": "44699725804",
   "update_detection": "fhsc_latest_statements_limit_1",
   "probe_statement_types": [
     "income-statement",
     "balance-sheet",
     "cash-flow"
   ],
-  "probe_request_count": 300,
+  "probe_request_count": 301,
   "max_workers": 4,
   "counts": {
     "updated": 0,
-    "unchanged": 100,
+    "unchanged": 99,
     "failed": 0,
     "failed_preserved": 0,
     "material_changed": 0,
@@ -294,13 +294,6 @@
       "probe_request_count": 3,
       "material_changed": false
     },
-    "HPG": {
-      "status": "unchanged",
-      "attempt": 1,
-      "phase": "probe",
-      "probe_request_count": 3,
-      "material_changed": false
-    },
     "HSG": {
       "status": "unchanged",
       "attempt": 1,
@@ -464,9 +457,9 @@
     },
     "PNJ": {
       "status": "unchanged",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "probe",
-      "probe_request_count": 3,
+      "probe_request_count": 5,
       "material_changed": false
     },
     "POW": {
@@ -723,9 +716,9 @@
     },
     "VTP": {
       "status": "unchanged",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "probe",
-      "probe_request_count": 3,
+      "probe_request_count": 5,
       "material_changed": false
     }
   }
