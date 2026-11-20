@@ -287,5 +287,50 @@ class MarketFactorTest(unittest.TestCase):
             result["endpoint_sources"]["foreign_flow"], "SSI_SESSION_STATS"
         )
 
+    def test_incomplete_live_depth_keeps_atomic_same_session_cache(self):
+        class Equity:
+            def foreign_flow(self, **kwargs): return []
+            def session_stats(self, **kwargs): raise RuntimeError("stats unavailable")
+            def active_session(self, **kwargs): return []
+            def order_book(self, **kwargs): return [{"bid_price_1": 101, "bid_volume_1": 9_000}]
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        cache = {
+            "s_depth_wall": 2, "depth_signal_date": "2026-11-20",
+            "depth_snap_time": "09:35", "depth_captured_at": "2026-11-20T02:35:00Z",
+            "raw": {
+                "average_trade_size": 100,
+                "order_book": [{"bid_price_1": 100, "bid_volume_1": 5_000, "ask_price_1": 100.5, "ask_volume_1": 4_000}],
+            },
+        }
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol("FPT", date(2026, 11, 20), cache)
+        self.assertEqual(result["depth_status"], "same_session_cache")
+        self.assertEqual(result["depth_snap_time"], "09:35")
+        self.assertEqual(result["raw"]["average_trade_size"], 100)
+        self.assertEqual(result["raw"]["order_book"][0]["bid_price_1"], 100)
+        self.assertEqual(result["raw"]["observed_order_book"][0]["bid_price_1"], 101)
+        self.assertEqual(result["endpoint_sources"]["observed_order_book"], "FHSC")
+
+    def test_incomplete_live_depth_without_atomic_cache_is_excluded(self):
+        class Equity:
+            def foreign_flow(self, **kwargs): return []
+            def session_stats(self, **kwargs): raise RuntimeError("stats unavailable")
+            def active_session(self, **kwargs): return []
+            def order_book(self, **kwargs): return [{"bid_price_1": 101, "bid_volume_1": 9_000}]
+
+        class Factory:
+            def equity(self, symbol): return Equity()
+
+        with patch("scripts.vnstock6_market_factors.Market", return_value=Factory()):
+            result = fetch_symbol("FPT", date(2026, 11, 20), {})
+        self.assertEqual(result["depth_status"], "missing_trade_size")
+        self.assertIsNone(result["s_depth_wall"])
+        self.assertIsNone(result["depth_signal_date"])
+        self.assertEqual(result["raw"]["observed_order_book"][0]["bid_price_1"], 101)
+        self.assertEqual(result["endpoint_sources"]["observed_order_book"], "FHSC")
+
 if __name__ == "__main__":
     unittest.main()

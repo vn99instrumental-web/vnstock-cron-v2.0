@@ -45,6 +45,7 @@ class PipelineCadenceTest(unittest.TestCase):
             "fundamental": None, "growth": 0.6, "cash_flow": None, "ratios": {},
             "growth_revenue_yoy": 0.1, "growth_profit_yoy": 0.2,
             "latest_income_period": "2026-Q3",
+            "latest_statement_periods": {"cash-flow": "2026-Q3"},
         }
         quant = {
             "ema20": 101, "ema50": 100, "ema200": 99,
@@ -61,6 +62,7 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertEqual(result["growth_profit_yoy"], 0.2)
         self.assertEqual(result["growth_effective_yoy"], 0.15)
         self.assertEqual(result["growth_period"], "2026-Q3")
+        self.assertEqual(result["cash_flow_period"], "2026-Q3")
     def test_intraday_ohlcv_retries_two_transient_empty_responses(self):
         empty = pd.DataFrame(columns=["time", "open", "high", "low", "close", "volume"])
         available = pd.DataFrame({
@@ -87,8 +89,8 @@ class PipelineCadenceTest(unittest.TestCase):
         factors = {
             "FPT": {
                 "endpoint_sources": {"order_book": "FHSC"},
-                "raw": {"order_book": [{"bid_volume_1": 1200}]},
-                "depth_signal_date": "2026-11-17",
+                "raw": {"order_book": [{"bid_volume_1": 1200}], "average_trade_size": 100},
+                "depth_status": "live_ready", "depth_signal_date": "2026-11-17",
             },
             "HPG": {
                 "endpoint_sources": {"order_book": "FHSC_SESSION_CACHE"},
@@ -102,22 +104,21 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertEqual(factors["FPT"]["depth_signal_date"], "2026-11-18")
         self.assertEqual(factors["FPT"]["depth_snap_time"], "09:35")
         self.assertEqual(factors["FPT"]["depth_captured_at"], "2026-11-18T02:35:00+00:00")
+        self.assertEqual(factors["FPT"]["depth_status"], "live_scored")
         self.assertEqual(factors["HPG"]["depth_signal_date"], "2026-11-17")
 
     def test_market_cache_writer_normalizes_nested_order_book(self):
-        from tempfile import TemporaryDirectory
-
-        with TemporaryDirectory() as folder:
-            cache_path = Path(folder) / "market-factors.json"
-            with patch.object(pipeline, "MARKET_FACTOR_CACHE", cache_path):
-                pipeline.save_market_factor_cache({
-                    "FPT": {"raw": {"order_book": [{
-                        "time": pd.Timestamp("2026-11-17 09:30:00"),
-                        "bid_volume_1": 1200,
-                        "ask_volume_1": float("nan"),
-                    }]}}
-                })
-            saved = json.loads(cache_path.read_text(encoding="utf-8"))
+        cache_path = Path(__file__).parent / ".tmp-market-factors.json"
+        self.addCleanup(lambda: cache_path.unlink(missing_ok=True))
+        with patch.object(pipeline, "MARKET_FACTOR_CACHE", cache_path):
+            pipeline.save_market_factor_cache({
+                "FPT": {"raw": {"order_book": [{
+                    "time": pd.Timestamp("2026-11-17 09:30:00"),
+                    "bid_volume_1": 1200,
+                    "ask_volume_1": float("nan"),
+                }]}}
+            })
+        saved = json.loads(cache_path.read_text(encoding="utf-8"))
         record = saved["symbols"]["FPT"]["raw"]["order_book"][0]
         self.assertEqual(record["time"], "2026-11-17T09:30:00")
         self.assertEqual(record["bid_volume_1"], 1200)
@@ -337,19 +338,6 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertEqual(factors["FPT"]["cash_flow"], .5)
         self.assertEqual(factors["FPT"]["cash_flow_source"], "legacy_finance_cache")
 
-    def test_depth_cache_prefers_complete_in_session_snapshot(self):
-        rows = [
-            {"symbol": "FPT", "signal_date": "2026-11-16", "snap_time": "14:19", "scoring_version": "v6.4.18", "s_depth_wall": 2},
-            {"symbol": "SSI", "signal_date": "2026-11-16", "snap_time": "14:19", "scoring_version": "v6.4.18", "s_depth_wall": 1},
-            {"symbol": "FPT", "signal_date": "2026-11-16", "snap_time": "17:14", "scoring_version": "v6.4.18", "s_depth_wall": 3},
-        ]
-        payload = "".join(json.dumps(row) + "\n" for row in rows)
-        with patch.object(Path, "glob", return_value=[Path("2026-11-16.jsonl")]), patch.object(
-            Path, "read_text", return_value=payload
-        ):
-            cached = pipeline.load_best_depth_snapshot("v6.4.18")
-        self.assertEqual(set(cached), {"FPT", "SSI"})
-        self.assertEqual(cached["FPT"]["depth_snap_time"], "14:19")
 
 
 if __name__ == "__main__":

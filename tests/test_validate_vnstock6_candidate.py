@@ -7,6 +7,7 @@ from validate_vnstock6_candidate import (
     OPTIONAL_SOURCE_COVERAGE,
     REQUIRED_QUALITY_COVERAGE,
     fundamental_refresh_summary,
+    source_lag_days,
 )
 
 
@@ -16,6 +17,16 @@ class FundamentalRefreshSummaryTest(unittest.TestCase):
         self.assertIn("ff_intra_ratio", OPTIONAL_SOURCE_COVERAGE)
         self.assertNotIn("ff_intra_net", REQUIRED_QUALITY_COVERAGE)
         self.assertNotIn("ff_intra_ratio", REQUIRED_QUALITY_COVERAGE)
+
+    def test_depth_quality_requires_atomic_raw_inputs(self):
+        self.assertIn("s_depth_wall", REQUIRED_QUALITY_COVERAGE)
+        self.assertIn("depth_average_trade_size", REQUIRED_QUALITY_COVERAGE)
+        self.assertIn("order_book_bid_price", REQUIRED_QUALITY_COVERAGE)
+        self.assertIn("order_book_ask_price", REQUIRED_QUALITY_COVERAGE)
+
+    def test_source_lag_uses_signal_and_source_dates(self):
+        self.assertEqual(source_lag_days("2026-11-17", "2026-11-20"), 3)
+        self.assertIsNone(source_lag_days(None, "2026-11-20"))
 
     def test_marks_refresh_from_current_run_as_success(self):
         status = {

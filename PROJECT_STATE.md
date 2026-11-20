@@ -270,3 +270,10 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - The next post-market BCTC maintenance materializes missing raw growth values for future snapshots; legacy finance values are not substituted because they do not reproduce the Gen6 score reliably.
 - Verification: focused Python pipeline/serving tests, TypeScript typecheck, old/new snapshot behavior assertions and the Next.js production build passed. The broader Python suite still has one unrelated Windows temporary-directory permission error.
 - Security review found no new endpoint, dependency, credential, client-side secret or write authority.
+
+## Độ tin cậy depth và quality gate Gen6 — 2026-11-20
+
+- Depth chỉ được chấm khi cùng một bundle có order book, cỡ lệnh trung bình dương và provenance cùng phiên. Không còn phục hồi score-only từ lịch sử hoặc gắn timestamp mới cho cache cũ.
+- Bid/ask quan sát được tách khỏi tường thanh khoản dùng chấm. Dashboard phân biệt `Bid/Ask hiện tại`, `Bid/Ask cache cùng phiên` và dữ liệu bị loại khỏi điểm khi bundle không đủ.
+- Serving payload có `depth_status`, nguồn order book quan sát, top bid/ask thực tế, kỳ tăng trưởng và kỳ dòng tiền. Quality gate kiểm tra tính nguyên tử của depth, kỳ BCTC và phát cảnh báo riêng cho dữ liệu proprietary cũ, insider thiếu ngày, thanh khoản ước tính và growth chỉ có một đầu vào.
+- Xác minh local: 50 unit test liên quan PASS; TypeScript PASS; Next.js production build compile và sinh đủ route PASS. ESLint trong build local không chạy được do cây dependency hiện tại thiếu module gián tiếp `debug`; build vẫn exit 0. Visual sau đăng nhập cần xác minh trên deployment mới.

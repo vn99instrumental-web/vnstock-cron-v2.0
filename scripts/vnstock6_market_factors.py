@@ -224,14 +224,19 @@ def fetch_symbol(
     cached_depth_current = cached_slow.get("depth_signal_date") == today.isoformat()
     cached_order_book = _records(cached_raw.get("order_book")) if cached_depth_current else []
     cached_average = finite(cached_raw.get("average_trade_size")) if cached_depth_current else None
+    cached_depth_complete = bool(
+        cached_order_book and cached_average and cached_average > 0
+        and finite(cached_slow.get("s_depth_wall")) is not None
+    )
     checked_at = datetime.now(UTC).isoformat()
     result: dict[str, Any] = {
         "refreshed_at": checked_at, "errors": {},
         "endpoint_sources": {}, "raw": {}, "s_ff_net": None,
-        "s_depth_wall": finite(cached_slow.get("s_depth_wall")),
-        "depth_signal_date": cached_slow.get("depth_signal_date"),
-        "depth_snap_time": cached_slow.get("depth_snap_time"),
-        "depth_captured_at": cached_slow.get("depth_captured_at"),
+        "s_depth_wall": finite(cached_slow.get("s_depth_wall")) if cached_depth_complete else None,
+        "depth_signal_date": cached_slow.get("depth_signal_date") if cached_depth_complete else None,
+        "depth_snap_time": cached_slow.get("depth_snap_time") if cached_depth_complete else None,
+        "depth_captured_at": cached_slow.get("depth_captured_at") if cached_depth_complete else None,
+        "depth_status": "same_session_cache" if cached_depth_complete else "not_available",
         "s_prop_5d": finite(cached_slow.get("s_prop_5d")),
         "s_insider": finite(cached_slow.get("s_insider")),
         "proprietary_flow_status": cached_slow.get("proprietary_flow_status"),
@@ -262,7 +267,7 @@ def fetch_symbol(
         result["insider_deal_status"] = result["insider_deal_status"] or "available"
     else:
         result["insider_deal_status"] = result["insider_deal_status"] or "not_available"
-    if result["s_depth_wall"] is not None:
+    if cached_depth_complete:
         result["endpoint_sources"]["order_book"] = "FHSC_SESSION_CACHE"
     proprietary_rows: list[dict[str, Any]] = []
     insider_rows: list[dict[str, Any]] = []
@@ -412,18 +417,37 @@ def fetch_symbol(
 
     result["endpoint_sources"]["order_book_primary"] = "SSI_UNSUPPORTED"
     try:
-        order_book = _records(Market("fhsc").equity(symbol).order_book(compat="v6", floating=2))
-        if order_book:
+        live_order_book = _records(Market("fhsc").equity(symbol).order_book(compat="v6", floating=2))
+        if live_order_book:
             result["endpoint_sources"]["order_book"] = "FHSC"
         else:
             result["errors"]["order_book_fhsc"] = {"type": "EmptyData"}
     except Exception as exc:
-        order_book = []
+        live_order_book = []
         result["errors"]["order_book_fhsc"] = _error(exc)
-    if not order_book and cached_order_book:
+    if live_order_book:
+        result["raw"]["observed_order_book"] = live_order_book
+        result["endpoint_sources"]["observed_order_book"] = "FHSC"
+    if live_order_book and average and average > 0:
+        order_book = live_order_book
+        result["depth_status"] = "live_ready"
+    elif cached_depth_complete:
         order_book = cached_order_book
-        average = average or cached_average
+        average = cached_average
         result["endpoint_sources"]["order_book"] = "FHSC_SESSION_CACHE"
+        if not live_order_book:
+            result["raw"]["observed_order_book"] = cached_order_book
+            result["endpoint_sources"]["observed_order_book"] = "FHSC_SESSION_CACHE"
+        result["depth_status"] = "same_session_cache"
+    else:
+        order_book = live_order_book
+        result["s_depth_wall"] = None
+        result["depth_signal_date"] = None
+        result["depth_snap_time"] = None
+        result["depth_captured_at"] = None
+        result["depth_status"] = (
+            "missing_trade_size" if live_order_book else "missing_order_book"
+        )
     result["raw"].update({"average_trade_size": average, "order_book": order_book})
     result["endpoint_rows"] = {
         "foreign_flow": len(foreign_rows), "session_stats": len(stats_rows), "order_book": len(order_book),
