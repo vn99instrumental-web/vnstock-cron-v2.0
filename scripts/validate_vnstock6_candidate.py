@@ -55,6 +55,26 @@ def source_lag_days(as_of: object, signal_date: object) -> int | None:
         return None
 
 
+def github_command_escape(value: object) -> str:
+    """Escape a value for a single-line GitHub workflow command."""
+    return str(value).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def write_failure_summary(
+    output: Path, run_id: str, run_url: str, message: str, quality: dict[str, object],
+) -> None:
+    """Persist a secret-free failure artifact and surface the reason in check annotations."""
+    payload = {
+        "schema_version": 1, "candidate_status": "FAIL",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "run": {"id": run_id, "url": run_url},
+        "error": message, "data_quality": quality,
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"::error title=VNStock6 data-quality gate::{github_command_escape(message)}")
+
+
 def fundamental_refresh_summary(
     refresh_status: dict[str, object], run_id: str, degraded: bool,
 ) -> dict[str, object]:
@@ -289,7 +309,12 @@ def main() -> None:
     quality_path.parent.mkdir(parents=True, exist_ok=True)
     quality_path.write_text(json.dumps(quality, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if low_quality_coverage or invalid_values:
-        raise RuntimeError(f"Dashboard data-quality gate failed: coverage={low_quality_coverage}, invalid={len(invalid_values)}")
+        message = (
+            f"Dashboard data-quality gate failed: coverage={low_quality_coverage}, "
+            f"invalid={len(invalid_values)}"
+        )
+        write_failure_summary(Path(args.output), args.run_id, args.run_url, message, quality)
+        raise RuntimeError(message)
     excluded_counts = {}
     for row in rows:
         for factor in row.get("excluded_factors", []):

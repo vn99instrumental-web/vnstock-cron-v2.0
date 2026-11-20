@@ -7,6 +7,7 @@ from validate_vnstock6_candidate import (
     OPTIONAL_SOURCE_COVERAGE,
     REQUIRED_QUALITY_COVERAGE,
     fundamental_refresh_summary,
+    github_command_escape,
     source_lag_days,
 )
 
@@ -23,6 +24,9 @@ class FundamentalRefreshSummaryTest(unittest.TestCase):
         self.assertIn("depth_average_trade_size", REQUIRED_QUALITY_COVERAGE)
         self.assertIn("order_book_bid_price", REQUIRED_QUALITY_COVERAGE)
         self.assertIn("order_book_ask_price", REQUIRED_QUALITY_COVERAGE)
+
+    def test_github_command_escape_keeps_annotation_on_one_line(self):
+        self.assertEqual(github_command_escape("bad%\nvalue\r"), "bad%25%0Avalue%0D")
 
     def test_source_lag_uses_signal_and_source_dates(self):
         self.assertEqual(source_lag_days("2026-11-17", "2026-11-20"), 3)
