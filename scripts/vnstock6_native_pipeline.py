@@ -727,6 +727,16 @@ def score_v4_profiles(
             "fundamental_score": signals.get("s_fund_core"), "growth_score": signals.get("s_growth_core"),
             "growth_revenue_yoy": finite(fundamentals.get("growth_revenue_yoy")),
             "growth_profit_yoy": finite(fundamentals.get("growth_profit_yoy")),
+            "growth_effective_yoy": (
+                finite(fundamentals.get("growth")) * 0.25
+                if finite(fundamentals.get("growth")) is not None else None
+            ),
+            "growth_input_count": sum(
+                finite(fundamentals.get(key)) is not None
+                for key in ("growth_revenue_yoy", "growth_profit_yoy")
+            ),
+            "growth_period": fundamentals.get("latest_income_period")
+            or (fundamentals.get("latest_statement_periods") or {}).get("income-statement"),
             "ratio_roe": ratios.get("RT_PRT_ROE"), "ratio_roa": ratios.get("RT_PRT_ROA"),
             "ratio_gross_margin": ratios.get("RT_PRT_GROSS_MARGIN"), "ratio_net_margin": ratios.get("RT_PRT_NET_MARGIN"),
             "ratio_current": ratios.get("RT_LQD_CR"), "ratio_debt_equity": ratios.get("RT_LEV_DE"),

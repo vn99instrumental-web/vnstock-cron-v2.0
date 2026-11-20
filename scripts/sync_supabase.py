@@ -90,7 +90,8 @@ SIGNAL_BREAKDOWN_KEYS = frozenset({
     "insider_deal_checked_at", "insider_deal_refreshed_at",
     "order_book_source", "order_flow_source", "order_flow_as_of",
     "cash_flow_source", "cash_flow_period", "cash_flow_refreshed_at",
-    "growth_revenue_yoy", "growth_profit_yoy",
+    "growth_revenue_yoy", "growth_profit_yoy", "growth_effective_yoy",
+    "growth_input_count", "growth_period",
     "market_indicator_sources",
     # Factor chi tiết
     "s_willr_mr", "s_bb_mr", "s_overext_ema", "s_rs_reversal", "s_deep_dd",

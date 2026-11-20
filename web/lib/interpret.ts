@@ -163,6 +163,7 @@ export interface GroupMemberView {
   raw?: string;
   details?: IndicatorDetailView[];
   method?: string;
+  evidenceNote?: string;
 }
 
 /** Định dạng VND gọn: tỷ / triệu, kèm dấu. */
@@ -211,14 +212,22 @@ function growthDetail(label: string, value: number | null): IndicatorDetailView 
   };
 }
 
-function memberDetails(key: string, b: Record<string, unknown>): Pick<GroupMemberView, "details" | "method"> {
+function memberDetails(key: string, b: Record<string, unknown>, score: number): Pick<GroupMemberView, "details" | "method" | "evidenceNote"> {
   if (key !== "s_growth_core") return {};
+  const revenue = num(b.growth_revenue_yoy);
+  const profit = num(b.growth_profit_yoy);
+  const hasRawGrowth = revenue != null || profit != null;
+  const effective = num(b.growth_effective_yoy) ?? (score / 5) * 0.25;
+  const effectiveDetail = growthDetail("Tăng trưởng YoY dùng chấm (sau giới hạn)", effective);
+  const period = textValue(b.growth_period);
   return {
-    details: [
-      growthDetail("Doanh thu YoY", num(b.growth_revenue_yoy)),
-      growthDetail("LNST YoY", num(b.growth_profit_yoy)),
-    ],
-    method: "Điểm = TB các tăng trưởng YoY có dữ liệu; mỗi giá trị ÷ 25%, giới hạn ±1, rồi ×5.",
+    details: hasRawGrowth
+      ? [growthDetail("Doanh thu YoY", revenue), growthDetail("LNST YoY", profit)]
+      : [effectiveDetail],
+    method: `${effectiveDetail.value} ÷ 25,00% × 5 = ${score > 0 ? "+" : ""}${score.toFixed(2)} điểm`,
+    evidenceNote: hasRawGrowth
+      ? `Số liệu tăng trưởng thô${period ? ` kỳ ${period}` : ""} trong snapshot.`
+      : "Snapshot cũ: mức YoY sau giới hạn được quy đổi chính xác từ điểm đã lưu; không đại diện riêng doanh thu hay LNST.",
   };
 }
 
@@ -384,7 +393,7 @@ export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] 
         key: k, name: meta?.name ?? k, score, span, dir,
         text: dir === "buy" ? (meta?.buy ?? "") : dir === "sell" ? (meta?.sell ?? "") : "trung tính",
         raw: k === "s_growth_core" ? undefined : rawAnnot(k, b),
-        ...memberDetails(k, b),
+        ...memberDetails(k, b, score),
       });
     }
     members.sort((a, z) => Math.abs(z.score) - Math.abs(a.score));

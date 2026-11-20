@@ -261,3 +261,12 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - Any non-null foreign value still must match `signal_date`; stale values and invalid ratios still fail the quality gate. Price, turnover, depth and technical indicator coverage remain mandatory.
 - This is a validator correction only: source priority, scoring formulas, intraday/daily/BCTC cadence and source calls are unchanged.
 - Verification: modified Python compiles; 22 focused tests pass. The broader local run passed 34 logic tests and hit only the pre-existing Windows temporary-directory permission error in the cache-writer test.
+
+## Gen6 growth evidence contract - 2026-11-20
+
+- Growth evidence now displays the actual revenue and parent-profit YoY inputs when they exist in the snapshot, plus the exact effective capped YoY and score calculation.
+- Older snapshots that contain only `s_growth_core` show the mathematically exact capped YoY implied by the stored score. The UI explicitly labels it as a score-derived value and never presents it as separate revenue or profit growth.
+- New ledger and serving rows retain `growth_revenue_yoy`, `growth_profit_yoy`, `growth_effective_yoy`, `growth_input_count` and `growth_period`. Intraday continues to consume cached fundamentals and does not fetch BCTC.
+- The next post-market BCTC maintenance materializes missing raw growth values for future snapshots; legacy finance values are not substituted because they do not reproduce the Gen6 score reliably.
+- Verification: focused Python pipeline/serving tests, TypeScript typecheck, old/new snapshot behavior assertions and the Next.js production build passed. The broader Python suite still has one unrelated Windows temporary-directory permission error.
+- Security review found no new endpoint, dependency, credential, client-side secret or write authority.

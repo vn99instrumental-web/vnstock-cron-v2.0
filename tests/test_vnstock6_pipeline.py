@@ -41,7 +41,11 @@ class PipelineCadenceTest(unittest.TestCase):
             "intraday_turnover_as_of": signal_date,
             "intraday_turnover_checked_at": "2026-09-17T02:30:00+00:00",
         }}
-        fundamentals = {"fundamental": None, "growth": None, "cash_flow": None, "ratios": {}}
+        fundamentals = {
+            "fundamental": None, "growth": 0.6, "cash_flow": None, "ratios": {},
+            "growth_revenue_yoy": 0.1, "growth_profit_yoy": 0.2,
+            "latest_income_period": "2026-Q3",
+        }
         quant = {
             "ema20": 101, "ema50": 100, "ema200": 99,
             "rsi14": 50, "adx": 20, "supertrend": 100,
@@ -53,6 +57,10 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertEqual(result["adtv_bil"], .302)
         self.assertEqual(result["liquidity_source"], "SSI_OHLCV_ESTIMATE")
         self.assertEqual(result["turnover_quality"], "estimated")
+        self.assertEqual(result["growth_revenue_yoy"], 0.1)
+        self.assertEqual(result["growth_profit_yoy"], 0.2)
+        self.assertEqual(result["growth_effective_yoy"], 0.15)
+        self.assertEqual(result["growth_period"], "2026-Q3")
     def test_intraday_ohlcv_retries_two_transient_empty_responses(self):
         empty = pd.DataFrame(columns=["time", "open", "high", "low", "close", "volume"])
         available = pd.DataFrame({

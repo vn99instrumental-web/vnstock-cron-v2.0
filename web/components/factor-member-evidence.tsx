@@ -4,8 +4,6 @@ import { DIR_COLOR } from "@/lib/interpret";
 export function FactorMemberEvidence({ member }: { member: GroupMemberView }) {
   if (!member.details?.length && !member.method) return null;
 
-  const available = member.details?.filter((detail) => detail.available).length ?? 0;
-
   return (
     <div className="ml-[3.25rem] mt-1.5 rounded border border-[var(--color-border)]/70 bg-black/[0.018] px-2 py-1.5 dark:bg-white/[0.025]">
       {member.details?.length ? (
@@ -21,14 +19,14 @@ export function FactorMemberEvidence({ member }: { member: GroupMemberView }) {
           ))}
         </dl>
       ) : null}
-      {member.details?.length && available === 0 ? (
+      {member.evidenceNote ? (
         <p className="mt-1 text-[10px] leading-tight text-[var(--color-muted)]">
-          Snapshot chưa có số liệu tăng trưởng thô; điểm hiện tại vẫn lấy từ cache BCTC đã chấm.
+          {member.evidenceNote}
         </p>
       ) : null}
       {member.method ? (
         <p className="mt-1 border-t border-[var(--color-border)]/60 pt-1 text-[10px] leading-tight text-[var(--color-muted)]">
-          <span className="font-medium text-[var(--color-ink)]">Cách chấm:</span> {member.method}
+          <span className="font-medium text-[var(--color-ink)]">Phép tính:</span> {member.method}
         </p>
       ) : null}
     </div>

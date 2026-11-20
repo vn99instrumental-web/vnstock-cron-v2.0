@@ -32,6 +32,8 @@ class ServingProjectionTests(unittest.TestCase):
             "depth_ask_price": 100.5, "depth_ask_volume": 80_000,
             "depth_bid_ask_ratio": 1.5,
             "growth_revenue_yoy": 0.25, "growth_profit_yoy": 0.4,
+            "growth_effective_yoy": 0.25, "growth_input_count": 2,
+            "growth_period": "2026-Q3",
             "market_regime": "UPTREND", "vnindex_close": 1_650.0,
             "vnindex_ema20": 1_620.0, "vnindex_ema50": 1_600.0,
             "order_flow_source": "SSI_OHLCV_PHASE_VOLUME",
@@ -55,6 +57,9 @@ class ServingProjectionTests(unittest.TestCase):
         self.assertEqual(breakdown["depth_bid_ask_ratio"], 1.5)
         self.assertEqual(breakdown["growth_revenue_yoy"], 0.25)
         self.assertEqual(breakdown["growth_profit_yoy"], 0.4)
+        self.assertEqual(breakdown["growth_effective_yoy"], 0.25)
+        self.assertEqual(breakdown["growth_input_count"], 2)
+        self.assertEqual(breakdown["growth_period"], "2026-Q3")
         self.assertEqual(breakdown["market_regime"], "UPTREND")
         self.assertEqual(breakdown["vnindex_close"], 1_650.0)
         self.assertEqual(breakdown["order_flow_source"], "SSI_OHLCV_PHASE_VOLUME")
