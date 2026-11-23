@@ -347,6 +347,7 @@ def refresh_fundamental_cache(
                     value["latest_statement_periods"] = probe["periods"]
                     value["latest_income_signature"] = probe["statement_signatures"]["income-statement"]
                     value["latest_income_period"] = probe["periods"]["income-statement"]
+                    value["cash_flow_period"] = probe["periods"]["cash-flow"]
                     return symbol, {
                         "status": "unchanged",
                         "attempt": probe_attempt,
@@ -369,9 +370,22 @@ def refresh_fundamental_cache(
                 if probe and not probe.get("error"):
                     last_result["latest_statement_signature"] = probe["signature"]
                     last_result["latest_statement_signatures"] = probe["statement_signatures"]
-                    last_result["latest_statement_periods"] = probe["periods"]
+                    # Full normalized statements are the primary period evidence.
+                    # The source probe only fills fields the full reader lacks.
+                    normalized_periods = last_result.get("latest_statement_periods") or {}
+                    last_result["latest_statement_periods"] = {
+                        kind: normalized_periods.get(kind) or period
+                        for kind, period in probe["periods"].items()
+                    }
                     last_result["latest_income_signature"] = probe["statement_signatures"]["income-statement"]
-                    last_result["latest_income_period"] = probe["periods"]["income-statement"]
+                    last_result["latest_income_period"] = (
+                        last_result.get("latest_income_period")
+                        or probe["periods"]["income-statement"]
+                    )
+                    last_result["cash_flow_period"] = (
+                        last_result.get("cash_flow_period")
+                        or probe["periods"]["cash-flow"]
+                    )
                 material_changed = (
                     fundamental_material_value(previous) != fundamental_material_value(last_result)
                 )
