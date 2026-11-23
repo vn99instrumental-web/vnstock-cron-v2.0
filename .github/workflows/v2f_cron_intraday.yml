@@ -268,7 +268,8 @@ jobs:
             output/v2f_v4_regime_state.json \
             output/vnindex_live.json \
             output/history/v2f_predictions_v4/ \
-            output/serving/ ; do
+            output/serving/current/ \
+            output/serving/latest.json ; do
             git add "$p" 2>/dev/null || true
           done
 

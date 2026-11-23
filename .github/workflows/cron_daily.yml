@@ -211,7 +211,20 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add output/
+          # Only context and VCI finance artifacts produced by this job.
+          # Never stage Gen6 or V2F ledgers / shared serving accidentally.
+          for path in \
+            output/market/industry_map.json \
+            output/industry_map.json \
+            output/market/context.json \
+            output/market/context.csv \
+            output/context.json \
+            output/context.csv \
+            output/finance/cache.json; do
+            if [ -e "$path" ] || git ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
+              git add -A -- "$path"
+            fi
+          done
           if git diff --staged --quiet; then
             echo "No changes to commit — skipping."
             exit 0
