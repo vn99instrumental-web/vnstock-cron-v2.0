@@ -14,6 +14,14 @@ const LINKS: NavLink[] = [
   { href: "/config", label: "Cấu hình", short: "Cấu hình", icon: "⚙", owner: true },
 ];
 
+function useDashboardHref(link: NavLink) {
+  const pathname = usePathname();
+  if (link.owner) return link.href;
+  return pathname === "/ssi" || pathname.startsWith("/ssi/")
+    ? `/ssi${link.href}`
+    : link.href;
+}
+
 function useActive(href: string) {
   const pathname = usePathname();
   return pathname === href || pathname.startsWith(href + "/");
@@ -39,10 +47,11 @@ export function Nav({ isOwner }: { isOwner: boolean }) {
 }
 
 function TopItem({ l }: { l: NavLink }) {
-  const active = useActive(l.href);
+  const href = useDashboardHref(l);
+  const active = useActive(href);
   return (
     <Link
-      href={l.href}
+      href={href}
       prefetch
       aria-current={active ? "page" : undefined}
       className={[
@@ -72,10 +81,11 @@ export function MobileNav({ isOwner }: { isOwner: boolean }) {
 }
 
 function BottomItem({ l }: { l: NavLink }) {
-  const active = useActive(l.href);
+  const href = useDashboardHref(l);
+  const active = useActive(href);
   return (
     <Link
-      href={l.href}
+      href={href}
       prefetch
       aria-current={active ? "page" : undefined}
       className={[

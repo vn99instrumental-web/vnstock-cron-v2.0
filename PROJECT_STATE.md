@@ -270,3 +270,23 @@ Các tab Buy, Hôm nay, Lịch sử và Phân tích hỗ trợ version phù hợ
 - The next post-market BCTC maintenance materializes missing raw growth values for future snapshots; legacy finance values are not substituted because they do not reproduce the Gen6 score reliably.
 - Verification: focused Python pipeline/serving tests, TypeScript typecheck, old/new snapshot behavior assertions and the Next.js production build passed. The broader Python suite still has one unrelated Windows temporary-directory permission error.
 - Security review found no new endpoint, dependency, credential, client-side secret or write authority.
+
+## Gen6 and independent SSI peer on Vercel - 2026-11-23
+
+- The public version selector now exposes only two peer versions: Gen 6 at `/today` and independent SSI at `/ssi`. Supabase and GitHub are no longer selectable dashboard versions. Supabase remains the authentication and serving implementation where existing routes require it.
+- The SSI page uses the embedded v4.18 source-only SSI + Finhay audit artifacts and does not call the vnstock runtime. It displays 97 symbols and the frozen 17/17 signal contract.
+- SSI remains fail-closed: official scores are 0, BUY/SELL decisions are 0, release is `BLOCKED_INPUT`, and the page is explicitly labelled `NOT FOR TRADING`.
+- Verification: 25 focused SSI tests passed, including the 67 negative release-guard scenarios; TypeScript typecheck passed; the Vercel build completed successfully.
+- Vercel production deployment `dpl_9TvUj2B2GqTb5GNyaD6tzSBNnqnR` is READY in `hnd1` and owns `https://trading-snapshot-dl.vercel.app`. Unauthenticated requests to `/today` and `/ssi` return HTTP 200 at the login boundary, and the production error/warning scan returned no entries.
+- Security review found no new secret, dependency, public endpoint, service-role client exposure or authorization expansion. The deployment intentionally excluded `.env.local.example`; Vercel environment values were not read or printed.
+- Remaining limitation: rendered desktop/mobile QA after owner login was not executed because the connected Chrome control failed before navigation. Do not claim authenticated visual verification until it is rerun with a working owner browser session.
+
+## SSI tab parity and missing-data highlights - 2026-11-23
+
+- Independent SSI now mirrors the Gen 6 navigation at `/ssi/buy`, `/ssi/today`, `/ssi/phan-tich`, `/ssi/history`, and `/ssi/ic`. The version switch preserves the current tab between Gen 6 and SSI on desktop and mobile.
+- Missing or uncertified SSI values are highlighted in amber on every SSI surface. They remain null: no zero imputation, weight redistribution, synthetic score, BUY/SELL decision, outcome, or IC is produced.
+- Buy, Today, and History show per-symbol availability; Analysis shows all 17 signal candidates and missing reasons; IC shows the 17-signal contract and blocks calculation until official scores and forward outcomes exist.
+- TypeScript `tsc --noEmit` passed. Next.js 15 production build passed and generated all five SSI tab routes. The build emitted the known standalone ESLint `debug` dependency warning from the borrowed local pnpm tree but exited successfully.
+- Production deployment `dpl_FdSudkLbPUVJMVb21DprvrrUSNZW` is READY in `hnd1` and owns `https://trading-snapshot-dl.vercel.app`. All five unauthenticated SSI routes returned HTTP 200 at the login boundary, and the focused production runtime-error query returned no errors.
+- Authenticated desktop/mobile visual QA remains unexecuted because no owner browser session/control was available. Source-level responsive review found no blocking overflow: wide symbol tables use bounded horizontal scrolling and existing mobile bottom navigation is retained.
+- No Git commit or push was made for this deployment; the working-tree changes must be committed before a future Git-triggered Vercel deployment to avoid overwrite.

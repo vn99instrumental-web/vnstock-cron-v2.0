@@ -4,7 +4,8 @@ import { Nav, MobileNav } from "@/components/nav";
 import { VersionBadge } from "@/components/version-badge";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { DataSourceToggle } from "@/components/data-source-toggle";
+import { VersionToggleV2 } from "@/components/version-toggle-v2";
+import { ConditionalGen6Notice } from "@/components/conditional-gen6-notice";
 import { Vnstock6SourceNotice } from "@/components/vnstock6-source-notice";
 import { getDashboardDataSource } from "@/lib/data-source/source";
 import { getUser, isOwner } from "@/lib/supabase/server";
@@ -42,7 +43,7 @@ export default async function DashboardLayout({
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 text-xs text-[var(--color-muted)] sm:gap-2">
-            {owner ? <DataSourceToggle source={dataSource} /> : null}
+            <VersionToggleV2 />
             <ThemeToggle />
             {user ? (
               <>
@@ -57,7 +58,9 @@ export default async function DashboardLayout({
       </header>
 
       <main className="mx-auto w-full max-w-[1400px] flex-1 px-3 py-2 pb-24 md:px-5 md:py-2 md:pb-5">
-        {dataSource === "vnstock6" ? <Vnstock6SourceNotice /> : null}
+        {dataSource === "vnstock6" ? (
+          <ConditionalGen6Notice><Vnstock6SourceNotice /></ConditionalGen6Notice>
+        ) : null}
         {children}
       </main>
       <MobileNav isOwner={owner} />
