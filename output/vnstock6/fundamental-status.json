@@ -1,26 +1,26 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-23T01:54:11.887743+00:00",
+  "generated_at": "2026-11-23T08:24:49.939404+00:00",
   "reference_source": "SSI",
   "fundamental_source": "FHSC",
   "configured_symbols": 100,
-  "reference_symbols_available": 99,
-  "symbols_requested": 99,
+  "reference_symbols_available": 100,
+  "symbols_requested": 100,
   "cache_symbols": 100,
   "stale_only": false,
   "check_updates": false,
   "ttl_days": 3,
-  "run_id": "45087628810",
+  "run_id": "45125855471",
   "update_detection": "full_materialize",
   "probe_statement_types": [],
   "probe_request_count": 0,
   "max_workers": 4,
   "counts": {
-    "updated": 99,
+    "updated": 100,
     "unchanged": 0,
     "failed": 0,
     "failed_preserved": 0,
-    "material_changed": 99,
+    "material_changed": 100,
     "skipped_fresh": 0
   },
   "symbols": {
@@ -90,7 +90,7 @@
     },
     "BVH": {
       "status": "updated",
-      "attempt": 3,
+      "attempt": 1,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -194,7 +194,7 @@
     },
     "DSE": {
       "status": "updated",
-      "attempt": 2,
+      "attempt": 1,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -250,7 +250,7 @@
     },
     "GAS": {
       "status": "updated",
-      "attempt": 2,
+      "attempt": 1,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -306,7 +306,7 @@
     },
     "HDB": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -314,7 +314,7 @@
     },
     "HDG": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -323,6 +323,14 @@
     "HHV": {
       "status": "updated",
       "attempt": 1,
+      "phase": "materialize",
+      "probe_attempt": 0,
+      "probe_request_count": 0,
+      "material_changed": true
+    },
+    "HPG": {
+      "status": "updated",
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -378,7 +386,7 @@
     },
     "LPB": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -402,7 +410,7 @@
     },
     "MSB": {
       "status": "updated",
-      "attempt": 2,
+      "attempt": 1,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -426,7 +434,7 @@
     },
     "NAB": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -490,7 +498,7 @@
     },
     "PDR": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -642,7 +650,7 @@
     },
     "TCX": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -650,7 +658,7 @@
     },
     "TPB": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -674,7 +682,7 @@
     },
     "VCI": {
       "status": "updated",
-      "attempt": 2,
+      "attempt": 1,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -746,7 +754,7 @@
     },
     "VND": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
@@ -786,7 +794,7 @@
     },
     "VPX": {
       "status": "updated",
-      "attempt": 1,
+      "attempt": 2,
       "phase": "materialize",
       "probe_attempt": 0,
       "probe_request_count": 0,
