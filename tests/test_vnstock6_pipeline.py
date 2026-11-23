@@ -289,6 +289,41 @@ class PipelineCadenceTest(unittest.TestCase):
         self.assertEqual(saved["growth"], 0.2)
         self.assertIn("checked_at", saved)
 
+    def test_full_refresh_writes_statement_periods_without_probe(self):
+        config = {
+            "sources": {"reference": "ssi", "fundamental": "fhsc"},
+            "universe": ["FPT"],
+            "fundamental_refresh": {"max_workers": 1},
+        }
+        reference = pd.DataFrame({"symbol": ["FPT"], "industry": ["Technology"]})
+        materialized = {
+            "fundamental": .4, "growth": .2,
+            "growth_revenue_yoy": .1, "growth_profit_yoy": .2,
+            "latest_income_period": "2026-Q3",
+            "cash_flow_period": "2026-Q3",
+            "latest_statement_periods": {
+                "income-statement": "2026-Q3",
+                "cash-flow": "2026-Q3",
+                "balance-sheet": "2026-Q3",
+            },
+        }
+        with patch.object(pipeline, "load_fundamental_cache", return_value={}), patch.object(
+            pipeline, "Reference"
+        ) as reference_factory, patch.object(
+            pipeline, "latest_statement_probe"
+        ) as probe, patch.object(
+            pipeline, "fundamental_factors", return_value=materialized
+        ), patch.object(
+            pipeline, "save_fundamental_cache"
+        ) as save, patch.object(Path, "mkdir"), patch.object(Path, "write_text"):
+            reference_factory.return_value.equity.list.return_value = reference
+            status = pipeline.refresh_fundamental_cache(config, check_updates=False)
+        probe.assert_not_called()
+        self.assertEqual(status["counts"]["updated"], 1)
+        saved = save.call_args.args[1]["FPT"]
+        self.assertEqual(saved["latest_income_period"], "2026-Q3")
+        self.assertEqual(saved["cash_flow_period"], "2026-Q3")
+
     def test_stale_only_skips_source_calls_when_cache_is_fresh(self):
         config = {
             "sources": {"reference": "ssi", "fundamental": "fhsc"},
