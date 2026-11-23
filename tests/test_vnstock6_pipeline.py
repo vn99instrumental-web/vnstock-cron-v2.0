@@ -191,6 +191,29 @@ class PipelineCadenceTest(unittest.TestCase):
             pipeline.fundamental_material_value(before), pipeline.fundamental_material_value(after)
         )
 
+    def test_metadata_only_change_is_not_scoring_material(self):
+        old = {
+            "fundamental": .4, "growth": .25, "cash_flow_score": 5,
+            "statement_signature": "same",
+            "latest_income_period": None, "cash_flow_period": None,
+            "latest_statement_periods": None,
+        }
+        updated = {
+            **old, "latest_income_period": "2026-Q3",
+            "cash_flow_period": "2026-Q3",
+            "latest_statement_periods": {
+                "income-statement": "2026-Q3", "cash-flow": "2026-Q3",
+            },
+        }
+        self.assertEqual(
+            pipeline.fundamental_material_value(old),
+            pipeline.fundamental_material_value(updated),
+        )
+        self.assertNotEqual(
+            pipeline.fundamental_period_metadata(old),
+            pipeline.fundamental_period_metadata(updated),
+        )
+
     def test_fundamental_ttl_matches_legacy_earnings_cadence(self):
         config = {
             "fundamental_refresh": {

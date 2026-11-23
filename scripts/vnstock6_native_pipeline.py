@@ -103,8 +103,17 @@ def finite(value: Any) -> float | None:
 _FUNDAMENTAL_VOLATILE_KEYS = frozenset({
     "checked_at", "refreshed_at", "fetched_at", "generated_at", "cache_stale",
     "latest_income_signature", "latest_income_period", "latest_statement_signature",
-    "latest_statement_signatures", "latest_statement_periods",
+    "latest_statement_signatures", "latest_statement_periods", "cash_flow_period",
 })
+
+# Reporting-period corrections are metadata, not new scoring inputs.
+_FUNDAMENTAL_PERIOD_KEYS = ("latest_income_period", "cash_flow_period", "latest_statement_periods")
+
+
+def fundamental_period_metadata(value: dict[str, Any] | None) -> dict[str, Any]:
+    record = value or {}
+    return {key: record.get(key) for key in _FUNDAMENTAL_PERIOD_KEYS}
+
 
 
 def fundamental_material_value(value: Any) -> Any:
@@ -354,6 +363,9 @@ def refresh_fundamental_cache(
                         "phase": "probe",
                         "probe_request_count": probe_request_count,
                         "material_changed": False,
+                        "metadata_changed": (
+                            fundamental_period_metadata(previous) != fundamental_period_metadata(value)
+                        ),
                     }, value
 
         last_result: dict[str, Any] | None = None
@@ -389,6 +401,9 @@ def refresh_fundamental_cache(
                 material_changed = (
                     fundamental_material_value(previous) != fundamental_material_value(last_result)
                 )
+                metadata_changed = (
+                    fundamental_period_metadata(previous) != fundamental_period_metadata(last_result)
+                )
                 return symbol, {
                     "status": "updated",
                     "attempt": attempt,
@@ -396,6 +411,7 @@ def refresh_fundamental_cache(
                     "probe_attempt": probe_attempt if check_updates else 0,
                     "probe_request_count": probe_request_count,
                     "material_changed": material_changed,
+                    "metadata_changed": metadata_changed,
                 }, last_result
             if attempt < 3:
                 time.sleep(attempt)
@@ -405,6 +421,7 @@ def refresh_fundamental_cache(
             "type": (last_result or {}).get("error", {}).get("type"),
             "code": (last_result or {}).get("error", {}).get("code"),
             "material_changed": False,
+            "metadata_changed": False,
             "probe_request_count": probe_request_count,
         }, previous
 
@@ -428,6 +445,7 @@ def refresh_fundamental_cache(
         "failed": sum(item["status"] == "failed" for item in results.values()),
         "failed_preserved": sum(item["status"] == "failed_preserved" for item in results.values()),
         "material_changed": sum(bool(item.get("material_changed")) for item in results.values()),
+        "metadata_changed": sum(bool(item.get("metadata_changed")) for item in results.values()),
         "skipped_fresh": len(config["universe"]) - len(configured) if stale_only else 0,
     }
     status = {
