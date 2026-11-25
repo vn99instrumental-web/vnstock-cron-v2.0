@@ -28,9 +28,13 @@ class ServingProjectionTests(unittest.TestCase):
             "insider_sell_count": 1,
             "insider_deal_status": "available",
             "order_book_source": "FHSC_SESSION_CACHE",
+            "order_book_observed_source": "FHSC",
             "depth_bid_price": 100.0, "depth_bid_volume": 120_000,
             "depth_ask_price": 100.5, "depth_ask_volume": 80_000,
             "depth_bid_ask_ratio": 1.5,
+            "depth_status": "live_scored", "depth_average_trade_size": 1_000,
+            "order_book_bid_price": 100.0, "order_book_bid_volume": 50_000,
+            "order_book_ask_price": 100.5, "order_book_ask_volume": 40_000,
             "growth_revenue_yoy": 0.25, "growth_profit_yoy": 0.4,
             "growth_effective_yoy": 0.25, "growth_input_count": 2,
             "growth_period": "2026-Q3",
@@ -55,6 +59,11 @@ class ServingProjectionTests(unittest.TestCase):
         self.assertEqual(breakdown["depth_bid_volume"], 120_000)
         self.assertEqual(breakdown["depth_ask_volume"], 80_000)
         self.assertEqual(breakdown["depth_bid_ask_ratio"], 1.5)
+        self.assertEqual(breakdown["depth_status"], "live_scored")
+        self.assertEqual(breakdown["order_book_observed_source"], "FHSC")
+        self.assertEqual(breakdown["depth_average_trade_size"], 1_000)
+        self.assertEqual(breakdown["order_book_bid_volume"], 50_000)
+        self.assertEqual(breakdown["order_book_ask_volume"], 40_000)
         self.assertEqual(breakdown["growth_revenue_yoy"], 0.25)
         self.assertEqual(breakdown["growth_profit_yoy"], 0.4)
         self.assertEqual(breakdown["growth_effective_yoy"], 0.25)

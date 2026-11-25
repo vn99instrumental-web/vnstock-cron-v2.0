@@ -47,13 +47,13 @@ class Gen6V4ScoringTest(unittest.TestCase):
         self.assertAlmostEqual(result["adtv_bil"], expected_session)
         self.assertAlmostEqual(result["adtv_20d_bil"], expected_20d)
 
-    def test_depth_uses_last_valid_session_cache_when_book_is_closed(self):
+    def test_depth_excludes_score_when_atomic_inputs_are_missing(self):
         indicators = indicator_snapshot(self.frame, self.quant, 3.0)
         signals = signal_values(
             indicators, {"fundamental": 0.4, "growth": 0.2}, "UPTREND",
             market={"s_depth_wall": 3, "raw": {"order_book": []}},
         )
-        self.assertEqual(signals["s_depth_wall"], 3)
+        self.assertIsNone(signals["s_depth_wall"])
 
     def test_depth_metrics_surface_exact_bid_ask_inputs_used_by_score(self):
         market = {
@@ -75,7 +75,19 @@ class Gen6V4ScoringTest(unittest.TestCase):
         self.assertEqual(result["depth_bid_ask_ratio"], 1.5)
         self.assertEqual(result["depth_bid_multiple"], 120)
         self.assertEqual(result["depth_ask_multiple"], 80)
+        self.assertEqual(result["order_book_bid_price"], 100)
+        self.assertEqual(result["order_book_bid_volume"], 50_000)
+        self.assertEqual(result["order_book_ask_price"], 100.5)
+        self.assertEqual(result["order_book_ask_volume"], 40_000)
         self.assertEqual(result["score"], 1)
+
+    def test_depth_surfaces_current_book_without_scoring_when_trade_size_missing(self):
+        result = depth_wall_metrics({
+            "raw": {"order_book": [{"bid_price_1": 100, "bid_volume_1": 5_000, "ask_price_1": 100.5, "ask_volume_1": 4_000}]}
+        }, 100)
+        self.assertIsNone(result["score"])
+        self.assertEqual(result["order_book_bid_volume"], 5_000)
+        self.assertEqual(result["order_book_ask_volume"], 4_000)
 
     def test_regime_uses_only_rows_before_signal_date(self):
         rows = self.frame[["date", "open", "high", "low", "close", "volume"]].to_dict("records")

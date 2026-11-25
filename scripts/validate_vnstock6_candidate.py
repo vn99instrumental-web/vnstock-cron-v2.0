@@ -13,7 +13,9 @@ ROOT = Path(__file__).resolve().parent.parent
 QUALITY_FIELDS = (
     "price", "adtv_bil", "adtv_20d_bil", "ff_intra_net", "ff_intra_ratio",
     "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
-    "position_52w", "s_depth_wall",
+    "position_52w", "s_depth_wall", "depth_average_trade_size",
+    "order_book_bid_price", "order_book_bid_volume",
+    "order_book_ask_price", "order_book_ask_volume", "growth_input_count",
 )
 
 # Source-backed same-session fields may legitimately be unavailable during an
@@ -22,6 +24,8 @@ QUALITY_FIELDS = (
 # pipeline's exclude-and-renormalize policy instead of blocking the release.
 REQUIRED_QUALITY_COVERAGE = (
     "price", "adtv_bil", "adtv_20d_bil", "s_depth_wall",
+    "depth_average_trade_size", "order_book_bid_price", "order_book_bid_volume",
+    "order_book_ask_price", "order_book_ask_volume", "growth_input_count",
     "ema20", "ema50", "ema200", "rsi_14", "atr_14", "obv",
 )
 OPTIONAL_SOURCE_COVERAGE = ("ff_intra_net", "ff_intra_ratio")
@@ -41,6 +45,35 @@ def dashboard_value(row: dict[str, object], key: str) -> object:
         return value
     breakdown = row.get("breakdown")
     return breakdown.get(key) if isinstance(breakdown, dict) else None
+
+def source_lag_days(as_of: object, signal_date: object) -> int | None:
+    try:
+        source = datetime.fromisoformat(str(as_of)[:10]).date()
+        signal = datetime.fromisoformat(str(signal_date)[:10]).date()
+        return (signal - source).days
+    except (TypeError, ValueError):
+        return None
+
+
+def github_command_escape(value: object) -> str:
+    """Escape a value for a single-line GitHub workflow command."""
+    return str(value).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def write_failure_summary(
+    output: Path, run_id: str, run_url: str, message: str, quality: dict[str, object],
+) -> None:
+    """Persist a secret-free failure artifact and surface the reason in check annotations."""
+    payload = {
+        "schema_version": 1, "candidate_status": "FAIL",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "run": {"id": run_id, "url": run_url},
+        "error": message, "data_quality": quality,
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"::error title=VNStock6 data-quality gate::{github_command_escape(message)}")
+
 
 def fundamental_refresh_summary(
     refresh_status: dict[str, object], run_id: str, degraded: bool,
@@ -159,6 +192,13 @@ def main() -> None:
         for key in REQUIRED_QUALITY_COVERAGE
         if field_coverage[key] < minimum_rows
     }
+    metadata_coverage = {
+        key: sum(bool(str(dashboard_value(row, key) or "").strip()) for row in rows)
+        for key in ("growth_period", "cash_flow_period")
+    }
+    low_quality_coverage.update({
+        key: count for key, count in metadata_coverage.items() if count < minimum_rows
+    })
     invalid_values: list[dict[str, object]] = []
     for row in rows:
         checks = {
@@ -173,10 +213,21 @@ def main() -> None:
             "atr_14": (finite(dashboard_value(row, "atr_14")), 0, None),
             "position_52w": (finite(dashboard_value(row, "position_52w")), 0, 1),
             "s_depth_wall": (finite(dashboard_value(row, "s_depth_wall")), -3, 3),
+            "depth_average_trade_size": (finite(dashboard_value(row, "depth_average_trade_size")), 0, None),
+            "order_book_bid_price": (finite(dashboard_value(row, "order_book_bid_price")), 0, None),
+            "order_book_bid_volume": (finite(dashboard_value(row, "order_book_bid_volume")), 0, None),
+            "order_book_ask_price": (finite(dashboard_value(row, "order_book_ask_price")), 0, None),
+            "order_book_ask_volume": (finite(dashboard_value(row, "order_book_ask_volume")), 0, None),
         }
         for key, (value, low, high) in checks.items():
             if value is not None and (value < low or (high is not None and value > high)):
                 invalid_values.append({"symbol": row.get("symbol"), "version": row.get("scoring_version"), "field": key, "value": value})
+        growth_inputs = finite(dashboard_value(row, "growth_input_count"))
+        if finite(dashboard_value(row, "s_growth_core")) is not None and (growth_inputs is None or not 1 <= growth_inputs <= 2):
+            invalid_values.append({
+                "symbol": row.get("symbol"), "version": row.get("scoring_version"),
+                "field": "growth_input_count", "value": growth_inputs, "required": "1..2 when scored",
+            })
         signal_date = str(row.get("signal_date") or "")
         foreign_as_of = str(dashboard_value(row, "foreign_as_of") or "")
         if finite(dashboard_value(row, "ff_intra_net")) is not None and foreign_as_of != signal_date:
@@ -192,16 +243,54 @@ def main() -> None:
                 "field": "turnover_as_of", "value": turnover_as_of, "required": signal_date,
             })
         depth_date = str(dashboard_value(row, "depth_signal_date") or "")
-        if finite(dashboard_value(row, "s_depth_wall")) is not None and depth_date != signal_date:
-            invalid_values.append({
-                "symbol": row.get("symbol"), "version": row.get("scoring_version"),
-                "field": "depth_signal_date", "value": depth_date, "required": signal_date,
-            })
+        depth_score = finite(dashboard_value(row, "s_depth_wall"))
+        depth_average = finite(dashboard_value(row, "depth_average_trade_size"))
+        depth_status = str(dashboard_value(row, "depth_status") or "")
+        depth_captured_at = str(dashboard_value(row, "depth_captured_at") or "")
+        if depth_score is not None:
+            if depth_date != signal_date:
+                invalid_values.append({
+                    "symbol": row.get("symbol"), "version": row.get("scoring_version"),
+                    "field": "depth_signal_date", "value": depth_date, "required": signal_date,
+                })
+            if depth_average is None or depth_average <= 0 or depth_status not in {"live_scored", "same_session_cache"} or not depth_captured_at:
+                invalid_values.append({
+                    "symbol": row.get("symbol"), "version": row.get("scoring_version"),
+                    "field": "depth_atomic_bundle", "value": {
+                        "average_trade_size": depth_average, "status": depth_status,
+                        "captured_at": depth_captured_at,
+                    },
+                })
+    stale_proprietary = {
+        str(row.get("symbol")) for row in rows
+        if finite(dashboard_value(row, "s_prop_5d")) is not None
+        and (source_lag_days(dashboard_value(row, "proprietary_as_of"), row.get("signal_date")) or 0) > 1
+    }
+    missing_insider_as_of = {
+        str(row.get("symbol")) for row in rows
+        if finite(dashboard_value(row, "s_insider")) is not None
+        and not str(dashboard_value(row, "insider_as_of") or "").strip()
+    }
+    estimated_turnover = {
+        str(row.get("symbol")) for row in rows
+        if str(dashboard_value(row, "turnover_quality") or "") == "estimated"
+    }
+    partial_growth = {
+        str(row.get("symbol")) for row in rows
+        if finite(dashboard_value(row, "growth_input_count")) == 1
+    }
+    warnings = {
+        "stale_proprietary_symbols": len(stale_proprietary),
+        "missing_insider_as_of_symbols": len(missing_insider_as_of),
+        "estimated_turnover_symbols": len(estimated_turnover),
+        "single_input_growth_symbols": len(partial_growth),
+    }
     quality = {
         "schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": "FAIL" if low_quality_coverage or invalid_values else "PASS",
         "rows": len(rows), "total_serving_rows": len(all_rows), "minimum_required_rows": minimum_rows,
-        "field_coverage": field_coverage, "low_coverage": low_quality_coverage,
+        "field_coverage": field_coverage, "metadata_coverage": metadata_coverage,
+        "low_coverage": low_quality_coverage, "warnings": warnings,
         "optional_source_coverage": {
             key: field_coverage[key] for key in OPTIONAL_SOURCE_COVERAGE
         },
@@ -212,13 +301,20 @@ def main() -> None:
             "ff_intra_net": "same_session_foreign_net_vnd",
             "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date",
             "optional_source_fields": "missing_is_null_and_excluded_from_scoring",
+            "depth": "score_requires_atomic_same_session_book_and_average_trade_size",
+            "fundamental_periods": "growth_and_cash_flow_period_required",
         },
     }
     quality_path = ROOT / "output/vnstock6/data-quality.json"
     quality_path.parent.mkdir(parents=True, exist_ok=True)
     quality_path.write_text(json.dumps(quality, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if low_quality_coverage or invalid_values:
-        raise RuntimeError(f"Dashboard data-quality gate failed: coverage={low_quality_coverage}, invalid={len(invalid_values)}")
+        message = (
+            f"Dashboard data-quality gate failed: coverage={low_quality_coverage}, "
+            f"invalid={len(invalid_values)}"
+        )
+        write_failure_summary(Path(args.output), args.run_id, args.run_url, message, quality)
+        raise RuntimeError(message)
     excluded_counts = {}
     for row in rows:
         for factor in row.get("excluded_factors", []):

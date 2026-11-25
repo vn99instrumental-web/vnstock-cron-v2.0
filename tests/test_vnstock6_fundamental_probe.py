@@ -106,6 +106,35 @@ class FundamentalProbeTest(unittest.TestCase):
         self.assertEqual(saved["latest_income_signature"], "income-statement-signature")
         self.assertEqual(saved["latest_income_period"], "2026-Q4")
 
+    def test_unchanged_probe_fills_missing_period_without_material_change(self):
+        config = {
+            "sources": {"reference": "ssi", "fundamental": "fhsc"},
+            "universe": ["FPT"],
+            "fundamental_refresh": {"max_workers": 1},
+        }
+        previous = {
+            "latest_statement_signature": "same",
+            "fundamental": .4, "growth": .2,
+            "growth_revenue_yoy": .1, "growth_profit_yoy": .2,
+            "refreshed_at": datetime.now(timezone.utc).isoformat(),
+        }
+        reference = pd.DataFrame({"symbol": ["FPT"], "industry": ["Technology"]})
+        with patch.object(pipeline, "load_fundamental_cache", return_value={"FPT": previous}), patch.object(
+            pipeline, "Reference"
+        ) as reference_factory, patch.object(
+            pipeline, "latest_statement_probe", return_value=probe_result("same")
+        ), patch.object(
+            pipeline, "fundamental_factors"
+        ) as materialize, patch.object(
+            pipeline, "save_fundamental_cache"
+        ) as save, patch.object(Path, "mkdir"), patch.object(Path, "write_text"):
+            reference_factory.return_value.equity.list.return_value = reference
+            status = pipeline.refresh_fundamental_cache(config, check_updates=True)
+        materialize.assert_not_called()
+        self.assertEqual(status["counts"]["material_changed"], 0)
+        self.assertEqual(status["counts"]["metadata_changed"], 1)
+        self.assertEqual(save.call_args.args[1]["FPT"]["cash_flow_period"], "2026-Q4")
+
     def test_probe_failure_preserves_cache_without_full_download(self):
         config = {
             "sources": {"reference": "ssi", "fundamental": "fhsc"},

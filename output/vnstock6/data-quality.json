@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-20T03:35:56.674085+00:00",
+  "generated_at": "2026-11-24T08:13:29.184856+00:00",
   "status": "PASS",
   "rows": 300,
-  "total_serving_rows": 597,
+  "total_serving_rows": 1200,
   "minimum_required_rows": 240,
   "field_coverage": {
     "price": 300,
     "adtv_bil": 300,
     "adtv_20d_bil": 300,
     "ff_intra_net": 300,
-    "ff_intra_ratio": 297,
+    "ff_intra_ratio": 300,
     "ema20": 300,
     "ema50": 300,
     "ema200": 300,
@@ -18,12 +18,28 @@
     "atr_14": 300,
     "obv": 300,
     "position_52w": 300,
-    "s_depth_wall": 300
+    "s_depth_wall": 255,
+    "depth_average_trade_size": 255,
+    "order_book_bid_price": 300,
+    "order_book_bid_volume": 300,
+    "order_book_ask_price": 300,
+    "order_book_ask_volume": 300,
+    "growth_input_count": 300
+  },
+  "metadata_coverage": {
+    "growth_period": 300,
+    "cash_flow_period": 300
   },
   "low_coverage": {},
+  "warnings": {
+    "stale_proprietary_symbols": 100,
+    "missing_insider_as_of_symbols": 73,
+    "estimated_turnover_symbols": 0,
+    "single_input_growth_symbols": 32
+  },
   "optional_source_coverage": {
     "ff_intra_net": 300,
-    "ff_intra_ratio": 297
+    "ff_intra_ratio": 300
   },
   "invalid_values": [],
   "contracts": {
@@ -31,6 +47,8 @@
     "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
     "ff_intra_net": "same_session_foreign_net_vnd",
     "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date",
-    "optional_source_fields": "missing_is_null_and_excluded_from_scoring"
+    "optional_source_fields": "missing_is_null_and_excluded_from_scoring",
+    "depth": "score_requires_atomic_same_session_book_and_average_trade_size",
+    "fundamental_periods": "growth_and_cash_flow_period_required"
   }
 }

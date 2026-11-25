@@ -58,12 +58,19 @@ jobs:
           if [ "$REFRESH_LIMIT" -gt 0 ]; then args+=(--fundamental-limit "$REFRESH_LIMIT"); fi
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals "${args[@]}"
           material_changed=$(~/.venv_6x/bin/python -c "import json; from pathlib import Path; d=json.loads(Path('output/vnstock6/fundamental-status.json').read_text()); print('true' if int(d['counts'].get('material_changed', 0)) > 0 else 'false')")
+          metadata_changed=$(~/.venv_6x/bin/python -c "import json; from pathlib import Path; d=json.loads(Path('output/vnstock6/fundamental-status.json').read_text()); print('true' if int(d['counts'].get('metadata_changed', 0)) > 0 else 'false')")
           echo "material_changed=$material_changed" >> "$GITHUB_OUTPUT"
-          echo "Weekly material BCTC change: $material_changed"
+          echo "metadata_changed=$metadata_changed" >> "$GITHUB_OUTPUT"
+          if [ "$material_changed" = "true" ] || [ "$metadata_changed" = "true" ]; then
+            echo "serving_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "serving_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Weekly BCTC changes: material=$material_changed metadata=$metadata_changed"
       - name: Validate secret-free cache
         run: ~/.venv_6x/bin/python scripts/validate_vnstock6_fundamentals.py
-      - name: Recalculate scores and serving when BCTC changed
-        if: steps.fundamentals.outputs.material_changed == 'true'
+      - name: Recalculate scores and serving when BCTC data or period metadata changed
+        if: steps.fundamentals.outputs.serving_changed == 'true'
         env:
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
@@ -87,7 +94,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- output/vnstock6/fundamental-factors.json output/vnstock6/fundamental-status.json
-          if [ "${{ steps.fundamentals.outputs.material_changed }}" = "true" ]; then
+          if [ "${{ steps.fundamentals.outputs.serving_changed }}" = "true" ]; then
             git add -- output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6-preview/dashboard.json output/serving/vnstock6 comparison/weekly-fundamental-summary.json
           fi
           git diff --cached --quiet && exit 0
@@ -99,7 +106,7 @@ jobs:
           done
           exit 1
       - name: Revalidate Vercel dashboard cache
-        if: steps.fundamentals.outputs.material_changed == 'true'
+        if: steps.fundamentals.outputs.serving_changed == 'true'
         env:
           DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
         run: |

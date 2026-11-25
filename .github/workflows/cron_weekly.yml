@@ -122,7 +122,21 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add output/
+          # Only V2F outcomes (including HOLD10) and the shared current release.
+          # Do not stage Gen6 caches, predictions or output/serving/vnstock6.
+          for path in \
+            output/history/v2f_outcomes \
+            output/history/v2f_outcomes_hold \
+            output/history/v2f_outcomes_hold10 \
+            output/history/v2f_outcomes_v4 \
+            output/history/v2f_outcomes_v4_hold \
+            output/history/v2f_outcomes_v4_hold10 \
+            output/serving/current \
+            output/serving/latest.json; do
+            if [ -e "$path" ] || git ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
+              git add -A -- "$path"
+            fi
+          done
           if git diff --staged --quiet; then
             echo "No changes to commit — skipping."
             exit 0

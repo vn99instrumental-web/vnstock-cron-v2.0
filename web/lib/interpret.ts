@@ -180,6 +180,22 @@ function textValue(value: unknown): string | undefined {
 }
 
 function sourceStatusReason(key: string, b: Record<string, unknown>): string | undefined {
+  if (key === "s_depth_wall") {
+    const status = textValue(b.depth_status);
+    const bidPrice = num(b.order_book_bid_price), bidVolume = num(b.order_book_bid_volume);
+    const askPrice = num(b.order_book_ask_price), askVolume = num(b.order_book_ask_volume);
+    const volume = (value: number | null) => value == null ? "—" : value.toLocaleString("vi-VN", { maximumFractionDigits: 0 });
+    const price = (value: number | null) => value == null ? "—" : value.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const bookLabel = textValue(b.order_book_observed_source) === "FHSC_SESSION_CACHE" ? "Bid/Ask cache cùng phiên" : "Bid/Ask hiện tại";
+    const book = bidVolume != null || askVolume != null
+      ? `${bookLabel} B ${volume(bidVolume)} cp @${price(bidPrice)} / A ${volume(askVolume)} cp @${price(askPrice)}`
+      : undefined;
+    if (status === "missing_trade_size")
+      return `${book ? `${book} · ` : ""}thiếu cỡ lệnh trung bình; đã loại khỏi điểm`;
+    if (status === "missing_order_book")
+      return "Không có bid/ask cùng phiên; đã loại khỏi điểm";
+    return book ? `${book} · chưa đủ bundle để chấm` : "Chưa có dữ liệu depth đủ để chấm";
+  }
   const statusKey = key === "s_prop_5d" ? "proprietary_flow_status"
     : key === "s_insider" ? "insider_deal_status" : undefined;
   if (!statusKey) return undefined;
@@ -344,13 +360,22 @@ function rawAnnot(key: string, b: Record<string, unknown>): string | undefined {
       return buy != null || sell != null ? `B${buy ?? 0}/S${sell ?? 0}` : sourceStatusReason(key, b);
     }
     case "s_depth_wall": {
-      const bidVolume = g("depth_bid_volume"), askVolume = g("depth_ask_volume");
-      const bidPrice = g("depth_bid_price"), askPrice = g("depth_ask_price");
+      const currentBidVolume = g("order_book_bid_volume"), currentAskVolume = g("order_book_ask_volume");
+      const currentBidPrice = g("order_book_bid_price"), currentAskPrice = g("order_book_ask_price");
+      const observedSource = textValue(b.order_book_observed_source);
+      const wallBidVolume = g("depth_bid_volume"), wallAskVolume = g("depth_ask_volume");
+      const wallBidPrice = g("depth_bid_price"), wallAskPrice = g("depth_ask_price");
       const ratio = g("depth_bid_ask_ratio");
-      if (bidVolume == null && askVolume == null) return undefined;
+      if (currentBidVolume == null && currentAskVolume == null && wallBidVolume == null && wallAskVolume == null)
+        return sourceStatusReason(key, b);
       const volume = (value: number | null) => value == null ? "—" : value.toLocaleString("vi-VN", { maximumFractionDigits: 0 });
       const priceAt = (value: number | null) => value == null ? "" : ` @${value.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      return `Bid ${volume(bidVolume)} cp${priceAt(bidPrice)} / Ask ${volume(askVolume)} cp${priceAt(askPrice)}${ratio != null ? ` · B/A ${ratio.toFixed(2)}x` : ""}`;
+      const parts: string[] = [];
+      if (currentBidVolume != null || currentAskVolume != null)
+        parts.push(`${observedSource === "FHSC_SESSION_CACHE" ? "Bid/Ask cache cùng phiên" : "Bid/Ask hiện tại"} B ${volume(currentBidVolume)} cp${priceAt(currentBidPrice)} / A ${volume(currentAskVolume)} cp${priceAt(currentAskPrice)}`);
+      if (wallBidVolume != null || wallAskVolume != null)
+        parts.push(`Tường dùng chấm B ${volume(wallBidVolume)} cp${priceAt(wallBidPrice)} / A ${volume(wallAskVolume)} cp${priceAt(wallAskPrice)}${ratio != null ? ` · B/A ${ratio.toFixed(2)}x` : ""}`);
+      return parts.join(" · ");
     }
     case "s_of_phasefix": {
       const spike = g("of_vol_spike_pct");

@@ -152,18 +152,40 @@ def classify_regime(index_rows: list[dict[str, Any]], signal_date: str) -> dict[
 
 
 def depth_wall_metrics(market: dict[str,Any], price: float | None) -> dict[str, float | None]:
-    """Return the exact bid/ask inputs used by the depth-wall score."""
-    fallback=finite(market.get("s_depth_wall"))
+    """Return current top-of-book plus the exact inputs used by the depth score."""
     result={
-        "score": fallback, "depth_bid_price": None, "depth_bid_volume": None,
+        "score": None, "depth_bid_price": None, "depth_bid_volume": None,
         "depth_ask_price": None, "depth_ask_volume": None,
         "depth_bid_ask_ratio": None, "depth_average_trade_size": None,
         "depth_bid_multiple": None, "depth_ask_multiple": None,
+        "order_book_bid_price": None, "order_book_bid_volume": None,
+        "order_book_ask_price": None, "order_book_ask_volume": None,
     }
-    rows=((market.get("raw") or {}).get("order_book") or [])
+    raw=market.get("raw") or {}
+    rows=raw.get("order_book") or []
+    observed_rows=raw.get("observed_order_book") or rows
+    def normalized_row(book_rows):
+        if not book_rows:
+            return {}
+        return {
+            str(key).lower().replace(" ","_"):value
+            for key,value in book_rows[-1].items()
+        }
+    observed=normalized_row(observed_rows)
+    def normalized_price(value):
+        number=finite(value)
+        if number and price and number>price*10:
+            number/=1000
+        return number
+    result.update({
+        "order_book_bid_price": normalized_price(observed.get("bid_price_1")),
+        "order_book_bid_volume": finite(observed.get("bid_volume_1")),
+        "order_book_ask_price": normalized_price(observed.get("ask_price_1")),
+        "order_book_ask_volume": finite(observed.get("ask_volume_1")),
+    })
     if not rows or not price: return result
-    normalized={str(key).lower().replace(" ","_"):value for key,value in rows[-1].items()}
-    avg=finite((market.get("raw") or {}).get("average_trade_size"))
+    normalized=normalized_row(rows)
+    avg=finite(raw.get("average_trade_size"))
     if not avg or avg <= 0: return result
     bid=ask=0.0; bid_price=ask_price=None
     for i in (1,2,3):

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-20T03:35:52.364828+00:00",
+  "generated_at": "2026-11-24T08:12:55.037433+00:00",
   "scoring_version": "v6.4.18",
   "scoring_versions": [
     "v6.4.19-shadow",
@@ -20,8 +20,8 @@
   "fundamental_cache_symbols": 100,
   "cash_flow_overlay_symbols": 31,
   "slow_market_cache_symbols": 100,
-  "slow_market_refreshed": false,
-  "market_factor_date": "2026-11-20",
+  "slow_market_refreshed": true,
+  "market_factor_date": "2026-11-23",
   "fundamental_stale_cache_used": 0,
   "fundamental_symbols_refreshed": 0,
   "market_indicator_coverage": {
@@ -29,26 +29,16 @@
     "s_of_phasefix": 100,
     "s_prop_5d": 100,
     "s_insider": 73,
-    "s_depth_wall": 100,
+    "s_depth_wall": 85,
     "s_cf_core": 100
   },
   "session_stats_probe": {
-    "status": "circuit_open_empty",
-    "symbols": [
-      "FPT",
-      "HPG",
-      "SSI"
-    ],
-    "empty_symbols": [
-      "FPT",
-      "HPG",
-      "SSI"
-    ]
+    "status": "not_probed_postmarket"
   },
-  "depth_input_coverage": 100,
+  "depth_input_coverage": 85,
   "successful_symbols": 100,
   "prediction_rows": 300,
-  "vnindex_rows": 381,
+  "vnindex_rows": 383,
   "failed_symbols": [],
   "records_added": 300
 }

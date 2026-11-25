@@ -103,8 +103,17 @@ def finite(value: Any) -> float | None:
 _FUNDAMENTAL_VOLATILE_KEYS = frozenset({
     "checked_at", "refreshed_at", "fetched_at", "generated_at", "cache_stale",
     "latest_income_signature", "latest_income_period", "latest_statement_signature",
-    "latest_statement_signatures", "latest_statement_periods",
+    "latest_statement_signatures", "latest_statement_periods", "cash_flow_period",
 })
+
+# Reporting-period corrections are metadata, not new scoring inputs.
+_FUNDAMENTAL_PERIOD_KEYS = ("latest_income_period", "cash_flow_period", "latest_statement_periods")
+
+
+def fundamental_period_metadata(value: dict[str, Any] | None) -> dict[str, Any]:
+    record = value or {}
+    return {key: record.get(key) for key in _FUNDAMENTAL_PERIOD_KEYS}
+
 
 
 def fundamental_material_value(value: Any) -> Any:
@@ -182,57 +191,23 @@ def load_market_factor_cache() -> dict[str, dict[str, Any]]:
         return {}
 
 
-def load_best_depth_snapshot(scoring_version: str) -> dict[str, dict[str, Any]]:
-    """Recover the most complete valid in-session depth snapshot from history."""
-    for path in sorted(PRED_ROOT.glob("*.jsonl"), reverse=True):
-        groups: dict[str, list[dict[str, Any]]] = {}
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            row = json.loads(line)
-            if row.get("scoring_version") != scoring_version or finite(row.get("s_depth_wall")) is None:
-                continue
-            snap_time = str(row.get("snap_time") or "")
-            if not ("09:00" <= snap_time <= "15:00"):
-                continue
-            groups.setdefault(snap_time, []).append(row)
-        if not groups:
-            continue
-        snap_time, rows = max(groups.items(), key=lambda item: (len(item[1]), item[0]))
-        return {
-            str(row["symbol"]): {
-                "s_depth_wall": finite(row.get("s_depth_wall")),
-                "depth_signal_date": row.get("signal_date"),
-                "depth_snap_time": snap_time,
-                "depth_captured_at": row.get("generated_at") or row.get("signal_date"),
-            }
-            for row in rows
-        }
-    return {}
-
-
-def merge_depth_cache(
-    cache: dict[str, dict[str, Any]], history: dict[str, dict[str, Any]],
-) -> dict[str, dict[str, Any]]:
-    output = {symbol: dict(value) for symbol, value in cache.items()}
-    for symbol, depth in history.items():
-        current = output.setdefault(symbol, {})
-        if str(depth.get("depth_signal_date") or "") >= str(current.get("depth_signal_date") or ""):
-            current.update(depth)
-    return output
-
 def stamp_live_depth_metadata(
     factors: dict[str, dict[str, Any]], signal_date: date, snap_time: str, captured_at: str,
 ) -> None:
     """Align live FHSC order-book provenance before scoring and validation."""
     for value in factors.values():
         source = str((value.get("endpoint_sources") or {}).get("order_book") or "")
-        if source != "FHSC" or not (value.get("raw") or {}).get("order_book"):
+        raw = value.get("raw") or {}
+        if (
+            source != "FHSC" or value.get("depth_status") != "live_ready"
+            or not raw.get("order_book") or finite(raw.get("average_trade_size")) is None
+        ):
             continue
         value.update({
             "depth_signal_date": signal_date.isoformat(),
             "depth_snap_time": snap_time,
             "depth_captured_at": captured_at,
+            "depth_status": "live_scored",
         })
 
 def save_market_factor_cache(factors: dict[str, Any]) -> None:
@@ -381,12 +356,16 @@ def refresh_fundamental_cache(
                     value["latest_statement_periods"] = probe["periods"]
                     value["latest_income_signature"] = probe["statement_signatures"]["income-statement"]
                     value["latest_income_period"] = probe["periods"]["income-statement"]
+                    value["cash_flow_period"] = probe["periods"]["cash-flow"]
                     return symbol, {
                         "status": "unchanged",
                         "attempt": probe_attempt,
                         "phase": "probe",
                         "probe_request_count": probe_request_count,
                         "material_changed": False,
+                        "metadata_changed": (
+                            fundamental_period_metadata(previous) != fundamental_period_metadata(value)
+                        ),
                     }, value
 
         last_result: dict[str, Any] | None = None
@@ -403,11 +382,27 @@ def refresh_fundamental_cache(
                 if probe and not probe.get("error"):
                     last_result["latest_statement_signature"] = probe["signature"]
                     last_result["latest_statement_signatures"] = probe["statement_signatures"]
-                    last_result["latest_statement_periods"] = probe["periods"]
+                    # Full normalized statements are the primary period evidence.
+                    # The source probe only fills fields the full reader lacks.
+                    normalized_periods = last_result.get("latest_statement_periods") or {}
+                    last_result["latest_statement_periods"] = {
+                        kind: normalized_periods.get(kind) or period
+                        for kind, period in probe["periods"].items()
+                    }
                     last_result["latest_income_signature"] = probe["statement_signatures"]["income-statement"]
-                    last_result["latest_income_period"] = probe["periods"]["income-statement"]
+                    last_result["latest_income_period"] = (
+                        last_result.get("latest_income_period")
+                        or probe["periods"]["income-statement"]
+                    )
+                    last_result["cash_flow_period"] = (
+                        last_result.get("cash_flow_period")
+                        or probe["periods"]["cash-flow"]
+                    )
                 material_changed = (
                     fundamental_material_value(previous) != fundamental_material_value(last_result)
+                )
+                metadata_changed = (
+                    fundamental_period_metadata(previous) != fundamental_period_metadata(last_result)
                 )
                 return symbol, {
                     "status": "updated",
@@ -416,6 +411,7 @@ def refresh_fundamental_cache(
                     "probe_attempt": probe_attempt if check_updates else 0,
                     "probe_request_count": probe_request_count,
                     "material_changed": material_changed,
+                    "metadata_changed": metadata_changed,
                 }, last_result
             if attempt < 3:
                 time.sleep(attempt)
@@ -425,6 +421,7 @@ def refresh_fundamental_cache(
             "type": (last_result or {}).get("error", {}).get("type"),
             "code": (last_result or {}).get("error", {}).get("code"),
             "material_changed": False,
+            "metadata_changed": False,
             "probe_request_count": probe_request_count,
         }, previous
 
@@ -448,6 +445,7 @@ def refresh_fundamental_cache(
         "failed": sum(item["status"] == "failed" for item in results.values()),
         "failed_preserved": sum(item["status"] == "failed_preserved" for item in results.values()),
         "material_changed": sum(bool(item.get("material_changed")) for item in results.values()),
+        "metadata_changed": sum(bool(item.get("metadata_changed")) for item in results.values()),
         "skipped_fresh": len(config["universe"]) - len(configured) if stale_only else 0,
     }
     status = {
@@ -719,6 +717,9 @@ def score_v4_profiles(
             "insider_deal_checked_at": market.get("insider_deal_checked_at"),
             "insider_deal_refreshed_at": market.get("insider_deal_refreshed_at"),
             "order_book_source": (market.get("endpoint_sources") or {}).get("order_book"),
+            "order_book_observed_source": (market.get("endpoint_sources") or {}).get("observed_order_book")
+            or (market.get("endpoint_sources") or {}).get("order_book"),
+            "depth_status": market.get("depth_status"),
             "depth_signal_date": market.get("depth_signal_date"),
             "depth_snap_time": market.get("depth_snap_time"),
             "depth_captured_at": market.get("depth_captured_at"),
@@ -744,7 +745,8 @@ def score_v4_profiles(
             "cash_flow_quality": fundamentals.get("cash_flow_quality"),
             "cash_flow_score": fundamentals.get("cash_flow_score"),
             "cash_flow_source": fundamentals.get("cash_flow_source") or "FHSC",
-            "cash_flow_period": fundamentals.get("cash_flow_period"),
+            "cash_flow_period": fundamentals.get("cash_flow_period")
+            or (fundamentals.get("latest_statement_periods") or {}).get("cash-flow"),
             "cash_flow_refreshed_at": fundamentals.get("cash_flow_refreshed_at") or fundamentals.get("refreshed_at"),
             "market_indicator_sources": market.get("endpoint_sources") or {},
             "fundamental_status": ("stale_cache_scored" if fundamentals.get("cache_stale") else "scored") if fundamentals.get("fundamental") is not None else "excluded",
@@ -802,9 +804,7 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     source_counts: dict[str, int] = {source.upper(): 0 for source in market_sources}
     factor_cache = load_fundamental_cache(fundamental_source)
     factor_cache, restored_cash_flow = overlay_legacy_cash_flow(factor_cache, universe)
-    market_cache = merge_depth_cache(
-        load_market_factor_cache(), load_best_depth_snapshot(config["scoring_version"])
-    )
+    market_cache = load_market_factor_cache()
     index_rows = update_vnindex(reference_source, today)
     market_date = today if intraday else date.fromisoformat(str(index_rows[-1]["date"])[:10])
     market_factors = collect_market_factors(
@@ -883,16 +883,12 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
     added = append_jsonl(partition, predictions, "pred_id")
     primary_rows = [row for row in predictions if row.get("scoring_version") == config["scoring_version"]]
     if intraday:
-        captured_at = datetime.now(timezone.utc).isoformat()
         for row in primary_rows:
             depth = finite(row.get("s_depth_wall"))
             if depth is None:
                 continue
             target = market_factors.setdefault(str(row["symbol"]), {})
-            target.update({
-                "s_depth_wall": depth, "depth_signal_date": row.get("signal_date"),
-                "depth_snap_time": row.get("snap_time"), "depth_captured_at": captured_at,
-            })
+            target["s_depth_wall"] = depth
     if intraday or refresh_slow_market:
         save_market_factor_cache(market_factors)
     indicator_coverage = {
@@ -919,9 +915,8 @@ def run_native(config: dict[str, Any], force: bool, intraday: bool = False, refr
             if value.get("session_stats_probe")
         ), None),
         "depth_input_coverage": sum(
-            finite(value.get("s_depth_wall")) is not None
-            or (bool((value.get("raw") or {}).get("order_book"))
-            and bool((value.get("raw") or {}).get("average_trade_size")))
+            bool((value.get("raw") or {}).get("order_book"))
+            and finite((value.get("raw") or {}).get("average_trade_size")) is not None
             for value in market_factors.values()
         ),
         "successful_symbols": successful_symbols, "prediction_rows": len(predictions),

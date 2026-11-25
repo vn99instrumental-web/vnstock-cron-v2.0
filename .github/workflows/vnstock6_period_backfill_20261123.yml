@@ -1,0 +1,158 @@
+name: Gen6 source-backed reporting period repair
+
+on:
+  pull_request:
+    paths:
+      - scripts/vnstock6_quant.py
+      - scripts/vnstock6_native_pipeline.py
+      - tests/test_vnstock6_quant.py
+      - tests/test_vnstock6_pipeline.py
+      - .github/workflows/vnstock6_period_backfill_20261123.yml
+  push:
+    branches: [main]
+    paths:
+      - docs/GEN6_PERIOD_BACKFILL_20261123_TRIGGER.md
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
+      - name: Set up matching scoring libraries
+        run: |
+          test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
+          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
+      - name: Unit tests including full and incremental BCTC refresh
+        run: |
+          ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_account tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors tests.test_vnstock6_fundamental_probe
+
+  backfill:
+    if: github.event_name != 'pull_request'
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    concurrency:
+      group: vnstock-main-writer
+      cancel-in-progress: false
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync serialized main writer state
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
+      - name: Set up matching source packages
+        run: |
+          test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
+          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
+      - name: Full FHSC statement period backfill
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
+        run: |
+          test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
+          test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_fundamentals.py
+          ~/.venv_6x/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          config = json.loads(Path('config/vnstock6.json').read_text(encoding='utf-8'))
+          data = json.loads(Path('output/vnstock6/fundamental-factors.json').read_text(encoding='utf-8'))
+          records = [data['symbols'].get(s) or {} for s in config['universe']]
+          growth = sum(bool(x.get('latest_income_period')) for x in records)
+          cash = sum(bool(x.get('cash_flow_period') or (x.get('latest_statement_periods') or {}).get('cash-flow')) for x in records)
+          minimum = int(config['minimum_coverage'])
+          print(f'Source-backed BCTC period coverage: growth={growth}, cash_flow={cash}, required={minimum}')
+          if growth < minimum or cash < minimum:
+              raise SystemExit('Source-backed BCTC metadata is still below the strict threshold')
+          PY
+      - name: Publish verified BCTC cache only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- output/vnstock6/fundamental-factors.json output/vnstock6/fundamental-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data: backfill source-backed BCTC periods"
+            for attempt in 1 2 3 4 5; do
+              if git pull --rebase --autostash origin main && git push; then break; fi
+              git rebase --abort 2>/dev/null || true
+              if [ "$attempt" -eq 5 ]; then exit 1; fi
+              sleep $((attempt * 3))
+            done
+          fi
+      - name: Refresh scoring and rebuild three serving profiles
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
+        run: |
+          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --intraday
+          ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --versions v6.4.19-shadow v6.4.18 v6.4.17
+          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --output comparison/period-backfill-summary.json
+      - name: Publish serving only after strict quality PASS
+        run: |
+          git add -- output/vnstock6 output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6-preview/dashboard.json output/serving/vnstock6 comparison/period-backfill-summary.json
+          git diff --cached --quiet && exit 0
+          git commit -m "data: publish validated Gen6 period backfill serving"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          exit 1
+      - name: Revalidate dashboard cache after publication
+        env:
+          DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          test -n "$DASHBOARD_REVALIDATE_SECRET"
+          curl --fail --silent --show-error --retry 3 --retry-all-errors \
+            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+            -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+      - name: Preserve failure diagnostics without credentials
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gen6-period-backfill-failure
+          path: |
+            output/vnstock6/fundamental-status.json
+            output/vnstock6/data-quality.json
+            comparison/period-backfill-summary.json
+          if-no-files-found: ignore
