@@ -1,3 +1,7 @@
-import { SsiDashboardView } from "@/components/ssi-dashboard-view";
+import { TodayPageView } from "@/components/today-page-view";
+
 export const dynamic = "force-dynamic";
-export default function SsiTodayPage() { return <SsiDashboardView tab="today" />; }
+
+export default function SsiTodayPage() {
+  return <TodayPageView forcedSource="ssi" />;
+}

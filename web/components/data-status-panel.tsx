@@ -7,11 +7,11 @@ export interface DataStatusItem {
   tone: DataStatusTone;
 }
 
-const TONE: Record<DataStatusTone, { dot: string; text: string }> = {
-  ok: { dot: "bg-[var(--color-buy)]", text: "Đúng hạn" },
-  warn: { dot: "bg-amber-500", text: "Cần theo dõi" },
-  stale: { dot: "bg-[var(--color-sell)]", text: "Đang trễ" },
-  unknown: { dot: "bg-[var(--color-muted)]", text: "Chưa xác định" },
+const TONE: Record<DataStatusTone, { dot: string; text: string; container: string }> = {
+  ok: { dot: "bg-[var(--color-buy)]", text: "Đúng hạn", container: "" },
+  warn: { dot: "bg-amber-500", text: "Cần theo dõi", container: "border-amber-500/50 bg-amber-500/10" },
+  stale: { dot: "bg-[var(--color-sell)]", text: "Đang trễ", container: "" },
+  unknown: { dot: "bg-amber-500", text: "Chưa xác định", container: "border-amber-500/50 bg-amber-500/10" },
 };
 
 /** Operational freshness lives below the unchanged page header. */
@@ -21,10 +21,13 @@ export function DataStatusPanel({ items }: { items: DataStatusItem[] }) {
     : items.some((item) => item.tone === "warn" || item.tone === "unknown")
       ? "Có nguồn dữ liệu cần kiểm tra"
       : "Các nguồn dữ liệu đúng hạn";
+  const summaryDot = items.some((item) => item.tone === "stale")
+    ? "bg-[var(--color-sell)]"
+    : items.some((item) => item.tone === "warn" || item.tone === "unknown") ? "bg-amber-500" : "bg-[var(--color-buy)]";
   return (
     <details className="card mb-4 p-3">
       <summary className="flex min-h-8 cursor-pointer list-none items-center gap-2 text-sm font-semibold">
-        <span aria-hidden className={`h-2.5 w-2.5 rounded-full ${items.some((item) => item.tone === "stale") ? "bg-[var(--color-sell)]" : "bg-[var(--color-buy)]"}`} />
+        <span aria-hidden className={`h-2.5 w-2.5 rounded-full ${summaryDot}`} />
         Trạng thái dữ liệu
         <span className="text-xs font-normal text-[var(--color-muted)]">· {worst}</span>
         <span className="ml-auto text-xs font-normal text-[var(--color-muted)]">Chi tiết</span>
@@ -33,7 +36,7 @@ export function DataStatusPanel({ items }: { items: DataStatusItem[] }) {
         {items.map((item) => {
           const tone = TONE[item.tone];
           return (
-            <div key={item.label} className="rounded-lg border border-[var(--color-border)] p-3">
+            <div key={item.label} className={`rounded-lg border border-[var(--color-border)] p-3 ${tone.container}`}>
               <div className="flex items-center gap-2 text-xs text-[var(--color-muted)]">
                 <span aria-hidden className={`h-2 w-2 rounded-full ${tone.dot}`} />{item.label}
               </div>

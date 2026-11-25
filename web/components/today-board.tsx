@@ -126,9 +126,9 @@ function SnapshotFactors({ breakdown }: { breakdown: Record<string, unknown> }) 
               </ul>
             ) : <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Không có chỉ báo khả dụng ở snapshot này.</p>}
             {g.missing.length ? (
-              <ul className="mt-1 space-y-1 border-t border-[var(--color-border)]/60 pt-1">
+              <ul className="mt-1 space-y-1 rounded border border-amber-500/40 bg-amber-500/10 px-2 py-1">
                 {g.missing.map((m) => (
-                  <li key={m.key} className="text-[10px] leading-tight text-[var(--color-muted)]">
+                  <li key={m.key} className="text-[10px] leading-tight text-amber-800 dark:text-amber-200">
                     <span className="font-medium text-[var(--color-ink)]">{m.name}</span> · loại khỏi điểm: {m.reason}
                   </li>
                 ))}

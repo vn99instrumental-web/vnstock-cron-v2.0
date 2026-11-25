@@ -405,7 +405,7 @@ export function factorGroupViews(b: Record<string, unknown>): FactorGroupView[] 
       const score = num(b[k]);
       if (score == null) {
         const meta = SIGNAL_META.find((s) => s.key === k);
-        const reason = sourceStatusReason(k, b);
+        const reason = sourceStatusReason(k, b) ?? "Chưa có dữ liệu nguồn; đã loại khỏi điểm";
         if (reason) missing.push({ key: k, name: meta?.name ?? k, reason });
         continue;
       }

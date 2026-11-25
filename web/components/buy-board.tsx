@@ -228,6 +228,7 @@ export function BuyBoard({
   newestRunId = null,
   industryIC = {},
   currentVersion = "v4.18",
+  dataSource = "default",
 }: {
   signals: BuySignal[];
   expectancy?: ExpectancyRow[];
@@ -238,6 +239,7 @@ export function BuyBoard({
   /** IC score↔lợi nhuận 5 phiên theo ngành (Spearman gộp) — badge chất lượng ngành. */
   industryIC?: Record<string, { ic: number | null; n: number }>;
   currentVersion?: string;
+  dataSource?: "default" | "ssi";
 }) {
   const robMap = useMemo(
     () => new Map(robustness.map((r) => [r.symbol, r])),
@@ -291,7 +293,8 @@ export function BuyBoard({
     setLoading(true);
     (async () => {
       try {
-        const response = await fetch(`/api/chart?version=${encodeURIComponent(currentVersion)}&symbol=${encodeURIComponent(sel.symbol)}`);
+        const sourceParam = dataSource === "ssi" ? "&source=ssi" : "";
+        const response = await fetch(`/api/chart?version=${encodeURIComponent(currentVersion)}&symbol=${encodeURIComponent(sel.symbol)}${sourceParam}`);
         if (!response.ok) throw new Error("Chart data unavailable");
         const payload = await response.json() as { signals?: Record<string, unknown>[]; ohlc?: Record<string, unknown>[] };
         if (!alive) return;
@@ -338,7 +341,7 @@ export function BuyBoard({
       }
     })();
     return () => { alive = false; };
-  }, [sel, currentVersion]);
+  }, [sel, currentVersion, dataSource]);
 
   const levels: Levels | null = useMemo(() => {
     if (!sel) return null;
@@ -683,7 +686,9 @@ export function BuyBoard({
                 Đang tải giá…
               </div>
             ) : (
-              <p className="grid h-[120px] place-items-center text-xs text-[var(--color-muted)]">Chưa đủ dữ liệu giá để vẽ.</p>
+              <p className="grid h-[120px] place-items-center rounded-md border border-amber-500/50 bg-amber-500/10 px-3 text-center text-xs font-medium text-amber-800 dark:text-amber-200">
+                Chưa có dữ liệu OHLC độc lập để vẽ biểu đồ.
+              </p>
             )}
 
             {/* 6 NHÓM YẾU TỐ — từ breakdown, hiện NGAY (không chờ tải giá) */}
@@ -733,9 +738,9 @@ export function BuyBoard({
                           <p className="mt-1 text-[10px] italic text-[var(--color-muted)]">Nhóm này không có chỉ báo nổi bật.</p>
                         )}
                         {g.missing.length ? (
-                          <ul className="mt-1 border-t border-[var(--color-border)]/60 pt-1">
+                          <ul className="mt-1 rounded border border-amber-500/40 bg-amber-500/10 px-2 py-1">
                             {g.missing.map((m) => (
-                              <li key={m.key} className="text-[10px] leading-tight text-[var(--color-muted)]">
+                              <li key={m.key} className="text-[10px] leading-tight text-amber-800 dark:text-amber-200">
                                 <span className="font-medium text-[var(--color-ink)]">{m.name}</span> · loại khỏi điểm: {m.reason}
                               </li>
                             ))}

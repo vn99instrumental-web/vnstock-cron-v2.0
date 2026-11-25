@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const source = await getDashboardDataSource();
+    const requestedSource = request.nextUrl.searchParams.get("source");
+    const source = requestedSource === "ssi" ? "ssi" : await getDashboardDataSource();
     if (source !== "supabase") {
       return NextResponse.json(await servingForSource(source).chart(version, symbol));
     }

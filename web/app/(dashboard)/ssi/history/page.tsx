@@ -1,3 +1,3 @@
-import { SsiDashboardView } from "@/components/ssi-dashboard-view";
+import { SsiAlignedDashboard } from "@/components/ssi-aligned-dashboard";
 export const dynamic = "force-dynamic";
-export default function SsiHistoryPage() { return <SsiDashboardView tab="history" />; }
+export default async function SsiHistoryPage() { return <SsiAlignedDashboard tab="history" />; }

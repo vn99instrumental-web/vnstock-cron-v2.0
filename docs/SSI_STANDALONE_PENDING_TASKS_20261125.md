@@ -12,6 +12,7 @@ SSI hiện đã độc lập về công thức score và dashboard artifact, nh�
 | Thứ tự | Task | Trạng thái | Điều kiện nghiệm thu |
 |---|---|---|---|
 | 0 | Khóa ranh giới kiến trúc trong `AGENTS.md`, `PROJECT_STATE.md` và tài liệu canonical | DONE 2026-11-25 | Mọi handoff ghi rõ chỉ raw SSI/FHSC được dùng chung; trạng thái hiện tại được gọi là transitional |
+| 0A | Đồng bộ visual Gen 6/SSI và highlight dữ liệu thiếu | DONE 2026-11-25 | Các route SSI dùng chung shell/component Gen 6; giá trị `null` hiển thị màu vàng, không đổi 0 thành missing; adapter/chart SSI không fallback sang serving Gen 6 |
 | 1 | Định nghĩa shared-raw contract và namespace trung lập | PENDING | Có schema/version/provenance/hash/QC cho SSI OHLCV, session/foreign và FHSC BCTC/order-book/slow data; không có ratio/feature/score tính sẵn |
 | 2 | Tách collector/materializer raw khỏi runtime Gen 6 | PENDING | Một raw release có thể được tạo/đọc mà không chạy scorer hoặc feature builder Gen 6; cả hai calculator đọc cùng immutable release ID |
 | 3 | Xây SSI BCTC normalizer và calculator riêng | PENDING | SSI tự tính ratio, growth, CFO/cash-flow quality từ raw FHSC; có formula version, PIT guard, sector cases và golden fixtures |

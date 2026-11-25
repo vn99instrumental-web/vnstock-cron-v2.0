@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-export type DashboardDataSource = "supabase" | "github" | "vnstock6";
+export type DashboardDataSource = "supabase" | "github" | "vnstock6" | "ssi";
 
 export const DATA_SOURCE_COOKIE = "dashboard_data_source";
 

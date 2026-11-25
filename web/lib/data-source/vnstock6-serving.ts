@@ -1,5 +1,6 @@
 import { fetchGitHubLedgerText, githubServing } from "@/lib/data-source/github-serving";
 import type { DashboardDataSource } from "@/lib/data-source/source";
+import { ssiServing } from "@/lib/data-source/ssi-serving";
 
 const SAFE_SYMBOL = /^[A-Z0-9]{1,10}$/;
 
@@ -144,6 +145,7 @@ export const vnstock6Serving = {
 };
 export function servingForSource(source: DashboardDataSource) {
   if (source === "supabase") throw new Error("Supabase does not use the serving adapter");
+  if (source === "ssi") return ssiServing;
   return source === "vnstock6" ? vnstock6Serving : githubServing;
 }
 
