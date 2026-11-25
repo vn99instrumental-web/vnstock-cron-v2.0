@@ -1,0 +1,56 @@
+name: SSI independent production
+
+on:
+  workflow_run:
+    workflows: ["VNStock 6 native production"]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: vnstock-main-writer
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  produce:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Sync latest shared source features
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify independent calculator
+        run: python -m unittest tests.test_ssi_independent_pipeline
+      - name: Build SSI serving, ledger and dashboard artifact
+        run: python scripts/ssi_independent_pipeline.py build
+      - name: Publish independent SSI artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- output/history/ssi-independent output/serving/ssi web/data/ssi-independent-dashboard.json
+          git diff --cached --quiet && exit 0
+          git commit -m "data: publish independent SSI scores"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          exit 1
+      - name: Revalidate Vercel dashboard cache
+        env:
+          DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
+        run: |
+          test -n "$DASHBOARD_REVALIDATE_SECRET"
+          curl --fail --silent --show-error --retry 3 --retry-all-errors \
+            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+            -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"

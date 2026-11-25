@@ -1,5 +1,15 @@
 # PROJECT_STATE.md
 
+## SSI independent scoring and dashboard - 2026-11-25
+
+- Production architecture now reuses the materialized SSI/FHSC feature layer already built for Gen 6, while keeping calculation independent in `scripts/ssi_independent_pipeline.py`.
+- Independence guard: the SSI calculator imports no Gen 6 scorer and ignores all input `s_*`, `score_trade`, `score_hold`, and `decision` fields. Unit tests mutate those Gen 6 fields and verify identical SSI output.
+- Current repository snapshot (2026-11-23): 100/100 symbols scored; 43 BUY/STRONG BUY; 16 SELL/STRONG SELL; minimum coverage 14/17; 41 symbols have 17/17.
+- SSI history contains 7 source dates / 700 symbol-date predictions. Observed outcomes: D+3 n=400 and D+5 n=200. D+10 remains pending until ten future trading sessions exist.
+- Dashboard routes are `/ssi`, `/ssi/buy`, `/ssi/today`, `/ssi/phan-tich`, `/ssi/history`, and `/ssi/ic`, all backed by the independent SSI artifact.
+- `.github/workflows/ssi_independent_production.yml` runs after successful Gen 6 source materialization (or manual dispatch), executes the independent test/build, publishes only SSI serving/ledger/web artifacts, and revalidates Vercel.
+- Full architecture and source-boundary record: `docs/SSI_INDEPENDENT_SHARED_SOURCE_ARCHITECTURE_20261125.md`.
+
 **Cập nhật:** 2026-11-04
 **Branch production:** `main`
 **Dashboard:** <https://trading-snapshot-dl.vercel.app>

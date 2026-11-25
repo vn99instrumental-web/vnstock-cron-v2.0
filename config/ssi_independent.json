@@ -1,0 +1,33 @@
+{
+  "version": "ssi-v4.18-independent",
+  "input_version": "v6.4.18",
+  "sources": {
+    "market": "SSI",
+    "fundamental": "FHSC"
+  },
+  "missing_data_policy": "exclude_and_renormalize",
+  "weights": {
+    "trade": {
+      "mean_reversion": 0.50,
+      "breakout": 0.05,
+      "flow": 0.15,
+      "fundamental": 0.20,
+      "growth": 0.10,
+      "context": 0.0
+    },
+    "hold": {
+      "mean_reversion": 0.15,
+      "breakout": 0.28,
+      "flow": 0.12,
+      "fundamental": 0.25,
+      "growth": 0.15,
+      "context": 0.05
+    }
+  },
+  "decision_thresholds": {
+    "strong_buy": 50,
+    "buy": 25,
+    "sell": -10,
+    "strong_sell": -25
+  }
+}
