@@ -1,14 +1,17 @@
 # PROJECT_STATE.md
 
-## SSI independent scoring and dashboard - 2026-11-25
+## SSI standalone architecture correction - 2026-11-25
 
-- Production architecture now reuses the materialized SSI/FHSC feature layer already built for Gen 6, while keeping calculation independent in `scripts/ssi_independent_pipeline.py`.
-- Independence guard: the SSI calculator imports no Gen 6 scorer and ignores all input `s_*`, `score_trade`, `score_hold`, and `decision` fields. Unit tests mutate those Gen 6 fields and verify identical SSI output.
+- Canonical target: Gen 6 and SSI are independent calculators and share only raw/immutable provider data from SSI and FHSC. SSI must not read Gen 6 serving/history/factor artifacts or use Gen 6-calculated BCTC metrics.
+- Current deployment is **transitional**, not fully standalone. `scripts/ssi_independent_pipeline.py` independently recomputes 17 signals/scores/decisions and ignores Gen 6 `s_*`/score/decision fields, but still reads `output/serving/vnstock6` and `output/history/vnstock6` rows.
+- Current BCTC inputs (`ratio_*`, growth, CFO/cash-flow quality) are materialized by `scripts/vnstock6_quant.py`/`vnstock_quant.fa`; SSI does not yet have its own raw-FHSC normalizer/calculator.
+- Current `.github/workflows/ssi_independent_production.yml` still waits for `VNStock 6 native production`; this must be replaced by a provider-neutral raw-release dependency or a standalone SSI run.
+- Durable architecture rule: `docs/SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md`. Ordered pending tasks: `docs/SSI_STANDALONE_PENDING_TASKS_20261125.md`.
+- Already independent and retained: SSI serving/ledger/dashboard routes, score formulas, missing-data handling, outcomes and IC. The test that mutates Gen 6 scores remains useful but is not sufficient proof of input independence.
 - Current repository snapshot (2026-11-23): 100/100 symbols scored; 43 BUY/STRONG BUY; 16 SELL/STRONG SELL; minimum coverage 14/17; 41 symbols have 17/17.
 - SSI history contains 7 source dates / 700 symbol-date predictions. Observed outcomes: D+3 n=400 and D+5 n=200. D+10 remains pending until ten future trading sessions exist.
 - Dashboard routes are `/ssi`, `/ssi/buy`, `/ssi/today`, `/ssi/phan-tich`, `/ssi/history`, and `/ssi/ic`, all backed by the independent SSI artifact.
-- `.github/workflows/ssi_independent_production.yml` runs after successful Gen 6 source materialization (or manual dispatch), executes the independent test/build, publishes only SSI serving/ledger/web artifacts, and revalidates Vercel.
-- Full architecture and source-boundary record: `docs/SSI_INDEPENDENT_SHARED_SOURCE_ARCHITECTURE_20261125.md`.
+- The earlier `docs/SSI_INDEPENDENT_SHARED_SOURCE_ARCHITECTURE_20261125.md` is retained as a corrected transition record and no longer defines the target architecture.
 - GitHub commit `d8e403bdc` is pushed to `codex/ssi-gen6-parallel-tabs`.
 - Vercel production deployment `dpl_HUNa9TCNThSGtcBPivVPaibkWFFX` is READY in `hnd1`; `trading-snapshot-dl.vercel.app` points to it.
 - Verification PASS: 48 Python tests, ESLint, TypeScript, Next.js production build, JSON/source guards, and 22 workflow YAML files.

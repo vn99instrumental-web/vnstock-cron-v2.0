@@ -16,6 +16,16 @@ This project uses the Python library `vnstock` generation 6 final (`vnstock==6.0
 - Errors are typed exceptions with a Vietnamese and English message; read `error.code` and `error.action`.
 <!-- vnstock-guide:end -->
 
+## SSI standalone architecture boundary (effective 2026-11-25)
+
+Gen 6 and SSI are independent calculators. They may share only immutable/raw provider data from SSI and FHSC plus source metadata; they must not consume each other's calculated features, ratios, signals, scores, decisions or ledgers.
+
+- SSI runtime must not read `output/serving/vnstock6`, `output/history/vnstock6`, `output/vnstock6/*-factors.json` or import `scripts/vnstock6_*` calculation modules.
+- SSI owns its BCTC normalization and formulas. It calculates ratios, growth and cash-flow features directly from raw FHSC statements with its own versioned engine and tests.
+- A shared collector/transport layer is allowed only when it publishes a provider-neutral raw contract. A successful Gen 6 run must not be required for SSI to run.
+- Treat the 2026-11-25 deployed scorer as transitional: score calculation is independent, but its current feature inputs are still Gen 6 artifacts.
+- Canonical decision and backlog: [docs/SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md](docs/SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md) and [docs/SSI_STANDALONE_PENDING_TASKS_20261125.md](docs/SSI_STANDALONE_PENDING_TASKS_20261125.md).
+
 ## Stock-research technical source (effective 2026-11-17)
 
 For an end-user request to **analyze a Vietnamese stock ticker**, use the latest **Gen6** signals in this repository as the **technical reference**, not the old `output/v2f_signals_v4.json` or `output/v2f_trade_levels_v4.json`.

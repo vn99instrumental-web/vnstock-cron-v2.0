@@ -1,54 +1,33 @@
-# SSI independent scoring on the shared SSI/FHSC feature layer
+# SSI independent scoring on shared SSI/FHSC data — transition record
 
 Date: 2026-11-25
-Status: implemented, pushed and production-deployed
+Status: deployed transition; superseded as target architecture
 
-## Decision
+## Correction
 
-SSI scoring reuses the same materialized source and feature layer as Gen 6 because both products use the same providers:
+The first implementation reused Gen 6 materialized feature rows. It is independent at the scoring layer, but it is not independent at the input-calculation layer and therefore does not satisfy the final SSI standalone requirement.
 
-- SSI supplies reference data, OHLCV, session statistics and primary foreign flow.
-- FHSC supplies fundamentals, order book, foreign fallback and post-market slow-flow datasets.
+The canonical decision is now:
 
-Only the scoring calculation is independent. `scripts/ssi_independent_pipeline.py` does not import a Gen 6 scoring module and deliberately ignores every `s_*`, `score_trade`, `score_hold` and `decision` field present in the shared input rows. It recomputes the 17 signals, factors, scores and decisions from the raw/materialized feature fields.
+- [SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md](SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md)
+- [SSI_STANDALONE_PENDING_TASKS_20261125.md](SSI_STANDALONE_PENDING_TASKS_20261125.md)
 
-This corrects the earlier assumption that the SSI track needed a separate provider ingestion path or exact parity with a frozen legacy artifact. Separate ingestion would duplicate calls, cadence logic and caches without improving calculation independence.
+Gen 6 and SSI may share the same provider facts from SSI and FHSC only at the raw/immutable boundary. They must calculate technical features, BCTC ratios/growth/cash-flow, signals, scores and decisions independently.
 
-## Runtime flow
+## What the deployed transition actually proves
 
-1. Gen 6 source workflows materialize SSI/FHSC feature rows and OHLCV.
-2. `.github/workflows/ssi_independent_production.yml` starts only after a successful `VNStock 6 native production` run, or by manual dispatch.
-3. The independent test suite proves that changing Gen 6 signals/scores/decisions does not alter SSI output.
-4. The independent calculator builds its own serving tree, prediction ledger, outcomes and IC.
-5. The workflow commits only SSI artifacts and revalidates the Vercel dashboard.
+- `scripts/ssi_independent_pipeline.py` does not import a Gen 6 scorer.
+- It ignores input `s_*`, `score_trade`, `score_hold` and `decision` fields and recomputes the 17 signals, factors and scores.
+- It publishes separate SSI serving, ledger, outcomes, IC and `/ssi/*` dashboard artifacts.
 
-The workflow dependency is a data-readiness dependency, not a scoring-engine dependency.
+## What it does not prove
 
-## Artifacts
+- The pipeline reads `output/serving/vnstock6/current/today` and `output/history/vnstock6/predictions`.
+- Fundamental inputs were calculated by `scripts/vnstock6_quant.py` using `vnstock_quant.fa` before SSI consumed them.
+- The SSI workflow is triggered by a successful Gen 6 production workflow.
 
-- Configuration: `config/ssi_independent.json`
-- Calculator: `scripts/ssi_independent_pipeline.py`
-- Tests: `tests/test_ssi_independent_pipeline.py`
-- Serving: `output/serving/ssi/current/`
-- Ledger: `output/history/ssi-independent/predictions/`
-- Web projection: `web/data/ssi-independent-dashboard.json`
-- Dashboard routes: `/ssi`, `/ssi/buy`, `/ssi/today`, `/ssi/phan-tich`, `/ssi/history`, `/ssi/ic`
+Accordingly, the current deployment is labelled `transitional_score_independent`, not `standalone`.
 
-## Missing-data and outcome policy
+## Verified transition snapshot
 
-- Missing optional source signals remain `null` and are excluded with weight renormalization. They are never converted to neutral zeroes.
-- Every latest-universe symbol with at least the source gate is scored; signal coverage is displayed explicitly.
-- D+3, D+5 and D+10 outcomes are calculated only from later observed trading sessions.
-- D+10 remains pending until ten future sessions exist. No future return or IC value is fabricated.
-
-## Current verified snapshot
-
-For source date 2026-11-23:
-
-- 100/100 symbols scored.
-- 43 BUY or STRONG BUY; 16 SELL or STRONG SELL.
-- Coverage distribution: 41 rows at 17/17, 36 at 16/17, 21 at 15/17 and 2 at 14/17.
-- History: 7 source dates and 700 symbol-date predictions.
-- Outcome availability: D+3 `n=400`, D+5 `n=200`, D+10 pending.
-
-These values describe the available repository snapshot, not an investment recommendation.
+For source date 2026-11-23, the repository contains 100/100 scored symbols, 7 source dates / 700 predictions, D+3 `n=400` and D+5 `n=200`. D+10 is pending until ten future trading sessions exist. These facts remain valid for the transition artifact and are not an investment recommendation.
