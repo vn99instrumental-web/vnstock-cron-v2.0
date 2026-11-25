@@ -1,7 +1,7 @@
 # SSI independent scoring on the shared SSI/FHSC feature layer
 
 Date: 2026-11-25
-Status: implemented and locally verified
+Status: implemented, pushed and production-deployed
 
 ## Decision
 

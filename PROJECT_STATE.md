@@ -9,6 +9,10 @@
 - Dashboard routes are `/ssi`, `/ssi/buy`, `/ssi/today`, `/ssi/phan-tich`, `/ssi/history`, and `/ssi/ic`, all backed by the independent SSI artifact.
 - `.github/workflows/ssi_independent_production.yml` runs after successful Gen 6 source materialization (or manual dispatch), executes the independent test/build, publishes only SSI serving/ledger/web artifacts, and revalidates Vercel.
 - Full architecture and source-boundary record: `docs/SSI_INDEPENDENT_SHARED_SOURCE_ARCHITECTURE_20261125.md`.
+- GitHub commit `d8e403bdc` is pushed to `codex/ssi-gen6-parallel-tabs`.
+- Vercel production deployment `dpl_HUNa9TCNThSGtcBPivVPaibkWFFX` is READY in `hnd1`; `trading-snapshot-dl.vercel.app` points to it.
+- Verification PASS: 48 Python tests, ESLint, TypeScript, Next.js production build, JSON/source guards, and 22 workflow YAML files.
+- App/visual QA PASS on the production build: all six SSI routes render; desktop and 390x844 mobile layouts are usable; no browser console warning/error. Production HTTP correctly redirects anonymous users to login because `require_login` is enabled.
 
 **Cập nhật:** 2026-11-04
 **Branch production:** `main`
