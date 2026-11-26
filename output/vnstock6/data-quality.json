@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-25T07:35:40.920063+00:00",
+  "generated_at": "2026-11-26T02:36:04.493440+00:00",
   "status": "PASS",
   "rows": 300,
-  "total_serving_rows": 1500,
+  "total_serving_rows": 300,
   "minimum_required_rows": 240,
   "field_coverage": {
     "price": 300,
     "adtv_bil": 300,
     "adtv_20d_bil": 300,
-    "ff_intra_net": 297,
-    "ff_intra_ratio": 297,
+    "ff_intra_net": 291,
+    "ff_intra_ratio": 288,
     "ema20": 300,
     "ema50": 300,
     "ema200": 300,
@@ -18,12 +18,12 @@
     "atr_14": 300,
     "obv": 300,
     "position_52w": 300,
-    "s_depth_wall": 255,
-    "depth_average_trade_size": 255,
-    "order_book_bid_price": 300,
-    "order_book_bid_volume": 300,
-    "order_book_ask_price": 300,
-    "order_book_ask_volume": 300,
+    "s_depth_wall": 249,
+    "depth_average_trade_size": 249,
+    "order_book_bid_price": 294,
+    "order_book_bid_volume": 294,
+    "order_book_ask_price": 294,
+    "order_book_ask_volume": 294,
     "growth_input_count": 300
   },
   "metadata_coverage": {
@@ -38,8 +38,8 @@
     "single_input_growth_symbols": 32
   },
   "optional_source_coverage": {
-    "ff_intra_net": 297,
-    "ff_intra_ratio": 297
+    "ff_intra_net": 291,
+    "ff_intra_ratio": 288
   },
   "invalid_values": [],
   "contracts": {
