@@ -13,15 +13,23 @@ SSI hiện đã độc lập về công thức score và dashboard artifact, nh�
 |---|---|---|---|
 | 0 | Khóa ranh giới kiến trúc trong `AGENTS.md`, `PROJECT_STATE.md` và tài liệu canonical | DONE 2026-11-25 | Mọi handoff ghi rõ chỉ raw SSI/FHSC được dùng chung; trạng thái hiện tại được gọi là transitional |
 | 0A | Đồng bộ visual Gen 6/SSI và highlight dữ liệu thiếu | DONE 2026-11-25 | Các route SSI dùng chung shell/component Gen 6; giá trị `null` hiển thị màu vàng, không đổi 0 thành missing; adapter/chart SSI không fallback sang serving Gen 6 |
-| 1 | Định nghĩa shared-raw contract và namespace trung lập | PENDING | Có schema/version/provenance/hash/QC cho SSI OHLCV, session/foreign và FHSC BCTC/order-book/slow data; không có ratio/feature/score tính sẵn |
-| 2 | Tách collector/materializer raw khỏi runtime Gen 6 | PENDING | Một raw release có thể được tạo/đọc mà không chạy scorer hoặc feature builder Gen 6; cả hai calculator đọc cùng immutable release ID |
-| 3 | Xây SSI BCTC normalizer và calculator riêng | PENDING | SSI tự tính ratio, growth, CFO/cash-flow quality từ raw FHSC; có formula version, PIT guard, sector cases và golden fixtures |
-| 4 | Xây SSI market/technical/flow feature builder riêng | PENDING | 17 signal input được tạo từ raw SSI/FHSC bằng code/config SSI; null/stale semantics và provenance được giữ nguyên |
-| 5 | Chuyển `ssi_independent_pipeline.py` sang SSI-owned inputs | PENDING | Không còn `GEN6_TODAY`, `GEN6_HISTORY`, path `output/**/vnstock6` hoặc field đã tính bởi Gen 6 trong input |
-| 6 | Tách orchestration SSI khỏi workflow Gen 6 | PENDING | Workflow SSI chạy độc lập theo raw-release readiness/manual schedule; không dùng `workflow_run: VNStock 6 native production` |
-| 7 | Backfill ledger SSI từ shared raw và so sánh bản chuyển tiếp | PENDING | Tái tạo toàn bộ ngày có raw; báo cáo khác biệt feature/score theo nguyên nhân; không lấy output cũ làm fallback |
-| 8 | Thêm independence/QC/security gates | PENDING | Test fail nếu code/workflow SSI tham chiếu `vnstock6`, nếu BCTC engine khác `ssi`, raw stale/PIT sai hoặc provenance thiếu |
-| 9 | Publish, deploy và xác nhận production standalone | PENDING | GitHub workflow PASS, metadata `standalone=true`, Vercel `/ssi/*` dùng release mới và smoke/visual QA PASS |
+| 1 | Định nghĩa shared-raw contract và namespace trung lập | DONE LOCAL 2026-11-25 | Có schema/version/provenance/hash/QC cho SSI OHLCV, session/foreign và FHSC BCTC/order-book/slow data; không có ratio/feature/score tính sẵn |
+| 2 | Tách collector/materializer raw khỏi runtime Gen 6 | IN PROGRESS | Collector/workflow trung lập đã độc lập và SSI đọc release ID; Gen 6 chưa chuyển transport sang cùng release ID |
+| 3 | Xây SSI BCTC normalizer và calculator riêng | DONE LOCAL 2026-11-25 | SSI tự tính ratio, growth, CFO/cash-flow quality từ raw FHSC; có formula version, PIT guard, sector cases và golden fixtures |
+| 4 | Xây SSI market/technical/flow feature builder riêng | DONE LOCAL 2026-11-25 | 17 signal input được tạo từ raw SSI/FHSC bằng code/config SSI; null/stale semantics và provenance được giữ nguyên |
+| 5 | Chuyển `ssi_independent_pipeline.py` sang SSI-owned inputs | DONE LOCAL 2026-11-25 | Không còn `GEN6_TODAY`, `GEN6_HISTORY`, path `output/**/vnstock6` hoặc field đã tính bởi Gen 6 trong input |
+| 6 | Tách orchestration SSI khỏi workflow Gen 6 | DONE LOCAL 2026-11-25 | Workflow SSI chạy theo shared-raw readiness/manual dispatch; không còn chờ workflow Gen 6 |
+| 7 | Backfill ledger SSI từ shared raw và so sánh bản chuyển tiếp | PENDING LIVE RAW | Cần publish raw release thật đầu tiên và tích lũy/cấp raw lịch sử; không dùng output cũ làm fallback |
+| 8 | Thêm independence/QC/security gates | DONE LOCAL 2026-11-25 | Unit/golden/tamper/boundary tests pass; GitHub run trên raw thật vẫn phải xác nhận |
+| 9 | Publish, deploy và xác nhận production standalone | PENDING REMOTE | Cần merge/publish workflow, tạo raw release thật, build SSI artifact, deploy Vercel và smoke/visual QA |
+
+## Trạng thái triển khai raw ngày 2026-11-25
+
+- Contract: `docs/SHARED_RAW_SSI_FHSC_CONTRACT.md`; namespace `output/shared-raw/ssi-fhsc`.
+- Collector/validator: `scripts/shared_raw_collector.py`; workflow độc lập `.github/workflows/shared_raw_ssi_fhsc.yml`.
+- SSI-owned calculations: `scripts/ssi_raw_features.py`; pipeline score không còn đọc path/artifact Gen 6.
+- Workflow SSI chỉ chờ `Shared raw SSI FHSC production` và chạy `scripts/validate_ssi_standalone.py` trước build.
+- 15 focused tests pass locally. Chưa có raw release live trong repo này, nên backfill và production standalone chưa được xác nhận.
 
 ## Công việc không phải lỗi kiến trúc
 

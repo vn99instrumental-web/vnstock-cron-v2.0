@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trading-snapshot.local/schemas/shared-raw-release-v1.json",
+  "title": "Immutable SSI/FHSC shared raw release manifest",
+  "type": "object",
+  "required": ["schema_version", "namespace", "release_id", "created_at", "mode", "sources", "datasets", "qc"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "namespace": {"const": "ssi-fhsc-raw"},
+    "release_id": {"type": "string", "pattern": "^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "mode": {"enum": ["market", "full"]},
+    "sources": {
+      "type": "object",
+      "required": ["market", "fundamental"],
+      "properties": {
+        "market": {"const": "SSI"},
+        "fundamental": {"const": "FHSC"}
+      }
+    },
+    "datasets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "bytes", "records", "successful", "empty", "errors"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "records": {"type": "integer", "minimum": 0},
+          "successful": {"type": "integer", "minimum": 0},
+          "empty": {"type": "integer", "minimum": 0},
+          "errors": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "qc": {
+      "type": "object",
+      "required": ["status", "checks"],
+      "properties": {
+        "status": {"const": "passed"},
+        "checks": {"type": "object"}
+      }
+    }
+  },
+  "additionalProperties": true
+}

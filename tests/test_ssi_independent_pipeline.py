@@ -23,6 +23,7 @@ class SsiIndependentPipelineTests(unittest.TestCase):
         return {
             "symbol": "FPT", "signal_date": "2026-11-23", "snap_time": "15:30",
             "snapshot_at": "2026-11-23T15:30:00+07:00", "market_source": "SSI", "fundamental_source": "FHSC",
+            "raw_release_id": "20261123T083000Z-deadbeef", "feature_version": "ssi-raw-features-1.0.0",
             "price": 100, "willr_14": -85, "bb_position": .1, "price_vs_ema200_pct": -5,
             "relative_return_20d": -3, "position_52w": .1, "adx": 27, "supertrend": 95,
             "vol_ma_ratio": 1.8, "of_vol_spike_pct": 30, "adtv_20d_bil": 100,
@@ -70,12 +71,14 @@ class SsiIndependentPipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "MARKET_SOURCE"):
             module.score_row(row, self.config)
 
-    def test_repository_build_has_full_latest_universe(self):
-        dashboard = module.build()
-        self.assertGreaterEqual(dashboard["summary"]["symbols"], 80)
-        self.assertEqual(dashboard["summary"]["symbols"], dashboard["summary"]["scored_symbols"])
-        self.assertTrue(all(row["source_provenance"]["gen6_scores_consumed"] is False for row in dashboard["latest"]))
-        self.assertTrue(all(row["market_source"] == "SSI" and row["fundamental_source"] == "FHSC" for row in dashboard["latest"]))
+    def test_scored_row_declares_shared_raw_standalone_provenance(self):
+        scored = module.score_row(self.sample(), self.config)
+        provenance = scored["source_provenance"]
+        self.assertEqual(provenance["input_layer"], "shared_raw")
+        self.assertEqual(provenance["bctc_engine"], "ssi")
+        self.assertTrue(provenance["standalone"])
+        self.assertEqual(provenance["gen6_dependencies"], [])
+        self.assertEqual(scored["raw_release_id"], "20261123T083000Z-deadbeef")
 
 
 if __name__ == "__main__":

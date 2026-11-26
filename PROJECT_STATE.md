@@ -1,15 +1,27 @@
 # PROJECT_STATE.md
 
+## SSI shared-raw standalone implementation - 2026-11-25
+
+- Repository HEAD now has a calculator-neutral immutable raw contract at `output/shared-raw/ssi-fhsc`, implemented by `scripts/shared_raw_collector.py`, schema `schemas/shared_raw_release.schema.json`, and workflow `.github/workflows/shared_raw_ssi_fhsc.yml`.
+- Raw envelopes store only SSI/FHSC provider rows plus source/parameters/timestamps/status/hash. They contain no ratio, feature, signal, score or decision and do not import Gen 6 calculator code.
+- `scripts/ssi_raw_features.py` is the SSI-owned engine for TTM BCTC ratios, quarterly YoY growth, CFO quality, technical indicators and flow/depth inputs. It enforces report period <= signal quarter and excludes financial-sector cash-flow quality.
+- `scripts/ssi_independent_pipeline.py` now reads immutable raw releases and shared-raw OHLC outcomes only. It no longer contains Gen 6 serving/history paths or `output/ohlc`; metadata declares `input_layer=shared_raw`, `bctc_engine=ssi`, `standalone=true`, and `gen6_dependencies=[]`.
+- `.github/workflows/ssi_independent_production.yml` waits for `Shared raw SSI FHSC production`, not the Gen 6 production workflow, and runs `scripts/validate_ssi_standalone.py` before publishing.
+- Verified locally: 15 focused Python tests PASS, including immutable/tamper/QC/source/path-traversal tests, BCTC golden/PIT/sector tests, feature coverage, score provenance and boundary validation. Both changed workflow YAML files parse successfully.
+- No live raw release has been published in this branch/repo snapshot. Therefore the existing committed SSI dashboard artifact and current Vercel production remain transitional; standalone production/backfill is not yet claimed.
+- Remaining remote work: publish/merge the workflows, run the first credentialed full raw collection, build/backfill SSI from those raw releases, pass GitHub gates, then deploy and smoke/visual-QA Vercel. Gen 6 still has not been adapted to consume the neutral release ID.
+
+
 ## Gen 6 / SSI visual parity and missing-data state - 2026-11-25
 
 - `/ssi/today`, `/ssi/buy`, `/ssi/phan-tich`, `/ssi/history`, and `/ssi/ic` now use the same page shell and the same core Gen 6 board/table components where the data contract matches. SSI keeps its own version (`ssi-v4.18-independent`) and serving adapter.
 - Missing SSI values remain `null` and are highlighted in amber (`Chưa có dữ liệu`); numeric zero is never treated as missing. Page-level amber notices list datasets not yet available, including independent OHLC, expectancy/robustness, factor/industry IC, and MFE/MAE.
 - The chart API accepts only the explicit `source=ssi` override after the existing user-auth check, version allowlist, and symbol validation. SSI chart requests read SSI history only and do not fall through to Gen 6 serving.
-- This is a presentation/serving change only. It does not change scoring formulas and does not make the transitional SSI input pipeline fully standalone; the raw-only tasks below remain pending.
+- The visual-parity commit itself was presentation-only. Repository HEAD now also contains the raw standalone runtime above, but the deployed artifact remains transitional until the first credentialed raw workflow succeeds.
 - Local verification: TypeScript `tsc --noEmit` PASS and Next.js 15 production build PASS with all `/ssi/*` routes emitted. Standalone ESLint is blocked by missing local pnpm plugin links (`eslint-plugin-react-hooks`, `@next/eslint-plugin-next`), while the production build still completes successfully.
 - Security review: no secret, dependency, database write, service-role client exposure, or authorization expansion was introduced. Authenticated production visual QA and deployment verification must be updated after the new SHA is deployed.
 
-## SSI standalone architecture correction - 2026-11-25
+## Historical SSI transition state before the shared-raw implementation - 2026-11-25
 
 - Canonical target: Gen 6 and SSI are independent calculators and share only raw/immutable provider data from SSI and FHSC. SSI must not read Gen 6 serving/history/factor artifacts or use Gen 6-calculated BCTC metrics.
 - Current deployment is **transitional**, not fully standalone. `scripts/ssi_independent_pipeline.py` independently recomputes 17 signals/scores/decisions and ignores Gen 6 `s_*`/score/decision fields, but still reads `output/serving/vnstock6` and `output/history/vnstock6` rows.

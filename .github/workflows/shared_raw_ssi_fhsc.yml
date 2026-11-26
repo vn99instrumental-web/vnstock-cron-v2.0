@@ -1,0 +1,73 @@
+name: Shared raw SSI FHSC production
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: market skips FHSC post-market slow-flow endpoints; full includes them
+        type: choice
+        options: [full, market]
+        default: full
+
+concurrency:
+  group: vnstock-main-writer
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      HOME: /home/runner
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Sync latest serialized writer state
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.venv_6x
+          key: vnstock-gen6-6.0.0-oapi0.1.1-${{ runner.os }}-python311
+      - name: Ensure generation 6 transport environment
+        run: |
+          test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
+          ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1"
+      - name: Verify raw collector contract
+        run: ~/.venv_6x/bin/python -m unittest tests.test_shared_raw_collector
+      - name: Collect immutable raw release
+        env:
+          RAW_MODE: ${{ inputs.mode || 'full' }}
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
+        run: |
+          test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
+          test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
+          ~/.venv_6x/bin/python scripts/verify_vnstock_account.py
+          ~/.venv_6x/bin/python scripts/shared_raw_collector.py collect --mode "$RAW_MODE"
+          ~/.venv_6x/bin/python scripts/shared_raw_collector.py verify
+      - name: Publish provider raw release only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- output/shared-raw/ssi-fhsc
+          git diff --cached --quiet && exit 0
+          git commit -m "data: publish shared raw SSI FHSC release"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          exit 1

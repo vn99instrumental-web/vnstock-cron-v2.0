@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "namespace": "ssi-fhsc-raw",
+  "sources": {
+    "reference": "ssi",
+    "market": "ssi",
+    "fundamental": "fhsc",
+    "order_book": "fhsc",
+    "slow_flow": "fhsc"
+  },
+  "market_history_calendar_days": 800,
+  "flow_history_calendar_days": 45,
+  "minimum_ohlcv_symbols": 80,
+  "max_workers": 4,
+  "universe": [
+    "ACB", "ANV", "BAF", "BCM", "BID", "BMP", "BSI", "BSR", "BVH", "BWE",
+    "CII", "CMG", "CTD", "CTG", "CTR", "CTS", "DBC", "DCM", "DGW", "DIG",
+    "DPM", "DSE", "DXG", "EIB", "EVF", "FPT", "FRT", "FTS", "GAS", "GEE",
+    "GEX", "GMD", "GVR", "HAG", "HCM", "HDB", "HDG", "HHV", "HPG", "HSG",
+    "HT1", "KBC", "KDC", "KDH", "KOS", "LPB", "MBB", "MCH", "MSB", "MSN",
+    "MWG", "NAB", "NKG", "NLG", "NT2", "NVL", "OCB", "PAN", "PC1", "PDR",
+    "PHR", "PLX", "PNJ", "POW", "PVD", "PVT", "REE", "SAB", "SBT", "SHB",
+    "SIP", "SJS", "SSB", "SSI", "STB", "TAL", "TCB", "TCH", "TCX", "TPB",
+    "VCB", "VCG", "VCI", "VCK", "VGC", "VHC", "VHM", "VIB", "VIC", "VIX",
+    "VJC", "VND", "VNM", "VPB", "VPI", "VPL", "VPX", "VRE", "VSC", "VTP"
+  ]
+}

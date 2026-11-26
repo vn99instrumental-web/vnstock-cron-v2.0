@@ -1,8 +1,8 @@
-"""Independent SSI scoring on the shared SSI + FHSC feature layer.
+"""Independent SSI scoring from immutable provider-raw SSI + FHSC releases.
 
 This module deliberately does not import the Gen6 scorer and never consumes
-Gen6 ``s_*``, score or decision fields.  Gen6 and SSI may share provider data;
-their calculations and output ledgers remain independent.
+Gen6 features, ratios, signals, scores or decisions. Gen6 and SSI may share
+only the immutable provider-raw release ID.
 """
 from __future__ import annotations
 
@@ -14,12 +14,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from scripts.ssi_raw_features import FORMULA_VERSION, load_all_feature_rows, load_shared_ohlc
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config" / "ssi_independent.json"
-GEN6_TODAY = ROOT / "output" / "serving" / "vnstock6" / "current" / "today"
-GEN6_HISTORY = ROOT / "output" / "history" / "vnstock6" / "predictions"
-OHLC_ROOT = ROOT / "output" / "ohlc"
 SSI_SERVING = ROOT / "output" / "serving" / "ssi" / "current"
 SSI_HISTORY = ROOT / "output" / "history" / "ssi-independent" / "predictions"
 WEB_DATA = ROOT / "web" / "data" / "ssi-independent-dashboard.json"
@@ -290,10 +288,11 @@ def score_row(row: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
         "pred_id": f"ssi_{digest}", "symbol": symbol,
         "signal_date": signal_date, "snap_time": snap_time,
         "snapshot_at": row.get("snapshot_at"), "scoring_version": config["version"],
-        "pipeline_generation": "SSI_INDEPENDENT_1", "market_source": "SSI",
-        "fundamental_source": "FHSC", "data_origin": "shared_source_independent_calculation",
-        "calculation_engine": "ssi_independent_python", "calculation_version": "1.0.0",
-        "input_feature_version": config["input_version"],
+        "pipeline_generation": "SSI_INDEPENDENT_2", "market_source": "SSI",
+        "fundamental_source": "FHSC", "data_origin": "shared_raw_independent_calculation",
+        "calculation_engine": "ssi_independent_python", "calculation_version": "2.0.0",
+        "input_feature_version": row.get("feature_version") or FORMULA_VERSION,
+        "raw_release_id": row.get("raw_release_id"), "input_layer": "shared_raw",
         "price": finite(row.get("price")), "previous_close": finite(row.get("previous_close")),
         "regime": regime, "market_regime": regime,
         "score_trade": trade["score"], "total_score": trade["score"], "score_hold": hold["score"],
@@ -308,60 +307,25 @@ def score_row(row: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
         "n_supergroups_aligned": trade["n_aligned"], "confluence_bonus": trade["confluence_bonus"],
         "source_provenance": {
             "market": "SSI", "fundamental": "FHSC",
-            "feature_layer": config["input_version"],
+            "feature_layer": row.get("feature_version") or FORMULA_VERSION,
+            "raw_release_id": row.get("raw_release_id"),
+            "input_layer": "shared_raw", "bctc_engine": "ssi",
+            "standalone": True, "gen6_dependencies": [],
             "gen6_scores_consumed": False, "gen6_signals_consumed": False,
         },
     }
 
 
-def _flatten_today_signal(value: dict[str, Any]) -> dict[str, Any]:
-    breakdown = value.get("breakdown") if isinstance(value.get("breakdown"), dict) else {}
-    row = {**breakdown, **{key: item for key, item in value.items() if key != "breakdown"}}
-    row.setdefault("fundamental_source", breakdown.get("fundamental_source") or "FHSC")
-    return row
-
-
 def load_input_rows(config: dict[str, Any]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    today_path = GEN6_TODAY / f"{config['input_version']}.json"
-    if today_path.exists():
-        payload = json.loads(today_path.read_text(encoding="utf-8"))
-        rows.extend(_flatten_today_signal(value) for value in payload.get("signals", []))
-    for path in sorted(GEN6_HISTORY.glob("*.jsonl")):
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            value = json.loads(line)
-            if value.get("scoring_version") == config["input_version"]:
-                value.setdefault("fundamental_source", "FHSC")
-                rows.append(value)
-    latest: dict[tuple[str, str], dict[str, Any]] = {}
-    for row in rows:
-        key = (str(row.get("signal_date") or ""), str(row.get("symbol") or ""))
-        if not all(key):
-            continue
-        stamp = (str(row.get("snapshot_at") or ""), str(row.get("snap_time") or ""))
-        previous = latest.get(key)
-        previous_stamp = (str(previous.get("snapshot_at") or ""), str(previous.get("snap_time") or "")) if previous else ("", "")
-        if previous is None or stamp >= previous_stamp:
-            latest[key] = row
-    return [latest[key] for key in sorted(latest)]
+    del config
+    return load_all_feature_rows()
 
-
-def _load_ohlc(symbol: str) -> list[dict[str, Any]]:
-    path = OHLC_ROOT / f"{symbol}.json"
-    if not path.exists():
-        return []
-    values = json.loads(path.read_text(encoding="utf-8"))
-    return sorted((row for row in values if finite(row.get("close")) is not None), key=lambda row: str(row.get("date")))
-
-
-def attach_outcomes(rows: list[dict[str, Any]]) -> None:
+def attach_outcomes(rows: list[dict[str, Any]], ohlc_by_symbol: dict[str, list[dict[str, Any]]]) -> None:
     by_symbol: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         by_symbol.setdefault(row["symbol"], []).append(row)
     for symbol, predictions in by_symbol.items():
-        prices = _load_ohlc(symbol)
+        prices = ohlc_by_symbol.get(symbol, [])
         for prediction in predictions:
             later = [item for item in prices if str(item.get("date")) > prediction["signal_date"]]
             base = finite(prediction.get("price"))
@@ -398,8 +362,8 @@ def build() -> dict[str, Any]:
     input_rows = load_input_rows(config)
     scored = [score_row(row, config) for row in input_rows]
     if not scored:
-        raise RuntimeError("NO_SHARED_SSI_FHSC_INPUT_ROWS")
-    attach_outcomes(scored)
+        raise RuntimeError("NO_IMMUTABLE_SHARED_RAW_SSI_FHSC_INPUT_ROWS")
+    attach_outcomes(scored, load_shared_ohlc())
     dates = sorted({row["signal_date"] for row in scored})
     latest_date = dates[-1]
     latest = sorted((row for row in scored if row["signal_date"] == latest_date), key=lambda row: row["symbol"])
@@ -424,8 +388,10 @@ def build() -> dict[str, Any]:
     dashboard = {
         "schema_version": 1, "version": config["version"], "generated_at": generated,
         "signal_date": latest_date, "source_provenance": {
-            "market": "SSI", "fundamental": "FHSC", "shared_feature_input": config["input_version"],
-            "calculation": "SSI independent; no Gen6 score/signal consumed",
+            "market": "SSI", "fundamental": "FHSC", "input_layer": "shared_raw",
+            "raw_release_id": latest[0].get("raw_release_id"), "feature_engine": "ssi",
+            "bctc_engine": "ssi", "standalone": True, "gen6_dependencies": [],
+            "calculation": "SSI independent from immutable provider raw; no Gen6 artifact consumed",
         },
         "summary": summary, "latest": latest, "history": compact_history, "ic": ic,
     }
