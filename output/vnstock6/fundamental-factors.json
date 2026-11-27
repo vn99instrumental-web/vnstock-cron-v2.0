@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-23T10:23:50.348189+00:00",
+  "generated_at": "2026-11-27T06:02:54.223351+00:00",
   "source": "FHSC",
   "calculation_engine": "vnstock_quant",
   "calculation_version": "1.1.0",
@@ -59,7 +59,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:39:05.248107+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:39:05.248107+00:00",
       "latest_statement_signature": "0acc11638a9dc844492f8a277331e8356488ab66340a33dd9625c6b111ce3716",
       "latest_statement_signatures": {
@@ -67,7 +67,8 @@
         "balance-sheet": "12e70e438f6506becd746772ac967a0b59ffcc4cd6652f395ecca428e7983cb8",
         "cash-flow": "64158d5467e6aa6367191e2933d5da7dd60eb6597e93f81ab3478fad860ced17"
       },
-      "latest_income_signature": "0306efef99cdb392e5c2469304d2b1d671cf5fe300bee73d24dcc24757b614a2"
+      "latest_income_signature": "0306efef99cdb392e5c2469304d2b1d671cf5fe300bee73d24dcc24757b614a2",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "ANV": {
       "fundamental": 0.5860348049535978,
@@ -126,7 +127,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:38:06.907294+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:38:06.907294+00:00",
       "latest_statement_signature": "b046cb30ac00de77463a006d212ed1b38f76d8992a3d7b6b10c8d39396697193",
       "latest_statement_signatures": {
@@ -134,7 +135,8 @@
         "balance-sheet": "56a1af09fc98b3d6718e054c25044bc707404d068733e85a00a246864954dfa5",
         "cash-flow": "c73625189885767507b470b1ba56c1da2fe0c2f6537a9d76a62a1d83c322bb12"
       },
-      "latest_income_signature": "0ad722764a4522102b91b481f8fb1d826f1d7cef49f638f15e81f046e73b5bb4"
+      "latest_income_signature": "0ad722764a4522102b91b481f8fb1d826f1d7cef49f638f15e81f046e73b5bb4",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BAF": {
       "fundamental": -0.24746138139023552,
@@ -193,7 +195,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:36:08.563753+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:36:08.563753+00:00",
       "latest_statement_signature": "6494e97091d7683bc2ec2e087d1030749b9fba175fca68ec0b44c764f526e183",
       "latest_statement_signatures": {
@@ -201,7 +203,8 @@
         "balance-sheet": "900a9d59c5853089c2a474df531d5d55c85833b0f0112b8748a4856715ee6c33",
         "cash-flow": "6918d0a67e1fa30111cebed34beb93ff01945431f97668fed83b7a032aca66f5"
       },
-      "latest_income_signature": "74c5a652efd5c287fe03f63e0f775123a8e7418081d65292ae8583329049d802"
+      "latest_income_signature": "74c5a652efd5c287fe03f63e0f775123a8e7418081d65292ae8583329049d802",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BCM": {
       "fundamental": 0.49602663576156175,
@@ -260,7 +263,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:36:50.912441+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:36:50.912441+00:00",
       "latest_statement_signature": "ceceeecc2d8e7ea051ebe6882a703dd9cca28eaceaaf937fdd80d032f2e801e0",
       "latest_statement_signatures": {
@@ -268,7 +271,8 @@
         "balance-sheet": "12b40d90c66ddf093ff91602a9db3d1a5a590f999a4c14f241617557ce475363",
         "cash-flow": "05a5c431f4ea6bf5eb2e62d48ba3b30be26d6af565507ab1561cb68c525bb236"
       },
-      "latest_income_signature": "883c32560c8060d723eb936535197820fbc4880016374adc8d32e6a97ed21f58"
+      "latest_income_signature": "883c32560c8060d723eb936535197820fbc4880016374adc8d32e6a97ed21f58",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BID": {
       "fundamental": -0.19192298687661935,
@@ -324,7 +328,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:40:48.580744+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:40:48.580744+00:00",
       "latest_statement_signature": "f054a58356b347d1bf6bd7fb27252d89eaec10664173b558397b98874621e910",
       "latest_statement_signatures": {
@@ -332,7 +336,8 @@
         "balance-sheet": "35a749bca0cf6c3b61fea210375b79db3ae3814c4f2ce096681d0807defdbe82",
         "cash-flow": "40107638c96a8b981635910b8bd265fab84260672d52964d038a0e2fda6f027f"
       },
-      "latest_income_signature": "43f91f59b90bfb939125c63967ee62539c5e2785932d8037a70d26a9464f21b0"
+      "latest_income_signature": "43f91f59b90bfb939125c63967ee62539c5e2785932d8037a70d26a9464f21b0",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BMP": {
       "fundamental": 0.9798047442603227,
@@ -391,7 +396,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:41:10.244261+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:41:10.244261+00:00",
       "latest_statement_signature": "f6e9b130c8811e5c2043fdc9313a27ed3441ed953eb8d39aeb595df12bc0ba16",
       "latest_statement_signatures": {
@@ -399,7 +404,8 @@
         "balance-sheet": "55e88413bec1c6d8154230090f2efb21eba14a6249a55c5b31b1821b75b88c88",
         "cash-flow": "86d870a02e09caffa6afb050a2df127a34bc6df63e0ff1cc690567e1ae6bb402"
       },
-      "latest_income_signature": "422ef4af3e1514781e241a47353ebce49d0f17ac6fbde6323112b6e599ab90cf"
+      "latest_income_signature": "422ef4af3e1514781e241a47353ebce49d0f17ac6fbde6323112b6e599ab90cf",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BSI": {
       "fundamental": 0.26606859355911266,
@@ -458,7 +464,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:43:06.941912+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:43:06.941912+00:00",
       "latest_statement_signature": "08927b45d58e39d435bec11dc12f49bbfbf5a7001292ef359e0153db39d9f56c",
       "latest_statement_signatures": {
@@ -466,7 +472,8 @@
         "balance-sheet": "63bbdd2e027401a47954d865b58ab7d305553d113ed6b46493e5fa607f90546c",
         "cash-flow": "48bf6195f5618c24e103def7698426e300674a28a5666ca629c86bf21fc27a67"
       },
-      "latest_income_signature": "2e3445c2f4a41e6411b5308d6193c9502804b2777aeb126d8d6057b0aa4c9452"
+      "latest_income_signature": "2e3445c2f4a41e6411b5308d6193c9502804b2777aeb126d8d6057b0aa4c9452",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BSR": {
       "fundamental": 0.7209225710538529,
@@ -525,7 +532,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:42:06.329576+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:42:06.329576+00:00",
       "latest_statement_signature": "9055eb3d9cc5c8412095aed4ed958bbf549ecd48a2a8b94ed591b0cbc1edb458",
       "latest_statement_signatures": {
@@ -533,7 +540,8 @@
         "balance-sheet": "cf1a01227f0a346b5f7d2ea7727f3aaa2f377e70d5826b001f8e589b870f7c21",
         "cash-flow": "1d77229b39d8e7d4f03de395d7a4eeca8f1751bb4d95c3c462e5ea35675bfc31"
       },
-      "latest_income_signature": "17674d2e28bfe79f500fddb242d2d86f2bbe0d685e4c7fc60560a649fbfe5a7d"
+      "latest_income_signature": "17674d2e28bfe79f500fddb242d2d86f2bbe0d685e4c7fc60560a649fbfe5a7d",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BVH": {
       "fundamental": -0.35597471424188076,
@@ -590,7 +598,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:46:28.592858+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:46:28.592858+00:00",
       "latest_statement_signature": "ef51f86e229ec68abf6b18c9be3c09cc5b11c6b2cebcc70fe83b0222ee402706",
       "latest_statement_signatures": {
@@ -598,7 +606,8 @@
         "balance-sheet": "ca7a79beda58646824f4fd87ce4c48b9b66a11bb52d327a8f1e687d3c22b4830",
         "cash-flow": "bebdff1c21aad0ca06601e5e8b25cc6e891f03a702dcebf93a93f86b6a6b5a1b"
       },
-      "latest_income_signature": "707cb85154fac4df73e8940f6b79ed552355555554ed384825f8e1c99cf0b086"
+      "latest_income_signature": "707cb85154fac4df73e8940f6b79ed552355555554ed384825f8e1c99cf0b086",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "BWE": {
       "fundamental": 0.6409563006265449,
@@ -657,7 +666,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:44:31.051024+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:44:31.051024+00:00",
       "latest_statement_signature": "7b137f5b75ea06b98235c9e00c710741829b7b60fb27068f03acfe2f31c27768",
       "latest_statement_signatures": {
@@ -665,7 +674,8 @@
         "balance-sheet": "7ce8c04501f3b96ed003f7482dab28ceb7a6e5f6c865363341709fcdaa1ec1dd",
         "cash-flow": "3cbda6e08aef6f9031b13d1f7eb12edb4be37de9659a34871f38a0e5b48f11fd"
       },
-      "latest_income_signature": "252442056c158e757c43a0d24055fd9f0a212436d76033acb7e3ee84ae3ab089"
+      "latest_income_signature": "252442056c158e757c43a0d24055fd9f0a212436d76033acb7e3ee84ae3ab089",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "CII": {
       "fundamental": 0.05556350760957133,
@@ -724,7 +734,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:46:25.244043+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:46:25.244043+00:00",
       "latest_statement_signature": "93a783d5a0aa3a4093e0fb933e09b12b71cadc6a9b64d31140a44c69712bdc06",
       "latest_statement_signatures": {
@@ -732,7 +742,8 @@
         "balance-sheet": "91865904ab4f63b763ac5cecbe88aa76edb78935e62e1fd56247413b461a6cc2",
         "cash-flow": "c8ec23d81c9b2c8e325667f158c135bb13376e59fa35b5e391cd687d2c51082a"
       },
-      "latest_income_signature": "7a7c1d6759691d9e1645cef570d77606ae01d5f724933a7ae7a3e80061c6e95e"
+      "latest_income_signature": "7a7c1d6759691d9e1645cef570d77606ae01d5f724933a7ae7a3e80061c6e95e",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "CMG": {
       "fundamental": 0.12932751079647492,
@@ -791,7 +802,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:48:27.778616+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:48:27.778616+00:00",
       "latest_statement_signature": "c988410b07f83ae759e4809f17c9667b7b46e5d8e8e89a24596695df83240e41",
       "latest_statement_signatures": {
@@ -799,7 +810,8 @@
         "balance-sheet": "f170710863584cc4e7cf366e4b3bfc6ffef9ef8587a616c2242fbdba7d180a9e",
         "cash-flow": "c63fbe3073c04a71baf5a82d269639d5677fcdd8d00dff6a5ed690c1ea775304"
       },
-      "latest_income_signature": "fbc7410518b918579e5c6fa0af806640119bce56eed12856d6effa013a8c3218"
+      "latest_income_signature": "fbc7410518b918579e5c6fa0af806640119bce56eed12856d6effa013a8c3218",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "CTD": {
       "fundamental": -0.22941673090653092,
@@ -858,7 +870,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:48:50.245320+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:48:50.245320+00:00",
       "latest_statement_signature": "cd88e60381b7e6d93c4d9a089bd4a73b2041ee93c7679d1c7688bcf28a52d61b",
       "latest_statement_signatures": {
@@ -866,7 +878,8 @@
         "balance-sheet": "ea0ae467f08b5eacdd9b887bbc057571e06775091113d3437e969eeab87f4eb7",
         "cash-flow": "707d2e607c0925f8929727b6263e13a507e7c45e7a8c98f70b50a476cc5df7bc"
       },
-      "latest_income_signature": "37be6166229b10fe9fccb87536784429c02a8adbc6cec4a2e33481d4f7a03c2c"
+      "latest_income_signature": "37be6166229b10fe9fccb87536784429c02a8adbc6cec4a2e33481d4f7a03c2c",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "CTG": {
       "fundamental": -0.08751016765223985,
@@ -922,7 +935,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:51:45.250367+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:51:45.250367+00:00",
       "latest_statement_signature": "b1f45fa0341505126926a4863792f1a57734da10e6784bc03786c2c39d87d415",
       "latest_statement_signatures": {
@@ -930,7 +943,8 @@
         "balance-sheet": "312c50f00da095efda2bb252cb46ac1886863b073564f3b4b7d85aa4be6e5993",
         "cash-flow": "2cbc900c60fbbade1ec0260f81bc612ac2f352ec202e3d2284e2ec672cb7fc03"
       },
-      "latest_income_signature": "1afd3cfe286b0a947a433c8c15f41c501eb578a5b8aadfe7464b6af62e71951b"
+      "latest_income_signature": "1afd3cfe286b0a947a433c8c15f41c501eb578a5b8aadfe7464b6af62e71951b",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "CTR": {
       "fundamental": 0.05471968646724338,
@@ -989,7 +1003,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:50:48.583423+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:50:48.583423+00:00",
       "latest_statement_signature": "94e0599964d84824e0347d067f45932358807d83c8ef3a06a19a57f6936224c9",
       "latest_statement_signatures": {
@@ -997,7 +1011,8 @@
         "balance-sheet": "df6090a3ef4b2f34d1b56b314c9e3bcb1c8f2b337c3b5c51f25c71fc0ea2404d",
         "cash-flow": "28e57473b4dcd78adae3e499808c3a87bd05dddcf3fb5e9eeb43af37a97361ed"
       },
-      "latest_income_signature": "df105eb7c8099a7728f626d1b86e7c8b23aa731a5a2f1d0b2fff7d2aecd02a46"
+      "latest_income_signature": "df105eb7c8099a7728f626d1b86e7c8b23aa731a5a2f1d0b2fff7d2aecd02a46",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "CTS": {
       "fundamental": -0.006492759081637471,
@@ -1056,7 +1071,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:53:06.942305+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:53:06.942305+00:00",
       "latest_statement_signature": "f1db646995e68709269dcf3cff759a071991f57b1ccf2b19a954978458183f25",
       "latest_statement_signatures": {
@@ -1064,7 +1079,8 @@
         "balance-sheet": "6af9e452214d8522bc77810fcfd0f36e5e8fc48eac26a091f003c330d592e31c",
         "cash-flow": "03debe61d4c3bfb8755542ff315a1a8a2d355017caa37f31ebe1d764c69a4ea3"
       },
-      "latest_income_signature": "b491c23f9028d372c19787cbbbf904e4399025841f5b7e55573c03f0844f7534"
+      "latest_income_signature": "b491c23f9028d372c19787cbbbf904e4399025841f5b7e55573c03f0844f7534",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DBC": {
       "fundamental": 0.22033114217050884,
@@ -1123,7 +1139,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:53:10.243812+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:53:10.243812+00:00",
       "latest_statement_signature": "aef91d7f4d9bc69f2f547ae6b2d66438479a13a66f173bf1ecbc2b743a48b670",
       "latest_statement_signatures": {
@@ -1131,7 +1147,8 @@
         "balance-sheet": "4911b553b1fb24aca47fa4e1ac0630dcbe4dfa92bb70db0b51f480b0e2d1cdb5",
         "cash-flow": "639214fb9da3fef722b21703600bbe9c3b4febe6e5448437abdbbc65364cc673"
       },
-      "latest_income_signature": "00c9a3dc98c21a232f19cb8c85bf6f78a8911f2347cc960ce8c805b15ef72567"
+      "latest_income_signature": "00c9a3dc98c21a232f19cb8c85bf6f78a8911f2347cc960ce8c805b15ef72567",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DCM": {
       "fundamental": 0.7509102113777528,
@@ -1190,7 +1207,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:54:49.254298+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:54:49.254298+00:00",
       "latest_statement_signature": "0fd0759b2a17d5857ea7734347b32dcf42ff274d87805362729359f0db240804",
       "latest_statement_signatures": {
@@ -1198,7 +1215,8 @@
         "balance-sheet": "147b47f6e7b4345d6303492f360c8bf0d04616f7863cb5ae7cda2e5bed0a2034",
         "cash-flow": "e7784074a8798d3af828b1279f18a234bc6ed8806072a96fff61a9fca55a0c08"
       },
-      "latest_income_signature": "36c3ed2cf647e13bf744471da886cdec4395749f1bfef3571d379dc7fadf9481"
+      "latest_income_signature": "36c3ed2cf647e13bf744471da886cdec4395749f1bfef3571d379dc7fadf9481",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DGW": {
       "fundamental": 0.15892490274053847,
@@ -1257,7 +1275,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:55:45.247951+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:55:45.247951+00:00",
       "latest_statement_signature": "97e6b631eca3784e742ef3f0e81dcece22f90fa6f40ff5551a38c1227da7ba47",
       "latest_statement_signatures": {
@@ -1265,7 +1283,8 @@
         "balance-sheet": "f23125f99bd2f07d9065eb92576b6acb9b78a5ad801e421f57578e0915d8aa9b",
         "cash-flow": "3e4731c5a06fa21258e53147fb5da0163ef707c08d3d55a3e83ceb15ac13d2ce"
       },
-      "latest_income_signature": "5f385e7e4f89a9deab126a5ef5bc73ebe9bc2bf362cba9e6f9f29a97e5028dba"
+      "latest_income_signature": "5f385e7e4f89a9deab126a5ef5bc73ebe9bc2bf362cba9e6f9f29a97e5028dba",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DIG": {
       "fundamental": 0.32852989743703437,
@@ -1324,7 +1343,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:57:26.908239+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:57:26.908239+00:00",
       "latest_statement_signature": "7ee8f7cb615ef0fb0bcf61a6046b95669664f71bd0344f4c9a1ff14779b05d45",
       "latest_statement_signatures": {
@@ -1332,7 +1351,8 @@
         "balance-sheet": "cb871d2cb44051150119e58da8e1ba4d0da2a4207d9d2f69d0528b0a204cf2a2",
         "cash-flow": "892ed9e7faaf7287563dee835c30c1b6a2defbcc891586a9fc4361e60b32eaae"
       },
-      "latest_income_signature": "6be79bb7863c1d0fea6c136e4b5da3b840f4894abbee350a40708eb1073df57d"
+      "latest_income_signature": "6be79bb7863c1d0fea6c136e4b5da3b840f4894abbee350a40708eb1073df57d",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DPM": {
       "fundamental": 0.5100890045524163,
@@ -1391,7 +1411,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:57:30.250881+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:57:30.250881+00:00",
       "latest_statement_signature": "c693d3c29ae48425f36339b0c1aea27c88a415887592c49f305e1f0b3fcd3c91",
       "latest_statement_signatures": {
@@ -1399,7 +1419,8 @@
         "balance-sheet": "40466e3debf9e0d84cda42e5b02f571ec0a4d2f2d2481b381f81be00f2d0d0b4",
         "cash-flow": "def8cc41220157a563d927354d47fbc6022da10f7730d177d4162daa8070951b"
       },
-      "latest_income_signature": "d4643e61358471ff8172473095dfe0da3f3c9c7290d90268d06c4aa02cb745f9"
+      "latest_income_signature": "d4643e61358471ff8172473095dfe0da3f3c9c7290d90268d06c4aa02cb745f9",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DSE": {
       "fundamental": 0.08492439321975392,
@@ -1458,7 +1479,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T08:58:28.590358+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T08:58:28.590358+00:00",
       "latest_statement_signature": "d2d6796b6ab1bffcf70f8a22eb2afed3764860c50f46055e04752ed9a5153b9c",
       "latest_statement_signatures": {
@@ -1466,7 +1487,8 @@
         "balance-sheet": "f151e7208f93d100394501dc26cdfcfe7cd365781439d9386e1b84b4e1db0d05",
         "cash-flow": "b39714daecebf58014ab99c2e61e9c29bb72ca726a88c70f546a2c3e7c78a2ed"
       },
-      "latest_income_signature": "1134cf7ec69f8d4605d62c16c52bfee92c48adc31f5c7de5d85943b12e9a468f"
+      "latest_income_signature": "1134cf7ec69f8d4605d62c16c52bfee92c48adc31f5c7de5d85943b12e9a468f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "DXG": {
       "fundamental": 0.2896771722740303,
@@ -1525,7 +1547,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:00:05.982095+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:00:05.982095+00:00",
       "latest_statement_signature": "a9a7521098029adb6b2b5f3cee44e421678506fe971fcf0033be12116eaa2eab",
       "latest_statement_signatures": {
@@ -1533,7 +1555,8 @@
         "balance-sheet": "fe989ee02e398d746be5b08c3ab0389525a86f9062a62a90075d34fe3dbcfa1b",
         "cash-flow": "3d35d4a41870471287b1f47deae4406c2788afc4c11a6809d2e51d43747bc945"
       },
-      "latest_income_signature": "6db7169ce757b1768ed5032103aa8919ce07606f1a0b2483d827a996915a99fb"
+      "latest_income_signature": "6db7169ce757b1768ed5032103aa8919ce07606f1a0b2483d827a996915a99fb",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "EIB": {
       "fundamental": -0.6169810295384909,
@@ -1589,7 +1612,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:02:46.915490+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:02:46.915490+00:00",
       "latest_statement_signature": "1e1f826753b2fe3c992b3854faf345f29da46f2ce4a5acaf15128c6011658096",
       "latest_statement_signatures": {
@@ -1597,7 +1620,8 @@
         "balance-sheet": "7f114e6a96696fea828f785c58b1aa01b2b2d0ed613936aa206285ddd0f6ed48",
         "cash-flow": "12bd57047fa974699f0f299c8b6dc158175816d9ce984cf35e244761e12730e7"
       },
-      "latest_income_signature": "a93e381c25ec5010055f2f96b187d3842b6a04457c6bd1430171f6b78fa600dc"
+      "latest_income_signature": "a93e381c25ec5010055f2f96b187d3842b6a04457c6bd1430171f6b78fa600dc",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "EVF": {
       "fundamental": -0.37445898057733995,
@@ -1653,7 +1677,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:01:10.231384+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:01:10.231384+00:00",
       "latest_statement_signature": "dc3a489a93430b279124365073c818cbbc95fc5a8f314f43aae104211f682ea1",
       "latest_statement_signatures": {
@@ -1661,7 +1685,8 @@
         "balance-sheet": "1a379a5d8715ba6dae04db39b4eeca871a8825ceaff56e726fe93636b879e724",
         "cash-flow": "e88ddfe8d9190e5c1fd9246f0c4190b631c8c0116ad87b37741de5d258bfe644"
       },
-      "latest_income_signature": "0c7b98f57028decf5cd6a9078fc3641ea05d284c80809f8c07f982809a61d53b"
+      "latest_income_signature": "0c7b98f57028decf5cd6a9078fc3641ea05d284c80809f8c07f982809a61d53b",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "FPT": {
       "fundamental": 0.7927449841654841,
@@ -1720,7 +1745,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:02:48.597788+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:02:48.597788+00:00",
       "latest_statement_signature": "954a664be1fa278920a9fe401c981a8c39e2d228673a819849e671712f43de0a",
       "latest_statement_signatures": {
@@ -1728,7 +1753,8 @@
         "balance-sheet": "99206a8893ecc9eae66eedf273d292793d4afad4385ad9af33f68cca64e0d731",
         "cash-flow": "2e0f195a7012f4b7647b30175a2a879e7f6007f24a17aaa2f2a73afe05aa6e57"
       },
-      "latest_income_signature": "196910f40c2d8f6db16b348e3ba1ac2db334cca96a454dbdd1a42909b5e6ae3e"
+      "latest_income_signature": "196910f40c2d8f6db16b348e3ba1ac2db334cca96a454dbdd1a42909b5e6ae3e",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "FRT": {
       "fundamental": 0.08122821712623884,
@@ -1787,7 +1813,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:03:25.240563+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:03:25.240563+00:00",
       "latest_statement_signature": "245a2b62d0b80841c4ec39fe7283c27b7ff4f767ce5e2714baaf61a52219d5c4",
       "latest_statement_signatures": {
@@ -1795,7 +1821,8 @@
         "balance-sheet": "ac90330385edb959c54978ca86380d6d2f570b90ee1f4e5756a03a367204fa5a",
         "cash-flow": "0270c6063f9ed47c497b7173e2c5d5edc9b1e311ef98739b6190098a710fb419"
       },
-      "latest_income_signature": "deb98114dfc5de9d070bdef2db17d3a708bfaa2f3002b1d1a9e63b442766e389"
+      "latest_income_signature": "deb98114dfc5de9d070bdef2db17d3a708bfaa2f3002b1d1a9e63b442766e389",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "FTS": {
       "fundamental": 0.3585571298284489,
@@ -1854,7 +1881,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:08:36.945974+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:08:36.945974+00:00",
       "latest_statement_signature": "cf090373f935acfe928d7a326904b3721be22874646791712b314588da2db11b",
       "latest_statement_signatures": {
@@ -1862,21 +1889,22 @@
         "balance-sheet": "53df3fdbf43fa765981f235f504e77c850c49710fecae7067b15760c1839ec9d",
         "cash-flow": "785b958d4a5c573dd3a936297aea10f586d27169a02e13bd5b6266f819dd32bf"
       },
-      "latest_income_signature": "f545ce81c1e0a446004d1529d0467905be0c60d362f0923b4be593e22f1faf5f"
+      "latest_income_signature": "f545ce81c1e0a446004d1529d0467905be0c60d362f0923b4be593e22f1faf5f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "GAS": {
       "fundamental": 0.6383176370553131,
       "growth": 0.725174735766076,
       "growth_revenue_yoy": 0.11258736788303803,
       "growth_profit_yoy": 0.7486755951162039,
-      "cash_flow": 1.0,
-      "cash_flow_score": 10,
-      "cash_flow_operating": 5615341019294.0,
-      "cash_flow_quality": 1.2290157288075154,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Phân phối xăng dầu & khí đốt",
       "fundamental_reason": null,
       "growth_reason": null,
-      "cash_flow_reason": null,
+      "cash_flow_reason": "vnstock_quant_no_usable_cash_flow",
       "ratios": {
         "RT_PRT_ROE": 0.21252763902019955,
         "RT_PRT_ROA": 0.1495285549483535,
@@ -1889,50 +1917,39 @@
         "balance_sheet": {
           "status": "success",
           "rows": 7480,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 1375,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 2640,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "fcfdd73797642998334b98659a12492750bc59e65c41ab55a47306a86e2c21b6",
+      "statement_signature": "4d0be2a091031e9de786e770b900ab0a74f94b401cd9b6c249c8a7f3474f85ef",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:07:06.925558+00:00",
-      "refreshed_at": "2026-11-23T09:07:06.925558+00:00",
-      "latest_statement_signature": "c34dc6e5e382782e594e646049f455c7a3ccfa9e46f70ac4057a5df47801992f",
-      "latest_statement_signatures": {
-        "income-statement": "c80b13fa9e1ef60f809d048866b1acf1d740ad0207e0ec98d41c312b935afbe3",
-        "balance-sheet": "638d76a7958917a2ebd24e4b4cef88fcacd86c5ff69ef4453a3b2772a1336dcd",
-        "cash-flow": "0c05b7e15cdee1fc6fb58607878cd17d2c69f0d83e1e4ffa015cbf9bfa653eb9"
-      },
-      "latest_income_signature": "c80b13fa9e1ef60f809d048866b1acf1d740ad0207e0ec98d41c312b935afbe3"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "GEE": {
-      "fundamental": 0.5022834240689685,
+      "fundamental": 0.5022831323788814,
       "growth": 0.0,
       "growth_revenue_yoy": 0.5008713614982232,
       "growth_profit_yoy": -0.5499220053148952,
@@ -1945,10 +1962,10 @@
       "growth_reason": null,
       "cash_flow_reason": null,
       "ratios": {
-        "RT_PRT_ROE": 0.3219121291545402,
-        "RT_PRT_ROA": 0.14032322437322622,
+        "RT_PRT_ROE": 0.3219110383457834,
+        "RT_PRT_ROA": 0.1403227488838362,
         "RT_PRT_GROSS_MARGIN": 0.1482226595164083,
-        "RT_PRT_NET_MARGIN": 0.08142854124323202,
+        "RT_PRT_NET_MARGIN": 0.08142827872215364,
         "RT_LQD_CR": 1.6039687325968695,
         "RT_LEV_DE": 1.1890236518053572
       },
@@ -1956,47 +1973,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 2584,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 475,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
           "status": "success",
           "rows": 912,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "d48e003ba4986cc14bc4d7e76789f1166019e3a979fb7228890cef74d5808d96",
+      "statement_signature": "21a17f9ffbc67feb9b8f642a1ad48a0f9b0d1831ba494335efebf231ce1a3491",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
+        "income-statement": "2026-Q3",
         "cash-flow": "2026-Q3"
       },
       "latest_income_period": "2026-Q3",
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:05:29.216766+00:00",
-      "refreshed_at": "2026-11-23T09:05:29.216766+00:00",
-      "latest_statement_signature": "ada5caa7ceabd58e62fc757fc31fa21ef7bfa1962bb963d3db6389058fcf7198",
-      "latest_statement_signatures": {
-        "income-statement": "64671f2b005766ec0e81bdca80331ffad11d5fae5646a31aa7f64b2a357a7d30",
-        "balance-sheet": "be977f24636ba526c2ddf66158005fb438028d1e1462b4f57156ff37064d7c80",
-        "cash-flow": "a345b8e524c0616ccc87c544bbaf5107753d53645bfeed34e8837f536d9b5e40"
-      },
-      "latest_income_signature": "64671f2b005766ec0e81bdca80331ffad11d5fae5646a31aa7f64b2a357a7d30"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "GEX": {
       "fundamental": 0.07293259059854502,
@@ -2055,7 +2061,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:07:45.251107+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:07:45.251107+00:00",
       "latest_statement_signature": "d58ccf4ee2ba011cb00af1ac0620f3032afb73ffbb6d1e6807b29621568e6dd8",
       "latest_statement_signatures": {
@@ -2063,7 +2069,8 @@
         "balance-sheet": "07a65b6970fbabb3a0bd215f23023150798faf63006a14d0d4ce97546071c0c8",
         "cash-flow": "aeb88429570436b0b7f45dee93a3ebaba4a22ec679be5b03ad538103d433d292"
       },
-      "latest_income_signature": "ef96e64dbdbbc8cfbd6cbb47f6f03c904b951fcc740c2321e78755fcce4e1b83"
+      "latest_income_signature": "ef96e64dbdbbc8cfbd6cbb47f6f03c904b951fcc740c2321e78755fcce4e1b83",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "GMD": {
       "fundamental": 0.9219717404478597,
@@ -2122,7 +2129,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:09:48.585161+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:09:48.585161+00:00",
       "latest_statement_signature": "defc9a4d0baab4367781898f78e35a70fe5eea9770ecf5d6df3b08aa977556f3",
       "latest_statement_signatures": {
@@ -2130,7 +2137,8 @@
         "balance-sheet": "c62359ab7d69fc038d81955eeccb22d123d3e09e1c264654170186848b9dcc80",
         "cash-flow": "02d2d4ea79e7bd1f8a660739bd38b04fcbe528224af00e1e425aabf15a533d73"
       },
-      "latest_income_signature": "36caa202f52b102cf105fa5ea288abd1678da7a5f178e4dab0846c42a503a2e7"
+      "latest_income_signature": "36caa202f52b102cf105fa5ea288abd1678da7a5f178e4dab0846c42a503a2e7",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "GVR": {
       "fundamental": 0.7629766498078144,
@@ -2189,7 +2197,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:10:06.900898+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:10:06.900898+00:00",
       "latest_statement_signature": "22bb04884a30655138e84e0e76d54dcaf30548291fc516f87e910ada2af9b5e9",
       "latest_statement_signatures": {
@@ -2197,7 +2205,8 @@
         "balance-sheet": "aca7b90196ae0a090d4dde9c71ecce8fa9185378e79a9510b72676e1fb01a9be",
         "cash-flow": "8da2eda06e15e8963392e3568648323dda79a0df0e9a7b685897d78548bf2a03"
       },
-      "latest_income_signature": "25080482ae768bdff0cb0182dbc16c709217f41a5641f5ea913fd7a2fd926456"
+      "latest_income_signature": "25080482ae768bdff0cb0182dbc16c709217f41a5641f5ea913fd7a2fd926456",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HAG": {
       "fundamental": 0.7442924611930085,
@@ -2256,7 +2265,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:12:06.299722+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:12:06.299722+00:00",
       "latest_statement_signature": "8a2c80aa8adb2153fe4f53dfd1a05d73fac83f1b31d65c5a57e12e6778d23377",
       "latest_statement_signatures": {
@@ -2264,7 +2273,8 @@
         "balance-sheet": "28abeb6a516f7259670e86d62d19144f5a9693a402472dff6ae7d175ba16f49a",
         "cash-flow": "8d69e030e4bee0016931125567c195816b00b6fdeba985c299abea677ac9f81e"
       },
-      "latest_income_signature": "22bc8dfd72cad344c256892a14c5a4f1678dfcf2da4aa47ce552c075dcd61c6d"
+      "latest_income_signature": "22bc8dfd72cad344c256892a14c5a4f1678dfcf2da4aa47ce552c075dcd61c6d",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HCM": {
       "fundamental": 0.34272037573192543,
@@ -2273,8 +2283,8 @@
       "growth_profit_yoy": -0.3253182618573782,
       "cash_flow": null,
       "cash_flow_score": null,
-      "cash_flow_operating": 6064382795768.0,
-      "cash_flow_quality": 20.403568157085065,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
@@ -2291,47 +2301,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 10650,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 5680,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 7242,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "b7ccbff2c332053f8ba3e9e6546e12d7c41d49006b0eb57b7f60f1b4e5c886b9",
+      "statement_signature": "37809674687ca5e91ea9e4388affd287afdef86d22c84f2fade7e277ad82c1c4",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:14:16.957347+00:00",
-      "refreshed_at": "2026-11-23T09:14:16.957347+00:00",
-      "latest_statement_signature": "cf163bff28b90db525edeba5d110f53e4b2f930b8b9fad63bd8e86ad089e17d4",
-      "latest_statement_signatures": {
-        "income-statement": "b16d74dd4819f92e29a1079350331c766983ddaf48fdb211717f3ff4e878ba10",
-        "balance-sheet": "d7d568fe3be527133b9c70aa56e431df08ff89658f00ed620f9b553face54f88",
-        "cash-flow": "66b493ea91fcd2ae698bd3d4c2c2445531996a9916439037cf020965fd43c861"
-      },
-      "latest_income_signature": "b16d74dd4819f92e29a1079350331c766983ddaf48fdb211717f3ff4e878ba10"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "HDB": {
       "fundamental": -0.06181305805997931,
@@ -2387,7 +2386,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:13:28.570504+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:13:28.570504+00:00",
       "latest_statement_signature": "aeb3d225cd0c2973053a12c766db99b208e536b6337c9a6c33d6a0720f7c97a2",
       "latest_statement_signatures": {
@@ -2395,7 +2394,8 @@
         "balance-sheet": "c3fb0ffaf8d542cb4fab6b3ddb947bfbefca46c6f082829d77557eeb46b08b0b",
         "cash-flow": "1fbc45e4f27b41667a5880fb33a206bee6633a31032fd17f3d0a090c66c9dfd8"
       },
-      "latest_income_signature": "6832d372f81ce9753624b4ec45d17dde055b30675d858d1b3b5ae74dfc7d5d44"
+      "latest_income_signature": "6832d372f81ce9753624b4ec45d17dde055b30675d858d1b3b5ae74dfc7d5d44",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HDG": {
       "fundamental": 0.6318707100025033,
@@ -2454,7 +2454,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:14:26.922574+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:14:26.922574+00:00",
       "latest_statement_signature": "348505bcb1ba80b41a630fd534ae61bf8c65e54da75d9c94591549305e3e9e6f",
       "latest_statement_signatures": {
@@ -2462,7 +2462,8 @@
         "balance-sheet": "2b5028bfb1fb701519324e6ab6286050aa558e12b0ac1b76d766e4e6dc0402e4",
         "cash-flow": "cb35e64ecbaeae013ffc051937b434db100cbf96da6e837178b79b9a87f7b50c"
       },
-      "latest_income_signature": "b3ddd17bea428529739e4eb3996d06ef1a2122d8d5ab31fe9fded4cf1fcd9ba7"
+      "latest_income_signature": "b3ddd17bea428529739e4eb3996d06ef1a2122d8d5ab31fe9fded4cf1fcd9ba7",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HHV": {
       "fundamental": 0.1475732935835025,
@@ -2521,7 +2522,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:14:45.249415+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:14:45.249415+00:00",
       "latest_statement_signature": "f53b9a37ae4708f31764b6ec92e24bb67dacfea1b03e937723dea1b9f27ce53c",
       "latest_statement_signatures": {
@@ -2529,7 +2530,8 @@
         "balance-sheet": "1ea840e7dd10a212d07b8b2752291f9c6551515ac4c8f795318af759ee12326e",
         "cash-flow": "56ab9b5430abbab3229e4d379370df413beefb291fe31375cc4b481b14db98b8"
       },
-      "latest_income_signature": "012f9f16dcc7a567802e5d9c0485d3f296bdc23f9d9cbdb2b137c9f65e71c2ce"
+      "latest_income_signature": "012f9f16dcc7a567802e5d9c0485d3f296bdc23f9d9cbdb2b137c9f65e71c2ce",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HPG": {
       "fundamental": 0.46559609400341556,
@@ -2588,7 +2590,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:17:49.256081+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:17:49.256081+00:00",
       "latest_statement_signature": "d2042277bfd80715ecbd44fe8367288226aa0c82989e115dc900fda33b22c9a2",
       "latest_statement_signatures": {
@@ -2596,7 +2598,8 @@
         "balance-sheet": "78fbb535fdebc2886823636d5a767fea7db33b40e8db6efdb4f4600b67555b4a",
         "cash-flow": "809e2af1aaf64dc51dbcee1e27810d20bcadb42bbffc107ec7567affcb4cf7fb"
       },
-      "latest_income_signature": "b4cf609f59c0d9c544aaf4dbc45167c06a91fd641303749f9126e5fd0f1b5bd3"
+      "latest_income_signature": "b4cf609f59c0d9c544aaf4dbc45167c06a91fd641303749f9126e5fd0f1b5bd3",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HSG": {
       "fundamental": 0.022728867754807185,
@@ -2655,7 +2658,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:19:36.925611+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:19:36.925611+00:00",
       "latest_statement_signature": "f9dc096e80075a5e3c4858a05e9f1be65f9f6961045e040bb4713322da253997",
       "latest_statement_signatures": {
@@ -2663,7 +2666,8 @@
         "balance-sheet": "6b00d24047403fc54e38503a9c164a7111c2618868bfc9221a42ef5ff3a9cf67",
         "cash-flow": "154a4a7ae8466478197d597099952e5998f6b1af05ed89f7cdda09d0f3306a3b"
       },
-      "latest_income_signature": "5cffa5babf8fa83d307b5f9a32e72196a26df35878b27323c313f7bbf5d6e712"
+      "latest_income_signature": "5cffa5babf8fa83d307b5f9a32e72196a26df35878b27323c313f7bbf5d6e712",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HT1": {
       "fundamental": 0.09565571499065216,
@@ -2722,7 +2726,7 @@
       "cash_flow_period": "2026-Q2",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:18:46.917656+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:18:46.917656+00:00",
       "latest_statement_signature": "903af0babc450fd0b59d49a16fa995ee8d80f55a052593dc75cf5b4295a8bd5f",
       "latest_statement_signatures": {
@@ -2730,7 +2734,8 @@
         "balance-sheet": "1fe760d12aca7462d6d21f5884dfc14df6b2606b436bb07ec7a64530d708520e",
         "cash-flow": "c9f92721a7c51a8457eee07eff472c08319297b98719cf89f6f308ae2cee027c"
       },
-      "latest_income_signature": "db065911af135d26ebcdb5f61693cb49e0d569902e59960bc8c6236a0684ce0a"
+      "latest_income_signature": "db065911af135d26ebcdb5f61693cb49e0d569902e59960bc8c6236a0684ce0a",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "KBC": {
       "fundamental": 0.448446308462908,
@@ -2789,7 +2794,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:19:05.239365+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:19:05.239365+00:00",
       "latest_statement_signature": "dda6e4d51e529d3a2c3b2a0acda6646334c779874d969f36fdc23c75431d4f93",
       "latest_statement_signatures": {
@@ -2797,7 +2802,8 @@
         "balance-sheet": "41a9c6ffb8d4ff91e526eac29b354f2e32898903e53aae4289095d8eb587165c",
         "cash-flow": "7d081bf1e642b25cafeb66f99d8be638b88e297dbbd5c43718f81976f5b72841"
       },
-      "latest_income_signature": "1903e887d64fa0bcceb1e4751b9472459c454f09cc0f332adbd090494718e020"
+      "latest_income_signature": "1903e887d64fa0bcceb1e4751b9472459c454f09cc0f332adbd090494718e020",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "KDC": {
       "fundamental": 0.20431450941627305,
@@ -2856,7 +2862,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:22:08.587018+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:22:08.587018+00:00",
       "latest_statement_signature": "88ba7257347e336d083686bd1a3d3d7ce036fb25abd415aecb5ab9577402a9a4",
       "latest_statement_signatures": {
@@ -2864,21 +2870,22 @@
         "balance-sheet": "ae56474d005c5edb2e03b2b57c4f5a45668c9641451a3cdd0b92309b4eb2cc75",
         "cash-flow": "2d909c5fd2a6ed31e30b7e3045a935ed16150fd9e505f3686f945b1fe42fd112"
       },
-      "latest_income_signature": "4b365e36edf1e291886e8939743c6c428b425e9aff52d27c7c034df290685be5"
+      "latest_income_signature": "4b365e36edf1e291886e8939743c6c428b425e9aff52d27c7c034df290685be5",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "KDH": {
       "fundamental": 0.5787224960007785,
       "growth": -1.0,
       "growth_revenue_yoy": -0.9622760664464756,
       "growth_profit_yoy": -0.6790410598597908,
-      "cash_flow": 1.0,
-      "cash_flow_score": 10,
-      "cash_flow_operating": 1949334701000.0,
-      "cash_flow_quality": 11.548640303185246,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
-      "cash_flow_reason": null,
+      "cash_flow_reason": "vnstock_quant_no_usable_cash_flow",
       "ratios": {
         "RT_PRT_ROE": 0.09086779962061975,
         "RT_PRT_ROA": 0.04332055213191916,
@@ -2891,47 +2898,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 7480,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 1375,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 2640,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "e6a684dd6f5c9f8b49a623dd67b0b547e16d489f06919a9304dc85823d8c206f",
+      "statement_signature": "520796053e8c9b0dcd51f359c68c00417756a672555e710356ecb3208724525d",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:23:08.781567+00:00",
-      "refreshed_at": "2026-11-23T09:23:08.781567+00:00",
-      "latest_statement_signature": "bf9a06ccfc846183589775688d101851f72470f5093d79a43431fb4cb7bc04b6",
-      "latest_statement_signatures": {
-        "income-statement": "213b7f82bad0ba891e305fc83ca3233c4e41eba054b342ea21534acdf50abf48",
-        "balance-sheet": "77e1f7f9a6d4c5c5e2c8f160cb2815dcf86a8643f99586a52043923e451975b9",
-        "cash-flow": "b4d9a9fcf68981e9388763bcad11687c1a046d23adf02ac1e2d56d70a80d63bd"
-      },
-      "latest_income_signature": "213b7f82bad0ba891e305fc83ca3233c4e41eba054b342ea21534acdf50abf48"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "KOS": {
       "fundamental": 0.011321353257222536,
@@ -2990,7 +2986,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:22:25.252299+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:22:25.252299+00:00",
       "latest_statement_signature": "b57f1c509832d5f2dbcad233f9b94ed88b38e4e5ca7fe1d6cab27d2306c36515",
       "latest_statement_signatures": {
@@ -2998,7 +2994,8 @@
         "balance-sheet": "b549fe075dbda434e0247c5b1b1adcecf3594a6fca2dd8bf9d07eca88d653de0",
         "cash-flow": "ac81b2ad8e03b2cdb88a9c6ad4147321e30b57f7845b1fc990b0c82920ab2644"
       },
-      "latest_income_signature": "65bf9c57d589fb5109c2b59adafd0f956ae40d7e8498ee5cb3c746f5eac598c0"
+      "latest_income_signature": "65bf9c57d589fb5109c2b59adafd0f956ae40d7e8498ee5cb3c746f5eac598c0",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "LPB": {
       "fundamental": -0.04426177642251983,
@@ -3054,7 +3051,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:23:36.905685+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:23:36.905685+00:00",
       "latest_statement_signature": "0579c9a2d2ba32ac09f788f162e9f604c72beac2a5c0b84b4bb18ad589456053",
       "latest_statement_signatures": {
@@ -3062,7 +3059,8 @@
         "balance-sheet": "b3961b8a47c0ddac4e1bada997d3446b80ec492c223c2479886217a564c0884a",
         "cash-flow": "09f5924d3f4016dc5e279f67c1d999b566945f5e5e4fa694f62d732d4e9d43b8"
       },
-      "latest_income_signature": "b4da94deb64a3512a128d883287175a11346f8576be97686fbd74983f23764ae"
+      "latest_income_signature": "b4da94deb64a3512a128d883287175a11346f8576be97686fbd74983f23764ae",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "MBB": {
       "fundamental": -0.08411524034581341,
@@ -3118,7 +3116,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:27:08.587843+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:27:08.587843+00:00",
       "latest_statement_signature": "ecf385bf3975317a6eeb27f6eb3e18547c8fc21857ebc190de6f88c44d3e2153",
       "latest_statement_signatures": {
@@ -3126,7 +3124,8 @@
         "balance-sheet": "f8fea4c0ce0c105291ab9690f7d9e69453a2bf90cb256027ee6c589d50c369ae",
         "cash-flow": "a36861d7796c020352473d0973a2efdf4920c6398e7b1e1f7e37683f19cb8d04"
       },
-      "latest_income_signature": "2c7a9360fb54699154fb4c249dd537fd8b611e0422524cd54e0bceb19d82087b"
+      "latest_income_signature": "2c7a9360fb54699154fb4c249dd537fd8b611e0422524cd54e0bceb19d82087b",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "MCH": {
       "fundamental": 0.7719287707489947,
@@ -3185,7 +3184,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:26:45.262687+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:26:45.262687+00:00",
       "latest_statement_signature": "0b38d992c68d3d1589fad34d1b2d3c401c56be139abd6291aefc708a1c47b469",
       "latest_statement_signatures": {
@@ -3193,7 +3192,8 @@
         "balance-sheet": "be9b0b2538be898fe99e7fa0aa76cc68ca9beaeeebb068277c807753e27bcf59",
         "cash-flow": "8b15d0df8d73755a669c5694a45f3a119873ec34fd1604a0d264db34654e1a59"
       },
-      "latest_income_signature": "3e688fa80031aeb4e67bd4306c769cfe481e87f5d545fcc5ea791510674fb9e1"
+      "latest_income_signature": "3e688fa80031aeb4e67bd4306c769cfe481e87f5d545fcc5ea791510674fb9e1",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "MSB": {
       "fundamental": -0.2627944563581818,
@@ -3249,7 +3249,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:26:46.903023+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:26:46.903023+00:00",
       "latest_statement_signature": "f8d00252c6c238bb12e29808e382a1d4fe7884a14f43a3e13f0d799c836f7e1f",
       "latest_statement_signatures": {
@@ -3257,7 +3257,8 @@
         "balance-sheet": "2324599b2dc66c308a5e00aacaffeec6cf91cafd3f4b404a5367a37267766c99",
         "cash-flow": "8b98df3ed2dad32a342a870b360f1a9ef0f8fe82cc73522997e96c47f1727896"
       },
-      "latest_income_signature": "e569eed4232ae63fb51a42ec663aa24b4aa397320419e8c1ba5fd10f3ec73578"
+      "latest_income_signature": "e569eed4232ae63fb51a42ec663aa24b4aa397320419e8c1ba5fd10f3ec73578",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "MSN": {
       "fundamental": 0.3562012069710689,
@@ -3316,7 +3317,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:27:56.923532+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:27:56.923532+00:00",
       "latest_statement_signature": "9a18ac70f4994ae9fc8cfb1270974e576cbaf95c503e87ed16e25a44f5bde01e",
       "latest_statement_signatures": {
@@ -3324,7 +3325,8 @@
         "balance-sheet": "c3440413d309c26aeece0950146a66b9451b0695724a93b391afc2e592151fb4",
         "cash-flow": "680821721dc696981cbdd131b181661c0b687328bab4d08084d9c5c37d94c60b"
       },
-      "latest_income_signature": "aa40f23d59b179b11452dd8ae237897db8a6ff86474041daa6289928eefc093f"
+      "latest_income_signature": "aa40f23d59b179b11452dd8ae237897db8a6ff86474041daa6289928eefc093f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "MWG": {
       "fundamental": 0.5765369017770349,
@@ -3383,7 +3385,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:31:05.945906+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:31:05.945906+00:00",
       "latest_statement_signature": "aeb4a0254f7cdc52f38d0cc71989cb729d3600cb900399ec91c1f946024a45c6",
       "latest_statement_signatures": {
@@ -3391,7 +3393,8 @@
         "balance-sheet": "620117d709c94b8cc3f6e052ef449e087e5a52ce5cb6a7612c6b9f8cc8b5c945",
         "cash-flow": "4586fc2ae89be41fb0e2e40855d1b2d9b200b6302eb356d3d02040db1cc6744f"
       },
-      "latest_income_signature": "6ece8b380756dd3fc72ba33c93c663a16b6ed889112f924cdd07c5c682b3f9cc"
+      "latest_income_signature": "6ece8b380756dd3fc72ba33c93c663a16b6ed889112f924cdd07c5c682b3f9cc",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "NAB": {
       "fundamental": -0.16002207008875136,
@@ -3447,7 +3450,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:31:26.911581+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:31:26.911581+00:00",
       "latest_statement_signature": "20474b13683a75e7c2d4805d70f2659c3119467239ba083a5837770526fa8335",
       "latest_statement_signatures": {
@@ -3455,7 +3458,8 @@
         "balance-sheet": "6a730997f4a420edec3357dd1199bcbb7b35366a62862ec8d07fff1d4e2af197",
         "cash-flow": "fe8882b54cc3a4ee702a2956516278bf32735939fd6d355deb64f44bb18adfde"
       },
-      "latest_income_signature": "a3af78dbac67fa7b09ab86b15b1249c4a8fe14753968a776b1e5fa3ee5a61cb7"
+      "latest_income_signature": "a3af78dbac67fa7b09ab86b15b1249c4a8fe14753968a776b1e5fa3ee5a61cb7",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "NKG": {
       "fundamental": -0.14341556708115394,
@@ -3514,7 +3518,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:31:28.582039+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:31:28.582039+00:00",
       "latest_statement_signature": "2e070504077f6343fdea34b3e18e53151b112e9a5dcd0ffb24f517a412a990b0",
       "latest_statement_signatures": {
@@ -3522,7 +3526,8 @@
         "balance-sheet": "f229e8c872ecc1b206443fd52acd1be36cb240c78f0460a1518a0a8be8330a87",
         "cash-flow": "63b7bb079175863b9dfbcd6dc4d80deb28c8cb070eab8ab3a1fa482a996a1251"
       },
-      "latest_income_signature": "e1a80ec6f675378d1265d190bdc6b824facf6a5edb71f8e26137490af6b99a37"
+      "latest_income_signature": "e1a80ec6f675378d1265d190bdc6b824facf6a5edb71f8e26137490af6b99a37",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "NLG": {
       "fundamental": 0.4986898786994541,
@@ -3581,7 +3586,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:32:16.918462+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:32:16.918462+00:00",
       "latest_statement_signature": "5ee421678a43f516481da56616c8f3fd2cc5ac5418796b4ea5c55ef912730cc8",
       "latest_statement_signatures": {
@@ -3589,7 +3594,8 @@
         "balance-sheet": "5f00a17fce911750c6b378ccf746fc2274343031ad0358ab045a51775b0f287b",
         "cash-flow": "4f14052254df7359525c89c927a7ecbad6abc6e2dd3106bc3d7496074b7242a7"
       },
-      "latest_income_signature": "7b0afddb02a2dabd1c41bd13a71e5e338ed12ac0eec0a6f3115e1c27a7f25c3c"
+      "latest_income_signature": "7b0afddb02a2dabd1c41bd13a71e5e338ed12ac0eec0a6f3115e1c27a7f25c3c",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "NT2": {
       "fundamental": 0.5804424418162656,
@@ -3648,7 +3654,7 @@
       "cash_flow_period": "2026-Q2",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:35:26.057774+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:35:26.057774+00:00",
       "latest_statement_signature": "b78776f225f598483472b5112311d007a8ff6bf3b009a3c5a8b5a0198d3b89d8",
       "latest_statement_signatures": {
@@ -3656,7 +3662,8 @@
         "balance-sheet": "16be541c6a9b26b5b1ca53b97b2d788ac0b0be3cdc8df923d2ce353fcf81e63b",
         "cash-flow": "048bbad0549e4914cfcf6113eef7aa1f1a172f863a0ddde94f4b851276ebe35f"
       },
-      "latest_income_signature": "db3c17ec650b517fbf6e5472c29bcc29241c861d648d451446aff29b9960119f"
+      "latest_income_signature": "db3c17ec650b517fbf6e5472c29bcc29241c861d648d451446aff29b9960119f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "NVL": {
       "fundamental": 0.38912743956481677,
@@ -3715,7 +3722,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:36:47.549531+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:36:47.549531+00:00",
       "latest_statement_signature": "45f916a4efa568fffb9016d46a330d3ba4d7d95389909f4f6fbd9676c447b363",
       "latest_statement_signatures": {
@@ -3723,7 +3730,8 @@
         "balance-sheet": "116e57bf3fc761f493e6deed13e45c4549e25498fb9e6127ad93761a31f133af",
         "cash-flow": "720f72af88458b1e75c802c87e34886102a6969fcfd7c83623268066142e8262"
       },
-      "latest_income_signature": "96deb53b55754003fa309783168e4882df3f17fddedc75dfd996382759b5f0f3"
+      "latest_income_signature": "96deb53b55754003fa309783168e4882df3f17fddedc75dfd996382759b5f0f3",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "OCB": {
       "fundamental": -0.2968136423620341,
@@ -3779,7 +3787,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:34:48.561958+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:34:48.561958+00:00",
       "latest_statement_signature": "d7aa4b91b3fd9a60aec6d0ee96196317e830c871d0d0f1f3fe1df6e806f8bfee",
       "latest_statement_signatures": {
@@ -3787,7 +3795,8 @@
         "balance-sheet": "85f23c1e352ef68b6c778b3c979bb2a11b8a65d6f64c8981fe4f6af496a892bc",
         "cash-flow": "d9c2107af66f90d69815898dbb15321a76d5c2f2719683a2a9fd4386b96625ed"
       },
-      "latest_income_signature": "3ffb79bd834f4826cd97f30cd4834a55ab7d70a4a85863e00fd40f98abac659f"
+      "latest_income_signature": "3ffb79bd834f4826cd97f30cd4834a55ab7d70a4a85863e00fd40f98abac659f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PAN": {
       "fundamental": 0.6014818121635918,
@@ -3846,7 +3855,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:36:56.917533+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:36:56.917533+00:00",
       "latest_statement_signature": "8ed6345cffbbeabbe6dbfa8e1989df1c0f18f3eb3c78caefa2a736e037e136db",
       "latest_statement_signatures": {
@@ -3854,7 +3863,8 @@
         "balance-sheet": "b24c6b6ab77d52ced108393e8a050e841995655b57978e980c51761658af5a78",
         "cash-flow": "3741cd296174ea812a029ce4291294e0c824581a97df1068a99deafcfd42eebf"
       },
-      "latest_income_signature": "8e8d0f47f56b2f1f3e02bd54e53aa81d7cd1ebfcffaa3edda4ae772ab87a54c8"
+      "latest_income_signature": "8e8d0f47f56b2f1f3e02bd54e53aa81d7cd1ebfcffaa3edda4ae772ab87a54c8",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PC1": {
       "fundamental": 0.30863031809827607,
@@ -3913,7 +3923,7 @@
       "cash_flow_period": "2026-Q2",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:42:21.912562+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:42:21.912562+00:00",
       "latest_statement_signature": "ed0ed5fc57ef7762d2c4d684542fb397c256999df69bcc478ba6d980f38fc2fb",
       "latest_statement_signatures": {
@@ -3921,7 +3931,8 @@
         "balance-sheet": "4e69d15f2041e78ebb4d9bbb0269122d4c1e88e0fbc84421a5ed2b47d19e889c",
         "cash-flow": "2b2f90f69360c6fa5445f95d5aac0419deb4d49fd776572e00793e80c2ce3ea6"
       },
-      "latest_income_signature": "596f829c81fe69e14d7123585673e3a6356a97e891c4eaea74dd4f131af286bb"
+      "latest_income_signature": "596f829c81fe69e14d7123585673e3a6356a97e891c4eaea74dd4f131af286bb",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PDR": {
       "fundamental": 0.3022650745167536,
@@ -3980,7 +3991,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:39:45.635606+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:39:45.635606+00:00",
       "latest_statement_signature": "95c7b42659cc41535124126cdcb4d25145db27be6791f7cf694521787374d745",
       "latest_statement_signatures": {
@@ -3988,7 +3999,8 @@
         "balance-sheet": "f3ec30189b3285a16958016e3afcd866473d6dc4ba6764199a07508270955442",
         "cash-flow": "8cbe7c7e5e0425f1c024f4d063cd12107f38eed52ff013e5ea8a00090683b697"
       },
-      "latest_income_signature": "df448687f3ba87d97d93f8492b781a4807109311c172de2e32100757ea4ca077"
+      "latest_income_signature": "df448687f3ba87d97d93f8492b781a4807109311c172de2e32100757ea4ca077",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PHR": {
       "fundamental": 0.8509591188789346,
@@ -4047,7 +4059,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:42:14.249075+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:42:14.249075+00:00",
       "latest_statement_signature": "3b90e4d5a8b75f267144825558666d131b4270f5a78dc2f2c86e0a984d540ffa",
       "latest_statement_signatures": {
@@ -4055,7 +4067,8 @@
         "balance-sheet": "e8e20eb15d81005d2a702c198c54fe36f12c56a87b4dcdc7d019eac56977a042",
         "cash-flow": "3316664266a793cb6f7ecd67b4c5d771a4df999ed6994d85528b1c26d21b7634"
       },
-      "latest_income_signature": "e6ab17a73a60a0bc078602dfc46b7ddd43fcf0267f17976578ee13efbcd4f4b7"
+      "latest_income_signature": "e6ab17a73a60a0bc078602dfc46b7ddd43fcf0267f17976578ee13efbcd4f4b7",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PLX": {
       "fundamental": -0.1143782086093021,
@@ -4114,7 +4127,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:43:03.583594+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:43:03.583594+00:00",
       "latest_statement_signature": "12026888a35fd5244f619d78e564eb1f50d2263316b86d977ce17f5fde57057d",
       "latest_statement_signatures": {
@@ -4122,26 +4135,23 @@
         "balance-sheet": "e373dd5e6f0a780f7d5610f331ac08fa85a357e7e2867d1426b3fa426e4743b3",
         "cash-flow": "9f21754577ef86d0e71e5910899d9dd25e99a69152a27d771275e949fcc5379d"
       },
-      "latest_income_signature": "06b3261fb572233ec59cadf43c1814819c487bc61bcdd170899262743cb18a0f"
+      "latest_income_signature": "06b3261fb572233ec59cadf43c1814819c487bc61bcdd170899262743cb18a0f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PNJ": {
-      "fundamental": 0.41439531502152965,
-      "growth": -0.7804531677056767,
-      "growth_revenue_yoy": -0.14022658385283837,
-      "growth_profit_yoy": -1.520190763392827,
-      "cash_flow": -0.5,
-      "cash_flow_score": -5,
+      "fundamental": 0.8250526096168262,
+      "growth": null,
+      "growth_revenue_yoy": null,
+      "growth_profit_yoy": null,
+      "cash_flow": -1.0,
+      "cash_flow_score": -10,
       "cash_flow_operating": -2874069796635.0,
-      "cash_flow_quality": 11.145812770996226,
+      "cash_flow_quality": null,
       "industry": "Hàng cá nhân",
       "fundamental_reason": null,
-      "growth_reason": null,
+      "growth_reason": "insufficient_quarterly_growth_history",
       "cash_flow_reason": null,
       "ratios": {
-        "RT_PRT_ROE": 0.12447939272769776,
-        "RT_PRT_ROA": 0.08285220014343596,
-        "RT_PRT_GROSS_MARGIN": 0.13661438752240174,
-        "RT_PRT_NET_MARGIN": 0.03989410012424758,
         "RT_LQD_CR": 2.6271901972767386,
         "RT_LEV_DE": 0.5248421711495211
       },
@@ -4149,66 +4159,51 @@
         "balance_sheet": {
           "status": "success",
           "rows": 7480,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
-          "status": "success",
-          "rows": 1375,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
           "status": "success",
           "rows": 2640,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "10f4f2364935852356c1712a6b2517ca595f03a60d9071764539b289ad0c3be5",
+      "statement_signature": "3cc2b7a81fd69a8d79f56344661c9010c0e4d695075532deba8ee96f6ad099ce",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
+        "income-statement": null,
         "cash-flow": "2026-Q3"
       },
-      "latest_income_period": "2026-Q3",
+      "latest_income_period": null,
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:44:05.648829+00:00",
-      "refreshed_at": "2026-11-23T09:44:05.648829+00:00",
-      "latest_statement_signature": "b6787d764bc0d2fbb8591391318ddb6ceb8fb065c0fdbb07d2034de81242c60b",
-      "latest_statement_signatures": {
-        "income-statement": "427681c869300087c43dfb7ef141b407b43457932358317b2d996dd65af7bc7c",
-        "balance-sheet": "89f6601fc49e5a07de1b5562c66ac619f2e57fba3ca4d385c685632bbc8cc256",
-        "cash-flow": "789fc27b7073ee621c10dc026639614c378b8176d0396a13ea4b8137f643ee3a"
-      },
-      "latest_income_signature": "427681c869300087c43dfb7ef141b407b43457932358317b2d996dd65af7bc7c"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "POW": {
-      "fundamental": 0.37870271605480527,
-      "growth": 1.0,
-      "growth_revenue_yoy": 1.1351713607718996,
-      "growth_profit_yoy": 1.185960969134062,
-      "cash_flow": 1.0,
-      "cash_flow_score": 10,
+      "fundamental": 0.24150603214697597,
+      "growth": null,
+      "growth_revenue_yoy": null,
+      "growth_profit_yoy": null,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
       "cash_flow_operating": 5682459515064.0,
-      "cash_flow_quality": 2.741023096957765,
+      "cash_flow_quality": null,
       "industry": "Sản xuất & Phân phối Điện",
       "fundamental_reason": null,
-      "growth_reason": null,
+      "growth_reason": "insufficient_quarterly_growth_history",
       "cash_flow_reason": null,
       "ratios": {
-        "RT_PRT_ROE": 0.17866444823672759,
-        "RT_PRT_ROA": 0.0701716162503342,
-        "RT_PRT_GROSS_MARGIN": 0.16988100475791815,
-        "RT_PRT_NET_MARGIN": 0.13246580324437682,
         "RT_LQD_CR": 1.3828605133215737,
         "RT_LEV_DE": 1.3497726735414326
       },
@@ -4216,66 +4211,51 @@
         "balance_sheet": {
           "status": "success",
           "rows": 5168,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
-          "status": "success",
-          "rows": 950,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
           "status": "success",
           "rows": 1824,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "e5b1cc7ecf9b4fbc39a75f2af77244ccac6cbde20304a3726222e28913132e41",
+      "statement_signature": "5d8c1fdbc4fa6081a7420c29a46444722526c35e94b95aaca33fcb3c7b15edde",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
+        "income-statement": null,
         "cash-flow": "2026-Q3"
       },
-      "latest_income_period": "2026-Q3",
+      "latest_income_period": null,
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:45:35.430758+00:00",
-      "refreshed_at": "2026-11-23T09:45:35.430758+00:00",
-      "latest_statement_signature": "7333452bdca2b0d9c304eb01b03984c03eef1e682d84b3162211dda7407d45d5",
-      "latest_statement_signatures": {
-        "income-statement": "d63436aae59a054840f2ff09bafedca0d4bc6cef6da55151b82577c6ee8a9b01",
-        "balance-sheet": "b12f7b53a4ea0ff9c864ccc85138a614c3ed8c85199b82efa75ad6500122bfbf",
-        "cash-flow": "b124de4c3141f5e07ea19ca2f676fc1efaf08bc099e6149ab703012ca3019f44"
-      },
-      "latest_income_signature": "d63436aae59a054840f2ff09bafedca0d4bc6cef6da55151b82577c6ee8a9b01"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "PVD": {
-      "fundamental": 0.1789698030143636,
-      "growth": 0.0,
-      "growth_revenue_yoy": 0.2500932591011138,
-      "growth_profit_yoy": -0.7050391904272337,
-      "cash_flow": 0.0,
-      "cash_flow_score": 0,
+      "fundamental": 0.5409114306169944,
+      "growth": null,
+      "growth_revenue_yoy": null,
+      "growth_profit_yoy": null,
+      "cash_flow": 0.5,
+      "cash_flow_score": 5,
       "cash_flow_operating": 28356172637.0,
-      "cash_flow_quality": 0.3469248728380686,
+      "cash_flow_quality": null,
       "industry": "Thiết bị và Dịch vụ Dầu khí",
       "fundamental_reason": null,
-      "growth_reason": null,
+      "growth_reason": "insufficient_quarterly_growth_history",
       "cash_flow_reason": null,
       "ratios": {
-        "RT_PRT_ROE": 0.05301392542517845,
-        "RT_PRT_ROA": 0.030765193215518488,
-        "RT_PRT_GROSS_MARGIN": 0.16198478369306982,
-        "RT_PRT_NET_MARGIN": 0.06715986060771142,
         "RT_LQD_CR": 1.5761876915534265,
         "RT_LEV_DE": 0.7415472454791567
       },
@@ -4283,47 +4263,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 7480,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
-          "status": "success",
-          "rows": 1375,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
           "status": "success",
           "rows": 2640,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "65407a414a394ae6aebe9b5a7f3980dc20de67935a71d29da330f09dffd23382",
+      "statement_signature": "3ea4f9bd83c882351c95e5bf003dd3f5f3c31ca37754e8c5e22885b2451a592c",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
+        "income-statement": null,
         "cash-flow": "2026-Q3"
       },
-      "latest_income_period": "2026-Q3",
+      "latest_income_period": null,
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:46:40.263051+00:00",
-      "refreshed_at": "2026-11-23T09:46:40.263051+00:00",
-      "latest_statement_signature": "2b87bb799e654d6a88bedb2944f36b5d364357912b522d6a39fc5068e38be1c8",
-      "latest_statement_signatures": {
-        "income-statement": "905d1051c2538cbd1685bdf203ce549f707936a3f01d47cb46d23c78413aefc0",
-        "balance-sheet": "05b419c9885a8d6709831b549028cf6f71ebc8dea31b9fc6b52be44a046bcafb",
-        "cash-flow": "8d691bb38529579bcc713f270c93d2acfb767d2ecdf6413c91135b4896f23d9c"
-      },
-      "latest_income_signature": "905d1051c2538cbd1685bdf203ce549f707936a3f01d47cb46d23c78413aefc0"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "PVT": {
       "fundamental": 0.45310799802563967,
@@ -4382,7 +4351,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:47:50.905247+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:47:50.905247+00:00",
       "latest_statement_signature": "4c93ef20048964e67a20e76918decb9e57423b1df1793b73987657df1dc178e2",
       "latest_statement_signatures": {
@@ -4390,7 +4359,8 @@
         "balance-sheet": "e8e449a3d03adfee5fec06ed504a7b93bf1b9fa16cbdf0b23d3007e59c48fb6e",
         "cash-flow": "0a1a0f465e7fefd26908e49885473025e2d04e73fdb093ff1e52c031a3963fcb"
       },
-      "latest_income_signature": "e978dd00068e0b8eff0e446493a97efc173efa8ce19572e49a6a97eda4443184"
+      "latest_income_signature": "e978dd00068e0b8eff0e446493a97efc173efa8ce19572e49a6a97eda4443184",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "REE": {
       "fundamental": 0.6994264798971813,
@@ -4449,7 +4419,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:48:25.244922+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:48:25.244922+00:00",
       "latest_statement_signature": "8d60bb8589619e15fb9ef40f9ed289ad44665576b34f7dca824d130b7d353e65",
       "latest_statement_signatures": {
@@ -4457,7 +4427,8 @@
         "balance-sheet": "59d6008b66c517fee14233cdb3349e8b186ce71dbc9fb1e9e05e56f21a670341",
         "cash-flow": "aa251dd35c0f24f519b0180325a203c80fd1e8f169a1aea746e850dea12bb77c"
       },
-      "latest_income_signature": "c2c6b63402ea1eb6f452b3fa1bdd8db0068ae327207e71b7c395c7a6ac2b045b"
+      "latest_income_signature": "c2c6b63402ea1eb6f452b3fa1bdd8db0068ae327207e71b7c395c7a6ac2b045b",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SAB": {
       "fundamental": 0.9217059514668673,
@@ -4516,7 +4487,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:49:55.249578+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:49:55.249578+00:00",
       "latest_statement_signature": "6479a2150dd2e9db1234bc45fda6cd25eddae8a19146602253ba6142d63588ee",
       "latest_statement_signatures": {
@@ -4524,7 +4495,8 @@
         "balance-sheet": "f853ba35447fde46791d0901d6665d83322fbd43e821be46483e9619072dbb3e",
         "cash-flow": "0c29d843ef8763593eb690997f80f7efc5e5eec396d01dc440f81478fadb4ccd"
       },
-      "latest_income_signature": "91a36701eb1a890c99fa416b3938cfd4c2bed14a177ab732f5a73d6c71934589"
+      "latest_income_signature": "91a36701eb1a890c99fa416b3938cfd4c2bed14a177ab732f5a73d6c71934589",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SBT": {
       "fundamental": -0.12709610291827364,
@@ -4583,7 +4555,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:56:13.587635+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:56:13.587635+00:00",
       "latest_statement_signature": "b8e68c90b9dc185f4d343337e9be143dc566f1f43ac8c872d0817310abc7b919",
       "latest_statement_signatures": {
@@ -4591,7 +4563,8 @@
         "balance-sheet": "869483dd609dcb8bef5e84c99abb62b3a3304f328e8794a2498a8b2ea19e3108",
         "cash-flow": "4a6b3d3fa5c7bad1489f3be895885a595a9ee03f03a7e04700fd4ff6e4f0b0b2"
       },
-      "latest_income_signature": "f7a12cc36f05250c0b51f9a290753cec32d099936cad3b2a09a34b7930d223dd"
+      "latest_income_signature": "f7a12cc36f05250c0b51f9a290753cec32d099936cad3b2a09a34b7930d223dd",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SHB": {
       "fundamental": -0.16346196666012158,
@@ -4647,7 +4620,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:58:56.927306+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:58:56.927306+00:00",
       "latest_statement_signature": "25f64cdbd0e7d9c94af492b26391597ffcf24851d594b45489b6ede9be528e7c",
       "latest_statement_signatures": {
@@ -4655,7 +4628,8 @@
         "balance-sheet": "8ff89602ea731110345b4f2e1d75c0930162b6a0dac2283b7eafa9a02c80585d",
         "cash-flow": "2dd8f3de56129dcd647b3ad56b581b59320f34357ca173ed1a937adf72827813"
       },
-      "latest_income_signature": "e4f9799fc1eeeeeb228604454c07c967ab016b39053f762515843a8da765d0f0"
+      "latest_income_signature": "e4f9799fc1eeeeeb228604454c07c967ab016b39053f762515843a8da765d0f0",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SIP": {
       "fundamental": 0.3339963824836827,
@@ -4714,7 +4688,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:51:25.636031+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:51:25.636031+00:00",
       "latest_statement_signature": "5569a7eb564b17e25607f11186e102c6e4136918ab9d64cf05cdac25b9ef66ae",
       "latest_statement_signatures": {
@@ -4722,7 +4696,8 @@
         "balance-sheet": "2435a815c550d96fa40b70012e695680f695ffc085dbd41e28337e68d7a4690c",
         "cash-flow": "113c38d18886b728b432ba7755e993be4ae9d9b5a4b2a37dd9340fd5973b33ab"
       },
-      "latest_income_signature": "424afb63c9a66a844487c892ce906f460029b8aa85662c694a35caa13f4369b5"
+      "latest_income_signature": "424afb63c9a66a844487c892ce906f460029b8aa85662c694a35caa13f4369b5",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SJS": {
       "fundamental": 0.9136696813140546,
@@ -4781,7 +4756,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:54:15.946068+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:54:15.946068+00:00",
       "latest_statement_signature": "1f49271178abea2197399d368b8dd151e5f7ee485ed0efe20778b012affe68bf",
       "latest_statement_signatures": {
@@ -4789,7 +4764,8 @@
         "balance-sheet": "153390598501d9c5556fc7e3abb863aea1e2b83244c294dba50165ff93485de5",
         "cash-flow": "236c51446151719645a2d147ea6c0a7bb5c5aaa05c5fe306aceca812e358757f"
       },
-      "latest_income_signature": "9a702ecd1bb24af049829e12811e291fbbe9d9ee2e5ecca1573bfb3539cfe582"
+      "latest_income_signature": "9a702ecd1bb24af049829e12811e291fbbe9d9ee2e5ecca1573bfb3539cfe582",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SSB": {
       "fundamental": -0.43023159518581533,
@@ -4845,7 +4821,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:56:38.575757+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T09:56:38.575757+00:00",
       "latest_statement_signature": "56042ce1be55e36aef8e3e142c7f364ca1d0f0e2d1f5316390daa57247fcdb88",
       "latest_statement_signatures": {
@@ -4853,7 +4829,8 @@
         "balance-sheet": "8da460451c332ba42ae4c852a93c53ac5671f3f3cb82938679b17d3026c3aaee",
         "cash-flow": "f801ba591d6243302b9e4a90c6718ccf0e757b394e383c4f228bac15dc573ced"
       },
-      "latest_income_signature": "1d38dbaba4c9619bf8187338e0498436b3c0d6ca4613445b916b02af15000dfa"
+      "latest_income_signature": "1d38dbaba4c9619bf8187338e0498436b3c0d6ca4613445b916b02af15000dfa",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SSI": {
       "fundamental": 0.5288009701683999,
@@ -4862,8 +4839,8 @@
       "growth_profit_yoy": -0.23760370831944422,
       "cash_flow": null,
       "cash_flow_score": null,
-      "cash_flow_operating": 5217434967873.0,
-      "cash_flow_quality": 4.637757264271319,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
@@ -4880,47 +4857,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 8250,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 4400,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 5610,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "270f941ae301328b30130c1c90363f0cbf641c26f4df9c67b7d3cafa3d584f1f",
+      "statement_signature": "9ddfd66f7af25dbfb502c15ebd6a11427f07c2a2a79c8b90ce294b91134bba67",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:58:35.291605+00:00",
-      "refreshed_at": "2026-11-23T09:58:35.291605+00:00",
-      "latest_statement_signature": "3976a5afb79d893d2a4bed219f5c250aefb3020187cdd61a7970bdfc3c01b6ab",
-      "latest_statement_signatures": {
-        "income-statement": "84bd165e74687b03c442991a01d1b894b7b061d4db4802e8b150dcba579a3fdd",
-        "balance-sheet": "75420d4a3feed37d1aaa407e8c1eb580f9aeb50c4f12438c8f57fc1e286e3c0b",
-        "cash-flow": "bbf2c3a72639999bb10c1bee51a715c369375c34243f41291287e92f57d37cbb"
-      },
-      "latest_income_signature": "84bd165e74687b03c442991a01d1b894b7b061d4db4802e8b150dcba579a3fdd"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "STB": {
       "fundamental": -0.5746809793292192,
@@ -4976,7 +4942,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:01:54.288071+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:01:54.288071+00:00",
       "latest_statement_signature": "0c7a372fdd8761150b1ea19f5917ed9bff6f3061af9dd8e69f1e32d9363a7793",
       "latest_statement_signatures": {
@@ -4984,21 +4950,22 @@
         "balance-sheet": "13808248c9da2313e072e25e564e703fce0ab35aead016b2d202879334962742",
         "cash-flow": "8e78f0fbbf796f478a1a61f23503b2c238dad8ca49a1ca6054c5e1f0db19558e"
       },
-      "latest_income_signature": "0203258420c6d529bbff2d0de37dafef675641a33051f9a25684dd5f2a0dc807"
+      "latest_income_signature": "0203258420c6d529bbff2d0de37dafef675641a33051f9a25684dd5f2a0dc807",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TAL": {
       "fundamental": 0.5226620571893099,
       "growth": -0.7385520697444585,
       "growth_revenue_yoy": -0.2670374947367222,
       "growth_profit_yoy": -0.11927603487222926,
-      "cash_flow": -1.0,
-      "cash_flow_score": -10,
-      "cash_flow_operating": -3721488340175.0,
-      "cash_flow_quality": -18.969827279111385,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Bất động sản",
       "fundamental_reason": null,
       "growth_reason": null,
-      "cash_flow_reason": null,
+      "cash_flow_reason": "vnstock_quant_no_usable_cash_flow",
       "ratios": {
         "RT_PRT_ROE": 0.1529604625376055,
         "RT_PRT_ROA": 0.04540512569662119,
@@ -5011,47 +4978,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 1496,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 275,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 528,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "9f69b8865b5ddfaed2437717b994598505f648dd07985e62898ca8ce67991c29",
+      "statement_signature": "f1ecf779ab1129911060a1437b344cecead4a0a66063af7acf8925e27d74faa0",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T09:58:18.564236+00:00",
-      "refreshed_at": "2026-11-23T09:58:18.564236+00:00",
-      "latest_statement_signature": "4df655e12e9a327a3f28816c0cfc87870910bbf8a5ff51f1f0f4f3abee0b3b1b",
-      "latest_statement_signatures": {
-        "income-statement": "39668a1fb98e72b38d8bc6335bd06337371fb065ec11bd6c9a4d9ba6643ae2e1",
-        "balance-sheet": "771797383840ccb87661d45cf0acb1521b676f4dd502f7e28c5fcb653061a541",
-        "cash-flow": "f5a0ea8f761a449a7174ebc1219d97bf08c8bb33ab93d295d0ec13bf46238c1c"
-      },
-      "latest_income_signature": "39668a1fb98e72b38d8bc6335bd06337371fb065ec11bd6c9a4d9ba6643ae2e1"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "TCB": {
       "fundamental": -0.20184509571029052,
@@ -5107,7 +5063,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:04:05.273814+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:04:05.273814+00:00",
       "latest_statement_signature": "5a2d25057a3bdf0f579d932668bef7527f633c4dcc50d1d084a3f373d19160cc",
       "latest_statement_signatures": {
@@ -5115,7 +5071,8 @@
         "balance-sheet": "dd4980a86dd8b0d8ba2a604b5eb61064a6150dae11d35109a075dc6bb69e5e87",
         "cash-flow": "df01f039c4a75a8a14d7d0fa1d210644aab0fa2500ae925d863a03848e7ad5c6"
       },
-      "latest_income_signature": "db50efec6f205e7f3b4dd3af57ca08a41821071fef2cbe7706f7a750ee385a9f"
+      "latest_income_signature": "db50efec6f205e7f3b4dd3af57ca08a41821071fef2cbe7706f7a750ee385a9f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TCH": {
       "fundamental": 0.6152999068416939,
@@ -5174,7 +5131,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:02:15.236586+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:02:15.236586+00:00",
       "latest_statement_signature": "6b4447f7602456a563cd456f1b7aeb6f50c13487a61dd3e4e845d0a3ac66b4b8",
       "latest_statement_signatures": {
@@ -5182,7 +5139,8 @@
         "balance-sheet": "961cb4ca34c49d6fccddbfc029077438419245bae738775989f36ddb819aea74",
         "cash-flow": "f5f21def194c06aaaae6ece570c2886cea9adfebc4f789ad0e8398d97fb29863"
       },
-      "latest_income_signature": "04afffb2deadd8b8c18ff6e149a024638e7c7881cfd86fa5744cf5b8a920693e"
+      "latest_income_signature": "04afffb2deadd8b8c18ff6e149a024638e7c7881cfd86fa5744cf5b8a920693e",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TCX": {
       "fundamental": 0.6916760984262983,
@@ -5241,7 +5199,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:02:36.937549+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:02:36.937549+00:00",
       "latest_statement_signature": "3d27e48ff491babd7a87cff6239d9e3bfd5716c05e72f229d507ba69b1d38746",
       "latest_statement_signatures": {
@@ -5249,7 +5207,8 @@
         "balance-sheet": "c478766b236fa7d65ea7b227a648ece1f9bf541329c028cacc077b11cfdaaf52",
         "cash-flow": "b68a7afedbe07ea266d2869d4831514de171dfdfc253d598c7cb538ed0be5d84"
       },
-      "latest_income_signature": "7806988535d445c56a532bc8935180fb47f53b6f05f42065c3b9a1a9644f40cb"
+      "latest_income_signature": "7806988535d445c56a532bc8935180fb47f53b6f05f42065c3b9a1a9644f40cb",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TPB": {
       "fundamental": -0.19217144190360622,
@@ -5258,8 +5217,8 @@
       "growth_profit_yoy": 0.5461917350589225,
       "cash_flow": null,
       "cash_flow_score": null,
-      "cash_flow_operating": 39535763000000.0,
-      "cash_flow_quality": 16.81513532871073,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
@@ -5273,47 +5232,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 3666,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 1128,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 2303,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "24c51e3578991212fdbb0a6478454834f7c02054f468007c3e3bfa11c18ad054",
+      "statement_signature": "c1a078b977d3da430a8fa9507b4cf196ba1d5b5522cec6e9a413cce73e9f1c87",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:05:53.574411+00:00",
-      "refreshed_at": "2026-11-23T10:05:53.574411+00:00",
-      "latest_statement_signature": "25ac208816cb7db0912df53f28dfcab6ba58361ba8690fb0198278ee5677e558",
-      "latest_statement_signatures": {
-        "income-statement": "2851c23873159f895c3207bacc4cb70229d0130170752a34b007aaf006dbd061",
-        "balance-sheet": "ac6d56545bc6cf471eb4c35d85ef4c9c25eff77d73fe68c0e75ad2c193e131db",
-        "cash-flow": "89fff3db5a8fd6e44cf4cc778be667fcd8bcdffa1885638334bca262ab95635e"
-      },
-      "latest_income_signature": "2851c23873159f895c3207bacc4cb70229d0130170752a34b007aaf006dbd061"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "VCB": {
       "fundamental": -0.18350019380285829,
@@ -5369,7 +5317,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:07:55.258318+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:07:55.258318+00:00",
       "latest_statement_signature": "b3a7be77878655f04808c65d454c0c901012038f6071593957285698600b2749",
       "latest_statement_signatures": {
@@ -5377,7 +5325,8 @@
         "balance-sheet": "29151160fab45e1de2c0a0c0bc1f265e11b4a91fd418e047b0c90b9c55163d32",
         "cash-flow": "5f133cda9b650599deab552bce8b475cdbaf594447819ee1aca4bc5c75022b68"
       },
-      "latest_income_signature": "f26a30c53288f42014f60feee2b7a724414273547e7a869ddc1b8de5ecfd554f"
+      "latest_income_signature": "f26a30c53288f42014f60feee2b7a724414273547e7a869ddc1b8de5ecfd554f",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VCG": {
       "fundamental": 0.1304768671358568,
@@ -5436,7 +5385,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:06:57.975882+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:06:57.975882+00:00",
       "latest_statement_signature": "7ba857e5f4799630e4b56616b399d9ec29f34833519657e5699053a3f3b16d87",
       "latest_statement_signatures": {
@@ -5444,7 +5393,8 @@
         "balance-sheet": "89482cb5f31e0130abb94d8ede85cad1b3f15de54c3275673b2323c547beabee",
         "cash-flow": "25d7e18d56f09ee9898e5d1e047d86d7990caa829ee2f5e91736ec9b67f9a1ff"
       },
-      "latest_income_signature": "be933884819ab15c127b633dca6e4f5d28f3a847498656be6c9dc81b8ce86333"
+      "latest_income_signature": "be933884819ab15c127b633dca6e4f5d28f3a847498656be6c9dc81b8ce86333",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VCI": {
       "fundamental": 0.4786133677889109,
@@ -5503,7 +5453,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:08:25.286646+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:08:25.286646+00:00",
       "latest_statement_signature": "2064bfdc1d88b710ea229856597721027665168f87630842a5404f155d3934a8",
       "latest_statement_signatures": {
@@ -5511,7 +5461,8 @@
         "balance-sheet": "6686f5a985d19c36fd5f792f02c2bfae1f62a2ea31e57196813b31a03e918939",
         "cash-flow": "8770666860437226db4d69a036a3f8cfd1ffa1827f1b1859d74eb25d342f84a4"
       },
-      "latest_income_signature": "1ef4353d42d4907a7c6f726fbee6f231a46cdf0d29db49d5238cb98f6f34145c"
+      "latest_income_signature": "1ef4353d42d4907a7c6f726fbee6f231a46cdf0d29db49d5238cb98f6f34145c",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VCK": {
       "fundamental": 0.7902446928370678,
@@ -5570,7 +5521,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:09:33.594814+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:09:33.594814+00:00",
       "latest_statement_signature": "bc928a34c7ddadffc331260bb132e310297abdf002dea0c92d46884c05248af2",
       "latest_statement_signatures": {
@@ -5578,7 +5529,8 @@
         "balance-sheet": "ad61f86458ea36ea674b6e71fe7a5cf45768ee84e1434a1deaa267061cf7daa8",
         "cash-flow": "101a8db40af1769b94156baf41faa05f375144a999c830542305612d54fd55c1"
       },
-      "latest_income_signature": "6e6c5c8538d01f07660114f92bd5e802216d51a491fb06f059316259ace2acdd"
+      "latest_income_signature": "6e6c5c8538d01f07660114f92bd5e802216d51a491fb06f059316259ace2acdd",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VGC": {
       "fundamental": 0.6087932986175094,
@@ -5637,7 +5589,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:10:56.932555+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:10:56.932555+00:00",
       "latest_statement_signature": "90bc812a72f42b4387b6359f9a5e5f27287c612848f99197e54166cfa74c69b2",
       "latest_statement_signatures": {
@@ -5645,7 +5597,8 @@
         "balance-sheet": "47c4cb2130ed359331e34d0995b4e29e6166faab1bed46c84d001cca99bc59a1",
         "cash-flow": "19e0fd4210c6a07413f95ec89b08680141e37d79dfad594163e34931bfce2ddc"
       },
-      "latest_income_signature": "03d108c410795785f7dd8e7eb8d15c87085026d68306899242aee76e2cf56686"
+      "latest_income_signature": "03d108c410795785f7dd8e7eb8d15c87085026d68306899242aee76e2cf56686",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VHC": {
       "fundamental": 0.5382607509510974,
@@ -5704,7 +5657,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:12:16.114807+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:12:16.114807+00:00",
       "latest_statement_signature": "0f758e3caccd12dc95837637ddb26d3a75a6cd3305d45eb2e181f44983b5a968",
       "latest_statement_signatures": {
@@ -5712,7 +5665,8 @@
         "balance-sheet": "096ff901986fed0afaa73e131bcf050ec125e16df0835892965526e61310db2a",
         "cash-flow": "a41a512b555b797d2bec6e73ec676b72c2429792d782c0930f78dd53ede11e5c"
       },
-      "latest_income_signature": "239cc2afbe4914cb766e6b0802a590d7ab0c41cf0e3e42f634f7b60682a51935"
+      "latest_income_signature": "239cc2afbe4914cb766e6b0802a590d7ab0c41cf0e3e42f634f7b60682a51935",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VHM": {
       "fundamental": 0.5139374097381785,
@@ -5771,7 +5725,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:11:25.240945+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:11:25.240945+00:00",
       "latest_statement_signature": "1061a706126fbfba14fd2a31b09d356e5a8a8be5cc82914ab66b5f7413dc191e",
       "latest_statement_signatures": {
@@ -5779,7 +5733,8 @@
         "balance-sheet": "b60fde0511d349ab28aa9777441576b44f933daede5e2ecb1a1c2a17317aceee",
         "cash-flow": "456ae03cd942e5b740a1599215bf192fa7eb4fe6c6ca31331b388855c1d7bb7b"
       },
-      "latest_income_signature": "7c90ea572f331e90d163fa3cf878231004b336e4b307c4dc81cb418b89c1d4db"
+      "latest_income_signature": "7c90ea572f331e90d163fa3cf878231004b336e4b307c4dc81cb418b89c1d4db",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VIB": {
       "fundamental": -0.22585913384464726,
@@ -5835,7 +5790,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:14:13.585169+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:14:13.585169+00:00",
       "latest_statement_signature": "dc9072cc201b6c43e5c0fe536b77fa85018a9599f954f36e3ba9e3e6be66aad5",
       "latest_statement_signatures": {
@@ -5843,26 +5798,23 @@
         "balance-sheet": "ce4cf3795a9450526ee818b6ca2c74650ff0cc0463f080680f1339d3ee6c20d2",
         "cash-flow": "c9df90c9ae2d9d7fca842e4dd8a830f401bbefd1c782892a92dcffe1c0c68361"
       },
-      "latest_income_signature": "206898097f3780b961d60c5b1de5928cfef802619dd493a43f2d4dde8f267ebc"
+      "latest_income_signature": "206898097f3780b961d60c5b1de5928cfef802619dd493a43f2d4dde8f267ebc",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VIC": {
-      "fundamental": 0.1700274787507666,
-      "growth": 1.0,
-      "growth_revenue_yoy": 2.847669980579839,
-      "growth_profit_yoy": 6.523059241645066,
-      "cash_flow": 1.0,
-      "cash_flow_score": 10,
-      "cash_flow_operating": 107499816000000.0,
-      "cash_flow_quality": 4.7232326369167525,
+      "fundamental": -0.3675208448037933,
+      "growth": null,
+      "growth_revenue_yoy": null,
+      "growth_profit_yoy": null,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Bất động sản",
       "fundamental_reason": null,
-      "growth_reason": null,
-      "cash_flow_reason": null,
+      "growth_reason": "insufficient_quarterly_growth_history",
+      "cash_flow_reason": "vnstock_quant_no_usable_cash_flow",
       "ratios": {
-        "RT_PRT_ROE": 0.2606028228375355,
-        "RT_PRT_ROA": 0.03292383911472277,
-        "RT_PRT_GROSS_MARGIN": 0.26599295974749054,
-        "RT_PRT_NET_MARGIN": 0.08820301012822845,
         "RT_LQD_CR": 1.2649583103924134,
         "RT_LEV_DE": 5.85179734887271
       },
@@ -5870,47 +5822,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 7480,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
-          "status": "success",
-          "rows": 1375,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 2640,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "edff241cf34e04da9c329c7528e85511f160ad83b724eb8e6375e2adb65a2e79",
+      "statement_signature": "f7fd0952d5b27581fe965f4f63adab834dc0d6f9431777045f06c47e541f6428",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": null,
+        "cash-flow": null
       },
-      "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "latest_income_period": null,
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:15:16.927780+00:00",
-      "refreshed_at": "2026-11-23T10:15:16.927780+00:00",
-      "latest_statement_signature": "fedebd9590b6d07fe46c8c6b96cd3044144dff37bc64443158b544bade1872f4",
-      "latest_statement_signatures": {
-        "income-statement": "99c4ffbc0d82bbd30d32df6e3e137e8cf41641287129a4ba2761c9bcf93a0fbd",
-        "balance-sheet": "f4b8979b615075f92c17dfa67f8ac612f098fea0e4d29f8654888db3d3d0250c",
-        "cash-flow": "34b8f59d1b1b7165e46eede98693baa5110fe7e1a7873ec9396e2726eb854dc5"
-      },
-      "latest_income_signature": "99c4ffbc0d82bbd30d32df6e3e137e8cf41641287129a4ba2761c9bcf93a0fbd"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "VIX": {
       "fundamental": 0.633791910578633,
@@ -5969,7 +5910,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:16:45.296216+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:16:45.296216+00:00",
       "latest_statement_signature": "995db6b12238d92a4c2e5c147c3a5281990e56618b58cde2776a6e6ef3f276e8",
       "latest_statement_signatures": {
@@ -5977,7 +5918,8 @@
         "balance-sheet": "f7ce185086d875470a589f6bad6e4e3d06539f37a91099905e79c3b924a81ad6",
         "cash-flow": "5dd066de1e707a5bb8b72718331313b392637942f3b560fb7e89bd97640df354"
       },
-      "latest_income_signature": "7fa72eba4443e2d1cf8bd9654e3b9ca72d44e0ad39ec5233097d6d70cc4e3463"
+      "latest_income_signature": "7fa72eba4443e2d1cf8bd9654e3b9ca72d44e0ad39ec5233097d6d70cc4e3463",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VJC": {
       "fundamental": -0.25227945321976997,
@@ -6036,7 +5978,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:15:35.239576+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:15:35.239576+00:00",
       "latest_statement_signature": "d6c635b2a389f89b7fecac84aeba93f51b4191ac46f3a0545f55c52f5afb8ac3",
       "latest_statement_signatures": {
@@ -6044,7 +5986,8 @@
         "balance-sheet": "177c80cf83869ba3ab98dc6ae1a55aeece7303322fb719026869b6ad74a48bca",
         "cash-flow": "38f5ff8a66422b6a1d4ee76de6cf56e2089cabc954c730fd9383072b4d2660f0"
       },
-      "latest_income_signature": "2e046e36719907f6b57de20f27aa3cd61b5adef79f8121c2e129258ffe81904c"
+      "latest_income_signature": "2e046e36719907f6b57de20f27aa3cd61b5adef79f8121c2e129258ffe81904c",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VND": {
       "fundamental": 0.5921210856594951,
@@ -6053,8 +5996,8 @@
       "growth_profit_yoy": -0.6453813556674595,
       "cash_flow": null,
       "cash_flow_score": null,
-      "cash_flow_operating": 3756508365596.0,
-      "cash_flow_quality": 11.402081581559846,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Môi giới chứng khoán",
       "fundamental_reason": null,
       "growth_reason": null,
@@ -6071,114 +6014,88 @@
         "balance_sheet": {
           "status": "success",
           "rows": 10050,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 5360,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 6834,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "35d704e8d846f65f53f162c84f2a5076e5a421e9c68d778bb2a7b459aeaf3b40",
+      "statement_signature": "9886cf77a7c456a878d432548cf92a714de10a8c04bf19588a1ddf50488b57dc",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:19:34.688820+00:00",
-      "refreshed_at": "2026-11-23T10:19:34.688820+00:00",
-      "latest_statement_signature": "7327eabfe8215a0cfbf5be8c1d9a6cc431b67f7bccd00802eb6ebaa8a746fa88",
-      "latest_statement_signatures": {
-        "income-statement": "63c6003044f0f62891d280abb83590da97e2d89cfb4ed2d4504302b0c0e8d646",
-        "balance-sheet": "1ee34a427be080b32153a2eb82d3dc015b7c905532e6f8d4142113ce58276e53",
-        "cash-flow": "6eb6993dd9ee7d6cdde09a1692efb97db5f36b8964bd01d8ac03b49887cb8196"
-      },
-      "latest_income_signature": "63c6003044f0f62891d280abb83590da97e2d89cfb4ed2d4504302b0c0e8d646"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "VNM": {
-      "fundamental": 0.9009689970041638,
+      "fundamental": 0.8738953045423585,
       "growth": 0.5381959480603316,
       "growth_revenue_yoy": 0.08918412323061964,
       "growth_profit_yoy": 0.17991385079954614,
-      "cash_flow": 1.0,
-      "cash_flow_score": 10,
-      "cash_flow_operating": 4272033504983.0,
-      "cash_flow_quality": 1.4421766540395438,
+      "cash_flow": null,
+      "cash_flow_score": null,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Thực phẩm",
       "fundamental_reason": null,
       "growth_reason": null,
-      "cash_flow_reason": null,
+      "cash_flow_reason": "vnstock_quant_no_usable_cash_flow",
       "ratios": {
-        "RT_PRT_ROE": 0.351073548909834,
-        "RT_PRT_ROA": 0.20349892816968343,
         "RT_PRT_GROSS_MARGIN": 0.42026644504947763,
-        "RT_PRT_NET_MARGIN": 0.16216859136270756,
-        "RT_LQD_CR": 2.1135516115203705,
-        "RT_LEV_DE": 0.5129649405896025
+        "RT_PRT_NET_MARGIN": 0.16216859136270756
       },
       "statements": {
         "balance_sheet": {
-          "status": "success",
-          "rows": 7480,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 1375,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 2640,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "e9ff6f8a0ea3442d6a6b362a4e3cecfb9aa6c6cf9069bcf574531d5e3d29c904",
+      "statement_signature": "775864176bec43c6a1a2d27f51afea80436c2e37d33f2d3961c4f942ab92a3a0",
       "latest_statement_periods": {
+        "balance-sheet": null,
         "income-statement": "2026-Q3",
-        "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:19:36.920943+00:00",
-      "refreshed_at": "2026-11-23T10:19:36.920943+00:00",
-      "latest_statement_signature": "ebb8a67c42b2545d4d513aa10a1f7a4044ae6cd21a91828aa9dca2b17367f2b2",
-      "latest_statement_signatures": {
-        "income-statement": "9835710eeb8cd67e128fb35ba250b98ce3f4c644f038c51514bc0445e95b6e05",
-        "balance-sheet": "39d8891300dae0ad7a2159f9fd6feabdcd57ef421c76206b713bf23cb63e7f7a",
-        "cash-flow": "a3d35e745015685d91f3429fdab34d750d63255a8e5b90dc553f2e9f117d227e"
-      },
-      "latest_income_signature": "9835710eeb8cd67e128fb35ba250b98ce3f4c644f038c51514bc0445e95b6e05"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "VPB": {
       "fundamental": -0.18004707495960526,
@@ -6187,8 +6104,8 @@
       "growth_profit_yoy": 0.20358861268402162,
       "cash_flow": null,
       "cash_flow_score": null,
-      "cash_flow_operating": 34031625000000.0,
-      "cash_flow_quality": 3.83978004966766,
+      "cash_flow_operating": null,
+      "cash_flow_quality": null,
       "industry": "Ngân hàng",
       "fundamental_reason": null,
       "growth_reason": null,
@@ -6202,47 +6119,36 @@
         "balance_sheet": {
           "status": "success",
           "rows": 4524,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "income_statement": {
           "status": "success",
           "rows": 1392,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "schema_changes": [],
+          "identity_issue_count": 0
         },
         "cash_flow": {
-          "status": "success",
-          "rows": 2695,
-          "schema_changes": [
-            "SCH-A02"
-          ],
-          "identity_issue_count": 4
+          "status": "empty",
+          "rows": 0,
+          "schema_changes": [],
+          "identity_issue_count": 0
         }
       },
-      "statement_signature": "4375d65df77d86f0a5d6de766316f32bdb3492308c9c01b517bf4f32f619269b",
+      "statement_signature": "6891417733d41cd971f02fa193f20a0fb83d9074812b9c6b5f9ba4921d2e1b43",
       "latest_statement_periods": {
-        "income-statement": "2026-Q3",
         "balance-sheet": "2026-Q3",
-        "cash-flow": "2026-Q3"
+        "income-statement": "2026-Q3",
+        "cash-flow": null
       },
       "latest_income_period": "2026-Q3",
-      "cash_flow_period": "2026-Q3",
+      "cash_flow_period": null,
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:20:15.249438+00:00",
-      "refreshed_at": "2026-11-23T10:20:15.249438+00:00",
-      "latest_statement_signature": "72867ba52eb5fb0a593f1fdfb117cd19871919ed939ecae31eb7060047e2193b",
-      "latest_statement_signatures": {
-        "income-statement": "ef8c9241ebc04472e9a2a3f8254ee130f24bec20c792b1bb5638ed4dba029ace",
-        "balance-sheet": "35534a271cfea3771ff3d4091101a5d6febe3203bc2649b61fd6ebb693cac935",
-        "cash-flow": "cab4654630fdf5432526fae4d682810c53a2b59115e30c7416c35cb758ddba74"
-      },
-      "latest_income_signature": "ef8c9241ebc04472e9a2a3f8254ee130f24bec20c792b1bb5638ed4dba029ace"
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
+      "refreshed_at": "2026-11-27T04:12:29.451693+00:00",
+      "raw_release_id": "20261127T041229Z-d12e27b5",
+      "input_layer": "shared_provider_raw"
     },
     "VPI": {
       "fundamental": 0.3201848678411977,
@@ -6301,7 +6207,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:19:45.236872+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:19:45.236872+00:00",
       "latest_statement_signature": "1e39ca04c40a5f367cea13bc2d83b8480b1c8bfded31807cc2d8421d08d281da",
       "latest_statement_signatures": {
@@ -6309,7 +6215,8 @@
         "balance-sheet": "ee26b3f65510bd219c0c0d4b2eedfaaf21865386f83fcfa6331e511b3a6b6e4a",
         "cash-flow": "9f0371a37e6069cc7ee22a399819f752b8d62b2d5c7f302d35ea3efa33609762"
       },
-      "latest_income_signature": "f5e8123b9325f44694cfc38bf1709c91fd1fb6e378b5cdb99ec1ec00fa6bfac3"
+      "latest_income_signature": "f5e8123b9325f44694cfc38bf1709c91fd1fb6e378b5cdb99ec1ec00fa6bfac3",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VPL": {
       "fundamental": 0.32390409474495596,
@@ -6368,7 +6275,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:20:53.560061+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:20:53.560061+00:00",
       "latest_statement_signature": "d2ea8a0317bc425a65899d3b3b6010d50f7fd77a86eb96f2202960d9c4d62e64",
       "latest_statement_signatures": {
@@ -6376,7 +6283,8 @@
         "balance-sheet": "72b1a6e8ca89fcd92506e939e14aec59fd4e61d82d3f2b91d1c98eadfab159d4",
         "cash-flow": "a899066aaf0454ca662078d2b0c1b1e01e1ada3e7da82afb45922d4bc5559549"
       },
-      "latest_income_signature": "31df13e79957dadff80e3f0206b87a587154e2df0dcc9cae88489bbd64588e82"
+      "latest_income_signature": "31df13e79957dadff80e3f0206b87a587154e2df0dcc9cae88489bbd64588e82",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VPX": {
       "fundamental": 0.5454992814904255,
@@ -6435,7 +6343,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:23:15.268521+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:23:15.268521+00:00",
       "latest_statement_signature": "9fa86d13f152f82e45d16f145caabdc1010460aac8892f4ffb6dbd4e0bfdeaca",
       "latest_statement_signatures": {
@@ -6443,7 +6351,8 @@
         "balance-sheet": "b7d5a64f4bfbbec1a17dd65b7580a37747851192edb102a4bd5c88019ec8c3ec",
         "cash-flow": "c6da484fd07568cde40216fdb422ed69244363d8b81b082411a67809f0bb3a46"
       },
-      "latest_income_signature": "ed270fbb9471f811bc81aadc6ef06d96c2174aaeacef9e71841d728f894c8e79"
+      "latest_income_signature": "ed270fbb9471f811bc81aadc6ef06d96c2174aaeacef9e71841d728f894c8e79",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VRE": {
       "fundamental": 0.8847283335302345,
@@ -6502,7 +6411,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:23:05.246840+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:23:05.246840+00:00",
       "latest_statement_signature": "4654d38e238a6e2050c3f101397838a96929a73ddac2384e7c9f3875ffdd283f",
       "latest_statement_signatures": {
@@ -6510,7 +6419,8 @@
         "balance-sheet": "7e2048765aff5b73842cf9b007903ab092616064b8ae80baf380e25cb7042de5",
         "cash-flow": "41c3b063267c5a959bb24c8d7a74c40600e751da7019f3c0ff203971e2ccc354"
       },
-      "latest_income_signature": "a3c98411390f8c7a31bb06aeee97618ce5861970a7c2738a7d6293ef644640be"
+      "latest_income_signature": "a3c98411390f8c7a31bb06aeee97618ce5861970a7c2738a7d6293ef644640be",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VSC": {
       "fundamental": 0.24188467178092496,
@@ -6569,7 +6479,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:23:50.346881+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:23:50.346881+00:00",
       "latest_statement_signature": "fbce78e53b684c692539a182007696f26402f623e410b7ba7687ed0aa922866c",
       "latest_statement_signatures": {
@@ -6577,7 +6487,8 @@
         "balance-sheet": "2f8251b83d04c656ba77f35c7bfe006237d00a7bee6235822d8e20657b81f85b",
         "cash-flow": "212e6a8ff00fb36bf2d46ee193693cbbb548685f32565fd38bb81f38c154b9ee"
       },
-      "latest_income_signature": "6c0e3109fed74a51f35e92e8a38d5919c2adfd2136ef438e8978bc82fca9396b"
+      "latest_income_signature": "6c0e3109fed74a51f35e92e8a38d5919c2adfd2136ef438e8978bc82fca9396b",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VTP": {
       "fundamental": -0.0564091827793639,
@@ -6636,7 +6547,7 @@
       "cash_flow_period": "2026-Q3",
       "engine": "vnstock_quant.fa",
       "version": "1.1.0",
-      "checked_at": "2026-11-23T10:23:43.571013+00:00",
+      "checked_at": "2026-11-27T04:12:29.451693+00:00",
       "refreshed_at": "2026-11-23T10:23:43.571013+00:00",
       "latest_statement_signature": "bf3b93fca32b3083ef60c5f645cb582a04bb493031acd04ad15d6fa78b4f2ee3",
       "latest_statement_signatures": {
@@ -6644,7 +6555,8 @@
         "balance-sheet": "e9c9a470d917eb2af29535098d5deac009d34daee1deb74519d216a7f234ce88",
         "cash-flow": "910a6ef2286e953f4b1cda0ee3e322f5a06ece5214a4f6595cc6eac8a178458c"
       },
-      "latest_income_signature": "78da6527860c718f191cf76aed88a408a003dc0347b06ae65b3cfc12a0360ba9"
+      "latest_income_signature": "78da6527860c718f191cf76aed88a408a003dc0347b06ae65b3cfc12a0360ba9",
+      "raw_release_id": "20261127T041229Z-d12e27b5"
     }
   }
 }

@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "candidate_status": "PASS",
-  "generated_at": "2026-11-23T01:55:47.263584+00:00",
+  "generated_at": "2026-11-27T06:03:51.690430+00:00",
   "run": {
-    "id": "45087628810",
-    "url": "https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/45087628810"
+    "id": "45949217456",
+    "url": "https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/45949217456"
   },
   "sources": {
     "reference": "SSI",
@@ -24,9 +24,9 @@
   "successful_symbols": 100,
   "serving_rows": 300,
   "serving_rows_by_version": {
-    "v6.4.19-shadow": 699,
-    "v6.4.18": 699,
-    "v6.4.17": 699
+    "v6.4.19-shadow": 600,
+    "v6.4.18": 600,
+    "v6.4.17": 600
   },
   "failed_symbol_count": 0,
   "excluded_factor_counts": {},
@@ -45,10 +45,10 @@
   },
   "data_quality": {
     "schema_version": 1,
-    "generated_at": "2026-11-23T01:55:47.263002+00:00",
+    "generated_at": "2026-11-27T06:03:51.689735+00:00",
     "status": "PASS",
     "rows": 300,
-    "total_serving_rows": 2097,
+    "total_serving_rows": 1800,
     "minimum_required_rows": 240,
     "field_coverage": {
       "price": 300,
@@ -65,10 +65,10 @@
       "position_52w": 300,
       "s_depth_wall": 255,
       "depth_average_trade_size": 255,
-      "order_book_bid_price": 255,
-      "order_book_bid_volume": 255,
-      "order_book_ask_price": 255,
-      "order_book_ask_volume": 255,
+      "order_book_bid_price": 300,
+      "order_book_bid_volume": 300,
+      "order_book_ask_price": 300,
+      "order_book_ask_volume": 300,
       "growth_input_count": 300
     },
     "metadata_coverage": {
@@ -77,9 +77,9 @@
     },
     "low_coverage": {},
     "warnings": {
-      "stale_proprietary_symbols": 0,
+      "stale_proprietary_symbols": 100,
       "missing_insider_as_of_symbols": 73,
-      "estimated_turnover_symbols": 0,
+      "estimated_turnover_symbols": 100,
       "single_input_growth_symbols": 32
     },
     "optional_source_coverage": {
@@ -100,23 +100,21 @@
   "fundamental_refresh": {
     "status": "success",
     "counts": {
-      "updated": 99,
-      "unchanged": 0,
+      "updated": 14,
+      "unchanged": 86,
       "failed": 0,
       "failed_preserved": 0,
-      "material_changed": 99,
-      "skipped_fresh": 0
+      "material_changed": 14
     },
-    "update_detection": "full_materialize",
-    "source_run_id": "45087628810",
-    "generated_at": "2026-11-23T01:54:11.887743+00:00",
+    "update_detection": null,
+    "source_run_id": "45949217456",
+    "generated_at": "2026-11-27T06:02:54.264811+00:00",
     "last_refresh_counts": {
-      "updated": 99,
-      "unchanged": 0,
+      "updated": 14,
+      "unchanged": 86,
       "failed": 0,
       "failed_preserved": 0,
-      "material_changed": 99,
-      "skipped_fresh": 0
+      "material_changed": 14
     }
   },
   "stages": {
