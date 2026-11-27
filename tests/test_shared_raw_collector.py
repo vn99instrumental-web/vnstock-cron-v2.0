@@ -84,6 +84,12 @@ class SharedRawCollectorTests(unittest.TestCase):
             verified = raw.verify_release(release_dir)
             self.assertEqual(verified["qc"]["status"], "passed")
             self.assertEqual(verified["contract"]["calculated_fields"], [])
+            for endpoint in ("balance_sheet", "income_statement", "cash_flow"):
+                relative = raw.ENDPOINTS[endpoint][1]
+                self.assertTrue(relative.endswith(".jsonl.gz"))
+                envelopes = raw.read_dataset(release_dir, relative)
+                self.assertEqual(len(envelopes), 2)
+                self.assertTrue(all(value["source"] == "FHSC" for value in envelopes))
             self.assertFalse(verified["contract"]["gen6_dependency"])
             self.assertEqual(json.loads((root / "current.json").read_text())["release_id"], manifest["release_id"])
             self.assertEqual({call[1] for call in transport.calls if call[0] in {"ohlcv", "foreign_flow", "session_stats"}}, {"SSI"})
@@ -141,7 +147,7 @@ class SharedRawCollectorTests(unittest.TestCase):
             release_dir = root / "releases" / manifest["release_id"]
             dataset = release_dir / "market" / "equity-ohlcv.jsonl"
             dataset.write_bytes(dataset.read_bytes() + b"{}\n")
-            with self.assertRaisesRegex(ValueError, "HASH_MISMATCH"):
+            with self.assertRaisesRegex(ValueError, "SIZE_MISMATCH"):
                 raw.verify_release(release_dir)
 
     def test_manifest_rejects_calculated_field_declaration(self):

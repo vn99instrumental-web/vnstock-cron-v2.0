@@ -6,6 +6,7 @@ transport metadata only: no ratios, indicators, factors, signals or scores.
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import math
@@ -23,6 +24,7 @@ CONFIG_PATH = ROOT / "config" / "shared_raw_ssi_fhsc.json"
 RAW_ROOT = ROOT / "output" / "shared-raw" / "ssi-fhsc"
 UTC = timezone.utc
 RELEASE_RE = re.compile(r"^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$")
+GIT_BLOB_SAFETY_BYTES = 95 * 1024 * 1024
 
 ENDPOINTS = {
     "reference": ("SSI", "reference/equity-list.jsonl"),
@@ -33,9 +35,9 @@ ENDPOINTS = {
     "foreign_flow_fhsc": ("FHSC", "market/foreign-flow-fhsc.jsonl"),
     "session_stats": ("SSI", "market/session-stats.jsonl"),
     "active_session": ("FHSC", "market/active-session.jsonl"),
-    "balance_sheet": ("FHSC", "fundamental/balance-sheet.jsonl"),
-    "income_statement": ("FHSC", "fundamental/income-statement.jsonl"),
-    "cash_flow": ("FHSC", "fundamental/cash-flow.jsonl"),
+    "balance_sheet": ("FHSC", "fundamental/balance-sheet.jsonl.gz"),
+    "income_statement": ("FHSC", "fundamental/income-statement.jsonl.gz"),
+    "cash_flow": ("FHSC", "fundamental/cash-flow.jsonl.gz"),
     "order_book": ("FHSC", "market/order-book.jsonl"),
     "proprietary_flow": ("FHSC", "market/proprietary-flow.jsonl"),
     "insider_deal": ("FHSC", "market/insider-deal.jsonl"),
@@ -176,7 +178,10 @@ def _envelope(
 
 def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> dict[str, Any]:
     path.parent.mkdir(parents=True, exist_ok=True)
-    body = b"".join(canonical_bytes(value) + b"\n" for value in values)
+    raw_body = b"".join(canonical_bytes(value) + b"\n" for value in values)
+    body = gzip.compress(raw_body, compresslevel=9, mtime=0) if path.suffix == ".gz" else raw_body
+    if len(body) > GIT_BLOB_SAFETY_BYTES:
+        raise RuntimeError(f"SHARED_RAW_DATASET_EXCEEDS_GIT_BLOB_SAFETY_LIMIT:{path.name}:{len(body)}")
     path.write_bytes(body)
     return {
         "path": path.as_posix(),
@@ -347,10 +352,17 @@ def verify_release(release_dir: Path) -> dict[str, Any]:
         relative = str(dataset["path"])
         if Path(relative).is_absolute() or ".." in Path(relative).parts:
             raise ValueError("SHARED_RAW_UNSAFE_DATASET_PATH")
-        body = (release_dir / relative).read_bytes()
+        dataset_path = release_dir / relative
+        body = dataset_path.read_bytes()
+        if len(body) != int(dataset["bytes"]):
+            raise ValueError(f"SHARED_RAW_SIZE_MISMATCH:{relative}")
         if hashlib.sha256(body).hexdigest() != dataset["sha256"]:
             raise ValueError(f"SHARED_RAW_HASH_MISMATCH:{relative}")
-        for line in body.splitlines():
+        try:
+            payload = gzip.decompress(body) if dataset_path.suffix == ".gz" else body
+        except (OSError, EOFError) as exc:
+            raise ValueError(f"SHARED_RAW_GZIP_INVALID:{relative}") from exc
+        for line in payload.splitlines():
             envelope = json.loads(line)
             if envelope.get("source") not in {"SSI", "FHSC"}:
                 raise ValueError(f"SHARED_RAW_SOURCE_INVALID:{relative}")
@@ -369,7 +381,10 @@ def load_current_manifest(output_root: Path = RAW_ROOT) -> tuple[Path, dict[str,
 
 
 def read_dataset(release_dir: Path, relative: str) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in (release_dir / relative).read_text(encoding="utf-8").splitlines() if line.strip()]
+    path = release_dir / relative
+    body = path.read_bytes()
+    payload = gzip.decompress(body) if path.suffix == ".gz" else body
+    return [json.loads(line) for line in payload.splitlines() if line.strip()]
 
 
 def main() -> int:

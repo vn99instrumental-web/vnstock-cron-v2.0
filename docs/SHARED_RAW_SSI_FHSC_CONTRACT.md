@@ -21,7 +21,7 @@ Schema: `shared-raw-release-v1`
 
 ## Cadence và dataset
 
-Mỗi dòng JSONL là một envelope gồm `source`, `endpoint`, `symbol`, `parameters`, `fetched_at`, `status`, `row_count`, `raw_sha256`, `rows` và lỗi đã loại message nhạy cảm. `rows` giữ nguyên các cột provider trả về.
+Mỗi dòng JSONL là một envelope gồm `source`, `endpoint`, `symbol`, `parameters`, `fetched_at`, `status`, `row_count`, `raw_sha256`, `rows` và lỗi đã loại message nhạy cảm. `rows` giữ nguyên các cột provider trả về. Ba dataset BCTC được lưu dưới dạng deterministic gzip (`*.jsonl.gz`) để giữ nguyên toàn bộ provider rows mà vẫn nằm dưới giới hạn blob của GitHub; hash trong manifest áp dụng trên bytes đã nén và verifier giải nén trước khi kiểm tra envelope.
 
 | Cadence | SSI | FHSC | Không gọi |
 |---|---|---|---|
