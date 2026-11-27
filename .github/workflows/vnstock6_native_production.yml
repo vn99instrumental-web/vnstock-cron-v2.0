@@ -3,18 +3,13 @@ name: VNStock 6 native production
 on:
   workflow_dispatch:
     inputs:
-      raw_release_id:
-        description: Exact immutable SSI/FHSC raw release; blank redirects legacy n8n to collector
-        required: false
-        type: string
-        default: ""
       mode:
-        description: Legacy n8n compatibility input
+        description: Invocation mode used by n8n
         type: choice
         options: [intraday]
         default: intraday
       activate_dashboard:
-        description: Publish the compatible public Gen6 manifest
+        description: Switch the public manifest to native after the compatible web release is deployed
         type: boolean
         default: true
 
@@ -24,36 +19,22 @@ concurrency:
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
-  redirect_legacy_schedule:
-    if: inputs.raw_release_id == ''
-    runs-on: ubuntu-latest
-    steps:
-      - name: Route legacy n8n trigger through shared raw collector
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: gh workflow run shared_raw_ssi_fhsc.yml --ref main -f cadence=intraday
   produce:
-    if: inputs.raw_release_id != ''
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
       HOME: /home/runner
       DO_NOT_TRACK: "1"
-      RAW_RELEASE_ID: ${{ inputs.raw_release_id }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Sync exact release from main
+      - name: Sync the latest serialized writer state
         run: |
           git fetch origin main
           git checkout -B main origin/main
-          [[ "$RAW_RELEASE_ID" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$ ]]
-          test -f "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID/manifest.json"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -61,20 +42,33 @@ jobs:
         with:
           path: /home/runner/.venv_6x
           key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
-      - name: Ensure generation 6 calculation environment
+      - name: Ensure generation 6 environment
         run: |
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
-      - name: Verify calculations and raw adapter
-        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors tests.test_vnstock6_raw_adapter
+      - name: Verify scoring calculations
+        run: ~/.venv_6x/bin/python -m unittest tests.test_vnstock6_account tests.test_vnstock6_scoring tests.test_vnstock6_quant tests.test_vnstock6_v4_scoring tests.test_vnstock6_serving_projection tests.test_vnstock6_pipeline tests.test_vnstock6_market_factors
       - name: Build and validate native release
+        env:
+          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
+          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
+          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
+          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
+          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
         run: |
-          ~/.venv_6x/bin/python scripts/shared_raw_collector.py verify --release-dir "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID"
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --intraday --raw-release-id "$RAW_RELEASE_ID"
+          test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
+          test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
+          ~/.venv_6x/bin/python scripts/verify_vnstock_account.py
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --intraday
           ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --versions v6.4.19-shadow v6.4.18 v6.4.17
-          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py --run-id "${{ github.run_id }}" --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py --run-id "${{ github.run_id }}" --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" --output comparison/native-production-summary.json
-      - name: Keep dashboard bridge until explicitly activated
+          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py \
+            --run-id "${{ github.run_id }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --output comparison/native-production-summary.json
+      - name: Keep dashboard bridge until the compatible Vercel release is approved
         if: inputs.activate_dashboard != true
         run: git restore -- output/vnstock6-preview/dashboard.json
       - name: Publish native Git ledger and serving
@@ -83,7 +77,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6 output/vnstock6-preview/dashboard.json output/serving/vnstock6
           git diff --cached --quiet && exit 0
-          git commit -m "data: publish vnstock6 intraday from $RAW_RELEASE_ID"
+          git commit -m "data: publish vnstock6 native ${{ inputs.mode }}"
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push; then exit 0; fi
             git rebase --abort 2>/dev/null || true
@@ -95,4 +89,6 @@ jobs:
           DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
         run: |
           test -n "$DASHBOARD_REVALIDATE_SECRET"
-          curl --fail --silent --show-error --retry 3 --retry-all-errors -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+          curl --fail --silent --show-error --retry 3 --retry-all-errors \
+            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+            -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
