@@ -220,14 +220,16 @@ def _call_specs(config: dict[str, Any], signal_date: date, cadence: str) -> dict
         })
     if cadence in {"daily", "weekly"}:
         specs.update({
-            "balance_sheet": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
-            "income_statement": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
-            "cash_flow": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
             "proprietary_flow": [(symbol, {"start": flow_start, "end": end}) for symbol in symbols],
             "insider_deal": [(symbol, {}) for symbol in symbols],
         })
     if cadence == "weekly":
-        specs["order_book"] = [(symbol, {}) for symbol in symbols]
+        specs.update({
+            "balance_sheet": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
+            "income_statement": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
+            "cash_flow": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
+            "order_book": [(symbol, {}) for symbol in symbols],
+        })
     return specs
 
 

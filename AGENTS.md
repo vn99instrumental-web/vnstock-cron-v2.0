@@ -18,12 +18,12 @@ This project uses the Python library `vnstock` generation 6 final (`vnstock==6.0
 
 ## SSI standalone architecture boundary (effective 2026-11-25)
 
-Gen 6 and SSI are independent calculators. They may share only immutable/raw provider data from SSI and FHSC plus source metadata; they must not consume each other's calculated features, ratios, signals, scores, decisions or ledgers.
+Gen 6 and SSI are independent calculators. They may share only immutable/raw provider data from SSI and FHSC plus source metadata; they must not consume each other's calculated features, ratios, signals, scores, decisions or ledgers for calculation.
 
-- SSI runtime must not read `output/serving/vnstock6`, `output/history/vnstock6`, `output/vnstock6/*-factors.json` or import `scripts/vnstock6_*` calculation modules.
+- SSI calculation/runtime must not read `output/serving/vnstock6`, `output/history/vnstock6`, `output/vnstock6/*-factors.json` or import `scripts/vnstock6_*` calculation modules.
 - SSI owns its BCTC normalization and formulas. It calculates ratios, growth and cash-flow features directly from raw FHSC statements with its own versioned engine and tests.
 - A shared collector/transport layer is allowed only when it publishes a provider-neutral raw contract. A successful Gen 6 run must not be required for SSI to run.
-- Treat the 2026-11-25 deployed scorer as transitional: score calculation is independent, but its current feature inputs are still Gen 6 artifacts.
+- The SSI scorer and feature builder are standalone. The only explicit exception is the `/ssi/history` presentation adapter: when an SSI symbol-date does not exist, it may show the corresponding Gen 6 historical row with an amber `Gen 6 lịch sử` label and preserved Gen 6 provenance. This display-only row must never enter SSI score, outcome, IC, today, buy or analysis calculations.
 - Canonical decision and backlog: [docs/SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md](docs/SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md) and [docs/SSI_STANDALONE_PENDING_TASKS_20261125.md](docs/SSI_STANDALONE_PENDING_TASKS_20261125.md).
 
 ## Stock-research technical source (effective 2026-11-17)

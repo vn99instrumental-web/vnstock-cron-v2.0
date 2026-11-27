@@ -30,6 +30,7 @@ export function SignalsTable({
       <ul className="flex flex-col gap-1.5 md:hidden">
         {rows.map((r) => {
           const b = r.breakdown ?? {};
+          const isGen6Fallback = b.display_source === "gen6_fallback";
           return (
             <li key={r.id}>
               <Link href={`/history/${encodeURIComponent(String(b.pred_id ?? r.id))}`} className="card flex items-center gap-2 px-3 py-2.5 active:bg-black/[0.03] dark:active:bg-white/[0.03]">
@@ -40,7 +41,7 @@ export function SignalsTable({
               </Link>
               <div className="mt-0.5 px-3 text-[10px] text-[var(--color-muted)]">
                 {showDate ? <>{r.signal_date} · {snapHM(r.snap_time)} · </> : null}
-                {r.companyName ? `${r.companyName} · ` : ""}{r.regime ?? "—"} · conf {String(b.confidence ?? "—")} · 5d <span className={signClass(Number(r.outcome?.ret_5d))}>{r.outcome?.ret_5d == null ? "chờ" : fmtPct(Number(r.outcome.ret_5d))}</span>
+                {r.companyName ? `${r.companyName} · ` : ""}{isGen6Fallback ? "Gen 6 tham chiếu · " : ""}{r.regime ?? "—"} · conf {String(b.confidence ?? "—")} · 5d <span className={signClass(Number(r.outcome?.ret_5d))}>{r.outcome?.ret_5d == null ? "chờ" : fmtPct(Number(r.outcome.ret_5d))}</span>
               </div>
             </li>
           );
@@ -67,12 +68,13 @@ export function SignalsTable({
           <tbody>
             {rows.map((r) => {
               const b = r.breakdown ?? {};
+              const isGen6Fallback = b.display_source === "gen6_fallback";
               return (
                 <tr
                   key={r.id}
                   className="border-t border-[var(--color-border)] hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
                 >
-                  <td className="px-3 py-2"><div className="font-semibold">{r.symbol}</div>{r.companyName ? <div className="max-w-44 truncate text-[10px] text-[var(--color-muted)]" title={r.companyName}>{r.companyName}</div> : null}</td>
+                  <td className="px-3 py-2"><div className="font-semibold">{r.symbol}</div>{r.companyName ? <div className="max-w-44 truncate text-[10px] text-[var(--color-muted)]" title={r.companyName}>{r.companyName}</div> : null}{isGen6Fallback ? <span className="mt-1 inline-flex rounded border border-amber-500/50 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700 dark:text-amber-300">Gen 6 lịch sử</span> : null}</td>
                   <td className="px-3 py-2"><DecisionBadge decision={r.decision} /></td>
                   <td className="tabular px-3 py-2 text-right">{fmtNum(r.score_trade)}</td>
                   <td className="px-3 py-2 text-xs text-[var(--color-muted)]">{r.regime ?? "—"}</td>

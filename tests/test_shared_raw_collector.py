@@ -116,7 +116,8 @@ class SharedRawCollectorTests(unittest.TestCase):
                 created_at=datetime(2026, 11, 25, 10, 30, tzinfo=timezone.utc),
             )
             daily_called = {call[0] for call in daily_transport.calls}
-            self.assertTrue({"balance_sheet", "proprietary_flow", "insider_deal"} <= daily_called)
+            self.assertTrue({"proprietary_flow", "insider_deal"} <= daily_called)
+            self.assertFalse({"balance_sheet", "income_statement", "cash_flow"} & daily_called)
             self.assertNotIn("ohlcv_intraday", daily_called)
             self.assertNotIn("order_book", daily_called)
             self.assertEqual(daily["cadence"], "daily")

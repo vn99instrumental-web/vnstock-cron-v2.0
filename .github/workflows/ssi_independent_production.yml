@@ -9,9 +9,8 @@ on:
         type: string
 
 concurrency:
-  # SSI has its own queue. Sharing the Gen 6/raw writer group causes GitHub to
-  # cancel the first pending consumer when the collector dispatches both.
-  group: ssi-main-writer
+  # Manual calculator retries share the single writer lock with the unified cadence run.
+  group: vnstock-main-writer
   cancel-in-progress: false
 
 permissions:

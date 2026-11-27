@@ -27,7 +27,7 @@ Mỗi dòng JSONL là một envelope gồm `source`, `endpoint`, `symbol`, `para
 | Cadence | SSI | FHSC | Không gọi |
 |---|---|---|---|
 | `intraday` | reference, VNINDEX/equity daily OHLCV, 5m OHLCV, foreign flow, session stats | foreign fallback, active-session fallback, order book | BCTC, proprietary, insider |
-| `daily` | reference, VNINDEX/equity daily OHLCV, foreign flow, session stats | foreign/active-session fallback, 3 BCTC statements, proprietary, insider | intraday 5m, order book mới |
+| `daily` | reference, VNINDEX/equity daily OHLCV, foreign flow, session stats | foreign/active-session fallback, proprietary, insider | intraday 5m, 3 BCTC statements, order book mới |
 | `weekly` | reference, VNINDEX/equity daily OHLCV, foreign flow, session stats | foreign/active-session fallback, 3 BCTC statements, proprietary, insider, order book | intraday 5m |
 
 SSI có thể dùng dataset chậm từ raw release gần nhất trước đó khi cadence hiện tại cố ý không thu endpoint đó. Gen 6 dùng cache đã tính của chính Gen 6 cho cùng mục đích. Không consumer nào được fallback sang artifact đã tính của calculator còn lại.
@@ -50,4 +50,6 @@ SSI có thể dùng dataset chậm từ raw release gần nhất trước đó k
 ~/.venv_6x/bin/python scripts/shared_raw_collector.py verify
 ```
 
-n8n chỉ dispatch `.github/workflows/shared_raw_ssi_fhsc.yml`. Workflow collector publish raw rồi fan-out cùng một `raw_release_id` sang SSI và workflow Gen 6 tương ứng. File import n8n canonical: `n8n/shared-raw-ssi-fhsc-schedule.json`.
+n8n chỉ dispatch `.github/workflows/shared_raw_ssi_fhsc.yml` với `engine=both`. Mỗi trigger tạo đúng một GitHub Actions run. Run này publish raw trước, sau đó chạy tuần tự Gen 6 và SSI từ cùng `raw_release_id`, ghi vào hai namespace riêng và revalidate dashboard một lần. Không dispatch workflow con.
+
+Daily chỉ cập nhật market/flow sau đóng cửa; không tải lại BCTC. Weekly mới tải ba báo cáo FHSC và order book làm safety refresh. Calculator-only retry truyền `raw_release_id` đã có và chọn `engine=gen6|ssi|both`, nên không gọi provider lần nữa. File import n8n canonical: `n8n/shared-raw-ssi-fhsc-schedule.json`.

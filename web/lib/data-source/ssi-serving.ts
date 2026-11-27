@@ -1,4 +1,5 @@
 import {
+  fetchGitHubLedgerText,
   type GitHubAnalysisSnapshot,
   type GitHubBuySnapshot,
   type GitHubChartSnapshot,
@@ -9,6 +10,7 @@ import {
 import { getSsiIndependentDashboard, type SsiHistoryRow, type SsiLatestRow } from "@/lib/ssi-independent";
 
 export const SSI_SCORING_VERSION = "ssi-v4.18-independent";
+export const SSI_HISTORY_FALLBACK_VERSION = "v6.4.18";
 
 async function dashboard() {
   const value = await getSsiIndependentDashboard();
@@ -85,7 +87,63 @@ function historyBreakdown(row: SsiHistoryRow): Record<string, unknown> {
     confidence: row.confidence,
     signal_coverage: row.signal_coverage,
     calculation_engine: "ssi_independent_python",
+    display_source: "ssi_native",
+    is_ssi_native: true,
   };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function rowKey(row: Record<string, unknown>): string | null {
+  const symbol = typeof row.symbol === "string" ? row.symbol.toUpperCase() : "";
+  const signalDate = typeof row.signal_date === "string" ? row.signal_date : "";
+  return /^[A-Z0-9]{2,12}$/.test(symbol) && /^\d{4}-\d{2}-\d{2}$/.test(signalDate)
+    ? `${signalDate}|${symbol}`
+    : null;
+}
+
+async function gen6HistoryFallback(nativeKeys: Set<string>): Promise<Array<Record<string, unknown>>> {
+  try {
+    const text = await fetchGitHubLedgerText(
+      `output/serving/vnstock6/current/history/${SSI_HISTORY_FALLBACK_VERSION}.json`,
+    );
+    const payload: unknown = JSON.parse(text);
+    if (!isRecord(payload) || !Array.isArray(payload.rows)) return [];
+
+    const latestBySymbolDate = new Map<string, Record<string, unknown>>();
+    for (const candidate of payload.rows) {
+      if (!isRecord(candidate)) continue;
+      const key = rowKey(candidate);
+      if (!key || nativeKeys.has(key)) continue;
+      const previous = latestBySymbolDate.get(key);
+      const candidateTime = String(candidate.snap_time ?? "");
+      const previousTime = String(previous?.snap_time ?? "");
+      if (!previous || candidateTime >= previousTime) latestBySymbolDate.set(key, candidate);
+    }
+
+    return [...latestBySymbolDate.values()].map((row) => {
+      const sourceBreakdown = isRecord(row.breakdown) ? row.breakdown : {};
+      const fallbackId = row.id ?? `6|${row.symbol}|${row.signal_date}|${row.snap_time ?? "close"}|${SSI_HISTORY_FALLBACK_VERSION}`;
+      return {
+        ...row,
+        id: fallbackId,
+        scoring_version: SSI_HISTORY_FALLBACK_VERSION,
+        breakdown: {
+          ...sourceBreakdown,
+          pred_id: sourceBreakdown.pred_id ?? fallbackId,
+          display_source: "gen6_fallback",
+          calculation_engine: "gen6",
+          calculation_version: SSI_HISTORY_FALLBACK_VERSION,
+          is_ssi_native: false,
+        },
+      };
+    });
+  } catch {
+    // SSI-native history remains available when the optional Gen 6 history source is unavailable.
+    return [];
+  }
 }
 
 export const ssiServing = {
@@ -141,7 +199,7 @@ export const ssiServing = {
   async history(version: string): Promise<GitHubHistorySnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");
     const data = await dashboard();
-    const rows = data.history.map((row) => ({
+    const nativeRows: Array<Record<string, unknown>> = data.history.map((row) => ({
       id: row.pred_id,
       symbol: row.symbol,
       decision: row.decision,
@@ -160,7 +218,22 @@ export const ssiServing = {
         mae_pct: null,
       },
     }));
-    return { version, rows, count: rows.length };
+    const nativeKeys = new Set(nativeRows.flatMap((row) => {
+      const key = rowKey(row);
+      return key ? [key] : [];
+    }));
+    const fallbackRows = await gen6HistoryFallback(nativeKeys);
+    const rows = [...nativeRows, ...fallbackRows].sort((left, right) => {
+      const leftKey = `${String(left.signal_date ?? "")}|${String(left.snap_time ?? "")}`;
+      const rightKey = `${String(right.signal_date ?? "")}|${String(right.snap_time ?? "")}`;
+      return rightKey.localeCompare(leftKey);
+    });
+    return {
+      version,
+      rows,
+      count: rows.length,
+      source_counts: { ssi_native: nativeRows.length, gen6_fallback: fallbackRows.length },
+    };
   },
   async analysis(version: string): Promise<GitHubAnalysisSnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");

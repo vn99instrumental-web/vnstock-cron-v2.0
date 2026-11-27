@@ -24,7 +24,7 @@ Quy tắc vận hành bắt buộc là **collect once, calculate many**:
 | 2 | Chuyển Gen 6 sang cùng raw release nhưng giữ calculator riêng | DONE | Adapter raw, `fundamental_factors_from_frames`, provenance `raw_release_id`; unit test chứng minh gọi `vnstock_quant.fa`, không gọi SSI calculator |
 | 3 | Chạy release live đầy đủ và đo coverage | DONE | Collector run `45938422349` publish release `20261127T041229Z-d12e27b5`; manifest, hash và raw QC PASS |
 | 4 | Build/publish SSI và Gen 6 từ cùng release, chạy gates và revalidate Vercel | DONE | Gen 6 run `45949217456`; SSI calculator-only run `45952046277`; cả hai success, serving metadata cùng release ID, Vercel revalidate đã chạy |
-| 5 | Chuyển lịch n8n intraday/daily/weekly | DONE IN REPO | Commit `479ef5020` giữ tương thích wrapper; canonical schedule ở `n8n/shared-raw-ssi-fhsc-schedule.json`. Chỉ còn thao tác ngoài repo: import/attach credential/activate trong UI n8n, chưa xác minh vì không có endpoint/session |
+| 5 | Chuyển lịch n8n intraday/daily/weekly | DONE IN REPO | Canonical n8n dispatch `shared_raw_ssi_fhsc.yml` với `engine=both`; mỗi trigger tạo đúng một GitHub run, raw được lưu trước rồi Gen 6/SSI tính tuần tự. Chỉ còn import/attach credential/disable legacy/activate trong UI n8n vì repo không có endpoint/session owner. |
 
 ## Coverage live của release chung
 
@@ -46,7 +46,9 @@ SSI sau khi tính độc lập: 100/100 mã có score; `of_phasefix` 100, `ff_ne
 
 ## Coverage không thể bịa
 
-Dữ liệu provider trả empty/error phải giữ null và được dashboard highlight vàng. “Full data” nghĩa là đã thu đủ các endpoint được phép theo cadence và công khai coverage thật; không được điền 0 hoặc lấy artifact calculator còn lại để che phần thiếu.
+Dữ liệu provider trả empty/error phải giữ null và được dashboard highlight vàng. “Full data” nghĩa là đã thu đủ các endpoint được phép theo cadence và công khai coverage thật; không được điền 0 hoặc lấy artifact calculator còn lại làm input tính toán.
+
+Riêng lịch sử trước khi SSI có snapshot không cần backfill: `/ssi/history` hiển thị row Gen 6 cùng symbol-date với nhãn vàng `Gen 6 lịch sử` và provenance Gen 6. Đây là fallback hiển thị, không phải SSI data và không tham gia score, outcome hoặc IC của SSI.
 
 D+10/outcome mới vẫn phụ thuộc số phiên tương lai thực tế. Đây là `PENDING_TIME`, không phải lỗi collector hoặc dependency Gen 6.
 
@@ -55,11 +57,11 @@ D+10/outcome mới vẫn phụ thuộc số phiên tương lai thực tế. Đâ
 Không còn task code/runtime nào trong nhóm full-data 1-5. Hai việc còn lại không được giải quyết bằng cách rerun collector:
 
 1. `PENDING_TIME`: tích lũy outcome D+10 theo phiên giao dịch thực tế và các snapshot lịch sử mới.
-2. `EXTERNAL_VERIFY`: import, gắn GitHub credential và activate canonical workflow trong UI n8n khi có endpoint/session owner.
+2. `EXTERNAL_VERIFY`: trong UI n8n, import canonical workflow, gắn GitHub credential, tắt các dispatcher Gen 6/SSI legacy, chạy thử từng cadence và activate. Repo hiện không có endpoint/session owner để tự thực hiện thao tác này.
 
 ## Kiểm thử
 
 - Baseline full suite: 104/104 PASS trước compatibility wrapper.
-- Raw/adapter/SSI/n8n focused tests: PASS; GitHub SSI workflow chạy 16 focused tests PASS; n8n contract 4/4 PASS.
+- Raw/adapter/SSI/n8n focused tests: PASS; contract mới 15/15 PASS, gồm 5 n8n/unified-run, 7 collector/cadence và 3 dashboard history fallback.
 - `validate_ssi_standalone` package mode: PASS.
 - Security review: không commit token/secret; `raw_release_id` được regex validate; n8n JSON không chứa credential value.

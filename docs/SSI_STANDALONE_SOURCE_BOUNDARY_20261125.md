@@ -1,7 +1,7 @@
 # Ranh giới kiến trúc SSI standalone
 
 Ngày: 2026-11-25
-Trạng thái: quyết định kiến trúc bắt buộc; phần chuyển đổi runtime còn pending
+Trạng thái: đã triển khai; ranh giới bắt buộc cho runtime và dashboard
 
 ## Mục tiêu bất biến
 
@@ -19,6 +19,7 @@ Gen 6 và SSI là hai bộ tính độc lập. Hai hệ thống được phép d
 - Metadata nguồn: endpoint, symbol, source timestamp, received timestamp, unit, fiscal period, publication/effective time khi có, raw hash và quality state.
 - Lớp transport/collector có thể tái sử dụng để tránh gọi API trùng lặp, với điều kiện output nằm trong namespace trung lập và không chứa feature/ratio/score đã tính.
 - Lịch giao dịch, universe và schema raw đã được kiểm chứng nếu không phụ thuộc công thức của một calculator.
+- Ngoại lệ presentation-only: `/ssi/history` được phép đọc Gen 6 serving history để hiển thị symbol-date lịch sử mà SSI chưa từng tạo. Row phải giữ nguyên `calculation_engine=gen6`, version Gen 6 và nhãn vàng `Gen 6 lịch sử`; không được đổi nhãn thành SSI hoặc đi vào SSI score/outcome/IC/today/buy/analysis.
 
 ## Không được phép dùng chung
 
@@ -41,22 +42,13 @@ SSI đọc trực tiếp raw BCTC FHSC và có bộ chuẩn hóa/tính toán ri�
 
 Gen 6 có thể tính các metric tương tự từ cùng raw payload, nhưng kết quả Gen 6 chỉ dùng để đối chiếu chẩn đoán, không làm input hoặc fallback của SSI.
 
-## Trạng thái thực tế tại thời điểm chốt
+## Trạng thái triển khai hiện tại
 
-Đã độc lập:
-
-- Công thức 17 signal, factor, trade/hold score và decision trong `scripts/ssi_independent_pipeline.py` không import scorer Gen 6.
-- Test hiện tại chứng minh thay đổi `s_*`, score và decision Gen 6 không làm thay đổi output SSI.
-- SSI có serving tree, ledger, outcome/IC và dashboard `/ssi/*` riêng.
-
-Chưa độc lập:
-
-- `scripts/ssi_independent_pipeline.py` vẫn đọc `output/serving/vnstock6/current/today` và `output/history/vnstock6/predictions`.
-- Các field BCTC đầu vào hiện được materialize bởi `scripts/vnstock6_quant.py`/`vnstock_quant.fa` vào artifact Gen 6.
-- `.github/workflows/ssi_independent_production.yml` vẫn kích hoạt sau `VNStock 6 native production`.
-- Chưa có namespace raw trung lập và chưa có SSI-owned BCTC/market feature builder đủ để tái tạo 17 input.
-
-Vì vậy deployment SSI hiện tại là bản chuyển tiếp độc lập về score, chưa đạt mục tiêu SSI standalone toàn phần.
+- `scripts/ssi_independent_pipeline.py` và `scripts/ssi_raw_features.py` build 17 signal, BCTC/market feature, score và decision trực tiếp từ shared raw; không import scorer, factor cache hoặc serving input Gen 6.
+- Shared raw nằm trong namespace trung lập `output/shared-raw/ssi-fhsc/releases/<raw_release_id>` và được hash/verify trước khi cả hai calculator dùng.
+- `.github/workflows/shared_raw_ssi_fhsc.yml` thực hiện collector, Gen 6 và SSI trong một GitHub run, nhưng ghi calculation/ledger/serving vào namespace riêng. Lỗi một calculator được ghi nhận độc lập và gate cuối báo đúng consumer thất bại.
+- Dashboard `/ssi/history` có display-only Gen 6 fallback cho symbol-date SSI chưa có, thay cho backfill. SSI today/buy/analysis/outcome/IC vẫn chỉ đọc output SSI.
+- Test contract kiểm tra SSI scoring không phụ thuộc Gen 6, fallback chỉ nằm ở history và provenance Gen 6 không bị đổi nhãn.
 
 ## Tiêu chí hoàn thành
 

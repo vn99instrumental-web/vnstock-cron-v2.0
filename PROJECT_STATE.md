@@ -1,5 +1,14 @@
 # PROJECT_STATE.md
 
+## Unified data run and display-only history fallback - 2026-11-27
+
+- Canonical cadence is now one n8n trigger -> one `Unified SSI FHSC data production` GitHub run. The run persists one verified raw release, then calculates Gen 6 and SSI sequentially from that exact `raw_release_id`; it never dispatches child workflows.
+- Storage remains isolated: Gen 6 and SSI retain separate calculated factors, ledgers and serving trees. Shared raw is the only calculation input shared between them.
+- Intraday collects live market/depth only; daily collects market plus proprietary/insider flow and deliberately skips BCTC; weekly refreshes the three FHSC statements and order book. Calculator retries accept an existing `raw_release_id` and do not recollect.
+- `/ssi/history` composes SSI-native rows with latest Gen 6 rows only for missing symbol-date keys. Fallback rows retain Gen 6 engine/version provenance and show an amber `Gen 6 lịch sử` badge. They are excluded from SSI score, today, buy, analysis, outcome and IC.
+- Canonical n8n export is updated with `engine=both`. Activation still requires an owner to import/attach credentials, disable legacy dispatchers and activate it in n8n because no endpoint/session is available in the repo.
+- Verification for this change: TypeScript PASS, 114/114 Python tests PASS, workflow YAML and n8n JSON parse PASS, and Next.js 15 production build PASS with all `/ssi/*` routes. Local ESLint plugin links remain missing as an existing environment warning; the production build completes. GitHub workflow/deployment verification is recorded after push.
+
 ## Shared raw SSI/FHSC rollout - 2026-11-27
 
 - Architecture: Gen 6 and SSI are independent calculators sharing only immutable SSI/FHSC provider rows under `output/shared-raw/ssi-fhsc`. Calculated ratios, features, signals, scores and decisions are never shared.
@@ -7,9 +16,9 @@
 - Live weekly release `20261127T041229Z-d12e27b5` was published by collector run `45938422349` in about 109 minutes. Raw QC and hash verification passed. Both consumers use this same release ID.
 - Gen 6 run `45949217456` succeeded for 100/100 symbols and published commit `9b6549075`. Its BCTC remains calculated independently through `scripts/vnstock6_raw_adapter.py` and `vnstock_quant.fa`.
 - SSI run `45952046277` recomputed only from the existing release in about 2 minutes, succeeded for 100/100 symbols and published commit `185fe5521`. Its metadata declares `input_layer=shared_raw`, `bctc_engine=ssi`, `standalone=true`, and `gen6_dependencies=[]`.
-- Final SSI signal coverage: `of_phasefix` 100, `ff_net` 99, `prop_5d` 99, `growth_core` 96, `cf_core` 90, `depth_wall` 84 and `insider` 64 of 100; all other signals are 100/100. Missing provider rows remain null and amber on the dashboard; no Gen 6 fallback is permitted.
+- Final SSI signal coverage: `of_phasefix` 100, `ff_net` 99, `prop_5d` 99, `growth_core` 96, `cf_core` 90, `depth_wall` 84 and `insider` 64 of 100; all other signals are 100/100. Missing provider rows remain null and amber in SSI calculations. Gen 6 is permitted only as explicitly labeled display history for symbol-dates SSI does not have.
 - Provider gaps in the release: session stats 0/100 (empty response), active session 99/100, balance sheet 99/100, income statement 96/100, cash flow 90/100, proprietary 99/100 and insider 74/100 provider coverage (26 empty). These are source coverage gaps, not calculator dependencies.
-- n8n canonical schedule is weekday intraday 09:25, 10:25, 11:25, 13:25, 14:25 ICT; daily 15:05; weekly Sunday 07:15. Compatibility wrappers route old Gen 6 dispatches to the shared collector. Direct n8n UI import/credential attachment remains externally unverified because no n8n endpoint/session was available.
+- n8n canonical schedule is weekday intraday 09:25, 10:25, 11:25, 13:25, 14:25 ICT; daily 15:05; weekly Sunday 07:15. Each canonical dispatch creates one unified run; legacy direct dispatchers must be disabled in n8n. UI import/credential attachment/activation remains externally unverified because no n8n endpoint/session was available.
 - Vercel revalidation completed from both consumer workflows. Anonymous desktop/mobile auth-gate QA passed; authenticated dashboard QA was not possible without an owner session.
 - Canonical task and coverage state: `docs/SSI_STANDALONE_PENDING_TASKS_20261125.md`.
 
@@ -18,7 +27,7 @@
 - `/ssi/today`, `/ssi/buy`, `/ssi/phan-tich`, `/ssi/history`, and `/ssi/ic` now use the same page shell and the same core Gen 6 board/table components where the data contract matches. SSI keeps its own version (`ssi-v4.18-independent`) and serving adapter.
 - Missing SSI values remain `null` and are highlighted in amber (`Chưa có dữ liệu`); numeric zero is never treated as missing. Page-level amber notices list datasets not yet available, including independent OHLC, expectancy/robustness, factor/industry IC, and MFE/MAE.
 - The chart API accepts only the explicit `source=ssi` override after the existing user-auth check, version allowlist, and symbol validation. SSI chart requests read SSI history only and do not fall through to Gen 6 serving.
-- The dashboard now serves the standalone SSI artifact built from shared raw release `20261127T041229Z-d12e27b5`; missing values remain null/amber and never fall back to Gen 6.
+- The dashboard serves the standalone SSI artifact built from shared raw release `20261127T041229Z-d12e27b5`; missing calculation inputs remain null/amber. Only `/ssi/history` may show labeled Gen 6 rows for pre-SSI symbol-dates.
 - Local verification: TypeScript `tsc --noEmit` PASS and Next.js 15 production build PASS with all `/ssi/*` routes emitted. Standalone ESLint is blocked by missing local pnpm plugin links (`eslint-plugin-react-hooks`, `@next/eslint-plugin-next`), while the production build still completes successfully.
 - Security review: no secret, dependency, database write, service-role client exposure, or authorization expansion was introduced. Deployment and anonymous auth-gate checks are verified on the new build; authenticated production visual QA remains pending.
 

@@ -8,13 +8,15 @@ Schedule timezone: `Asia/Ho_Chi_Minh`.
 - Daily, Monday-Friday: 15:05.
 - Weekly, Sunday: 07:15.
 
-Every trigger dispatches only `shared_raw_ssi_fhsc.yml` with `cadence=intraday|daily|weekly`. GitHub publishes one immutable raw release, then fans the exact `raw_release_id` out to SSI and the matching Gen 6 calculator. The calculators never dispatch provider collection themselves.
+Every trigger dispatches only `shared_raw_ssi_fhsc.yml` with `cadence=intraday|daily|weekly` and `engine=both`. One n8n trigger therefore creates exactly one GitHub Actions run. Inside that run GitHub collects and publishes one immutable raw release, then executes the Gen 6 and SSI calculators sequentially from the exact same `raw_release_id`. It does not dispatch child workflows, and the calculators never dispatch provider collection themselves.
 
-Retry policy: **collect once, calculate many**. Retry the failed consumer with the existing `raw_release_id`; never rerun the shared collector merely because a formula, build or publish step failed.
+Retry policy: **collect once, calculate many**. Manually dispatch the same workflow with the existing `raw_release_id` plus `engine=gen6`, `engine=ssi`, or `engine=both`; never rerun the shared collector merely because a formula, build or publish step failed.
+
+Before activation, disable the legacy n8n nodes/workflows that dispatch `vnstock6_native_production.yml`, `vnstock6_daily_maintenance.yml`, `vnstock6_fundamental_refresh.yml`, or `ssi_independent_production.yml` directly. Leaving a legacy dispatcher active would duplicate calculations and GitHub runs.
 
 Required GitHub credential permissions for repository `vn99instrumental-web/vnstock-cron-v2.0`:
 
 - Actions: read and write.
 - Metadata: read.
 
-After import: attach the credential, run each HTTP node manually and confirm HTTP 204, then activate the workflow. GitHub Actions is the source of execution success/failure; n8n only owns schedules and dispatch acceptance.
+After import: attach the credential, run each HTTP node manually and confirm HTTP 204, verify that each manual trigger creates one `Unified SSI FHSC data production` run, then activate the workflow. GitHub Actions is the source of execution success/failure; n8n only owns schedules and dispatch acceptance.

@@ -37,6 +37,15 @@ function SourceNotice() {
   );
 }
 
+function HistoryFallbackNotice({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <div className="mb-3 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-amber-900 dark:text-amber-200">
+      <strong>Lịch sử tham chiếu Gen 6.</strong>{" "}
+      {count.toLocaleString("vi-VN")} dòng ở các ngày SSI chưa có được đọc từ Gen 6 v6.4.18. Các dòng này chỉ dùng để hiển thị, không tham gia score hoặc IC của SSI.
+    </div>
+  );
+}
 export async function SsiAlignedDashboard({ tab }: { tab: SsiAlignedTab }) {
   const dashboard = await getSsiIndependentDashboard();
   if (!dashboard) throw new Error("SSI dashboard source/schema validation failed");
@@ -78,11 +87,14 @@ export async function SsiAlignedDashboard({ tab }: { tab: SsiAlignedTab }) {
 
   if (tab === "history") {
     const data = await ssiServing.history(SSI_SCORING_VERSION);
+    const nativeCount = data.source_counts?.ssi_native ?? data.count;
+    const fallbackCount = data.source_counts?.gen6_fallback ?? 0;
     const rows = (data.rows as unknown as SignalRow[]).slice(0, 200).map((row) => ({ ...row, companyName: getCompanyName(row.symbol) }));
     return (
       <>
-        <PageHeader title="Lịch sử" desc={`${data.count.toLocaleString("vi-VN")} tín hiệu · SSI độc lập`} actions={<VersionAction tab={tab} />} />
-        <MissingDataNotice items={["Regime lịch sử", "MFE/MAE cho các outcome chưa thu thập"]} />
+        <PageHeader title="Lịch sử" desc={`${data.count.toLocaleString("vi-VN")} tín hiệu · ${nativeCount.toLocaleString("vi-VN")} SSI · ${fallbackCount.toLocaleString("vi-VN")} Gen 6 tham chiếu`} actions={<VersionAction tab={tab} />} />
+        <MissingDataNotice items={["Regime lịch sử SSI", "MFE/MAE cho các outcome chưa thu thập"]} />
+        <HistoryFallbackNotice count={fallbackCount} />
         <SourceNotice />
         <SignalsTable rows={rows} showDate />
       </>

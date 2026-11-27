@@ -95,6 +95,7 @@ export interface GitHubHistorySnapshot {
   version: string;
   rows: Array<Record<string, unknown>>;
   count: number;
+  source_counts?: Record<string, number>;
 }
 
 export interface GitHubChartSnapshot {

@@ -12,20 +12,18 @@ The source contract is explicit:
 | Fundamental | FHSC | none | quarterly balance sheet, income statement and cash flow; ratios and growth are calculated by `vnstock_quant.fa` per symbol |
 | Foreign flow | SSI | FHSC | refreshed on each scoring run; source and as-of date are retained |
 | Session statistics | SSI | FHSC active-session | intraday turnover and average trade size only |
-| Order book | FHSC | none | intraday only because Gen6 has no SSI order-book reader |
-| Proprietary/insider | FHSC | last-known-good cache | source endpoints are called only by post-market daily maintenance |
+| Order book | FHSC | none | intraday plus weekly safety refresh because Gen6 has no SSI order-book reader |
+| Proprietary/insider | FHSC | last-known-good cache | refreshed post-market daily and in the weekly safety release |
 The Vercel release is native-capable and `VNSTOCK6_NATIVE_MODE=1` makes the selected Gen6 source read only `output/serving/vnstock6/current`. It does not fall back to Supabase or the legacy serving root.
 
 ## Verified flows
 
-- `vnstock6_source_diagnostic.yml`: read-only account, key, route and schema diagnostic. It never uploads raw data or credentials.
-- `vnstock6_native_candidate.yml`: read-only end-to-end run; produces only a compact secret-free summary artifact.
-- `vnstock6_native_production.yml`: n8n/manual intraday executor. It publishes the Gen6 ledger and serving root under the shared `vnstock-main-writer` lock.
-- `vnstock6_daily_maintenance.yml`: post-market executor for BCTC change detection, slow market factors, closing scores, outcomes and full serving rebuild.
-- `vnstock6_fundamental_refresh.yml`: weekly full-universe BCTC safety net; it recalculates and revalidates the dashboard only when material statement/factor content changes.
-- Dashboard activation is a separate boolean input and defaults to true for the production workflow. It can be disabled explicitly for a data-only run.
-## Git data contract
+- `.github/workflows/shared_raw_ssi_fhsc.yml` is the canonical n8n/manual executor. One run persists shared raw, calculates Gen 6 and SSI sequentially, publishes their separate trees and revalidates once.
+- `vnstock6_source_diagnostic.yml` and `vnstock6_native_candidate.yml` remain read-only diagnostic/candidate tools.
+- `vnstock6_native_production.yml`, `vnstock6_daily_maintenance.yml`, `vnstock6_fundamental_refresh.yml` and `ssi_independent_production.yml` remain manual/compatibility calculator entry points. n8n must not schedule them directly.
+- Calculator-only retry uses the canonical workflow with an existing `raw_release_id` and `engine=gen6|ssi|both`; no provider recollection occurs.
 
+## Git data contract
 Historical generation 4/5 prediction ledgers are immutable. Generation 6 writes to:
 
 - `output/history/vnstock6/predictions/YYYY-MM-DD.jsonl`;
@@ -43,20 +41,20 @@ All seven schedules call only:
 
 - method: `POST`;
 - URL: `https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/shared_raw_ssi_fhsc.yml/dispatches`;
-- body: `{"ref":"main","inputs":{"cadence":"intraday|daily|weekly"}}`;
+- body: `{"ref":"main","inputs":{"cadence":"intraday|daily|weekly","engine":"both"}}`;
 - credential: GitHub HTTP Header Auth stored in n8n credential storage, never in the exported JSON.
 
-Canonical import file: `n8n/shared-raw-ssi-fhsc-schedule.json`. The collector publishes one release, then dispatches SSI and exactly one Gen 6 executor with that immutable `raw_release_id`. The shared `vnstock-main-writer` concurrency group serializes raw and calculated Git writes.
+Canonical import file: `n8n/shared-raw-ssi-fhsc-schedule.json`. One dispatch creates one GitHub run; it publishes one raw release and executes both calculators in-process from that immutable `raw_release_id`. There are no child workflow dispatches. The shared `vnstock-main-writer` concurrency group serializes raw and calculated Git writes.
 
 ## Data cadence
 
 | Cadence | n8n dispatch | Raw collection | Consumers |
 | --- | --- | --- | --- |
 | Weekdays 09:25, 10:25, 11:25, 13:25, 14:25 ICT | shared raw `cadence=intraday` | SSI daily+5m OHLCV, foreign/session; FHSC foreign/active-session fallback and order book; no slow endpoints | SSI independent + Gen 6 intraday |
-| Weekdays 15:05 ICT | shared raw `cadence=daily` | SSI daily market data; FHSC BCTC, proprietary and insider; no new order book | SSI independent + Gen 6 daily analytics |
+| Weekdays 15:05 ICT | shared raw `cadence=daily` | SSI daily market data; FHSC proprietary and insider; no BCTC or new order book | SSI independent + Gen 6 daily analytics |
 | Sundays 07:15 ICT | shared raw `cadence=weekly` | full slow-source safety release plus market reference | SSI independent + Gen 6 weekly fundamentals |
 
-Gen 6 never consumes SSI-calculated features or BCTC. `scripts/vnstock6_raw_adapter.py` verifies the raw release and exposes provider frames; `vnstock6_quant.fa` and Gen 6 scoring calculate independently. SSI likewise never consumes Gen 6 calculations.
+Gen 6 never consumes SSI-calculated features or BCTC. `scripts/vnstock6_raw_adapter.py` verifies the raw release and exposes provider frames; `vnstock_quant.fa` and Gen 6 scoring calculate independently. SSI scoring likewise never consumes Gen 6 calculations. `/ssi/history` alone may display an explicitly labeled Gen 6 row for a missing historical symbol-date; that row is presentation-only and excluded from SSI calculations and IC.
 
 Retry rule: collect once, calculate many. A calculator retry must receive the existing immutable `raw_release_id`; it must not dispatch provider collection. A new release is created only by the next n8n cadence trigger.
 
@@ -73,11 +71,11 @@ Promotion requires final package/version checks, account/device reuse, SSI and F
 FHSC throttles statement reads, so fundamentals are not re-downloaded during each of the five intraday runs. The production cache is `output/vnstock6/fundamental-factors.json` and carries source, calculation version, refresh time, ratios and statement quality counts per symbol.
 
 - Candidate refreshes three symbols through the dedicated fundamental command. It reports `PASS_DEGRADED` when FHSC is unavailable only if fundamental and growth factors are explicitly excluded.
-- Daily maintenance checks all configured symbols after market close. A deterministic signature of balance sheet, income statement and cash-flow content is compared with the committed cache; unchanged statements update only `checked_at`, while changed statements recalculate ratios, growth and cash-flow factors with `vnstock_quant.fa`.
+- Daily maintenance updates closing market/flow analytics from the daily raw release and reuses the last Gen 6 fundamental cache. It does not call balance sheet, income statement or cash-flow endpoints.
 - Intraday mode never calls the three statement endpoints, `proprietary_flow` or `insider_deal`. It reads their last committed caches; FHSC use is limited to order book and the approved foreign/active-session fallbacks.
-- Weekly refresh recalculates the full FHSC universe as a safety net. Read failures preserve last-known-good data; missing or expired values are excluded and available weights are renormalized, never replaced by zero. Refresh timestamps are ignored for change detection; only material content changes trigger scoring, serving rebuild and Vercel revalidation.
+- Weekly refresh collects the three FHSC statement endpoints and recalculates the full universe as a safety net. Read failures preserve last-known-good Gen 6 cache data; missing or expired values are excluded and available weights are renormalized, never replaced by zero. Refresh timestamps are ignored for change detection.
 
 
 ## Indicator upgrade (2026-11-13)
 
-Gen6 publishes all 17 production-reference signals. ADX(14) and Supertrend(10,3) use the auditable `local_wilder_reference` implementation when Community `vnstock_quant.ta` returns `QUANT_TIER_REQUIRED`. Foreign flow and depth refresh intraday; proprietary and insider refresh post-market and are cached intraday; BCTC-derived fundamental, cash-flow and growth signals refresh only after statement checks/full weekly refresh. Empty or unclassified source responses remain unavailable and are excluded rather than converted to zero. The dashboard includes raw values, source/as-of provenance and exclusion reasons where available.
+Gen6 publishes all 17 production-reference signals. ADX(14) and Supertrend(10,3) use the auditable `local_wilder_reference` implementation when Community `vnstock_quant.ta` returns `QUANT_TIER_REQUIRED`. Foreign flow and depth refresh intraday; proprietary and insider refresh post-market daily and weekly, then are cached intraday; BCTC-derived fundamental, cash-flow and growth signals refresh only from the weekly statement release. Empty or unclassified source responses remain unavailable and are excluded rather than converted to zero. The dashboard includes raw values, source/as-of provenance and exclusion reasons where available.

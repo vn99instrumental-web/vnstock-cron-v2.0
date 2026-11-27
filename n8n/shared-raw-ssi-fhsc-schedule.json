@@ -7,13 +7,13 @@
                  "templateCredsSetupCompleted":  false,
                  "instanceId":  ""
              },
-    "name":  "Shared raw SSI FHSC cadence dispatcher",
+    "name":  "Unified SSI FHSC data cadence",
     "connections":  {
                         "Daily ICT weekdays":  {
                                                    "main":  [
                                                                 [
                                                                     {
-                                                                        "node":  "Dispatch shared raw daily",
+                                                                        "node":  "Dispatch unified daily",
                                                                         "type":  "main",
                                                                         "index":  0
                                                                     }
@@ -24,7 +24,7 @@
                                                       "main":  [
                                                                    [
                                                                        {
-                                                                           "node":  "Dispatch shared raw intraday",
+                                                                           "node":  "Dispatch unified intraday",
                                                                            "type":  "main",
                                                                            "index":  0
                                                                        }
@@ -35,7 +35,7 @@
                                                   "main":  [
                                                                [
                                                                    {
-                                                                       "node":  "Dispatch shared raw weekly",
+                                                                       "node":  "Dispatch unified weekly",
                                                                        "type":  "main",
                                                                        "index":  0
                                                                    }
@@ -123,7 +123,7 @@
                   },
                   {
                       "id":  "dispatch-intraday",
-                      "name":  "Dispatch shared raw intraday",
+                      "name":  "Dispatch unified intraday",
                       "type":  "n8n-nodes-base.httpRequest",
                       "position":  [
                                        360,
@@ -147,14 +147,14 @@
                                                                                          "name":  "X-GitHub-Api-Version"
                                                                                      },
                                                                                      {
-                                                                                         "value":  "n8n-shared-raw-dispatcher",
+                                                                                         "value":  "n8n-unified-data-dispatcher",
                                                                                          "name":  "User-Agent"
                                                                                      }
                                                                                  ]
                                                               },
                                          "sendBody":  true,
                                          "sendHeaders":  true,
-                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"intraday\"}}",
+                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"intraday\",\"engine\":\"both\"}}",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "rawContentType":  "application/json",
                                          "authentication":  "genericCredentialType"
@@ -163,7 +163,7 @@
                   },
                   {
                       "id":  "dispatch-daily",
-                      "name":  "Dispatch shared raw daily",
+                      "name":  "Dispatch unified daily",
                       "type":  "n8n-nodes-base.httpRequest",
                       "position":  [
                                        360,
@@ -187,14 +187,14 @@
                                                                                          "name":  "X-GitHub-Api-Version"
                                                                                      },
                                                                                      {
-                                                                                         "value":  "n8n-shared-raw-dispatcher",
+                                                                                         "value":  "n8n-unified-data-dispatcher",
                                                                                          "name":  "User-Agent"
                                                                                      }
                                                                                  ]
                                                               },
                                          "sendBody":  true,
                                          "sendHeaders":  true,
-                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"daily\"}}",
+                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"daily\",\"engine\":\"both\"}}",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "rawContentType":  "application/json",
                                          "authentication":  "genericCredentialType"
@@ -203,7 +203,7 @@
                   },
                   {
                       "id":  "dispatch-weekly",
-                      "name":  "Dispatch shared raw weekly",
+                      "name":  "Dispatch unified weekly",
                       "type":  "n8n-nodes-base.httpRequest",
                       "position":  [
                                        360,
@@ -227,14 +227,14 @@
                                                                                          "name":  "X-GitHub-Api-Version"
                                                                                      },
                                                                                      {
-                                                                                         "value":  "n8n-shared-raw-dispatcher",
+                                                                                         "value":  "n8n-unified-data-dispatcher",
                                                                                          "name":  "User-Agent"
                                                                                      }
                                                                                  ]
                                                               },
                                          "sendBody":  true,
                                          "sendHeaders":  true,
-                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"weekly\"}}",
+                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"weekly\",\"engine\":\"both\"}}",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "rawContentType":  "application/json",
                                          "authentication":  "genericCredentialType"
