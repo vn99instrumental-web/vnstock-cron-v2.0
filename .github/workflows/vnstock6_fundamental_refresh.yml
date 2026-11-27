@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       raw_release_id:
-        description: Exact immutable weekly SSI/FHSC raw release
-        required: true
+        description: Exact immutable weekly raw release; blank redirects legacy n8n to collector
+        required: false
         type: string
+        default: ""
       limit:
         description: Optional number of configured symbols to refresh; 0 means all
         type: number
@@ -18,9 +19,19 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
+  redirect_legacy_schedule:
+    if: inputs.raw_release_id == ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Route legacy n8n trigger through shared raw collector
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run shared_raw_ssi_fhsc.yml --ref main -f cadence=weekly
   refresh:
+    if: inputs.raw_release_id != ''
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:

@@ -4,9 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       raw_release_id:
-        description: Exact immutable daily SSI/FHSC raw release
-        required: true
+        description: Exact immutable daily raw release; blank redirects legacy n8n to collector
+        required: false
         type: string
+        default: ""
+      refresh_slow_data:
+        description: Legacy n8n compatibility input
+        type: boolean
+        default: true
 
 concurrency:
   group: vnstock-main-writer
@@ -14,9 +19,19 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
+  redirect_legacy_schedule:
+    if: inputs.raw_release_id == ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Route legacy n8n trigger through shared raw collector
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run shared_raw_ssi_fhsc.yml --ref main -f cadence=daily
   maintain:
+    if: inputs.raw_release_id != ''
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
