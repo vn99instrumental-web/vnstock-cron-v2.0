@@ -1,5 +1,8 @@
 import stored from "@/data/ssi-independent-dashboard.json";
 
+const SSI_DASHBOARD_PATH = "web/data/ssi-independent-dashboard.json";
+const ACTIVE_TTL_SECONDS = 5 * 60;
+
 export type SsiDecision = "STRONG BUY" | "BUY" | "NEUTRAL" | "SELL" | "STRONG SELL";
 export type SsiLatestRow = {
   pred_id: string; symbol: string; signal_date: string; snap_time: string;
@@ -36,6 +39,27 @@ function valid(data: unknown): data is SsiIndependentDashboard {
   return true;
 }
 
-export function getSsiIndependentDashboard(): SsiIndependentDashboard | null {
+function repositoryRawBaseUrl(): string {
+  return (process.env.GITHUB_REPOSITORY_RAW_BASE_URL
+    ?? "https://raw.githubusercontent.com/vn99instrumental-web/vnstock-cron-v2.0/main")
+    .replace(/\/+$/, "");
+}
+
+export async function getSsiIndependentDashboard(): Promise<SsiIndependentDashboard | null> {
+  try {
+    const response = await fetch(repositoryRawBaseUrl() + "/" + SSI_DASHBOARD_PATH, {
+      cache: "force-cache",
+      next: {
+        revalidate: ACTIVE_TTL_SECONDS,
+        tags: ["dashboard-data", "github-serving", "github-serving-ssi"],
+      },
+    });
+    if (response.ok) {
+      const remote: unknown = await response.json();
+      if (valid(remote)) return remote;
+    }
+  } catch {
+    // The committed snapshot keeps the dashboard available during GitHub/raw outages.
+  }
   return valid(stored) ? stored : null;
 }

@@ -43,8 +43,8 @@ function HistoryTable({ rows }: { rows: SsiHistoryRow[] }) {
   </table></div>;
 }
 
-export function SsiDashboardView({ tab }: { tab: SsiDashboardTab }) {
-  const data = getSsiIndependentDashboard();
+export async function SsiDashboardView({ tab }: { tab: SsiDashboardTab }) {
+  const data = await getSsiIndependentDashboard();
   if (!data) return <QueryErrorState title="SSI dataset validation failed" hint="Artifact không đạt schema/source guard nên không hiển thị score." />;
   const buyRows = data.latest.filter((row) => row.decision === "BUY" || row.decision === "STRONG BUY");
   const descriptions: Record<SsiDashboardTab, string> = { buy: `${buyRows.length} tín hiệu BUY/STRONG BUY · snapshot ${data.signal_date}`, today: `${data.summary.symbols} mã · snapshot ${data.signal_date} · SSI + FHSC`, analysis: "17 tín hiệu · factor và score do SSI calculator độc lập tính lại", history: `${data.summary.history_rows} dự báo · ${data.summary.history_dates} phiên nguồn`, ic: "IC Pearson từ outcome thực đã đủ horizon" };

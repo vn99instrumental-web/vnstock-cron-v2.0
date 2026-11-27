@@ -10,14 +10,13 @@ import { getSsiIndependentDashboard, type SsiHistoryRow, type SsiLatestRow } fro
 
 export const SSI_SCORING_VERSION = "ssi-v4.18-independent";
 
-function dashboard() {
-  const value = getSsiIndependentDashboard();
+async function dashboard() {
+  const value = await getSsiIndependentDashboard();
   if (!value) throw new Error("SSI independent dashboard failed source/schema validation");
   return value;
 }
 
-function run() {
-  const data = dashboard();
+function run(data: Awaited<ReturnType<typeof dashboard>>) {
   return {
     run_id: `${data.signal_date}_1530_${SSI_SCORING_VERSION}`,
     started_at: data.generated_at,
@@ -91,8 +90,8 @@ function historyBreakdown(row: SsiHistoryRow): Record<string, unknown> {
 
 export const ssiServing = {
   async metadata(): Promise<GitHubMetadata> {
-    const data = dashboard();
-    const currentRun = run();
+    const data = await dashboard();
+    const currentRun = run(data);
     const dates = data.history.map((row) => row.signal_date).filter(Boolean).sort();
     return {
       schema_version: 2,
@@ -106,20 +105,20 @@ export const ssiServing = {
   },
   async today(version: string): Promise<GitHubTodaySnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");
-    const data = dashboard();
+    const data = await dashboard();
     return {
       version,
       signal_date: data.signal_date,
-      run: run(),
+      run: run(data),
       signals: data.latest.map(todaySignal),
       status: { ohlc: null, outcome: null, ic: null },
     };
   },
   async buy(version: string): Promise<GitHubBuySnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");
-    const data = dashboard();
+    const data = await dashboard();
     const selected = data.latest.filter((row) => row.decision === "BUY" || row.decision === "STRONG BUY");
-    const currentRun = run();
+    const currentRun = run(data);
     return {
       version,
       latestBuy: selected.length ? { run_id: currentRun.run_id, signal_date: data.signal_date, snap_time: selected[0].snap_time } : null,
@@ -141,7 +140,8 @@ export const ssiServing = {
   },
   async history(version: string): Promise<GitHubHistorySnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");
-    const rows = dashboard().history.map((row) => ({
+    const data = await dashboard();
+    const rows = data.history.map((row) => ({
       id: row.pred_id,
       symbol: row.symbol,
       decision: row.decision,
@@ -164,7 +164,8 @@ export const ssiServing = {
   },
   async analysis(version: string): Promise<GitHubAnalysisSnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");
-    const results = dashboard().history
+    const data = await dashboard();
+    const results = data.history
       .filter((row) => row.decision === "BUY" || row.decision === "STRONG BUY")
       .map((row) => ({
         pred_id: row.pred_id,
@@ -197,7 +198,8 @@ export const ssiServing = {
   async chart(version: string, symbol: string): Promise<GitHubChartSnapshot> {
     if (version !== SSI_SCORING_VERSION) throw new Error("Unsupported SSI scoring version");
     const normalized = symbol.toUpperCase();
-    const signals = dashboard().history.filter((row) => row.symbol === normalized).map((row) => ({
+    const data = await dashboard();
+    const signals = data.history.filter((row) => row.symbol === normalized).map((row) => ({
       signal_date: row.signal_date,
       snap_time: row.snap_time,
       decision: row.decision,

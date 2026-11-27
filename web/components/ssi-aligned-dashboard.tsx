@@ -38,7 +38,7 @@ function SourceNotice() {
 }
 
 export async function SsiAlignedDashboard({ tab }: { tab: SsiAlignedTab }) {
-  const dashboard = getSsiIndependentDashboard();
+  const dashboard = await getSsiIndependentDashboard();
   if (!dashboard) throw new Error("SSI dashboard source/schema validation failed");
 
   if (tab === "buy") {
