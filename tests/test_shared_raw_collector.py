@@ -23,15 +23,17 @@ class FakeTransport:
         self.calls.append((endpoint, source, symbol, parameters))
         if endpoint == "ohlcv" and symbol in self.fail_ohlcv:
             raise RuntimeError("fixture transport failure containing no secret")
-        if endpoint in {"ohlcv", "index_ohlcv"}:
+        if endpoint in {"ohlcv", "ohlcv_intraday", "index_ohlcv"}:
             return [{
                 "time": "2026-11-25", "open": 100, "high": 103,
                 "low": 99, "close": 102, "volume": 1000,
             }]
-        if endpoint == "foreign_flow":
+        if endpoint in {"foreign_flow", "foreign_flow_fhsc"}:
             return [{"time": "2026-11-25", "foreign_net_value": 100_000_000}]
         if endpoint == "session_stats":
-            return [{"symbol": symbol, "time": "2026-11-25", "total_value": 1_000_000_000}]
+            return [{"symbol": symbol, "time": "2026-11-25", "total_value": 1_000_000_000, "total_buy_trade_volume": 1000, "total_sell_trade_volume": 1000, "total_buy_trade": 10, "total_sell_trade": 10}]
+        if endpoint == "active_session":
+            return [{"symbol": symbol, "active_buy_volume": 1000, "active_sell_volume": 1000, "buy_order_count": 10, "sell_order_count": 10}]
         if endpoint == "reference":
             return [{"symbol": "FPT", "industry": "Technology"}, {"symbol": "HPG", "industry": "Materials"}]
         if endpoint in {"balance_sheet", "income_statement", "cash_flow"}:
@@ -89,13 +91,40 @@ class SharedRawCollectorTests(unittest.TestCase):
             with self.assertRaisesRegex(FileExistsError, "IMMUTABLE"):
                 self.collect(root)
 
-    def test_market_mode_does_not_call_post_market_slow_endpoints(self):
+    def test_intraday_cadence_has_live_inputs_but_skips_slow_statements(self):
         with tempfile.TemporaryDirectory(dir=TEMP_ROOT) as temp:
             transport = FakeTransport()
             manifest = self.collect(Path(temp), mode="market", transport=transport)
             called = {call[0] for call in transport.calls}
-            self.assertFalse({"order_book", "proprietary_flow", "insider_deal"} & called)
+            self.assertTrue({"ohlcv_intraday", "order_book", "foreign_flow_fhsc", "active_session"} <= called)
+            self.assertFalse({"balance_sheet", "income_statement", "cash_flow", "proprietary_flow", "insider_deal"} & called)
+            self.assertEqual(manifest["cadence"], "intraday")
             self.assertEqual(manifest["mode"], "market")
+
+    def test_daily_and_weekly_cadence_contract(self):
+        with tempfile.TemporaryDirectory(dir=TEMP_ROOT) as temp:
+            daily_transport = FakeTransport()
+            daily = raw.collect_release(
+                config(), daily_transport, Path(temp) / "daily", cadence="daily",
+                signal_date=date(2026, 11, 25),
+                created_at=datetime(2026, 11, 25, 10, 30, tzinfo=timezone.utc),
+            )
+            daily_called = {call[0] for call in daily_transport.calls}
+            self.assertTrue({"balance_sheet", "proprietary_flow", "insider_deal"} <= daily_called)
+            self.assertNotIn("ohlcv_intraday", daily_called)
+            self.assertNotIn("order_book", daily_called)
+            self.assertEqual(daily["cadence"], "daily")
+
+            weekly_transport = FakeTransport()
+            weekly = raw.collect_release(
+                config(), weekly_transport, Path(temp) / "weekly", cadence="weekly",
+                signal_date=date(2026, 11, 25),
+                created_at=datetime(2026, 11, 25, 11, 30, tzinfo=timezone.utc),
+            )
+            weekly_called = {call[0] for call in weekly_transport.calls}
+            self.assertIn("order_book", weekly_called)
+            self.assertIn("cash_flow", weekly_called)
+            self.assertEqual(weekly["cadence"], "weekly")
 
     def test_failed_quality_gate_does_not_publish_current_pointer(self):
         with tempfile.TemporaryDirectory(dir=TEMP_ROOT) as temp:

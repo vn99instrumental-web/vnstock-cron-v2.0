@@ -4,7 +4,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.shared_raw_collector import load_current_manifest
+try:
+    from scripts.shared_raw_collector import load_current_manifest
+except ModuleNotFoundError:
+    from shared_raw_collector import load_current_manifest
 
 
 ROOT = Path(__file__).resolve().parents[1]

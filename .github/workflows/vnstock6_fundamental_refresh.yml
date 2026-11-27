@@ -3,6 +3,10 @@ name: VNStock 6 weekly fundamentals
 on:
   workflow_dispatch:
     inputs:
+      raw_release_id:
+        description: Exact immutable weekly SSI/FHSC raw release
+        required: true
+        type: string
       limit:
         description: Optional number of configured symbols to refresh; 0 means all
         type: number
@@ -22,14 +26,18 @@ jobs:
     env:
       HOME: /home/runner
       DO_NOT_TRACK: "1"
+      RAW_RELEASE_ID: ${{ inputs.raw_release_id }}
+      REFRESH_LIMIT: ${{ inputs.limit || 0 }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Sync the latest serialized writer state
+      - name: Sync exact release from main
         run: |
           git fetch origin main
           git checkout -B main origin/main
+          [[ "$RAW_RELEASE_ID" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$ ]]
+          test -f "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID/manifest.json"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -37,68 +45,31 @@ jobs:
         with:
           path: /home/runner/.venv_6x
           key: vnstock-gen6-6.0.0-oapi0.1.1-quant1.0.0-${{ runner.os }}-python311
-      - name: Ensure generation 6 environment
+      - name: Ensure generation 6 calculation environment
         run: |
           test -x ~/.venv_6x/bin/python || python3 -m venv ~/.venv_6x
           ~/.venv_6x/bin/python -m pip install -U --extra-index-url https://vnstocks.com/api/packages "vnstock==6.0.0" "vnstock-oapi==0.1.1" "vnstock_quant==1.0.0"
-      - name: Refresh FHSC statements and calculated factors
-        id: fundamentals
-        env:
-          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
-          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
-          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
-          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
-          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
-          REFRESH_LIMIT: ${{ inputs.limit || 0 }}
+      - name: Recalculate full FHSC factors from weekly raw
         run: |
-          test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
-          test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
-          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
-          args=()
+          ~/.venv_6x/bin/python scripts/shared_raw_collector.py verify --release-dir "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID"
+          args=(--raw-release-id "$RAW_RELEASE_ID")
           if [ "$REFRESH_LIMIT" -gt 0 ]; then args+=(--fundamental-limit "$REFRESH_LIMIT"); fi
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py fundamentals "${args[@]}"
-          material_changed=$(~/.venv_6x/bin/python -c "import json; from pathlib import Path; d=json.loads(Path('output/vnstock6/fundamental-status.json').read_text()); print('true' if int(d['counts'].get('material_changed', 0)) > 0 else 'false')")
-          metadata_changed=$(~/.venv_6x/bin/python -c "import json; from pathlib import Path; d=json.loads(Path('output/vnstock6/fundamental-status.json').read_text()); print('true' if int(d['counts'].get('metadata_changed', 0)) > 0 else 'false')")
-          echo "material_changed=$material_changed" >> "$GITHUB_OUTPUT"
-          echo "metadata_changed=$metadata_changed" >> "$GITHUB_OUTPUT"
-          if [ "$material_changed" = "true" ] || [ "$metadata_changed" = "true" ]; then
-            echo "serving_changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "serving_changed=false" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Weekly BCTC changes: material=$material_changed metadata=$metadata_changed"
-      - name: Validate secret-free cache
-        run: ~/.venv_6x/bin/python scripts/validate_vnstock6_fundamentals.py
-      - name: Recalculate scores and serving when BCTC data or period metadata changed
-        if: steps.fundamentals.outputs.serving_changed == 'true'
-        env:
-          VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
-          VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
-          SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
-          SSI_API_SECRET: ${{ secrets.SSI_API_SECRET }}
-          FHSC_API_KEY: ${{ secrets.FINHAY_API_KEY }}
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_fundamentals.py
+      - name: Recalculate scores and serving from the same release
         run: |
-          ~/.venv_6x/bin/python -c "import os, vnstock; vnstock.login(os.environ['VNSTOCK_API_KEY'])"
-          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run
+          ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py run --refresh-slow-market --raw-release-id "$RAW_RELEASE_ID"
           ~/.venv_6x/bin/python scripts/vnstock6_native_pipeline.py evaluate
           ~/.venv_6x/bin/python scripts/build_dashboard_serving_local.py --full --versions v6.4.19-shadow v6.4.18 v6.4.17
-          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py \
-            --run-id "${{ github.run_id }}" \
-            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py \
-            --run-id "${{ github.run_id }}" \
-            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --output comparison/weekly-fundamental-summary.json
-      - name: Publish fundamental cache and changed dashboard
+          ~/.venv_6x/bin/python scripts/materialize_vnstock6_serving.py --run-id "${{ github.run_id }}" --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ~/.venv_6x/bin/python scripts/validate_vnstock6_candidate.py --run-id "${{ github.run_id }}" --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" --output comparison/weekly-fundamental-summary.json
+      - name: Publish fundamental cache and serving
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- output/vnstock6/fundamental-factors.json output/vnstock6/fundamental-status.json
-          if [ "${{ steps.fundamentals.outputs.serving_changed }}" = "true" ]; then
-            git add -- output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6-preview/dashboard.json output/serving/vnstock6 comparison/weekly-fundamental-summary.json
-          fi
+          git add -- output/history/vnstock6 output/ohlc output/market/vnindex.json output/vnstock6 output/vnstock6-preview/dashboard.json output/serving/vnstock6 comparison/weekly-fundamental-summary.json
           git diff --cached --quiet && exit 0
-          git commit -m "data: refresh vnstock6 fundamentals"
+          git commit -m "data: refresh vnstock6 weekly from $RAW_RELEASE_ID"
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push; then exit 0; fi
             git rebase --abort 2>/dev/null || true
@@ -106,10 +77,8 @@ jobs:
           done
           exit 1
       - name: Revalidate Vercel dashboard cache
-        if: steps.fundamentals.outputs.serving_changed == 'true'
         env:
           DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
         run: |
           test -n "$DASHBOARD_REVALIDATE_SECRET"
-          curl --fail --silent --show-error --retry 3 --retry-all-errors -X POST \
-            "https://trading-snapshot-dl.vercel.app/api/revalidate" -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"
+          curl --fail --silent --show-error --retry 3 --retry-all-errors -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"

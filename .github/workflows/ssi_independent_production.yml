@@ -1,10 +1,12 @@
 name: SSI independent production
 
 on:
-  workflow_run:
-    workflows: ["Shared raw SSI FHSC production"]
-    types: [completed]
   workflow_dispatch:
+    inputs:
+      raw_release_id:
+        description: Exact immutable SSI/FHSC raw release
+        required: true
+        type: string
 
 concurrency:
   group: vnstock-main-writer
@@ -15,17 +17,20 @@ permissions:
 
 jobs:
   produce:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      RAW_RELEASE_ID: ${{ inputs.raw_release_id }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Sync latest immutable shared raw release
+      - name: Sync exact release from main
         run: |
           git fetch origin main
           git checkout -B main origin/main
+          [[ "$RAW_RELEASE_ID" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$ ]]
+          test -f "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID/manifest.json"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -33,19 +38,18 @@ jobs:
         run: python -m unittest tests.test_shared_raw_collector tests.test_ssi_raw_features tests.test_ssi_independent_pipeline
       - name: Verify raw release and SSI boundary
         run: |
-          python scripts/shared_raw_collector.py verify
+          python scripts/shared_raw_collector.py verify --release-dir "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID"
           python scripts/validate_ssi_standalone.py
           python scripts/ssi_raw_features.py
-
       - name: Build SSI serving, ledger and dashboard artifact
-        run: python scripts/ssi_independent_pipeline.py build
+        run: python scripts/ssi_independent_pipeline.py build --raw-release-id "$RAW_RELEASE_ID"
       - name: Publish independent SSI artifacts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- output/history/ssi-independent output/serving/ssi web/data/ssi-independent-dashboard.json
           git diff --cached --quiet && exit 0
-          git commit -m "data: publish independent SSI scores"
+          git commit -m "data: publish independent SSI scores from $RAW_RELEASE_ID"
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push; then exit 0; fi
             git rebase --abort 2>/dev/null || true
@@ -57,6 +61,6 @@ jobs:
           DASHBOARD_REVALIDATE_SECRET: ${{ secrets.DASHBOARD_REVALIDATE_SECRET }}
         run: |
           test -n "$DASHBOARD_REVALIDATE_SECRET"
-          curl --fail --silent --show-error --retry 3 --retry-all-errors \
-            -X POST "https://trading-snapshot-dl.vercel.app/api/revalidate" \
+          curl --fail --silent --show-error --retry 3 --retry-all-errors -X POST \
+            "https://trading-snapshot-dl.vercel.app/api/revalidate" \
             -H "Authorization: Bearer $DASHBOARD_REVALIDATE_SECRET"

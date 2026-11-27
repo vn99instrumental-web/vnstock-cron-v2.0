@@ -3,12 +3,13 @@
   "$id": "https://trading-snapshot.local/schemas/shared-raw-release-v1.json",
   "title": "Immutable SSI/FHSC shared raw release manifest",
   "type": "object",
-  "required": ["schema_version", "namespace", "release_id", "created_at", "mode", "sources", "datasets", "qc"],
+  "required": ["schema_version", "namespace", "release_id", "created_at", "cadence", "mode", "sources", "datasets", "qc"],
   "properties": {
     "schema_version": {"const": 1},
     "namespace": {"const": "ssi-fhsc-raw"},
     "release_id": {"type": "string", "pattern": "^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$"},
     "created_at": {"type": "string", "format": "date-time"},
+    "cadence": {"enum": ["intraday", "daily", "weekly"]},
     "mode": {"enum": ["market", "full"]},
     "sources": {
       "type": "object",

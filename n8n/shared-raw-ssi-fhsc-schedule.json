@@ -1,0 +1,253 @@
+{
+    "versionId":  "0e0b8e88-3ce6-4eb7-a80b-123af6488de0",
+    "tags":  [
+
+             ],
+    "meta":  {
+                 "templateCredsSetupCompleted":  false,
+                 "instanceId":  ""
+             },
+    "name":  "Shared raw SSI FHSC cadence dispatcher",
+    "connections":  {
+                        "Daily ICT weekdays":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "Dispatch shared raw daily",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "Intraday ICT weekdays":  {
+                                                      "main":  [
+                                                                   [
+                                                                       {
+                                                                           "node":  "Dispatch shared raw intraday",
+                                                                           "type":  "main",
+                                                                           "index":  0
+                                                                       }
+                                                                   ]
+                                                               ]
+                                                  },
+                        "Weekly ICT Sunday":  {
+                                                  "main":  [
+                                                               [
+                                                                   {
+                                                                       "node":  "Dispatch shared raw weekly",
+                                                                       "type":  "main",
+                                                                       "index":  0
+                                                                   }
+                                                               ]
+                                                           ]
+                                              }
+                    },
+    "active":  false,
+    "nodes":  [
+                  {
+                      "id":  "cadence-intraday",
+                      "name":  "Intraday ICT weekdays",
+                      "type":  "n8n-nodes-base.scheduleTrigger",
+                      "position":  [
+                                       0,
+                                       0
+                                   ],
+                      "parameters":  {
+                                         "rule":  {
+                                                      "interval":  [
+                                                                       {
+                                                                           "expression":  "15 9 * * 1-5",
+                                                                           "field":  "cronExpression"
+                                                                       },
+                                                                       {
+                                                                           "expression":  "30 10 * * 1-5",
+                                                                           "field":  "cronExpression"
+                                                                       },
+                                                                       {
+                                                                           "expression":  "30 11 * * 1-5",
+                                                                           "field":  "cronExpression"
+                                                                       },
+                                                                       {
+                                                                           "expression":  "45 13 * * 1-5",
+                                                                           "field":  "cronExpression"
+                                                                       },
+                                                                       {
+                                                                           "expression":  "50 14 * * 1-5",
+                                                                           "field":  "cronExpression"
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                      "typeVersion":  1.2
+                  },
+                  {
+                      "id":  "cadence-daily",
+                      "name":  "Daily ICT weekdays",
+                      "type":  "n8n-nodes-base.scheduleTrigger",
+                      "position":  [
+                                       0,
+                                       220
+                                   ],
+                      "parameters":  {
+                                         "rule":  {
+                                                      "interval":  [
+                                                                       {
+                                                                           "expression":  "15 16 * * 1-5",
+                                                                           "field":  "cronExpression"
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                      "typeVersion":  1.2
+                  },
+                  {
+                      "id":  "cadence-weekly",
+                      "name":  "Weekly ICT Sunday",
+                      "type":  "n8n-nodes-base.scheduleTrigger",
+                      "position":  [
+                                       0,
+                                       440
+                                   ],
+                      "parameters":  {
+                                         "rule":  {
+                                                      "interval":  [
+                                                                       {
+                                                                           "expression":  "15 9 * * 0",
+                                                                           "field":  "cronExpression"
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                      "typeVersion":  1.2
+                  },
+                  {
+                      "id":  "dispatch-intraday",
+                      "name":  "Dispatch shared raw intraday",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "position":  [
+                                       360,
+                                       0
+                                   ],
+                      "parameters":  {
+                                         "url":  "https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/shared_raw_ssi_fhsc.yml/dispatches",
+                                         "options":  {
+
+                                                     },
+                                         "contentType":  "raw",
+                                         "method":  "POST",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "value":  "application/vnd.github+json",
+                                                                                         "name":  "Accept"
+                                                                                     },
+                                                                                     {
+                                                                                         "value":  "2022-11-28",
+                                                                                         "name":  "X-GitHub-Api-Version"
+                                                                                     },
+                                                                                     {
+                                                                                         "value":  "n8n-shared-raw-dispatcher",
+                                                                                         "name":  "User-Agent"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "sendHeaders":  true,
+                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"intraday\"}}",
+                                         "genericAuthType":  "httpHeaderAuth",
+                                         "rawContentType":  "application/json",
+                                         "authentication":  "genericCredentialType"
+                                     },
+                      "typeVersion":  4.2
+                  },
+                  {
+                      "id":  "dispatch-daily",
+                      "name":  "Dispatch shared raw daily",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "position":  [
+                                       360,
+                                       220
+                                   ],
+                      "parameters":  {
+                                         "url":  "https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/shared_raw_ssi_fhsc.yml/dispatches",
+                                         "options":  {
+
+                                                     },
+                                         "contentType":  "raw",
+                                         "method":  "POST",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "value":  "application/vnd.github+json",
+                                                                                         "name":  "Accept"
+                                                                                     },
+                                                                                     {
+                                                                                         "value":  "2022-11-28",
+                                                                                         "name":  "X-GitHub-Api-Version"
+                                                                                     },
+                                                                                     {
+                                                                                         "value":  "n8n-shared-raw-dispatcher",
+                                                                                         "name":  "User-Agent"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "sendHeaders":  true,
+                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"daily\"}}",
+                                         "genericAuthType":  "httpHeaderAuth",
+                                         "rawContentType":  "application/json",
+                                         "authentication":  "genericCredentialType"
+                                     },
+                      "typeVersion":  4.2
+                  },
+                  {
+                      "id":  "dispatch-weekly",
+                      "name":  "Dispatch shared raw weekly",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "position":  [
+                                       360,
+                                       440
+                                   ],
+                      "parameters":  {
+                                         "url":  "https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/shared_raw_ssi_fhsc.yml/dispatches",
+                                         "options":  {
+
+                                                     },
+                                         "contentType":  "raw",
+                                         "method":  "POST",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "value":  "application/vnd.github+json",
+                                                                                         "name":  "Accept"
+                                                                                     },
+                                                                                     {
+                                                                                         "value":  "2022-11-28",
+                                                                                         "name":  "X-GitHub-Api-Version"
+                                                                                     },
+                                                                                     {
+                                                                                         "value":  "n8n-shared-raw-dispatcher",
+                                                                                         "name":  "User-Agent"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "sendHeaders":  true,
+                                         "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"weekly\"}}",
+                                         "genericAuthType":  "httpHeaderAuth",
+                                         "rawContentType":  "application/json",
+                                         "authentication":  "genericCredentialType"
+                                     },
+                      "typeVersion":  4.2
+                  }
+              ],
+    "settings":  {
+                     "saveManualExecutions":  true,
+                     "executionOrder":  "v1",
+                     "timezone":  "Asia/Ho_Chi_Minh"
+                 },
+    "pinData":  {
+
+                }
+}

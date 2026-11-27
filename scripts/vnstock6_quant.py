@@ -117,6 +117,123 @@ def _growth(frames: list[pd.DataFrame], codes: tuple[str,...]) -> float | None:
     if current is None or prior in (None,0): return None
     return current/abs(prior)-(1 if prior>0 else -1)
 
+def fundamental_factors_from_frames(
+    symbol: str, frames: list[pd.DataFrame], industry: str | None = None,
+    known_signature: str | None = None,
+) -> dict[str, Any]:
+    """Calculate Gen6 fundamentals from provider-raw FHSC frames.
+
+    The input transport is shared, but every ratio and score remains owned by
+    vnstock_quant.fa and the Gen6 model; no SSI-calculated field is consumed.
+    """
+    statements = {}
+    names = ("balance_sheet", "income_statement", "cash_flow")
+    try:
+        if len(frames) != 3:
+            raise ValueError("GEN6_RAW_FUNDAMENTAL_REQUIRES_THREE_STATEMENTS")
+        normalized: list[pd.DataFrame] = []
+        for name, frame in zip(names, frames):
+            value = frame.copy() if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
+            normalized.append(value)
+            statements[name] = {
+                "status": "success" if not value.empty else "empty",
+                "rows": len(value), "schema_changes": [], "identity_issue_count": 0,
+            }
+        frames = normalized
+        statement_periods = {
+            name: _latest_statement_period(frame)
+            for name, frame in zip(("balance-sheet", "income-statement", "cash-flow"), frames)
+        }
+        period_metadata = {
+            "latest_statement_periods": statement_periods,
+            "latest_income_period": statement_periods["income-statement"],
+            "cash_flow_period": statement_periods["cash-flow"],
+        }
+        statement_signature = _statement_signature(frames)
+        if known_signature and statement_signature == known_signature:
+            return {
+                "unchanged": True, "statement_signature": statement_signature,
+                "statements": statements, **period_metadata,
+                "engine": "vnstock_quant.fa", "version": "1.1.0",
+            }
+        table = fa.ratios(
+            fa.Dataset.from_frames({symbol: frames}), ids=list(RATIO_IDS),
+            period="quarter", format="long",
+        )
+        ratios: dict[str, float] = {}
+        if table is not None and not table.empty:
+            table = table.sort_values("period")
+            for ratio_id in RATIO_IDS:
+                rows = table[table["id"] == ratio_id].copy()
+                rows["value"] = pd.to_numeric(rows["value"], errors="coerce")
+                rows = rows.dropna(subset=["value"])
+                if not rows.empty:
+                    ratios[ratio_id] = float(rows.iloc[-1]["value"])
+        parts = []
+        for key, center, scale, invert in (
+            ("RT_PRT_ROE", .08, .15, False), ("RT_PRT_ROA", .03, .08, False),
+            ("RT_PRT_GROSS_MARGIN", .15, .25, False), ("RT_PRT_NET_MARGIN", .05, .15, False),
+            ("RT_LQD_CR", 1., 1., False), ("RT_LEV_DE", 1.5, 1.5, True),
+        ):
+            if key in ratios:
+                parts.append(_clip((center - ratios[key] if invert else ratios[key] - center) / scale))
+        growth_revenue_yoy = _growth(frames, ("IS_NET_REVENUE", "IS_OPERATING_INCOME"))
+        growth_profit_yoy = _growth(frames, ("IS_NET_PROFIT_AFTER_TAX_OF_PARENT", "IS_NET_PROFIT_AFTER_TAX"))
+        growth_values = [value for value in (growth_revenue_yoy, growth_profit_yoy) if value is not None]
+
+        def latest_line(frame: pd.DataFrame, codes: tuple[str, ...]) -> float | None:
+            column = "id" if "id" in frame else "line_code" if "line_code" in frame else None
+            if not column or "value" not in frame:
+                return None
+            rows = frame[frame[column].astype(str).isin(codes)].copy()
+            if "period" in rows:
+                rows = rows.sort_values("period")
+            values = pd.to_numeric(rows.get("value"), errors="coerce").dropna()
+            return finite(values.iloc[-1]) if not values.empty else None
+
+        cash, income = frames[2], frames[1]
+        cfo = latest_line(cash, (
+            "CF_CASH_FLOW_FROM_OPERATING_ACTIVITIES",
+            "CF_NET_CASH_FLOWS_FROM_OPERATING_ACTIVITIES", "CF_OPERATING",
+        ))
+        net_profit = latest_line(income, (
+            "IS_NET_PROFIT_AFTER_TAX_OF_PARENT", "IS_NET_PROFIT_AFTER_TAX",
+        ))
+        cf_quality = finite(cfo / net_profit) if cfo is not None and net_profit not in (None, 0) else None
+        financial = _is_financial_industry(industry)
+        cf_parts = []
+        if industry and not financial and cfo is not None:
+            cf_parts.append(5 if cfo > 0 else -10)
+        if industry and not financial and cf_quality is not None:
+            cf_parts.append(5 if cf_quality > 1 else -5 if cf_quality < .5 else 0)
+        cf_score = max(-10, min(10, sum(cf_parts))) if cf_parts else None
+        return {
+            "fundamental": sum(parts) / len(parts) if parts else None,
+            "growth": sum(_clip(value / .25) for value in growth_values) / len(growth_values) if growth_values else None,
+            "growth_revenue_yoy": growth_revenue_yoy, "growth_profit_yoy": growth_profit_yoy,
+            "cash_flow": None if cf_score is None else cf_score / 10,
+            "cash_flow_score": cf_score, "cash_flow_operating": cfo,
+            "cash_flow_quality": cf_quality, "industry": industry,
+            "fundamental_reason": None if parts else "vnstock_quant_no_usable_ratios",
+            "growth_reason": None if growth_values else "insufficient_quarterly_growth_history",
+            "cash_flow_reason": None if cf_score is not None else (
+                "sector_cash_flow_excluded" if financial else
+                "industry_unavailable" if not industry else "vnstock_quant_no_usable_cash_flow"
+            ),
+            "ratios": ratios, "statements": statements,
+            "statement_signature": statement_signature, **period_metadata,
+            "engine": "vnstock_quant.fa", "version": "1.1.0",
+        }
+    except Exception as exc:
+        reason = getattr(exc, "code", None) or type(exc).__name__
+        return {
+            "fundamental": None, "growth": None, "cash_flow": None,
+            "fundamental_reason": reason, "growth_reason": reason, "cash_flow_reason": reason,
+            "ratios": {}, "statements": statements,
+            "engine": "vnstock_quant.fa", "version": "1.1.0",
+            "error": {"type": type(exc).__name__, "code": getattr(exc, "code", None), "action": getattr(exc, "action", None)},
+        }
+
 def fundamental_factors(
     symbol: str, source: str, industry: str | None = None,
     known_signature: str | None = None,

@@ -2,7 +2,7 @@
 
 ## Current state
 
-Generation 6 uses final packages `vnstock==6.0.0`, `vnstock-oapi==0.1.1` and `vnstock_quant==1.0.0` in the isolated GitHub Actions environment `~/.venv_6x`. Exact pins and the private extra index make every GitHub Actions run reproducible. The legacy generation 4/5 runtime and ledgers remain untouched for historical comparison.
+Generation 6 uses final packages `vnstock==6.0.0`, `vnstock-oapi==0.1.1` and `vnstock_quant==1.0.0` in the isolated GitHub Actions environment `~/.venv_6x`. Production calculators consume one verified immutable SSI/FHSC raw release ID; Gen 6 still owns every ratio, indicator and score calculation. Exact pins and the private extra index make every GitHub Actions run reproducible. The legacy generation 4/5 runtime and ledgers remain untouched for historical comparison.
 The source contract is explicit:
 
 | Domain | Primary | Fallback | Notes |
@@ -37,27 +37,26 @@ Historical generation 4/5 prediction ledgers are immutable. Generation 6 writes 
 Each native signal records `pipeline_generation`, `reference_source`, `market_source`, `fundamental_source`, `fundamental_status`, `data_origin`, `calculation_engine`, `calculation_version`, technical indicator output, factor availability and excluded-factor reasons.
 ## n8n schedule ownership
 
-The active n8n workflow owns all Gen 6 schedules in timezone `Asia/Ho_Chi_Minh`: five weekday intraday dispatches at `09:15`, `10:30`, `11:30`, `13:45` and `14:50`, weekday daily maintenance at `16:15`, and the full slow-source refresh at `09:15` on Sunday. GitHub Actions workflows are dispatch-only executors and contain no `schedule` trigger.
+n8n owns all schedules in timezone `Asia/Ho_Chi_Minh`: five weekday intraday dispatches at `09:15`, `10:30`, `11:30`, `13:45`, `14:50`; weekday daily at `16:15`; Sunday weekly at `09:15`. GitHub Actions remains dispatch-only and contains no `schedule` trigger.
 
-Each intraday trigger sends this authenticated GitHub REST request:
+All seven schedules call only:
 
 - method: `POST`;
-- URL: `https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/vnstock6_native_production.yml/dispatches`;
-- GitHub credential: stored in n8n credential storage, never in the workflow JSON;
-- body: `{"ref":"main","inputs":{"mode":"intraday","activate_dashboard":"true"}}`;
-- headers: `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`.
+- URL: `https://api.github.com/repos/vn99instrumental-web/vnstock-cron-v2.0/actions/workflows/shared_raw_ssi_fhsc.yml/dispatches`;
+- body: `{"ref":"main","inputs":{"cadence":"intraday|daily|weekly"}}`;
+- credential: GitHub HTTP Header Auth stored in n8n credential storage, never in the exported JSON.
 
-The workflow concurrency group vnstock-main-writer queues overlapping calls. An intraday run fetches SSI OHLCV, SSI foreign/session statistics, and the approved FHSC order book (with FHSC foreign/active-session fallback when SSI is unavailable). It calculates technical indicators, scores with committed BCTC/proprietary/insider caches, publishes the Gen6 ledger/serving release, pushes main, then calls the authenticated Vercel revalidation endpoint. It never calls BCTC, proprietary-flow or insider endpoints. n8n should treat HTTP 204 from GitHub dispatch as accepted and alert only when dispatch fails; GitHub Actions remains the source of run success/failure.
+Canonical import file: `n8n/shared-raw-ssi-fhsc-schedule.json`. The collector publishes one release, then dispatches SSI and exactly one Gen 6 executor with that immutable `raw_release_id`. The shared `vnstock-main-writer` concurrency group serializes raw and calculated Git writes.
 
 ## Data cadence
 
-| Cadence | Workflow | External reads | Derived work |
+| Cadence | n8n dispatch | Raw collection | Consumers |
 | --- | --- | --- | --- |
-| Five weekday runs at 09:15, 10:30, 11:30, 13:45, 14:50 ICT | vnstock6_native_production.yml dispatched by n8n with mode=intraday | SSI OHLCV/foreign/session; approved FHSC order book and bounded fallbacks; no BCTC/proprietary/insider calls | fast technical/flow/depth signals, scoring, incremental serving and Vercel revalidation |
-| Weekdays at 16:15 ICT | vnstock6_daily_maintenance.yml | BCTC update probes, FHSC proprietary/insider, SSI daily-close OHLCV/foreign; cached in-session depth | recalculate changed BCTC, closing score, outcomes, analytics/serving and Vercel revalidation |
-| Sundays at 09:15 ICT | vnstock6_fundamental_refresh.yml | SSI reference plus FHSC balance sheet, income statement and cash flow | full BCTC safety refresh; rebuild scores/serving and revalidate only on material change |
+| Weekdays 09:15, 10:30, 11:30, 13:45, 14:50 ICT | shared raw `cadence=intraday` | SSI daily+5m OHLCV, foreign/session; FHSC foreign/active-session fallback and order book; no slow endpoints | SSI independent + Gen 6 intraday |
+| Weekdays 16:15 ICT | shared raw `cadence=daily` | SSI daily market data; FHSC BCTC, proprietary and insider; no new order book | SSI independent + Gen 6 daily analytics |
+| Sundays 09:15 ICT | shared raw `cadence=weekly` | full slow-source safety release plus market reference | SSI independent + Gen 6 weekly fundamentals |
 
-All three writers share vnstock-main-writer; overlapping jobs queue instead of writing Git concurrently. n8n is the single schedule owner, while GitHub Actions performs the dispatched work. Do not run the legacy writer concurrently.
+Gen 6 never consumes SSI-calculated features or BCTC. `scripts/vnstock6_raw_adapter.py` verifies the raw release and exposes provider frames; `vnstock6_quant.fa` and Gen 6 scoring calculate independently. SSI likewise never consumes Gen 6 calculations.
 
 ## Promotion gates
 

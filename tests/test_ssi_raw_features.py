@@ -23,7 +23,7 @@ class FeatureTransport:
     def fetch(self, endpoint: str, source: str, symbol: str | None, parameters: dict):
         if endpoint == "reference":
             return [{"symbol": "FPT", "industry": "Technology"}]
-        if endpoint in {"ohlcv", "index_ohlcv"}:
+        if endpoint in {"ohlcv", "ohlcv_intraday", "index_ohlcv"}:
             start = date(2025, 10, 1)
             return [{
                 "time": (start + timedelta(days=index)).isoformat(),
@@ -31,10 +31,12 @@ class FeatureTransport:
                 "low": 89 + index / 10, "close": 91 + index / 10,
                 "volume": 1_000_000 + index * 1000,
             } for index in range(300)]
-        if endpoint == "foreign_flow":
+        if endpoint in {"foreign_flow", "foreign_flow_fhsc"}:
             return [{"time": f"2026-11-{day:02d}", "foreign_net_value": day * 1_000_000} for day in range(1, 21)]
         if endpoint == "session_stats":
             return [{"time": "2026-11-25", "total_buy_trade_volume": 5000, "total_sell_trade_volume": 5000, "total_buy_trade": 50, "total_sell_trade": 50}]
+        if endpoint == "active_session":
+            return [{"active_buy_volume": 5000, "active_sell_volume": 5000, "buy_order_count": 50, "sell_order_count": 50}]
         if endpoint == "income_statement":
             return (
                 statement("IS_NET_REVENUE", [100, 110, 120, 130, 125])

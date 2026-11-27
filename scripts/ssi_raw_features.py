@@ -327,6 +327,21 @@ def _by_symbol(release_dir: Path, endpoint: str) -> dict[str, dict[str, Any]]:
     return {str(value.get("symbol") or "").upper(): value for value in read_dataset(release_dir, path)}
 
 
+def _by_symbol_with_fallback(release_dir: Path, endpoint: str) -> dict[str, dict[str, Any]]:
+    """Use the newest earlier raw dataset when a cadence omits a slow endpoint."""
+    current = _by_symbol(release_dir, endpoint)
+    if current:
+        return current
+    releases = release_dir.parent
+    for candidate in sorted(releases.glob("*/manifest.json"), reverse=True):
+        if candidate.parent.name >= release_dir.name:
+            continue
+        verify_release(candidate.parent)
+        value = _by_symbol(candidate.parent, endpoint)
+        if value:
+            return value
+    return {}
+
 def _rows(mapping: dict[str, dict[str, Any]], symbol: str) -> list[dict[str, Any]]:
     envelope = mapping.get(symbol) or {}
     return list(envelope.get("rows") or []) if envelope.get("status") == "success" else []
@@ -335,7 +350,17 @@ def _rows(mapping: dict[str, dict[str, Any]], symbol: str) -> list[dict[str, Any
 def build_feature_rows(release_dir: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     manifest = verify_release(release_dir)
     signal_date = str(manifest["signal_date"])
-    maps = {endpoint: _by_symbol(release_dir, endpoint) for endpoint in ENDPOINTS if endpoint not in {"reference", "index_ohlcv"}}
+    slow_endpoints = {
+        "balance_sheet", "income_statement", "cash_flow",
+        "proprietary_flow", "insider_deal", "order_book",
+    }
+    maps = {
+        endpoint: (
+            _by_symbol_with_fallback(release_dir, endpoint)
+            if endpoint in slow_endpoints else _by_symbol(release_dir, endpoint)
+        )
+        for endpoint in ENDPOINTS if endpoint not in {"reference", "index_ohlcv"}
+    }
     reference_values = read_dataset(release_dir, ENDPOINTS["reference"][1])
     reference_rows = list(reference_values[0].get("rows") or []) if reference_values else []
     industry_map = {str(_value(row, "symbol", "ticker", "code") or "").upper(): str(_value(row, "industry", "industry_name", "icb_name3") or "") or None for row in reference_rows}

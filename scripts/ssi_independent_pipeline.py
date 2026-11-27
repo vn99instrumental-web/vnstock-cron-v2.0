@@ -357,7 +357,7 @@ def _write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def build() -> dict[str, Any]:
+def build(required_raw_release_id: str | None = None) -> dict[str, Any]:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     input_rows = load_input_rows(config)
     scored = [score_row(row, config) for row in input_rows]
@@ -367,6 +367,8 @@ def build() -> dict[str, Any]:
     dates = sorted({row["signal_date"] for row in scored})
     latest_date = dates[-1]
     latest = sorted((row for row in scored if row["signal_date"] == latest_date), key=lambda row: row["symbol"])
+    if required_raw_release_id and any(row.get("raw_release_id") != required_raw_release_id for row in latest):
+        raise RuntimeError(f"SSI_RAW_RELEASE_NOT_LATEST:{required_raw_release_id}")
     if len(latest) < 80:
         raise RuntimeError(f"SSI_LATEST_COVERAGE_BELOW_80:{len(latest)}")
     generated = datetime.now(timezone.utc).isoformat()
@@ -413,8 +415,9 @@ def build() -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=("build",), default="build", nargs="?")
-    parser.parse_args()
-    dashboard = build()
+    parser.add_argument("--raw-release-id")
+    args = parser.parse_args()
+    dashboard = build(args.raw_release_id)
     print(json.dumps({"version": dashboard["version"], "signal_date": dashboard["signal_date"], **dashboard["summary"]}, ensure_ascii=False, sort_keys=True))
     return 0
 

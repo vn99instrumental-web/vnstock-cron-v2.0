@@ -3,11 +3,11 @@ name: Shared raw SSI FHSC production
 on:
   workflow_dispatch:
     inputs:
-      mode:
-        description: market skips FHSC post-market slow-flow endpoints; full includes them
+      cadence:
+        description: Provider collection cadence dispatched by n8n
         type: choice
-        options: [full, market]
-        default: full
+        options: [intraday, daily, weekly]
+        default: intraday
 
 concurrency:
   group: vnstock-main-writer
@@ -15,6 +15,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   collect:
@@ -45,8 +46,9 @@ jobs:
       - name: Verify raw collector contract
         run: ~/.venv_6x/bin/python -m unittest tests.test_shared_raw_collector
       - name: Collect immutable raw release
+        id: release
         env:
-          RAW_MODE: ${{ inputs.mode || 'full' }}
+          RAW_CADENCE: ${{ inputs.cadence }}
           VNSTOCK_API_KEY: ${{ secrets.VNSTOCK_API_KEY }}
           VNSTOCK_DEVICE_ID: ${{ secrets.VNSTOCK_DEVICE_ID }}
           SSI_API_KEY: ${{ secrets.SSI_API_KEY }}
@@ -56,18 +58,33 @@ jobs:
           test -n "$VNSTOCK_API_KEY" && test -n "$VNSTOCK_DEVICE_ID"
           test -n "$SSI_API_KEY" && test -n "$SSI_API_SECRET" && test -n "$FHSC_API_KEY"
           ~/.venv_6x/bin/python scripts/verify_vnstock_account.py
-          ~/.venv_6x/bin/python scripts/shared_raw_collector.py collect --mode "$RAW_MODE"
+          ~/.venv_6x/bin/python scripts/shared_raw_collector.py collect --cadence "$RAW_CADENCE"
           ~/.venv_6x/bin/python scripts/shared_raw_collector.py verify
+          release_id=$(~/.venv_6x/bin/python -c "import json; print(json.load(open('output/shared-raw/ssi-fhsc/current.json'))['release_id'])")
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
       - name: Publish provider raw release only
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- output/shared-raw/ssi-fhsc
-          git diff --cached --quiet && exit 0
-          git commit -m "data: publish shared raw SSI FHSC release"
+          git diff --cached --quiet || git commit -m "data: publish ${{ inputs.cadence }} shared raw SSI FHSC release"
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push; then exit 0; fi
             git rebase --abort 2>/dev/null || true
             sleep $((attempt * 3))
           done
           exit 1
+      - name: Dispatch independent calculators with the exact release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+          CADENCE: ${{ inputs.cadence }}
+        run: |
+          gh workflow run ssi_independent_production.yml --ref main -f raw_release_id="$RELEASE_ID"
+          if [ "$CADENCE" = "intraday" ]; then
+            gh workflow run vnstock6_native_production.yml --ref main -f raw_release_id="$RELEASE_ID" -f activate_dashboard=true
+          elif [ "$CADENCE" = "daily" ]; then
+            gh workflow run vnstock6_daily_maintenance.yml --ref main -f raw_release_id="$RELEASE_ID"
+          else
+            gh workflow run vnstock6_fundamental_refresh.yml --ref main -f raw_release_id="$RELEASE_ID" -f limit=0
+          fi

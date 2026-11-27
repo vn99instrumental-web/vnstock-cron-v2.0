@@ -28,8 +28,11 @@ ENDPOINTS = {
     "reference": ("SSI", "reference/equity-list.jsonl"),
     "index_ohlcv": ("SSI", "market/vnindex-ohlcv.jsonl"),
     "ohlcv": ("SSI", "market/equity-ohlcv.jsonl"),
+    "ohlcv_intraday": ("SSI", "market/equity-ohlcv-intraday.jsonl"),
     "foreign_flow": ("SSI", "market/foreign-flow.jsonl"),
+    "foreign_flow_fhsc": ("FHSC", "market/foreign-flow-fhsc.jsonl"),
     "session_stats": ("SSI", "market/session-stats.jsonl"),
+    "active_session": ("FHSC", "market/active-session.jsonl"),
     "balance_sheet": ("FHSC", "fundamental/balance-sheet.jsonl"),
     "income_statement": ("FHSC", "fundamental/income-statement.jsonl"),
     "cash_flow": ("FHSC", "fundamental/cash-flow.jsonl"),
@@ -117,10 +120,14 @@ class VnstockTransport:
             equity = self.Fundamental(source_name).equity(str(symbol))
             return getattr(equity, endpoint)(**parameters, compat="v6", columns="all")
         equity = self.Market(source_name).equity(str(symbol))
-        if endpoint in {"ohlcv", "foreign_flow"}:
-            return getattr(equity, endpoint)(**parameters, compat="v6", columns="all")
+        if endpoint in {"ohlcv", "ohlcv_intraday"}:
+            return equity.ohlcv(**parameters, compat="v6", columns="all")
+        if endpoint in {"foreign_flow", "foreign_flow_fhsc"}:
+            return equity.foreign_flow(**parameters, compat="v6", columns="all")
         if endpoint == "session_stats":
             return equity.session_stats(**parameters, compat="v6", columns="all")
+        if endpoint == "active_session":
+            return equity.active_session(**parameters, compat="v6", columns="all")
         if endpoint in {"order_book", "insider_deal"}:
             return getattr(equity, endpoint)(compat="v6", columns="all")
         if endpoint == "proprietary_flow":
@@ -182,12 +189,12 @@ def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _release_id(created_at: datetime, signal_date: date, symbols: list[str], mode: str) -> str:
-    seed = content_hash({"date": signal_date.isoformat(), "symbols": symbols, "mode": mode, "created_at": created_at.isoformat()})[:8]
+def _release_id(created_at: datetime, signal_date: date, symbols: list[str], cadence: str) -> str:
+    seed = content_hash({"date": signal_date.isoformat(), "symbols": symbols, "cadence": cadence, "created_at": created_at.isoformat()})[:8]
     return f"{created_at.strftime('%Y%m%dT%H%M%SZ')}-{seed}"
 
 
-def _call_specs(config: dict[str, Any], signal_date: date, mode: str) -> dict[str, list[tuple[str | None, dict[str, Any]]]]:
+def _call_specs(config: dict[str, Any], signal_date: date, cadence: str) -> dict[str, list[tuple[str | None, dict[str, Any]]]]:
     market_start = (signal_date - timedelta(days=int(config["market_history_calendar_days"]))).isoformat()
     flow_start = (signal_date - timedelta(days=int(config["flow_history_calendar_days"]))).isoformat()
     end = signal_date.isoformat()
@@ -197,17 +204,25 @@ def _call_specs(config: dict[str, Any], signal_date: date, mode: str) -> dict[st
         "index_ohlcv": [("VNINDEX", {"start": market_start, "end": end, "interval": "1D"})],
         "ohlcv": [(symbol, {"start": market_start, "end": end, "interval": "1D"}) for symbol in symbols],
         "foreign_flow": [(symbol, {"start": flow_start, "end": end, "interval": "1D"}) for symbol in symbols],
+        "foreign_flow_fhsc": [(symbol, {"start": flow_start, "end": end, "interval": "1D"}) for symbol in symbols],
         "session_stats": [(symbol, {"start": end, "end": end}) for symbol in symbols],
-        "balance_sheet": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
-        "income_statement": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
-        "cash_flow": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
+        "active_session": [(symbol, {}) for symbol in symbols],
     }
-    if mode == "full":
+    if cadence == "intraday":
         specs.update({
+            "ohlcv_intraday": [(symbol, {"start": end, "end": end, "interval": "5m"}) for symbol in symbols],
             "order_book": [(symbol, {}) for symbol in symbols],
+        })
+    if cadence in {"daily", "weekly"}:
+        specs.update({
+            "balance_sheet": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
+            "income_statement": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
+            "cash_flow": [(symbol, {"period": "quarter", "format": "long"}) for symbol in symbols],
             "proprietary_flow": [(symbol, {"start": flow_start, "end": end}) for symbol in symbols],
             "insider_deal": [(symbol, {}) for symbol in symbols],
         })
+    if cadence == "weekly":
+        specs["order_book"] = [(symbol, {}) for symbol in symbols]
     return specs
 
 
@@ -216,19 +231,22 @@ def collect_release(
     transport: RawTransport,
     output_root: Path = RAW_ROOT,
     *,
-    mode: str = "full",
+    cadence: str = "weekly",
+    mode: str | None = None,
     signal_date: date | None = None,
     created_at: datetime | None = None,
     release_id: str | None = None,
 ) -> dict[str, Any]:
-    if mode not in {"market", "full"}:
-        raise ValueError("RAW_MODE_MUST_BE_MARKET_OR_FULL")
+    if mode is not None:
+        cadence = {"market": "intraday", "full": "weekly"}.get(mode, mode)
+    if cadence not in {"intraday", "daily", "weekly"}:
+        raise ValueError("RAW_CADENCE_MUST_BE_INTRADAY_DAILY_OR_WEEKLY")
     created_at = (created_at or datetime.now(UTC)).astimezone(UTC)
     signal_date = signal_date or created_at.date()
     symbols = sorted({str(symbol).upper() for symbol in config["universe"]})
     if not symbols or any(not re.fullmatch(r"[A-Z0-9]{2,5}", symbol) for symbol in symbols):
         raise ValueError("INVALID_SHARED_RAW_UNIVERSE")
-    release_id = release_id or _release_id(created_at, signal_date, symbols, mode)
+    release_id = release_id or _release_id(created_at, signal_date, symbols, cadence)
     if not RELEASE_RE.fullmatch(release_id):
         raise ValueError("INVALID_SHARED_RAW_RELEASE_ID")
     releases = output_root / "releases"
@@ -240,7 +258,7 @@ def collect_release(
     fetched_at = created_at.isoformat()
     datasets: list[dict[str, Any]] = []
     try:
-        for endpoint, calls in _call_specs({**config, "universe": symbols}, signal_date, mode).items():
+        for endpoint, calls in _call_specs({**config, "universe": symbols}, signal_date, cadence).items():
             source, relative = ENDPOINTS[endpoint]
             values: list[dict[str, Any]] = []
             with ThreadPoolExecutor(max_workers=max(1, int(config.get("max_workers", 4)))) as pool:
@@ -275,7 +293,8 @@ def collect_release(
             "release_id": release_id,
             "created_at": fetched_at,
             "signal_date": signal_date.isoformat(),
-            "mode": mode,
+            "cadence": cadence,
+            "mode": "market" if cadence == "intraday" else "full",
             "sources": {"market": "SSI", "fundamental": "FHSC"},
             "universe": symbols,
             "datasets": datasets,
@@ -316,6 +335,8 @@ def verify_release(release_dir: Path) -> dict[str, Any]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != 1 or manifest.get("namespace") != "ssi-fhsc-raw":
         raise ValueError("SHARED_RAW_CONTRACT_MISMATCH")
+    if manifest.get("cadence") not in {"intraday", "daily", "weekly"}:
+        raise ValueError("SHARED_RAW_CADENCE_INVALID")
     if release_dir.name != manifest.get("release_id") or not RELEASE_RE.fullmatch(release_dir.name):
         raise ValueError("SHARED_RAW_RELEASE_ID_MISMATCH")
     if manifest.get("qc", {}).get("status") != "passed":
@@ -355,7 +376,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
     collect = sub.add_parser("collect")
-    collect.add_argument("--mode", choices=("market", "full"), default="full")
+    collect.add_argument("--cadence", choices=("intraday", "daily", "weekly"), default="weekly")
+    collect.add_argument("--mode", choices=("market", "full"), help=argparse.SUPPRESS)
     collect.add_argument("--signal-date")
     collect.add_argument("--output-root", type=Path, default=RAW_ROOT)
     verify = sub.add_parser("verify")
@@ -368,6 +390,7 @@ def main() -> int:
             config,
             VnstockTransport(),
             args.output_root,
+            cadence=args.cadence,
             mode=args.mode,
             signal_date=date.fromisoformat(args.signal_date) if args.signal_date else None,
         )
@@ -378,6 +401,7 @@ def main() -> int:
             _, manifest = load_current_manifest(args.output_root)
     print(json.dumps({
         "release_id": manifest["release_id"],
+        "cadence": manifest.get("cadence"),
         "mode": manifest["mode"],
         "signal_date": manifest["signal_date"],
         "qc": manifest["qc"]["status"],
