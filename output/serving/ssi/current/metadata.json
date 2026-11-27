@@ -1,22 +1,27 @@
 {
   "schema_version": 1,
   "version": "ssi-v4.18-independent",
-  "generated_at": "2026-11-25T05:33:41.061044+00:00",
-  "signal_date": "2026-11-23",
+  "generated_at": "2026-11-27T06:22:33.446681+00:00",
+  "signal_date": "2026-11-27",
   "source_provenance": {
     "market": "SSI",
     "fundamental": "FHSC",
-    "shared_feature_input": "v6.4.18",
-    "calculation": "SSI independent; no Gen6 score/signal consumed"
+    "input_layer": "shared_raw",
+    "raw_release_id": "20261127T041229Z-d12e27b5",
+    "feature_engine": "ssi",
+    "bctc_engine": "ssi",
+    "standalone": true,
+    "gen6_dependencies": [],
+    "calculation": "SSI independent from immutable provider raw; no Gen6 artifact consumed"
   },
   "summary": {
     "symbols": 100,
-    "history_dates": 7,
-    "history_rows": 700,
-    "buy": 43,
-    "sell": 16,
-    "full_17_signal_rows": 41,
-    "minimum_signal_coverage": 14,
+    "history_dates": 1,
+    "history_rows": 100,
+    "buy": 68,
+    "sell": 6,
+    "full_17_signal_rows": 0,
+    "minimum_signal_coverage": 12,
     "scored_symbols": 100
   }
 }
