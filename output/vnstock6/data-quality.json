@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-24T08:13:29.184856+00:00",
+  "generated_at": "2026-11-26T07:35:59.795267+00:00",
   "status": "PASS",
   "rows": 300,
-  "total_serving_rows": 1200,
+  "total_serving_rows": 1500,
   "minimum_required_rows": 240,
   "field_coverage": {
     "price": 300,
@@ -34,7 +34,7 @@
   "warnings": {
     "stale_proprietary_symbols": 100,
     "missing_insider_as_of_symbols": 73,
-    "estimated_turnover_symbols": 0,
+    "estimated_turnover_symbols": 100,
     "single_input_growth_symbols": 32
   },
   "optional_source_coverage": {
