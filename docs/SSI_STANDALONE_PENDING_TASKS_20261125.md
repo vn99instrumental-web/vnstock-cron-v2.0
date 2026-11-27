@@ -62,6 +62,6 @@ Không còn task code/runtime nào trong nhóm full-data 1-5. Hai việc còn l�
 ## Kiểm thử
 
 - Baseline full suite: 104/104 PASS trước compatibility wrapper.
-- Raw/adapter/SSI/n8n focused tests: PASS; contract mới 15/15 PASS, gồm 5 n8n/unified-run, 7 collector/cadence và 3 dashboard history fallback.
+- Full suite 114/114 PASS; contract mới gồm 5 n8n/unified-run, 7 collector/cadence và 3 dashboard history fallback. Unified live run `45959083307` PASS từ raw release có sẵn, không recollect, publish hai namespace và revalidate một lần.
 - `validate_ssi_standalone` package mode: PASS.
 - Security review: không commit token/secret; `raw_release_id` được regex validate; n8n JSON không chứa credential value.
