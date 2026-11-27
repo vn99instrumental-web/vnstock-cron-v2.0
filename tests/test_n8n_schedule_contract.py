@@ -35,19 +35,17 @@ class N8nScheduleContractTests(unittest.TestCase):
             self.assertNotIn("credentials", node)
             self.assertNotIn("token", json.dumps(node).lower())
 
-    def test_legacy_gen6_dispatches_redirect_to_unified_workflow(self):
-        expected = {
-            "vnstock6_native_production.yml": "cadence=intraday",
-            "vnstock6_daily_maintenance.yml": "cadence=daily",
-            "vnstock6_fundamental_refresh.yml": "cadence=weekly",
-        }
-        for filename, cadence in expected.items():
-            text = (ROOT / ".github" / "workflows" / filename).read_text(encoding="utf-8")
-            self.assertIn("redirect_legacy_schedule:", text)
-            self.assertIn("if: inputs.raw_release_id == ''", text)
-            self.assertIn("shared_raw_ssi_fhsc.yml --ref main -f " + cadence, text)
-            self.assertIn("actions: write", text)
-            self.assertIn("GH_REPO: ${{ github.repository }}", text)
+    def test_canonical_n8n_does_not_reference_legacy_workflows(self):
+        export = WORKFLOW.read_text(encoding="utf-8")
+        for filename in (
+            "vnstock6_native_production.yml",
+            "vnstock6_daily_maintenance.yml",
+            "vnstock6_fundamental_refresh.yml",
+            "ssi_independent_production.yml",
+        ):
+            self.assertNotIn(filename, export)
+            workflow = (ROOT / ".github" / "workflows" / filename).read_text(encoding="utf-8")
+            self.assertNotIn("\n  schedule:", workflow)
 
     def test_unified_workflow_does_not_dispatch_calculator_runs(self):
         text = UNIFIED.read_text(encoding="utf-8")
