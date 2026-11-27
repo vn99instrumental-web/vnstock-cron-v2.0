@@ -29,6 +29,7 @@ jobs:
       - name: Route legacy n8n trigger through shared raw collector
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: gh workflow run shared_raw_ssi_fhsc.yml --ref main -f cadence=daily
   maintain:
     if: inputs.raw_release_id != ''

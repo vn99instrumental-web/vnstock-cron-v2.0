@@ -47,6 +47,13 @@ class N8nScheduleContractTests(unittest.TestCase):
             self.assertIn("if: inputs.raw_release_id == ''", text)
             self.assertIn("shared_raw_ssi_fhsc.yml --ref main -f " + cadence, text)
             self.assertIn("actions: write", text)
+            self.assertIn("GH_REPO: ${{ github.repository }}", text)
+
+    def test_shared_collector_dispatches_with_explicit_repo(self):
+        text = (
+            ROOT / ".github" / "workflows" / "shared_raw_ssi_fhsc.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("GH_REPO: ${{ github.repository }}", text)
 
 if __name__ == "__main__":
     unittest.main()

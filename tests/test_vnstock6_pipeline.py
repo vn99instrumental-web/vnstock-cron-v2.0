@@ -1,5 +1,6 @@
 import unittest
 import json
+import shutil
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -12,6 +13,49 @@ import vnstock6_native_pipeline as pipeline
 
 
 class PipelineCadenceTest(unittest.TestCase):
+    def test_unfinalized_daily_close_preserves_last_valid_status(self):
+        root = Path(__file__).parent / ".tmp-daily-defer-status"
+        shutil.rmtree(root, ignore_errors=True)
+        self.addCleanup(lambda: shutil.rmtree(root, ignore_errors=True))
+        status_path = root / "output" / "vnstock6" / "native-status.json"
+        status_path.parent.mkdir(parents=True, exist_ok=True)
+        status_path.write_text(
+            json.dumps({"generated_at": "2026-11-26T09:00:00+00:00", "rows": 100}),
+            encoding="utf-8",
+        )
+
+        with patch.object(pipeline, "ROOT", root):
+            pipeline.defer_unfinalized_daily_close(
+                date(2026, 11, 27),
+                date(2026, 11, 26),
+                "release-123",
+            )
+
+        saved = json.loads(status_path.read_text(encoding="utf-8"))
+        self.assertEqual(saved["rows"], 100)
+        self.assertEqual(
+            saved["daily_close"]["status"],
+            "deferred_source_not_finalized",
+        )
+        self.assertEqual(saved["daily_close"]["expected_date"], "2026-11-27")
+        self.assertEqual(saved["daily_close"]["market_date"], "2026-11-26")
+        self.assertEqual(saved["daily_close"]["raw_release_id"], "release-123")
+
+    def test_unfinalized_daily_close_requires_previous_valid_status(self):
+        root = Path(__file__).parent / ".tmp-daily-defer-empty"
+        shutil.rmtree(root, ignore_errors=True)
+        self.addCleanup(lambda: shutil.rmtree(root, ignore_errors=True))
+
+        with patch.object(pipeline, "ROOT", root):
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "VNSTOCK6_DAILY_SOURCE_NOT_FINALIZED_AND_NO_VALID_SNAPSHOT",
+            ):
+                pipeline.defer_unfinalized_daily_close(
+                    date(2026, 11, 27),
+                    date(2026, 11, 26),
+                )
+
     def test_intraday_turnover_sums_each_bar_close_times_volume(self):
         frame = pd.DataFrame({
             "time": ["2026-11-18 09:00", "2026-11-18 09:05", "2026-11-17 14:55"],
