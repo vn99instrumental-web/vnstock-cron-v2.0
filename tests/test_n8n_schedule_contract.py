@@ -32,6 +32,8 @@ class N8nScheduleContractTests(unittest.TestCase):
             self.assertEqual(json.loads(params["body"]), {
                 "ref": "main", "inputs": {"cadence": cadence, "engine": "both"},
             })
+            self.assertEqual(params["authentication"], "predefinedCredentialType")
+            self.assertEqual(params["nodeCredentialType"], "githubApi")
             self.assertNotIn("credentials", node)
             self.assertNotIn("token", json.dumps(node).lower())
 

@@ -24,7 +24,7 @@ Quy tắc vận hành bắt buộc là **collect once, calculate many**:
 | 2 | Chuyển Gen 6 sang cùng raw release nhưng giữ calculator riêng | DONE | Adapter raw, `fundamental_factors_from_frames`, provenance `raw_release_id`; unit test chứng minh gọi `vnstock_quant.fa`, không gọi SSI calculator |
 | 3 | Chạy release live đầy đủ và đo coverage | DONE | Collector run `45938422349` publish release `20261127T041229Z-d12e27b5`; manifest, hash và raw QC PASS |
 | 4 | Build/publish SSI và Gen 6 từ cùng release, chạy gates và revalidate Vercel | DONE | Gen 6 run `45949217456`; SSI calculator-only run `45952046277`; cả hai success, serving metadata cùng release ID, Vercel revalidate đã chạy |
-| 5 | Chuyển lịch n8n intraday/daily/weekly | DONE IN REPO | Canonical n8n dispatch `shared_raw_ssi_fhsc.yml` với `engine=both`; mỗi trigger tạo đúng một GitHub run, raw được lưu trước rồi Gen 6/SSI tính tuần tự. Chỉ còn import/attach credential/disable legacy/activate trong UI n8n vì repo không có endpoint/session owner. |
+| 5 | Chuyển lịch n8n intraday/daily/weekly | DONE LIVE | Workflow `Unified SSI FHSC data cadence` (`RPjryobbCgj9dcOLM`) đã publish với GitHub API credential; legacy daily/intraday/weekly và backup đều unpublished. Daily run `45962958727` collect một release `20261127T080622Z-bd6870bd`, sau đó Gen 6/SSI tính tuần tự, publish riêng và revalidate thành công. |
 
 ## Coverage live của release chung
 
@@ -54,14 +54,13 @@ D+10/outcome mới vẫn phụ thuộc số phiên tương lai thực tế. Đâ
 
 ## Pending còn lại
 
-Không còn task code/runtime nào trong nhóm full-data 1-5. Hai việc còn lại không được giải quyết bằng cách rerun collector:
+Không còn task code/runtime hay n8n activation nào trong nhóm full-data 1-5. Việc còn lại không được giải quyết bằng cách rerun collector:
 
 1. `PENDING_TIME`: tích lũy outcome D+10 theo phiên giao dịch thực tế và các snapshot lịch sử mới.
-2. `EXTERNAL_VERIFY`: trong UI n8n, import canonical workflow, gắn GitHub credential, tắt các dispatcher Gen 6/SSI legacy, chạy thử từng cadence và activate. Repo hiện không có endpoint/session owner để tự thực hiện thao tác này.
 
 ## Kiểm thử
 
 - Baseline full suite: 104/104 PASS trước compatibility wrapper.
-- Full suite 114/114 PASS; contract mới gồm 5 n8n/unified-run, 7 collector/cadence và 3 dashboard history fallback. Unified live run `45959083307` PASS từ raw release có sẵn, không recollect, publish hai namespace và revalidate một lần.
+- Full suite 114/114 PASS; contract mới gồm 5 n8n/unified-run, 7 collector/cadence và 3 dashboard history fallback. Calculator-only run `45959083307` PASS từ raw release có sẵn, không recollect. Live daily run `45962958727` PASS: collect một release, Gen 6/SSI dùng cùng ID, publish hai namespace và revalidate một lần.
 - `validate_ssi_standalone` package mode: PASS.
 - Security review: không commit token/secret; `raw_release_id` được regex validate; n8n JSON không chứa credential value.

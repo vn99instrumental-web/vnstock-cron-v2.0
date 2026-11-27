@@ -1,6 +1,6 @@
 # n8n shared raw cadence
 
-Import `shared-raw-ssi-fhsc-schedule.json` into the existing n8n instance and select the existing GitHub HTTP Header Auth credential on all three HTTP Request nodes. Do not store the token in this JSON.
+Import `shared-raw-ssi-fhsc-schedule.json` into the existing n8n instance and select the existing predefined **GitHub API** credential on all three HTTP Request nodes. Do not store the credential ID or token in this JSON.
 
 Schedule timezone: `Asia/Ho_Chi_Minh`.
 
@@ -19,4 +19,6 @@ Required GitHub credential permissions for repository `vn99instrumental-web/vnst
 - Actions: read and write.
 - Metadata: read.
 
-After import: attach the credential, run each HTTP node manually and confirm HTTP 204, verify that each manual trigger creates one `Unified SSI FHSC data production` run, then activate the workflow. GitHub Actions is the source of execution success/failure; n8n only owns schedules and dispatch acceptance.
+Live deployment (2026-11-27): workflow `Unified SSI FHSC data cadence` (`RPjryobbCgj9dcOLM`) is published with the predefined `GitHub account` credential. The legacy Gen 6 daily, intraday and weekly workflows and their dated backups are unpublished. Do not execute all three HTTP nodes just to test credentials because that creates three real provider runs. Test one node with a stored `raw_release_id`, confirm HTTP 204, then verify the single GitHub run.
+
+GitHub Actions is the source of execution success/failure; n8n only owns schedules and dispatch acceptance. Production daily run `45962958727` collected release `20261127T080622Z-bd6870bd` once, then completed Gen 6, SSI, separate publish and one Vercel revalidation successfully.

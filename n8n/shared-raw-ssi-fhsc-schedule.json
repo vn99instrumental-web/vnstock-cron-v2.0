@@ -155,9 +155,9 @@
                                          "sendBody":  true,
                                          "sendHeaders":  true,
                                          "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"intraday\",\"engine\":\"both\"}}",
-                                         "genericAuthType":  "httpHeaderAuth",
+                                         "nodeCredentialType":  "githubApi",
                                          "rawContentType":  "application/json",
-                                         "authentication":  "genericCredentialType"
+                                         "authentication":  "predefinedCredentialType"
                                      },
                       "typeVersion":  4.2
                   },
@@ -195,9 +195,9 @@
                                          "sendBody":  true,
                                          "sendHeaders":  true,
                                          "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"daily\",\"engine\":\"both\"}}",
-                                         "genericAuthType":  "httpHeaderAuth",
+                                         "nodeCredentialType":  "githubApi",
                                          "rawContentType":  "application/json",
-                                         "authentication":  "genericCredentialType"
+                                         "authentication":  "predefinedCredentialType"
                                      },
                       "typeVersion":  4.2
                   },
@@ -235,9 +235,9 @@
                                          "sendBody":  true,
                                          "sendHeaders":  true,
                                          "body":  "{\"ref\":\"main\",\"inputs\":{\"cadence\":\"weekly\",\"engine\":\"both\"}}",
-                                         "genericAuthType":  "httpHeaderAuth",
+                                         "nodeCredentialType":  "githubApi",
                                          "rawContentType":  "application/json",
-                                         "authentication":  "genericCredentialType"
+                                         "authentication":  "predefinedCredentialType"
                                      },
                       "typeVersion":  4.2
                   }
