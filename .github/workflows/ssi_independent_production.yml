@@ -42,7 +42,7 @@ jobs:
         run: |
           python scripts/shared_raw_collector.py verify --release-dir "output/shared-raw/ssi-fhsc/releases/$RAW_RELEASE_ID"
           python scripts/validate_ssi_standalone.py
-          python scripts/ssi_raw_features.py
+          python -m scripts.ssi_raw_features
       - name: Build SSI serving, ledger and dashboard artifact
         run: python scripts/ssi_independent_pipeline.py build --raw-release-id "$RAW_RELEASE_ID"
       - name: Publish independent SSI artifacts
