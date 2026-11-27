@@ -81,6 +81,19 @@ class SsiRawFeatureTests(unittest.TestCase):
         self.assertEqual(result["fundamental_period"], "2026-Q3")
         self.assertEqual(result["fundamental_formula_version"], features.FORMULA_VERSION)
 
+    def test_active_session_fallback_supplies_depth_trade_size(self):
+        result = features.flow_features(
+            [], [], [],
+            [{"bid_volume_1": 1000, "bid_volume_2": 800, "bid_volume_3": 600,
+              "ask_volume_1": 200, "ask_volume_2": 200, "ask_volume_3": 200}],
+            [],
+            [{"active_buy_volume": 5000, "active_sell_volume": 5000,
+              "buy_order_count": 50, "sell_order_count": 50}],
+        )
+        self.assertEqual(result["depth_trade_size_source"], "FHSC_ACTIVE_SESSION")
+        self.assertAlmostEqual(result["depth_bid_multiple"], 24.0)
+        self.assertAlmostEqual(result["depth_ask_multiple"], 6.0)
+
     def test_financial_sector_cashflow_quality_is_null(self):
         transport = FeatureTransport()
         result = features.fundamental_features(
@@ -102,7 +115,7 @@ class SsiRawFeatureTests(unittest.TestCase):
             root = Path(temp)
             manifest = raw.collect_release(
                 config, FeatureTransport(), root, mode="full", signal_date=date(2026, 11, 25),
-                created_at=datetime(2026, 11, 25, 9, 30, tzinfo=timezone.utc),
+                created_at=datetime(2026, 11, 25, 4, 30, tzinfo=timezone.utc),
             )
             release = root / "releases" / manifest["release_id"]
             _, rows = features.build_feature_rows(release)
@@ -111,6 +124,7 @@ class SsiRawFeatureTests(unittest.TestCase):
             self.assertEqual(row["input_layer"], "shared_raw")
             self.assertEqual(row["feature_engine"], "ssi")
             self.assertEqual(row["raw_release_id"], manifest["release_id"])
+            self.assertEqual(row["snap_time"], "11:30")
             for key in ("willr_14", "bb_position", "price_vs_ema200_pct", "relative_return_20d", "position_52w", "adx", "supertrend", "ratio_roe", "growth_revenue_yoy", "foreign_net_5d", "depth_bid_multiple"):
                 self.assertIsNotNone(row[key], key)
 

@@ -8,11 +8,13 @@ import unicodedata
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Iterable
+from zoneinfo import ZoneInfo
 
 from scripts.shared_raw_collector import ENDPOINTS, RAW_ROOT, load_current_manifest, read_dataset, verify_release
 
 
-FORMULA_VERSION = "ssi-raw-features-1.0.0"
+FORMULA_VERSION = "ssi-raw-features-1.0.1"
+ICT = ZoneInfo("Asia/Ho_Chi_Minh")
 
 ALIASES = {
     "revenue": ("IS_NET_REVENUE", "IS_REVENUE", "IS_TOTAL_OPERATING_INCOME", "IS_NET_INTEREST_INCOME", "IS_TOTAL_NET_REVENUE_FROM_INSURANCE_BUSINESS"),
@@ -287,7 +289,11 @@ def _sum_net(rows: list[dict[str, Any]], count: int, *, prefix: str = "foreign")
     return sum(values) if values else None
 
 
-def flow_features(foreign: list[dict[str, Any]], proprietary: list[dict[str, Any]], insider: list[dict[str, Any]], order_book: list[dict[str, Any]], session: list[dict[str, Any]]) -> dict[str, Any]:
+def flow_features(
+    foreign: list[dict[str, Any]], proprietary: list[dict[str, Any]],
+    insider: list[dict[str, Any]], order_book: list[dict[str, Any]],
+    session: list[dict[str, Any]], active_session: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     buy = sell = unclassified = 0
     for row in insider:
         kind = str(_value(row, "transaction_type", "deal_type", "type") or "").lower()
@@ -298,11 +304,19 @@ def flow_features(foreign: list[dict[str, Any]], proprietary: list[dict[str, Any
         else:
             unclassified += 1
     average = None
+    trade_size_source = None
     if session:
         row = session[-1]
         volume = (finite(_value(row, "total_buy_trade_volume")) or 0) + (finite(_value(row, "total_sell_trade_volume")) or 0)
         count = (finite(_value(row, "total_buy_trade")) or 0) + (finite(_value(row, "total_sell_trade")) or 0)
         average = volume / count if count else None
+        trade_size_source = "SSI_SESSION_STATS" if average else None
+    if average is None and active_session:
+        row = active_session[-1]
+        volume = (finite(_value(row, "active_buy_volume")) or 0) + (finite(_value(row, "active_sell_volume")) or 0)
+        count = (finite(_value(row, "buy_order_count")) or 0) + (finite(_value(row, "sell_order_count")) or 0)
+        average = volume / count if count else None
+        trade_size_source = "FHSC_ACTIVE_SESSION" if average else None
     bid = ask = None
     if order_book and average:
         row = order_book[-1]
@@ -316,6 +330,7 @@ def flow_features(foreign: list[dict[str, Any]], proprietary: list[dict[str, Any
         "insider_buy_count": buy if insider else None, "insider_sell_count": sell if insider else None,
         "insider_unclassified_count": unclassified if insider else None,
         "depth_bid_multiple": bid, "depth_ask_multiple": ask,
+        "depth_trade_size_source": trade_size_source,
         "flow_formula_version": FORMULA_VERSION,
     }
 
@@ -388,10 +403,10 @@ def build_feature_rows(release_dir: Path) -> tuple[dict[str, Any], list[dict[str
         flow = flow_features(
             _rows(maps["foreign_flow"], symbol), _rows(maps.get("proprietary_flow", {}), symbol),
             _rows(maps.get("insider_deal", {}), symbol), _rows(maps.get("order_book", {}), symbol),
-            _rows(maps["session_stats"], symbol),
+            _rows(maps["session_stats"], symbol), _rows(maps["active_session"], symbol),
         )
         rows.append({
-            "symbol": symbol, "signal_date": signal_date, "snap_time": created.strftime("%H:%M"),
+            "symbol": symbol, "signal_date": signal_date, "snap_time": created.astimezone(ICT).strftime("%H:%M"),
             "snapshot_at": manifest["created_at"], "market_source": "SSI", "fundamental_source": "FHSC",
             "raw_release_id": manifest["release_id"], "input_layer": "shared_raw",
             "feature_engine": "ssi", "feature_version": FORMULA_VERSION,
