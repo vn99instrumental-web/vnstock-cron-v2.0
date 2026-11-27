@@ -37,7 +37,7 @@ Historical generation 4/5 prediction ledgers are immutable. Generation 6 writes 
 Each native signal records `pipeline_generation`, `reference_source`, `market_source`, `fundamental_source`, `fundamental_status`, `data_origin`, `calculation_engine`, `calculation_version`, technical indicator output, factor availability and excluded-factor reasons.
 ## n8n schedule ownership
 
-n8n owns all schedules in timezone `Asia/Ho_Chi_Minh`: five weekday intraday dispatches at `09:15`, `10:30`, `11:30`, `13:45`, `14:50`; weekday daily at `16:15`; Sunday weekly at `09:15`. GitHub Actions remains dispatch-only and contains no `schedule` trigger.
+n8n owns all schedules in timezone `Asia/Ho_Chi_Minh`: five weekday intraday dispatches at `09:25`, `10:25`, `11:25`, `13:25`, `14:25`; weekday daily at `15:05`; Sunday weekly at `07:15`. GitHub Actions remains dispatch-only and contains no `schedule` trigger.
 
 All seven schedules call only:
 
@@ -52,11 +52,13 @@ Canonical import file: `n8n/shared-raw-ssi-fhsc-schedule.json`. The collector pu
 
 | Cadence | n8n dispatch | Raw collection | Consumers |
 | --- | --- | --- | --- |
-| Weekdays 09:15, 10:30, 11:30, 13:45, 14:50 ICT | shared raw `cadence=intraday` | SSI daily+5m OHLCV, foreign/session; FHSC foreign/active-session fallback and order book; no slow endpoints | SSI independent + Gen 6 intraday |
-| Weekdays 16:15 ICT | shared raw `cadence=daily` | SSI daily market data; FHSC BCTC, proprietary and insider; no new order book | SSI independent + Gen 6 daily analytics |
-| Sundays 09:15 ICT | shared raw `cadence=weekly` | full slow-source safety release plus market reference | SSI independent + Gen 6 weekly fundamentals |
+| Weekdays 09:25, 10:25, 11:25, 13:25, 14:25 ICT | shared raw `cadence=intraday` | SSI daily+5m OHLCV, foreign/session; FHSC foreign/active-session fallback and order book; no slow endpoints | SSI independent + Gen 6 intraday |
+| Weekdays 15:05 ICT | shared raw `cadence=daily` | SSI daily market data; FHSC BCTC, proprietary and insider; no new order book | SSI independent + Gen 6 daily analytics |
+| Sundays 07:15 ICT | shared raw `cadence=weekly` | full slow-source safety release plus market reference | SSI independent + Gen 6 weekly fundamentals |
 
 Gen 6 never consumes SSI-calculated features or BCTC. `scripts/vnstock6_raw_adapter.py` verifies the raw release and exposes provider frames; `vnstock6_quant.fa` and Gen 6 scoring calculate independently. SSI likewise never consumes Gen 6 calculations.
+
+Retry rule: collect once, calculate many. A calculator retry must receive the existing immutable `raw_release_id`; it must not dispatch provider collection. A new release is created only by the next n8n cadence trigger.
 
 ## Promotion gates
 

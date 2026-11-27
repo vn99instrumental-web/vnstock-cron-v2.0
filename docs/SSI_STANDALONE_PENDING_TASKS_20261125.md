@@ -1,48 +1,65 @@
-# Pending tasks để SSI độc lập hoàn toàn với Gen 6
+# Pending tasks để SSI có full data và độc lập với Gen 6
 
 Ngày cập nhật: 2026-11-27
-Nguồn quyết định: [SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md](SSI_STANDALONE_SOURCE_BOUNDARY_20261125.md)
 
-## Trạng thái ngắn
+## Quy tắc kiến trúc
 
-Code SSI hiện đã độc lập về công thức score, feature đầu vào, BCTC calculator, workflow và dashboard artifact. SSI chỉ đọc immutable raw release từ SSI/FHSC, không đọc Gen 6 hoặc `vnstock_quant.fa`; chưa thể tuyên bố full-data production vì workflow mới chưa được merge/chạy với credential thật và chưa có live raw release/backfill.
+Gen 6 và SSI là hai calculator độc lập. Cả hai dùng cùng immutable provider raw từ SSI/FHSC và cùng `raw_release_id`, nhưng không dùng chung ratio, feature, signal, score, decision hoặc BCTC đã tính:
 
-## Thứ tự triển khai bắt buộc
+- Gen 6: `scripts/vnstock6_raw_adapter.py` -> `vnstock_quant.fa` -> scoring/profile Gen 6.
+- SSI: `scripts/ssi_raw_features.py` -> BCTC/market formulas SSI -> scoring SSI.
 
-| Thứ tự | Task | Trạng thái | Điều kiện nghiệm thu |
+Quy tắc vận hành bắt buộc là **collect once, calculate many**:
+
+- Mỗi cadence chỉ publish một immutable `raw_release_id`.
+- Gen 6 và SSI phải nhận cùng ID này.
+- Retry calculator, sửa formula hoặc build lại dashboard phải tái sử dụng release đã có; không được gọi lại SSI/FHSC chỉ để tính lại.
+- Chỉ collector theo cadence mới được tạo release mới. Consumer không có quyền tự dispatch collector.
+
+## Task full data 1-5
+
+| # | Task | Trạng thái | Bằng chứng/điều kiện hoàn tất |
 |---|---|---|---|
-| 0 | Khóa ranh giới kiến trúc trong `AGENTS.md`, `PROJECT_STATE.md` và tài liệu canonical | DONE 2026-11-25 | Mọi handoff ghi rõ chỉ raw SSI/FHSC được dùng chung; trạng thái hiện tại được gọi là transitional |
-| 0A | Đồng bộ visual Gen 6/SSI và highlight dữ liệu thiếu | DONE 2026-11-25 | Các route SSI dùng chung shell/component Gen 6; giá trị `null` hiển thị màu vàng, không đổi 0 thành missing; adapter/chart SSI không fallback sang serving Gen 6 |
-| 1 | Định nghĩa shared-raw contract và namespace trung lập | DONE LOCAL 2026-11-25 | Có schema/version/provenance/hash/QC cho SSI OHLCV, session/foreign và FHSC BCTC/order-book/slow data; không có ratio/feature/score tính sẵn |
-| 2 | Tách collector/materializer raw khỏi runtime Gen 6 | IN PROGRESS | Collector/workflow trung lập đã độc lập và SSI đọc release ID; Gen 6 chưa chuyển transport sang cùng release ID |
-| 3 | Xây SSI BCTC normalizer và calculator riêng | DONE LOCAL 2026-11-25 | SSI tự tính ratio, growth, CFO/cash-flow quality từ raw FHSC; có formula version, PIT guard, sector cases và golden fixtures |
-| 4 | Xây SSI market/technical/flow feature builder riêng | DONE LOCAL 2026-11-25 | 17 signal input được tạo từ raw SSI/FHSC bằng code/config SSI; null/stale semantics và provenance được giữ nguyên |
-| 5 | Chuyển `ssi_independent_pipeline.py` sang SSI-owned inputs | DONE LOCAL 2026-11-25 | Không còn `GEN6_TODAY`, `GEN6_HISTORY`, path `output/**/vnstock6` hoặc field đã tính bởi Gen 6 trong input |
-| 6 | Tách orchestration SSI khỏi workflow Gen 6 | DONE LOCAL 2026-11-25 | Workflow SSI chạy theo shared-raw readiness/manual dispatch; không còn chờ workflow Gen 6 |
-| 7 | Backfill ledger SSI từ shared raw và so sánh bản chuyển tiếp | PENDING LIVE RAW | Cần publish raw release thật đầu tiên và tích lũy/cấp raw lịch sử; không dùng output cũ làm fallback |
-| 8 | Thêm independence/QC/security gates | DONE LOCAL 2026-11-25 | Unit/golden/tamper/boundary tests pass; GitHub run trên raw thật vẫn phải xác nhận |
-| 9 | Publish, deploy và xác nhận production standalone | IN PROGRESS REMOTE | Code đã push và Vercel đã deploy/smoke auth gate; còn merge/publish workflow, tạo raw release thật, build/backfill SSI artifact, chạy GitHub gates và visual QA sau đăng nhập |
+| 1 | Publish contract/workflow trung lập lên `main` | DONE | Commit `3b0b105f3`; collector có cadence `intraday/daily/weekly`, hash, QC và release bất biến |
+| 2 | Chuyển Gen 6 sang cùng raw release nhưng giữ calculator riêng | DONE | Adapter raw, `fundamental_factors_from_frames`, provenance `raw_release_id`; unit test chứng minh gọi `vnstock_quant.fa`, không gọi SSI calculator |
+| 3 | Chạy release live đầy đủ và đo coverage | DONE | Collector run `45938422349` publish release `20261127T041229Z-d12e27b5`; manifest, hash và raw QC PASS |
+| 4 | Build/publish SSI và Gen 6 từ cùng release, chạy gates và revalidate Vercel | DONE | Gen 6 run `45949217456`; SSI calculator-only run `45952046277`; cả hai success, serving metadata cùng release ID, Vercel revalidate đã chạy |
+| 5 | Chuyển lịch n8n intraday/daily/weekly | DONE IN REPO | Commit `479ef5020` giữ tương thích wrapper; canonical schedule ở `n8n/shared-raw-ssi-fhsc-schedule.json`. Chỉ còn thao tác ngoài repo: import/attach credential/activate trong UI n8n, chưa xác minh vì không có endpoint/session |
 
-## Trạng thái triển khai raw ngày 2026-11-25
+## Coverage live của release chung
 
-- Contract: `docs/SHARED_RAW_SSI_FHSC_CONTRACT.md`; namespace `output/shared-raw/ssi-fhsc`.
-- Collector/validator: `scripts/shared_raw_collector.py`; workflow độc lập `.github/workflows/shared_raw_ssi_fhsc.yml`.
-- SSI-owned calculations: `scripts/ssi_raw_features.py`; pipeline score không còn đọc path/artifact Gen 6.
-- Workflow SSI chỉ chờ `Shared raw SSI FHSC production` và chạy `scripts/validate_ssi_standalone.py` trước build.
-- Commit `8f80df1256bdf9e22208ebd0b5da54893d1711c4` đã push lên `codex/ssi-gen6-parallel-tabs`.
-- Vercel production `dpl_AbyvGSYzqT5LHxQMTDGXSSgjbF34` READY; alias production và auth-gate smoke check PASS. Commit mới chỉ đổi pipeline/docs nên Vercel Git integration bỏ preview build theo đúng Ignored Build Step; production được build thủ công từ repo root.
-- 15 focused tests pass locally. Chưa có raw release live trong repo này, nên backfill và production standalone data chưa được xác nhận.
+| Dataset/feature | Coverage | Ý nghĩa phần thiếu |
+|---|---:|---|
+| OHLCV SSI | 100/100 | Đủ |
+| Foreign SSI | 100/100 | Đủ |
+| Foreign FHSC | 100/100 | Đủ |
+| Session stats SSI | 0/100 | Provider trả empty; giữ null |
+| Active session FHSC | 99/100 | VCB lỗi mạng trong lần collect |
+| Balance sheet FHSC | 99/100 | VNM lỗi mạng |
+| Income statement FHSC | 96/100 | PNJ, POW, PVD, VIC lỗi mạng |
+| Cash flow FHSC | 90/100 | 10 mã lỗi mạng; không lấy BCTC Gen 6 để bù |
+| Proprietary flow FHSC | 99/100 | VIB lỗi mạng |
+| Insider FHSC | 74/100 | 26 mã trả empty |
+| Order book FHSC | 100/100 | Đủ |
 
-## Công việc không phải lỗi kiến trúc
+SSI sau khi tính độc lập: 100/100 mã có score; `of_phasefix` 100, `ff_net` 99, `prop_5d` 99, `growth_core` 96, `cf_core` 90, `depth_wall` 84 và `insider` 64. Có 46 mã đủ cả 17 signal; mọi mã đạt tối thiểu 14 signal.
 
-- D+10 của snapshot gần nhất tiếp tục `PENDING_TIME`: phải chờ đủ 10 phiên giao dịch tương lai; không được nội suy.
-- Nghiên cứu exact parity với frozen v4.18 trong repo `ssi-data-pipeline` là track kiểm chứng riêng. Nó không được dùng để lách ranh giới raw-only và không phải nguồn runtime cho SSI standalone.
+## Coverage không thể bịa
 
-## Nguyên nhân tồn tại dependency hiện tại
+Dữ liệu provider trả empty/error phải giữ null và được dashboard highlight vàng. “Full data” nghĩa là đã thu đủ các endpoint được phép theo cadence và công khai coverage thật; không được điền 0 hoặc lấy artifact calculator còn lại để che phần thiếu.
 
-Lần triển khai trước tối ưu tốc độ bằng cách tái sử dụng row feature đã materialize cho Gen 6. Cách đó tránh gọi lại SSI/FHSC và vẫn tách scorer, nhưng đã gộp hai khái niệm khác nhau:
+D+10/outcome mới vẫn phụ thuộc số phiên tương lai thực tế. Đây là `PENDING_TIME`, không phải lỗi collector hoặc dependency Gen 6.
 
-- dùng chung **nguồn/raw data** là đúng;
-- dùng chung **feature/BCTC đã tính** là không đúng với mục tiêu standalone.
+## Pending còn lại
 
-Việc sửa phải tách lớp raw ở trước hai calculator, thay vì nhân đôi API call hoặc cho SSI tiếp tục đọc artifact Gen 6.
+Không còn task code/runtime nào trong nhóm full-data 1-5. Hai việc còn lại không được giải quyết bằng cách rerun collector:
+
+1. `PENDING_TIME`: tích lũy outcome D+10 theo phiên giao dịch thực tế và các snapshot lịch sử mới.
+2. `EXTERNAL_VERIFY`: import, gắn GitHub credential và activate canonical workflow trong UI n8n khi có endpoint/session owner.
+
+## Kiểm thử
+
+- Baseline full suite: 104/104 PASS trước compatibility wrapper.
+- Raw/adapter/SSI/n8n focused tests: PASS; GitHub SSI workflow chạy 16 focused tests PASS; n8n contract 4/4 PASS.
+- `validate_ssi_standalone` package mode: PASS.
+- Security review: không commit token/secret; `raw_release_id` được regex validate; n8n JSON không chứa credential value.

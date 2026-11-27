@@ -18,6 +18,7 @@ Schema: `shared-raw-release-v1`
 - Release đã tồn tại không được ghi đè. Pointer chỉ publish sau khi coverage, manifest và toàn bộ SHA-256 pass.
 - Schema: `schemas/shared_raw_release.schema.json`.
 - Mỗi consumer bắt buộc nhận đúng `raw_release_id`; không được tự suy ra release mới nhất trong lúc chạy production.
+- Retry calculator phải tái sử dụng đúng release đó. Chỉ cadence collector mới được gọi provider và tạo release mới; lỗi tính toán, build hoặc publish không được phép kích hoạt recollect.
 
 ## Cadence và dataset
 

@@ -4,11 +4,13 @@ Import `shared-raw-ssi-fhsc-schedule.json` into the existing n8n instance and se
 
 Schedule timezone: `Asia/Ho_Chi_Minh`.
 
-- Intraday, Monday-Friday: 09:15, 10:30, 11:30, 13:45, 14:50.
-- Daily, Monday-Friday: 16:15.
-- Weekly, Sunday: 09:15.
+- Intraday, Monday-Friday: 09:25, 10:25, 11:25, 13:25, 14:25.
+- Daily, Monday-Friday: 15:05.
+- Weekly, Sunday: 07:15.
 
 Every trigger dispatches only `shared_raw_ssi_fhsc.yml` with `cadence=intraday|daily|weekly`. GitHub publishes one immutable raw release, then fans the exact `raw_release_id` out to SSI and the matching Gen 6 calculator. The calculators never dispatch provider collection themselves.
+
+Retry policy: **collect once, calculate many**. Retry the failed consumer with the existing `raw_release_id`; never rerun the shared collector merely because a formula, build or publish step failed.
 
 Required GitHub credential permissions for repository `vn99instrumental-web/vnstock-cron-v2.0`:
 

@@ -57,23 +57,23 @@
                                          "rule":  {
                                                       "interval":  [
                                                                        {
-                                                                           "expression":  "15 9 * * 1-5",
+                                                                           "expression":  "25 9 * * 1-5",
                                                                            "field":  "cronExpression"
                                                                        },
                                                                        {
-                                                                           "expression":  "30 10 * * 1-5",
+                                                                           "expression":  "25 10 * * 1-5",
                                                                            "field":  "cronExpression"
                                                                        },
                                                                        {
-                                                                           "expression":  "30 11 * * 1-5",
+                                                                           "expression":  "25 11 * * 1-5",
                                                                            "field":  "cronExpression"
                                                                        },
                                                                        {
-                                                                           "expression":  "45 13 * * 1-5",
+                                                                           "expression":  "25 13 * * 1-5",
                                                                            "field":  "cronExpression"
                                                                        },
                                                                        {
-                                                                           "expression":  "50 14 * * 1-5",
+                                                                           "expression":  "25 14 * * 1-5",
                                                                            "field":  "cronExpression"
                                                                        }
                                                                    ]
@@ -93,7 +93,7 @@
                                          "rule":  {
                                                       "interval":  [
                                                                        {
-                                                                           "expression":  "15 16 * * 1-5",
+                                                                           "expression":  "5 15 * * 1-5",
                                                                            "field":  "cronExpression"
                                                                        }
                                                                    ]
@@ -113,7 +113,7 @@
                                          "rule":  {
                                                       "interval":  [
                                                                        {
-                                                                           "expression":  "15 9 * * 0",
+                                                                           "expression":  "15 7 * * 0",
                                                                            "field":  "cronExpression"
                                                                        }
                                                                    ]

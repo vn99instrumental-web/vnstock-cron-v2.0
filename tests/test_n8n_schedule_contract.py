@@ -14,11 +14,11 @@ class N8nScheduleContractTests(unittest.TestCase):
         nodes = {node["name"]: node for node in value["nodes"]}
         expected = {
             "Intraday ICT weekdays": [
-                "15 9 * * 1-5", "30 10 * * 1-5", "30 11 * * 1-5",
-                "45 13 * * 1-5", "50 14 * * 1-5",
+                "25 9 * * 1-5", "25 10 * * 1-5", "25 11 * * 1-5",
+                "25 13 * * 1-5", "25 14 * * 1-5",
             ],
-            "Daily ICT weekdays": ["15 16 * * 1-5"],
-            "Weekly ICT Sunday": ["15 9 * * 0"],
+            "Daily ICT weekdays": ["5 15 * * 1-5"],
+            "Weekly ICT Sunday": ["15 7 * * 0"],
         }
         for name, expressions in expected.items():
             actual = [item["expression"] for item in nodes[name]["parameters"]["rule"]["interval"]]
@@ -54,6 +54,18 @@ class N8nScheduleContractTests(unittest.TestCase):
             ROOT / ".github" / "workflows" / "shared_raw_ssi_fhsc.yml"
         ).read_text(encoding="utf-8")
         self.assertIn("GH_REPO: ${{ github.repository }}", text)
+
+    def test_ssi_consumer_has_independent_concurrency_queue(self):
+        shared_raw = (ROOT / ".github" / "workflows" / "shared_raw_ssi_fhsc.yml").read_text(encoding="utf-8")
+        ssi = (ROOT / ".github" / "workflows" / "ssi_independent_production.yml").read_text(encoding="utf-8")
+        self.assertIn("group: ssi-main-writer", ssi)
+        self.assertIn("group: vnstock-main-writer", shared_raw)
+        self.assertIn("cancel-in-progress: false", ssi)
+        self.assertIn("python -m scripts.ssi_raw_features", ssi)
+        self.assertIn("python -m scripts.ssi_independent_pipeline build", ssi)
+        self.assertNotIn(" collect --cadence ", ssi)
+        self.assertNotIn("gh workflow run shared_raw_ssi_fhsc.yml", ssi)
+
 
 if __name__ == "__main__":
     unittest.main()
