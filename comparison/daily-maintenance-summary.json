@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "candidate_status": "PASS",
+  "generated_at": "2026-11-27T08:19:04.011918+00:00",
+  "run": {
+    "id": "45962958727",
+    "url": "https://github.com/vn99instrumental-web/vnstock-cron-v2.0/actions/runs/45962958727"
+  },
+  "sources": {
+    "reference": "SSI",
+    "market_counts": {
+      "SSI": 100
+    },
+    "fundamental": "FHSC"
+  },
+  "scoring_version": "v6.4.18",
+  "scoring_versions": [
+    "v6.4.19-shadow",
+    "v6.4.18",
+    "v6.4.17"
+  ],
+  "cutover_date": "2026-11-10",
+  "universe_size": 100,
+  "successful_symbols": 100,
+  "serving_rows": 300,
+  "serving_rows_by_version": {
+    "v6.4.19-shadow": 300,
+    "v6.4.18": 300,
+    "v6.4.17": 300
+  },
+  "failed_symbol_count": 0,
+  "excluded_factor_counts": {
+    "growth": 12
+  },
+  "fundamental_scored_rows": 300,
+  "growth_scored_rows": 288,
+  "indicator_coverage": {
+    "adx": 300,
+    "supertrend": 300,
+    "s_trend_st": 300,
+    "s_ff_net": 294,
+    "s_of_phasefix": 300,
+    "s_prop_5d": 300,
+    "s_insider": 219,
+    "s_depth_wall": 255,
+    "s_cf_core": 300
+  },
+  "data_quality": {
+    "schema_version": 1,
+    "generated_at": "2026-11-27T08:19:04.011484+00:00",
+    "status": "PASS",
+    "rows": 300,
+    "total_serving_rows": 900,
+    "minimum_required_rows": 240,
+    "field_coverage": {
+      "price": 300,
+      "adtv_bil": 300,
+      "adtv_20d_bil": 300,
+      "ff_intra_net": 294,
+      "ff_intra_ratio": 291,
+      "ema20": 300,
+      "ema50": 300,
+      "ema200": 300,
+      "rsi_14": 300,
+      "atr_14": 300,
+      "obv": 300,
+      "position_52w": 300,
+      "s_depth_wall": 255,
+      "depth_average_trade_size": 255,
+      "order_book_bid_price": 297,
+      "order_book_bid_volume": 297,
+      "order_book_ask_price": 297,
+      "order_book_ask_volume": 297,
+      "growth_input_count": 300
+    },
+    "metadata_coverage": {
+      "growth_period": 288,
+      "cash_flow_period": 300
+    },
+    "low_coverage": {},
+    "warnings": {
+      "stale_proprietary_symbols": 100,
+      "missing_insider_as_of_symbols": 73,
+      "estimated_turnover_symbols": 100,
+      "single_input_growth_symbols": 32
+    },
+    "optional_source_coverage": {
+      "ff_intra_net": 294,
+      "ff_intra_ratio": 291
+    },
+    "invalid_values": [],
+    "contracts": {
+      "adtv_bil": "current_or_last_session_turnover_bil_vnd",
+      "adtv_20d_bil": "mean_20_session_turnover_bil_vnd",
+      "ff_intra_net": "same_session_foreign_net_vnd",
+      "temporal_alignment": "latest_snapshot_only_and_source_date_equals_signal_date",
+      "optional_source_fields": "missing_is_null_and_excluded_from_scoring",
+      "depth": "score_requires_atomic_same_session_book_and_average_trade_size",
+      "fundamental_periods": "growth_and_cash_flow_period_required"
+    }
+  },
+  "fundamental_refresh": {
+    "status": "cache_reused",
+    "counts": {
+      "updated": 0,
+      "unchanged": 0,
+      "failed": 0,
+      "failed_preserved": 0,
+      "material_changed": 0,
+      "skipped_fresh": 0
+    },
+    "update_detection": "cache_reused",
+    "source_run_id": "45959083307",
+    "generated_at": "2026-11-27T07:40:21.157152+00:00",
+    "last_refresh_counts": {
+      "updated": 0,
+      "unchanged": 100,
+      "failed": 0,
+      "failed_preserved": 0,
+      "material_changed": 0
+    }
+  },
+  "stages": {
+    "authenticate": "success",
+    "reference": "success",
+    "market_ingest": "success",
+    "scoring": "success",
+    "serving": "success"
+  }
+}

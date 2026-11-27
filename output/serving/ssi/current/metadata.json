@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "version": "ssi-v4.18-independent",
-  "generated_at": "2026-11-27T07:43:24.736563+00:00",
+  "generated_at": "2026-11-27T08:22:26.198500+00:00",
   "signal_date": "2026-11-27",
   "source_provenance": {
     "market": "SSI",
     "fundamental": "FHSC",
     "input_layer": "shared_raw",
-    "raw_release_id": "20261127T041229Z-d12e27b5",
+    "raw_release_id": "20261127T080622Z-bd6870bd",
     "feature_engine": "ssi",
     "bctc_engine": "ssi",
     "standalone": true,
@@ -18,9 +18,9 @@
     "symbols": 100,
     "history_dates": 1,
     "history_rows": 100,
-    "buy": 76,
-    "sell": 4,
-    "full_17_signal_rows": 46,
+    "buy": 74,
+    "sell": 6,
+    "full_17_signal_rows": 47,
     "minimum_signal_coverage": 14,
     "scored_symbols": 100
   }
