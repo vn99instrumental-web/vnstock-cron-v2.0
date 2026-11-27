@@ -44,7 +44,7 @@ jobs:
           python scripts/validate_ssi_standalone.py
           python -m scripts.ssi_raw_features
       - name: Build SSI serving, ledger and dashboard artifact
-        run: python scripts/ssi_independent_pipeline.py build --raw-release-id "$RAW_RELEASE_ID"
+        run: python -m scripts.ssi_independent_pipeline build --raw-release-id "$RAW_RELEASE_ID"
       - name: Publish independent SSI artifacts
         run: |
           git config user.name "github-actions[bot]"
