@@ -35,6 +35,8 @@ npm run check
 
 Project được deploy từ nhánh `main` lên Vercel. `vercel.json` đặt Functions tại region Tokyo (`hnd1`) để gần Supabase hơn.
 
+Từ 2026-11-27, tab `/ssi/history` ghép SSI-native với lịch sử Gen 6 còn thiếu theo symbol-date. Row tham chiếu luôn giữ provenance Gen 6, có nhãn vàng và không đi vào score/outcome/IC của SSI.
+
 ## Lớp dữ liệu phục vụ
 
 - `v4_analysis_diagnostics_snapshot` thay các phép tương quan nặng trên request bằng snapshot nhỏ được tạo sau daily sync.
