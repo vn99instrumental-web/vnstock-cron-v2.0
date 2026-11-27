@@ -77,6 +77,7 @@ jobs:
       - name: Dispatch independent calculators with the exact release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           RELEASE_ID: ${{ steps.release.outputs.release_id }}
           CADENCE: ${{ inputs.cadence }}
         run: |

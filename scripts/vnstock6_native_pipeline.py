@@ -858,6 +858,38 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]], key: str) -> int:
     return len(existing) - before
 
 
+def defer_unfinalized_daily_close(
+    expected_date: date,
+    market_date: date,
+    raw_release_id: str | None = None,
+) -> None:
+    """Keep the last valid snapshot when SSI daily bars are not finalized yet."""
+    status_path = ROOT / "output" / "vnstock6" / "native-status.json"
+    if not status_path.exists():
+        raise RuntimeError(
+            "VNSTOCK6_DAILY_SOURCE_NOT_FINALIZED_AND_NO_VALID_SNAPSHOT:"
+            f"{market_date.isoformat()}:{expected_date.isoformat()}"
+        )
+
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    status["daily_close"] = {
+        "status": "deferred_source_not_finalized",
+        "expected_date": expected_date.isoformat(),
+        "market_date": market_date.isoformat(),
+        "raw_release_id": raw_release_id,
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+    }
+    status_path.write_text(
+        dumps_json(status, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(
+        "VNStock6 daily close deferred: "
+        f"VNINDEX daily latest={market_date.isoformat()}, "
+        f"expected={expected_date.isoformat()}; keeping last valid snapshot"
+    )
+
+
 def run_native(
     config: dict[str, Any], force: bool, intraday: bool = False,
     refresh_slow_market: bool = False, raw_release_id: str | None = None,
@@ -892,6 +924,13 @@ def run_native(
     else:
         index_rows = update_vnindex(reference_source, today)
     market_date = today if intraday else date.fromisoformat(str(index_rows[-1]["date"])[:10])
+    if not intraday and market_date < today and not force:
+        defer_unfinalized_daily_close(
+            today,
+            market_date,
+            raw.release_id if raw else None,
+        )
+        return
     if raw:
         market_factors = market_factors_from_raw(
             raw, universe, market_date, slow_cache=market_cache,
@@ -1033,6 +1072,14 @@ def run_native(
         "successful_symbols": successful_symbols, "prediction_rows": len(predictions),
         "vnindex_rows": len(index_rows), "failed_symbols": errors, "records_added": added,
     }
+    if not intraday:
+        status["daily_close"] = {
+            "status": "finalized",
+            "expected_date": today.isoformat(),
+            "market_date": market_date.isoformat(),
+            "raw_release_id": raw.release_id if raw else None,
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+        }
     status_path = ROOT / "output" / "vnstock6" / "native-status.json"
     status_path.parent.mkdir(parents=True, exist_ok=True)
     status_path.write_text(dumps_json(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
