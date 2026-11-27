@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-27T06:02:54.264811+00:00",
+  "generated_at": "2026-11-27T07:40:21.157152+00:00",
   "reference_source": "SSI",
   "fundamental_source": "FHSC",
   "input_layer": "shared_provider_raw",
@@ -10,13 +10,13 @@
   "reference_symbols_available": 1518,
   "symbols_requested": 100,
   "cache_symbols": 100,
-  "run_id": "45949217456",
+  "run_id": "45959083307",
   "counts": {
-    "updated": 14,
-    "unchanged": 86,
+    "updated": 0,
+    "unchanged": 100,
     "failed": 0,
     "failed_preserved": 0,
-    "material_changed": 14
+    "material_changed": 0
   },
   "symbols": {
     "ACB": {
@@ -188,15 +188,15 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "GAS": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "GEE": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "GEX": {
@@ -224,9 +224,9 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HCM": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "HDB": {
@@ -278,9 +278,9 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "KDH": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "KOS": {
@@ -392,21 +392,21 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PNJ": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "POW": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PVD": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "PVT": {
@@ -458,9 +458,9 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "SSI": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "STB": {
@@ -470,9 +470,9 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TAL": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TCB": {
@@ -494,9 +494,9 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "TPB": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VCB": {
@@ -548,9 +548,9 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VIC": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VIX": {
@@ -566,21 +566,21 @@
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VND": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VNM": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VPB": {
-      "status": "updated",
+      "status": "unchanged",
       "phase": "raw_release",
-      "material_changed": true,
+      "material_changed": false,
       "raw_release_id": "20261127T041229Z-d12e27b5"
     },
     "VPI": {
